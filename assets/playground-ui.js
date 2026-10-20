@@ -54,7 +54,8 @@
         body: { WebkitTapHighlightColor: 'transparent', WebkitFontSmoothing: 'antialiased', backgroundColor: C.page },
         'a, button, input, [role="button"], [role="tab"]': { touchAction: 'manipulation' }
       } },
-      MuiButtonBase: { defaultProps: { disableRipple: reduce } },
+      // Press feedback is done with Motion (whileTap scale), not the Material ripple.
+      MuiButtonBase: { defaultProps: { disableRipple: true } },
       MuiButton: {
         defaultProps: { disableElevation: true },
         styleOverrides: {
@@ -114,9 +115,27 @@
     Icon[k] = function (props) { return h(M.SvgIcon, props, h('path', { d: P[k] })); };
   });
 
+  /* ---- Motion (vendor/motion@14.4.0/motion-react.js → window.Motion) ----------------------
+     All interface motion uses Motion springs defined by visualDuration (how long it looks) +
+     bounce, so timings are easy to tune and coordinate. LazyMotion(domMax, strict) loads the
+     features incl. layout / layoutId animations; components use the lightweight `m.*`.
+     MotionConfig reducedMotion="user" turns transforms off when the phone asks for less motion. */
+  var Mo = window.Motion;
+  var T = {
+    ui:     { type: 'spring', visualDuration: 0.32, bounce: 0.12 },   // general UI movement
+    snap:   { type: 'spring', visualDuration: 0.22, bounce: 0.08 },   // indicators, press feedback
+    pop:    { type: 'spring', visualDuration: 0.36, bounce: 0.28 },   // things appearing (menu, swatches, pills)
+    layout: { type: 'spring', visualDuration: 0.38, bounce: 0.1 },    // cards changing size / position
+    fade:   { type: 'tween', duration: 0.2, ease: [0.2, 0, 0, 1] },   // colour / opacity only
+    out:    { type: 'tween', duration: 0.14, ease: [0.4, 0, 1, 1] }   // exits: quick and quiet
+  };
+  var TAP = { scale: 0.96 };
+
   function mount(el, App) {
     var root = ReactDOM.createRoot(el);
-    root.render(h(M.ThemeProvider, { theme: theme }, h(M.CssBaseline), h(App)));
+    root.render(h(M.ThemeProvider, { theme: theme }, h(M.CssBaseline),
+      h(Mo.MotionConfig, { reducedMotion: 'user', transition: T.ui },
+        h(Mo.LazyMotion, { features: Mo.domMax, strict: true }, h(App)))));
     return root;
   }
 
@@ -124,5 +143,6 @@
   var me = document.currentScript && document.currentScript.src || '';
   var v = (/[?&]v=([\w-]+)/.exec(me) || [])[1] || '';
 
-  window.PG = { h: h, theme: theme, Icon: Icon, mount: mount, C: C, reduce: reduce, v: v === 'STAMP' ? '' : v };
+  window.PG = { h: h, theme: theme, Icon: Icon, mount: mount, C: C, reduce: reduce, v: v === 'STAMP' ? '' : v,
+    Mo: Mo, m: Mo.m, T: T, TAP: TAP };
 })();
