@@ -35,7 +35,7 @@ shows still thumbnails.
 | Coins loading | loading loops → "Show success" finishes the turn → success once |
 
 Every animation also has a **GSAP version** (`animations/<name>/gsap/*.js`: inline SVG + one GSAP timeline,
-pixel-matched to the Lottie). The **Lottie / GSAP** tab above the animation switches renderer; the
+pixel-matched to the Lottie). The **Lottie / GSAP** switch in the animation's top-left corner changes renderer (background swatches sit top-right); the
 controls work the same for both and the current frame is kept when you switch.
 
 To add one: put the `.json` (plus `.lottie` and a `preview.png`) in `animations/<name>/`, the GSAP module (if
