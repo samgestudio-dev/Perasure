@@ -70,7 +70,11 @@ README.md                  human-facing summary + demo / animation tables
    `python3 tools/flatten-lottie-masks.py in.json out.json` (needs `pip install skia-pathops`) and rebuild the
    `.lottie` from the result. lottie-web draws such layers with nested SVG `<mask>`s, which iOS Safari renders
    blurry when the art is scaled up; the script merges them into one exact clip shape (pixel-identical in Chrome).
-6. Renderer: lottie-web SVG (`vendor/lottie-web@5.12.2/lottie_svg.min.js`). Don't switch to the canvas
+6. Check for bitmap-traced shapes: `python3 tools/smooth-traced-path.py --report animations/<slug>/<slug>.json`.
+   A traced path (many vertices on a half-pixel grid) shows jagged edges once scaled; rebuild it with
+   `python3 tools/smooth-traced-path.py in.json out.json "<layer name>" 8 0.5`, then put the same path into
+   the GSAP module's inline SVG and rebuild the `.lottie` (see the Customer service bubble).
+7. Renderer: lottie-web SVG (`vendor/lottie-web@5.12.2/lottie_svg.min.js`). Don't switch to the canvas
    renderer — it mis-renders the masks in Doc verify and Safe transaction.
 
 ## Requirements for a demo page
