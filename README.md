@@ -45,7 +45,8 @@ any) in `animations/<name>/gsap/`, and add an entry to `animations/animations.js
 ## Shared libraries
 
 `vendor/` holds pinned copies so demos don't depend on a CDN: lottie-web 5.12.2, GSAP 3.15.0 (core +
-all plugins, as browser scripts and as ES modules in `esm/`), React 18.3.1 and ReactDOM 18.3.1. Load them from a demo with a relative path, e.g.
+all plugins, as browser scripts and as ES modules in `esm/`), React 18.3.1, ReactDOM 18.3.1 and
+Material UI 5.18.0 (used by the Playground pages; theme in `assets/playground-ui.js`). Load them from a demo with a relative path, e.g.
 `<script src="../../vendor/gsap@3.15.0/gsap.min.js"></script>`, or for code that does `import { gsap } from "gsap"`
 an import map: `{"imports":{"gsap":"../../vendor/gsap@3.15.0/esm/index.js","gsap/":"../../vendor/gsap@3.15.0/esm/"}}`
 (see `animations/player.html`).

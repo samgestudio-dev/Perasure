@@ -10,13 +10,14 @@ Phone-first motion prototypes for PeraSure, served by GitHub Pages from `main` /
 
 ```
 index.html                 picker ("Playground"): "Prototypes" tab (DEMOS array) + "Animations" tab (reads animations/animations.js)
+assets/playground-ui.js    shared Material UI theme + icons for the picker and the player (window.PG)
 prototypes/<slug>/index.html    main / recommended variant of a demo
 prototypes/<slug>/<variant>.html  other variants of the same demo (optional)
 animations/animations.js       Lottie registry (LOTTIES array) — shared by the picker and the player
 animations/player.html         player, one animation at a time: player.html?a=<slug>[&r=gsap] (Lottie / GSAP tabs)
 animations/<slug>/             <slug>.json (+ <slug>.lottie, preview.png, gsap/<module>.js)
 tools/                     flatten-lottie-masks.py, flatten-svg-masks.py (Safari mask-blur fixes)
-vendor/<lib>@<version>/    pinned libraries: lottie-web, gsap (+ plugins; esm/ = ES modules), react, react-dom
+vendor/<lib>@<version>/    pinned libraries: lottie-web, gsap (+ plugins; esm/ = ES modules), react, react-dom, mui-material
 README.md                  human-facing summary + demo / animation tables
 .nojekyll                  keep: Pages serves files as-is
 ```
@@ -44,6 +45,8 @@ README.md                  human-facing summary + demo / animation tables
    - Link to the file explicitly (`.../index.html`), not the folder — folder links break when the repo is opened locally.
    - Newest demo goes at the top of the array unless the owner says otherwise.
    - Only edit the `DEMOS` array for a normal addition; don't restyle the picker unless asked.
+   - The picker and the player are React + Material UI 5 (browser builds in `vendor/`, no JSX, no build step;
+     `PG.h` = `React.createElement`). Style through the theme in `assets/playground-ui.js`, not per page.
 3. Add a row to the demo table in `README.md`.
 4. Removing or renaming a demo: update the folder, the `DEMOS` entry and the README row together.
 

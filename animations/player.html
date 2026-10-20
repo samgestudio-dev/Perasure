@@ -7,246 +7,43 @@
 <title>Animations · PeraSure Playground</title>
 <!-- GSAP modules import "gsap" as a package; map it to the vendored ES build (no build step). -->
 <script type="importmap">{"imports":{"gsap":"../vendor/gsap@3.15.0/esm/index.js","gsap/":"../vendor/gsap@3.15.0/esm/","gsap/MotionPathPlugin":"../vendor/gsap@3.15.0/esm/MotionPathPlugin.js"}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#f0f5f4; --card:#ffffff; --ink:#141e24; --sub:#6a757d; --mute:#97a0a6;
-    --line:#e0e3e5; --blue:#2c74be; --blue-50:#f3f8ff; --blue-100:#e4f0ff; --blue-200:#c8deff;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  html,body{background:var(--bg);color:var(--ink)}
-  body{
-    font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
-    -webkit-font-smoothing:antialiased;min-height:100vh;-webkit-text-size-adjust:100%;
-    padding:calc(env(safe-area-inset-top,0px) + 12px) 16px calc(env(safe-area-inset-bottom,0px) + 28px);
-  }
-  button,a,input{touch-action:manipulation;font:inherit;color:inherit}
-  button{border:0;background:none;cursor:pointer;-webkit-user-select:none;user-select:none}
-  main{max-width:440px;margin:0 auto}
-
-  /* top row */
-  .top{display:flex;align-items:center;justify-content:space-between;height:40px}
-  .back{display:inline-flex;align-items:center;gap:2px;margin-left:-8px;padding:8px 8px 8px 4px;border-radius:12px;
-    text-decoration:none;font-size:17px;line-height:24px;font-weight:600;letter-spacing:-.01em;color:var(--blue)}
-  .back:active{background:var(--blue-50)}
-  .count{font-size:13px;line-height:18px;color:var(--sub);font-variant-numeric:tabular-nums}
-
-  /* pager under the stage: prev · position · next (kept away from the menu button) */
-  .pager{margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-  .pager .nav{width:36px;height:36px}
-  .dots{display:flex;align-items:center;justify-content:center;gap:6px;flex:1}
-  .dots i{width:6px;height:6px;border-radius:99px;background:#c9d1d5;transition:width .2s ease,background-color .2s ease}
-  .dots i.on{width:18px;background:var(--blue)}
-  .pager .count{display:none}
-  .pager.many .dots{display:none}
-  .pager.many .count{display:block;flex:1;text-align:center}
-  main{position:relative}
-  .top-r{display:flex;align-items:center;gap:10px}
-  .menu-btn{width:40px;height:40px;border-radius:999px;display:grid;place-items:center;background:var(--card);
-    box-shadow:0 0 2px rgba(0,1,40,.16),0 2px 8px rgba(0,1,40,.06);transition:transform .12s ease}
-  .menu-btn:active{transform:scale(.92)}
-  .menu-btn[aria-expanded="true"]{background:var(--blue-50);color:var(--blue)}
-
-  /* animation list: a dropdown panel under the menu button, not full screen */
-  /* Tap-outside catcher. No background and display:none while closed: iOS Safari 26 tints its
-     status bar / toolbar from fixed full-screen layers, so a colour here turns the bars solid. */
-  .scrim{position:fixed;inset:0;z-index:20;display:none;background:transparent}
-  .scrim.open{display:block}
-  .menu{position:absolute;z-index:21;top:46px;right:0;width:min(320px,calc(100vw - 32px));
-    max-height:min(60vh,520px);overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
-    background:var(--card);border-radius:20px;padding:6px;
-    box-shadow:0 0 2px rgba(0,1,40,.16),0 16px 40px rgba(0,1,40,.22);
-    transform-origin:top right;opacity:0;transform:translateY(-6px) scale(.97);pointer-events:none;visibility:hidden;
-    transition:opacity .16s ease,transform .2s cubic-bezier(.2,.8,.2,1),visibility 0s linear .2s}
-  .menu.open{opacity:1;transform:none;pointer-events:auto;visibility:visible;transition:opacity .16s ease,transform .2s cubic-bezier(.2,.8,.2,1)}
-  .menu-h{padding:8px 10px 6px;font-size:12px;line-height:16px;font-weight:600;color:var(--sub)}
-  .item{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:6px 10px 6px 6px;border-radius:14px}
-  .item:active{background:#eef1f3}
-  @media (hover:hover){.item:hover{background:#f4f6f7}}
-  .item img{flex:none;width:48px;height:48px;border-radius:10px;object-fit:contain;background:#fff;box-shadow:0 0 0 1px var(--line)}
-  .item .t{flex:1;min-width:0}
-  .item .t b{display:block;font-size:14px;line-height:20px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .item .t span{display:block;font-size:12px;line-height:16px;color:var(--mute)}
-  .item .ck{flex:none;width:20px;color:var(--blue);visibility:hidden}
-  .item[aria-current="true"]{background:var(--blue-50)}
-  .item[aria-current="true"] b{color:var(--blue)}
-  .item[aria-current="true"] .ck{visibility:visible}
-
-  /* title row with prev / next */
-  .head{margin-top:16px}
-  .head h1{text-align:center;font-size:20px;line-height:26px;font-weight:700;letter-spacing:-.01em}
-  .nav{flex:none;width:40px;height:40px;border-radius:999px;display:grid;place-items:center;background:var(--card);
-    box-shadow:0 0 2px rgba(0,1,40,.16),0 2px 8px rgba(0,1,40,.06);transition:transform .12s ease}
-  .nav:active{transform:scale(.92)}
-  .desc{margin-top:6px;text-align:center;font-size:13px;line-height:18px;color:var(--sub);min-height:36px}
-
-  /* renderer tabs */
-  .seg{margin:18px auto 0;width:200px;display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:3px;border-radius:12px;background:#e3eaea}
-  .seg-b{height:32px;border-radius:9px;font-size:13px;line-height:18px;font-weight:600;color:var(--sub);transition:background-color .15s ease,color .15s ease}
-  .seg-b[aria-selected="true"]{background:var(--card);color:var(--ink);box-shadow:0 0 2px rgba(0,1,40,.12),0 2px 6px rgba(0,1,40,.06)}
-  .seg-b[disabled]{opacity:.4}
-
-  /* stage */
-  .stage{position:relative;margin-top:16px;aspect-ratio:1/1;width:100%;border-radius:24px;overflow:hidden;
-    background:var(--stage,#fff);box-shadow:0 0 2px rgba(0,1,40,.16),0 4px 12px rgba(0,1,40,.08);
-    touch-action:pan-y;transition:background-color .2s ease}
-  .stage[data-bg="grid"]{background-color:#fff;
-    background-image:linear-gradient(45deg,#eef0f2 25%,transparent 25%,transparent 75%,#eef0f2 75%),
-                     linear-gradient(45deg,#eef0f2 25%,transparent 25%,transparent 75%,#eef0f2 75%);
-    background-size:20px 20px;background-position:0 0,10px 10px}
-  .anim{position:absolute;inset:0;margin:auto;width:calc(100% * var(--scale,1));height:calc(100% * var(--scale,1))}
-  .anim[hidden]{display:block!important;visibility:hidden}
-  .anim svg{display:block}
-  .msg{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;font-size:13px;color:var(--mute)}
-  .msg[hidden]{display:none}
-
-  /* timeline */
-  .time{margin-top:16px;display:flex;align-items:center;justify-content:space-between;font-size:12px;line-height:16px;color:var(--sub);font-variant-numeric:tabular-nums}
-  .phase{display:inline-flex;align-items:center;gap:6px;font-weight:600;color:var(--ink)}
-  .phase i{width:8px;height:8px;border-radius:99px;background:var(--blue)}
-  .phase[data-p="intro"] i,.phase[data-p="loading"] i{background:#7aa7d8}
-  .phase[data-p="paused"] i{background:var(--mute)}
-  input[type=range]{-webkit-appearance:none;appearance:none;display:block;width:100%;height:32px;margin-top:4px;background:transparent}
-  input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:99px;background:var(--track)}
-  input[type=range]::-moz-range-track{height:6px;border-radius:99px;background:var(--track)}
-  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;margin-top:-8px;border-radius:99px;
-    background:#fff;border:0;box-shadow:0 0 0 1.5px var(--blue),0 2px 6px rgba(0,1,40,.18)}
-  input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:99px;background:#fff;border:0;box-shadow:0 0 0 1.5px var(--blue),0 2px 6px rgba(0,1,40,.18)}
-  .legend{display:flex;gap:14px;margin-top:2px;font-size:11px;line-height:14px;color:var(--mute)}
-  .legend span{display:inline-flex;align-items:center;gap:5px}
-  .legend b{width:14px;height:6px;border-radius:99px;background:var(--blue-200)}
-  .legend b.l{background:var(--blue)}
-
-  /* controls */
-  .ctrls{margin-top:14px;display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:8px}
-  .btn{height:48px;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;
-    background:var(--card);border:1.5px solid var(--line);font-size:14px;line-height:20px;font-weight:600;
-    transition:transform .12s ease,background-color .15s ease,border-color .15s ease}
-  .btn:active{transform:scale(.97);background:var(--blue-50);border-color:var(--blue-200)}
-  .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
-  .btn.primary:active{background:#255f9c}
-  .btn[disabled]{opacity:.55;pointer-events:none}
-  .btn.wide{width:100%;margin-top:8px}
-  .btn[hidden]{display:none}
-
-  .row{margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-  .label{font-size:12px;line-height:16px;color:var(--sub)}
-  .chips{display:flex;gap:6px}
-  .chip{width:32px;height:32px;border-radius:99px;border:1.5px solid var(--line);position:relative}
-  .chip[aria-pressed="true"]{box-shadow:0 0 0 2px var(--bg),0 0 0 3.5px var(--blue);border-color:transparent}
-  .chip[data-bg="white"]{background:#fff}
-  .chip[data-bg="page"]{background:#f0f5f4}
-  .chip[data-bg="dark"]{background:#141e24}
-  .chip[data-bg="grid"]{background:#fff linear-gradient(45deg,#dfe3e6 25%,transparent 25%,transparent 75%,#dfe3e6 75%),#fff linear-gradient(45deg,#dfe3e6 25%,transparent 25%,transparent 75%,#dfe3e6 75%);
-    background-size:10px 10px;background-position:0 0,5px 5px}
-
-  .spec{margin-top:16px;padding:12px 14px;border-radius:14px;background:var(--card);font-size:12px;line-height:18px;color:var(--sub)}
-  .spec strong{color:var(--ink);font-weight:600}
-  .files{margin-top:6px;display:flex;flex-wrap:wrap;gap:4px 14px}
-  .files a{color:var(--blue);font-weight:600;text-decoration:none}
-
-  @media (prefers-reduced-motion: reduce){.btn,.nav,.stage,.menu,.menu.open,.menu-btn,.dots i,.seg-b{transition:none}}
+  html,body{margin:0;background:#f0f5f4}
+  #root:empty::after{content:"";display:block;height:100vh}
+  .ps-anim{position:absolute;inset:0;margin:auto}
+  .ps-anim svg{display:block}
 </style>
 </head>
 <body>
-<div class="scrim" id="scrim"></div>
-<main>
-  <div class="top">
-    <a class="back" href="../index.html#animations" aria-label="Back to the Playground">
-      <svg width="22" height="22" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M12.5 4.5 7 10l5.5 5.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Playground
-    </a>
-    <div class="top-r">
-      <button class="menu-btn" id="menuBtn" aria-label="All animations" aria-haspopup="true" aria-expanded="false" aria-controls="menu">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3.5 5.5h13M3.5 10h13M3.5 14.5h13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-      </button>
-    </div>
-  </div>
-  <div class="menu" id="menu" role="menu" aria-label="All animations"></div>
+<div id="root"></div>
 
-  <div class="head">
-    <h1 id="title"></h1>
-  </div>
-  <p class="desc" id="desc"></p>
-
-  <div class="seg" role="tablist" aria-label="Renderer">
-    <button class="seg-b" role="tab" id="r-lottie" aria-selected="true">Lottie</button>
-    <button class="seg-b" role="tab" id="r-gsap" aria-selected="false">GSAP</button>
-  </div>
-
-  <div class="stage" id="stage" data-bg="white" aria-label="Animation (swipe for the next one)">
-    <div class="anim" id="animA"></div>
-    <div class="anim" id="animB" hidden></div>
-    <div class="msg" id="msg">Loading…</div>
-  </div>
-
-  <div class="pager">
-    <button class="nav" id="prev" aria-label="Previous animation">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M12.5 4.5 7 10l5.5 5.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-    <div class="dots" id="dots" aria-hidden="true"></div>
-    <span class="count" id="count"></span>
-    <button class="nav" id="next" aria-label="Next animation">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7.5 4.5 13 10l-5.5 5.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-  </div>
-
-  <div class="time">
-    <span class="phase" id="phase" data-p="intro"><i></i><span id="phaseText">—</span></span>
-    <span id="frame">0 / 0</span>
-  </div>
-  <input type="range" id="scrub" min="0" max="100" step="0.01" value="0" aria-label="Scrub frames">
-  <div class="legend" id="legend"><span><b></b>Intro (plays once)</span><span><b class="l"></b>Loop</span></div>
-
-  <div class="ctrls">
-    <button class="btn" id="replay" aria-label="Replay from the start">
-      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10a6 6 0 1 0 1.8-4.3M4 3.5v3.2h3.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Replay
-    </button>
-    <button class="btn primary" id="play" aria-label="Pause">
-      <svg id="icPause" width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.4" height="12" rx="1.2" fill="currentColor"/><rect x="11.6" y="4" width="3.4" height="12" rx="1.2" fill="currentColor"/></svg>
-      <svg id="icPlay" width="18" height="18" viewBox="0 0 20 20" aria-hidden="true" style="display:none"><path d="M6 4.2v11.6c0 .8.9 1.3 1.6.8l8.6-5.8c.6-.4.6-1.2 0-1.6L7.6 3.4C6.9 2.9 6 3.4 6 4.2z" fill="currentColor"/></svg>
-      <span id="playText">Pause</span>
-    </button>
-    <button class="btn" id="speed" aria-label="Playback speed">1×</button>
-  </div>
-  <button class="btn primary wide" id="success" hidden>Show success</button>
-
-  <div class="row">
-    <span class="label">Background</span>
-    <div class="chips" id="chips">
-      <button class="chip" data-bg="white" aria-label="White background"></button>
-      <button class="chip" data-bg="page" aria-label="Page background"></button>
-      <button class="chip" data-bg="dark" aria-label="Dark background"></button>
-      <button class="chip" data-bg="grid" aria-label="Transparency grid"></button>
-    </div>
-  </div>
-
-  <div class="spec" id="spec"></div>
-</main>
-
+<script src="../vendor/react@18.3.1/react.production.min.js"></script>
+<script src="../vendor/react-dom@18.3.1/react-dom.production.min.js"></script>
+<script src="../vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
 <script src="../vendor/lottie-web@5.12.2/lottie_svg.min.js"></script>
+<script src="../assets/playground-ui.js"></script>
 <script src="animations.js"></script>
 <script>
-/* ---- Lottie / GSAP player --------------------------------------------------------------
+/* ---- Animation player ------------------------------------------------------------------
    One animation at a time. Each animation exists twice, pixel-matched: the Lottie JSON played
-   by lottie-web (SVG renderer) and a GSAP module (inline SVG + one timeline). The tab above the
-   stage picks the renderer; both are driven through the same small "engine" interface, so the
+   by lottie-web (SVG renderer) and a GSAP module (inline SVG + one timeline). The Lottie / GSAP
+   switch picks the renderer; both are driven through the same small "engine" interface, so the
    playback rules (intro once → loop, one-shot holds, coin loading → success), the scrubber,
-   speed and replay behave identically. Switching tabs keeps the current frame.
-   ?a=<slug> picks the animation, ?r=gsap the renderer; prev/next, swipe and ←/→ switch it. */
-(function(){
-  var LIST = window.LOTTIES || [];
-  var $ = function(id){ return document.getElementById(id); };
-  var stage = $('stage'), boxA = $('animA'), boxB = $('animB'), msg = $('msg');
-  var scrub = $('scrub'), btnPlay = $('play'), btnSpeed = $('speed'), btnSuccess = $('success');
-  var SPEEDS = [1, 0.5, 0.25, 2];
+   speed and replay behave identically. Switching renderer keeps the current frame.
+   ?a=<slug> picks the animation, ?r=gsap the renderer; menu, stepper, swipe and ←/→ switch it.
 
-  var cur = null;                      // registry entry
-  var renderer = 'lottie';             // 'lottie' | 'gsap'
-  var A = null, B = null, active = null;   // engines (B = success part of the coin)
-  var phase = 'intro';                 // intro | tail | loop | once | loading | success
-  var paused = false, scrubbing = false, wasPlaying = false, speedIx = 0, token = 0;
-  var successReq = false;
+   Structure: engines (renderer adapters) → controller (playback rules + state, no UI) →
+   React / Material UI view (assets/playground-ui.js theme). The view subscribes to the
+   controller's state; the frame counter + slider subscribe to a separate per-frame store so
+   the rest of the page does not re-render while playing. */
+(function(){
+  var M = MaterialUI, R = React, h = PG.h, Icon = PG.Icon, C = PG.C;
+  var LIST = window.LOTTIES || [];
+  var SPEEDS = [1, 0.5, 0.25, 2];
+  var renderer = 'lottie';             // 'lottie' | 'gsap' — read by engineFor()
 
   function store(k, v){ try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
   function noop(){}
@@ -325,298 +122,418 @@
     return lottieEngine(box, base + (part === 'success' ? entry.success : entry.json));
   }
 
-  /* ---------- selection ---------- */
-  function indexOf(slug){ for (var i = 0; i < LIST.length; i++) if (LIST[i].slug === slug) return i; return -1; }
-  function go(delta){
-    var i = (indexOf(cur.slug) + delta + LIST.length) % LIST.length;
-    open(LIST[i]);
-  }
-  function syncUrl(){
-    try {
-      history.replaceState(null, '', '?a=' + encodeURIComponent(cur.slug) + (renderer === 'gsap' ? '&r=gsap' : '') + location.hash);
-    } catch (e) {}
-  }
-  // resume: { frame, paused } to continue where the other renderer was
-  function open(entry, resume){
-    cur = entry; token++;
-    destroy();
-    var i = indexOf(entry.slug);
-    $('title').textContent = entry.title;
-    $('desc').textContent = entry.desc || '';
-    $('count').textContent = (i + 1) + ' / ' + LIST.length;
-    var dots = $('dots');
-    if (dots.children.length !== LIST.length) dots.innerHTML = new Array(LIST.length + 1).join('<i></i>');
-    for (var k = 0; k < dots.children.length; k++) dots.children[k].className = k === i ? 'on' : '';
-    dots.parentNode.classList.toggle('many', LIST.length > 12);
-    document.title = entry.title + ' · ' + (renderer === 'gsap' ? 'GSAP' : 'Lottie') + ' · PeraSure Playground';
-    markCurrent(); markTabs(); syncUrl();
-    stage.style.setProperty('--scale', entry.scale || 1);
-    btnSuccess.hidden = !entry.success;
-    btnSuccess.textContent = 'Show success'; btnSuccess.disabled = false;
-    $('legend').style.visibility = entry.intro ? 'visible' : 'hidden';
-    msg.textContent = 'Loading…'; msg.hidden = false;
-    successReq = false; paused = false;
-    renderSpecPending();
 
-    var my = token;
-    A = engineFor(boxA, entry, 'main'); active = A;
-    if (entry.success) { B = engineFor(boxB, entry, 'success'); boxB.hidden = true; }
-    [A, B].forEach(function(e){ if (e) { e.onFrame = function(){ if (active === e && my === token) ui(); }; e.setSpeed(SPEEDS[speedIx]); } });
-    Promise.all([A.ready, B ? B.ready : null]).then(function(){
-      if (my !== token) return;
-      msg.hidden = true; renderSpec();
-      if (B) B.seek(0);
-      var f = resume ? Math.max(0, Math.min(resume.frame, A.total - 0.01)) : 0;
-      if (resume && resume.paused) { A.seek(f); paused = true; ui(); }
-      else start(f);
-    }, function(err){
-      if (my !== token) return;
-      msg.textContent = (err && err.message) || 'Couldn’t load the animation.'; msg.hidden = false;
+  /* ---------- controller ------------------------------------------------------------- */
+  var ctl = (function(){
+    var st = {
+      index: 0, renderer: 'lottie', paused: false, phase: 'intro', speedIx: 0,
+      success: 'none', loading: true, error: '', total: 0, meta: null,
+      bg: store('ps-lottie-bg') || 'white'
+    };
+    var subs = [], fsubs = [], frame = 0;
+    var cur = null, A = null, B = null, active = null, boxA = null, boxB = null, token = 0;
+    var phase = 'intro', paused = false, scrubbing = false, wasPlaying = false, successReq = false;
+
+    function emit(){ subs.forEach(function(f){ f(); }); }
+    function set(p){ st = Object.assign({}, st, p); emit(); }
+    function tick(f){ frame = f != null ? f : (active && active.total ? active.frame() : 0); fsubs.forEach(function(fn){ fn(); }); }
+    function sync(){
+      set({
+        paused: paused, phase: phase, total: active && active.total || 0,
+        success: !cur || !cur.success ? 'none' : active === B ? 'done' : successReq ? 'waiting' : 'idle'
+      });
+      tick();
+    }
+    function showBox(which){
+      if (boxA) boxA.style.visibility = which === 'B' ? 'hidden' : 'visible';
+      if (boxB) boxB.style.visibility = which === 'B' ? 'visible' : 'hidden';
+    }
+    function syncUrl(){
+      try { history.replaceState(null, '', '?a=' + encodeURIComponent(cur.slug) + (renderer === 'gsap' ? '&r=gsap' : '') + location.hash); } catch (e) {}
+      document.title = cur.title + ' · ' + (renderer === 'gsap' ? 'GSAP' : 'Lottie') + ' · PeraSure Playground';
+    }
+    function destroy(){
+      if (A) A.destroy(); if (B) B.destroy();
+      A = B = active = null;
+      if (boxA) boxA.innerHTML = ''; if (boxB) boxB.innerHTML = '';
+      showBox('A');
+    }
+
+    // resume: { frame, paused } to continue where the other renderer was
+    function open(i, resume){
+      if (!boxA) return;
+      token++; destroy();
+      cur = LIST[i]; successReq = false; paused = false;
+      phase = cur.success ? 'loading' : cur.intro ? 'intro' : 'once';
+      set({ index: i, renderer: renderer, loading: true, error: '', total: 0, meta: null, paused: false, phase: phase,
+            success: cur.success ? 'idle' : 'none' });
+      syncUrl();
+      var my = token;
+      A = engineFor(boxA, cur, 'main'); active = A;
+      if (cur.success) B = engineFor(boxB, cur, 'success');
+      [A, B].forEach(function(e){ if (e) { e.onFrame = function(){ if (active === e && my === token) tick(); }; e.setSpeed(SPEEDS[st.speedIx]); } });
+      Promise.all([A.ready, B ? B.ready : null]).then(function(){
+        if (my !== token) return;
+        set({ loading: false, meta: { w: A.w, h: A.h, fps: A.fps, label: A.label } });
+        if (B) B.seek(0);
+        var f = resume ? Math.max(0, Math.min(resume.frame, A.total - 0.01)) : 0;
+        if (resume && resume.paused) { A.seek(f); paused = true; sync(); }
+        else start(f);
+      }, function(err){
+        if (my !== token) return;
+        set({ loading: false, error: (err && err.message) || 'Couldn’t load the animation.' });
+      });
+    }
+
+    /* playback rules: intro once → loop forever; one-shots hold the last frame */
+    function start(f){
+      paused = false;
+      if (cur.success) { coinPlay(f); return; }
+      var end = A.total;
+      if (cur.intro && f < cur.intro[1] - 0.5) { phase = 'intro'; A.play(f, cur.intro[1], enterLoop); }
+      else if (cur.loop) {
+        if (f > cur.loop[0] + 0.5 && f < cur.loop[1] - 0.5) { phase = 'tail'; A.play(f, cur.loop[1], enterLoop); }
+        else { enterLoop(); return; }
+      }
+      else {
+        if (f >= end - 0.5) f = 0;
+        phase = 'once'; A.play(f, end, function(){ paused = true; sync(); });
+      }
+      sync();
+    }
+    function enterLoop(){ phase = 'loop'; A.loop(cur.loop[0], cur.loop[1]); sync(); }
+
+    /* coin: loading loops until "Show success"; the loop finishes its turn, then success plays */
+    function coinPlay(f){
+      paused = false;
+      if (active === A) {
+        phase = 'loading';
+        if (successReq) A.play(f, A.total, swapToSuccess);
+        else if (f > 0.5 && f < A.total - 0.5) A.play(f, A.total, coinLoop);
+        else { coinLoop(); return; }
+      } else {
+        phase = 'success';
+        if (f >= B.total - 0.5) f = 0;
+        B.play(f, B.total, function(){ paused = true; sync(); });
+      }
+      sync();
+    }
+    function coinLoop(){ A.loop(0, A.total); sync(); }
+    function swapToSuccess(){
+      showBox('B'); active = B; phase = 'success'; paused = false;
+      B.play(0, B.total, function(){ paused = true; sync(); });
+      sync();
+    }
+    function resetCoin(){
+      successReq = false; B.seek(0); showBox('A'); active = A;
+      start(0);
+    }
+
+    var api = {
+      getState: function(){ return st; },
+      subscribe: function(f){ subs.push(f); return function(){ subs = subs.filter(function(x){ return x !== f; }); }; },
+      getFrame: function(){ return frame; },
+      subscribeFrame: function(f){ fsubs.push(f); return function(){ fsubs = fsubs.filter(function(x){ return x !== f; }); }; },
+      attach: function(a, b){ boxA = a; boxB = b; showBox('A'); },
+      open: open,
+      go: function(d){ open((st.index + d + LIST.length) % LIST.length); },
+      setRenderer: function(r){
+        if (!cur || r === renderer || (r === 'gsap' && !cur.gsap)) return;
+        var resume = active && active.total && !cur.success ? { frame: active.frame(), paused: paused } : null;
+        renderer = r; store('ps-lottie-renderer', r);
+        open(st.index, resume);
+      },
+      togglePlay: function(){
+        if (!active || !active.total) return;
+        if (paused) { var f = active.frame(); if (cur.success) coinPlay(f); else start(f); }
+        else { active.pause(); paused = true; sync(); }
+      },
+      replay: function(){
+        if (!active || !active.total) return;
+        if (cur.success) { if (active === B) resetCoin(); else { successReq = false; start(0); } return; }
+        start(0);
+      },
+      showSuccess: function(){
+        if (!B || !active || !active.total) return;
+        if (active === B) { resetCoin(); return; }
+        successReq = true; paused = false;
+        A.finish(swapToSuccess);
+        sync();
+      },
+      cycleSpeed: function(){
+        var ix = (st.speedIx + 1) % SPEEDS.length;
+        if (A) A.setSpeed(SPEEDS[ix]); if (B) B.setSpeed(SPEEDS[ix]);
+        set({ speedIx: ix });
+      },
+      scrubMove: function(f){
+        if (!active || !active.total) return;
+        if (!scrubbing) { scrubbing = true; wasPlaying = !paused; active.pause(); paused = true; sync(); }
+        active.seek(Math.max(0, Math.min(f, active.total - 0.01)));
+        tick(f);
+      },
+      scrubEnd: function(f){
+        if (!scrubbing) return;
+        scrubbing = false;
+        if (wasPlaying) { if (cur.success) coinPlay(f); else start(f); } else sync();
+      },
+      setBg: function(bg){ store('ps-lottie-bg', bg); set({ bg: bg }); },
+      pauseHidden: function(){ if (active && !paused) { active.pause(); return true; } return false; },
+      resumeHidden: function(){ if (active) active.resume(); }
+    };
+    return api;
+  })();
+
+  window.PSPlayer = ctl;   // for debugging: PSPlayer.getState(), PSPlayer.go(1) …
+
+  /* ---------- view helpers ---------- */
+  function useCtl(){ return R.useSyncExternalStore(ctl.subscribe, ctl.getState); }
+  function useFrame(){ return R.useSyncExternalStore(ctl.subscribeFrame, ctl.getFrame); }
+  function howOf(a){ return a.success ? 'Loading → success' : a.intro ? 'Intro → loop' : 'Plays once'; }
+  var BG = {
+    white: { label: 'White', css: { bgcolor: '#fff' } },
+    page: { label: 'Page', css: { bgcolor: C.page } },
+    dark: { label: 'Dark', css: { bgcolor: '#141e24' } },
+    grid: { label: 'Transparency grid', css: { bgcolor: '#fff',
+      backgroundImage: 'linear-gradient(45deg,#eef0f2 25%,transparent 25%,transparent 75%,#eef0f2 75%),linear-gradient(45deg,#eef0f2 25%,transparent 25%,transparent 75%,#eef0f2 75%)',
+      backgroundSize: '20px 20px', backgroundPosition: '0 0,10px 10px' } }
+  };
+  var PHASE = {
+    intro: { label: 'Intro', dot: '#7aa7d8' }, loop: { label: 'Loop', dot: C.blue }, tail: { label: 'Loop', dot: C.blue },
+    once: { label: 'Playing', dot: C.blue }, loading: { label: 'Loading loop', dot: '#7aa7d8' }, success: { label: 'Success', dot: '#1a9b6b' },
+    paused: { label: 'Paused', dot: '#a3abb0' }, done: { label: 'Done', dot: '#1a9b6b' }
+  };
+
+  function SectionCard(p){
+    return h(M.Card, { sx: Object.assign({ p: 2, mt: 1.5 }, p.sx || {}) },
+      p.title ? h(M.Typography, { variant: 'overline', color: 'text.secondary', sx: { display: 'block', mb: 1 } }, p.title) : null,
+      p.children);
+  }
+
+  /* ---------- top bar + animation menu ---------- */
+  function TopBar(p){
+    var st = p.st;
+    var a = R.useState(null), anchor = a[0], setAnchor = a[1];
+    return h(M.Stack, { direction: 'row', alignItems: 'center', justifyContent: 'space-between', sx: { minHeight: 52 } },
+      h(M.Button, { href: '../index.html#animations', size: 'large', startIcon: h(Icon.back, { sx: { fontSize: '28px !important' } }),
+        'aria-label': 'Back to the Playground',
+        sx: { ml: -1.25, pl: 0.75, pr: 1.5, fontSize: 17, lineHeight: '24px', letterSpacing: '-0.01em', '& .MuiButton-startIcon': { mr: 0.25 } } }, 'Playground'),
+      h(M.IconButton, { 'aria-label': 'All animations', 'aria-haspopup': 'true', 'aria-expanded': anchor ? 'true' : 'false',
+        onClick: function(e){ setAnchor(e.currentTarget); },
+        sx: { width: 44, height: 44, bgcolor: anchor ? C.blue50 : '#fff', color: anchor ? 'primary.main' : 'text.primary',
+          boxShadow: PG.theme.shadows[2], '&:hover': { bgcolor: '#fff' } } },
+        h(Icon.menu, null)),
+      h(M.Menu, {
+        anchorEl: anchor, open: !!anchor, onClose: function(){ setAnchor(null); },
+        anchorOrigin: { vertical: 'bottom', horizontal: 'right' }, transformOrigin: { vertical: 'top', horizontal: 'right' },
+        slotProps: { paper: { sx: { width: 'min(320px, calc(100vw - 32px))', maxHeight: 'min(62vh, 540px)', mt: 1, boxShadow: PG.theme.shadows[4] } } },
+        MenuListProps: { sx: { py: 0.75 }, 'aria-label': 'All animations' }
+      },
+        h(M.ListSubheader, { sx: { lineHeight: '36px', fontSize: 12, fontWeight: 600, color: 'text.secondary', bgcolor: '#fff', px: 2 } },
+          LIST.length + ' animations'),
+        LIST.map(function(a, i){
+          var on = i === st.index;
+          return h(M.MenuItem, { key: a.slug, selected: on, onClick: function(){ setAnchor(null); if (!on) ctl.open(i); },
+              sx: { py: 0.75, gap: 1.5, '&.Mui-selected': { bgcolor: C.blue50 }, '&.Mui-selected:hover': { bgcolor: C.blue100 } } },
+            h(M.Avatar, { variant: 'rounded', src: a.slug + '/' + a.preview, alt: '',
+              sx: { width: 44, height: 44, borderRadius: '12px', bgcolor: '#fff', boxShadow: 'inset 0 0 0 1px ' + C.line,
+                '& img': { objectFit: 'contain' } } }),
+            h(M.ListItemText, { primary: a.title, secondary: howOf(a),
+              primaryTypographyProps: { variant: 'subtitle2', noWrap: true, color: on ? 'primary' : 'text.primary' },
+              secondaryTypographyProps: { variant: 'caption' } }),
+            on ? h(Icon.check, { color: 'primary', sx: { fontSize: 20 } }) : h(M.Box, { sx: { width: 20 } }));
+        })));
+  }
+
+  /* ---------- renderer switch ---------- */
+  function RendererSwitch(p){
+    var entry = p.entry;
+    return h(M.Box, { sx: { display: 'flex', justifyContent: 'center', mt: 2 } },
+      h(M.ToggleButtonGroup, {
+        exclusive: true, value: p.st.renderer, 'aria-label': 'Renderer',
+        onChange: function(e, v){ if (v) ctl.setRenderer(v); },
+        sx: { p: 0.5, gap: 0.5, borderRadius: '14px', bgcolor: C.track,
+          '& .MuiToggleButton-root': { border: 0, borderRadius: '10px !important', width: 96, height: 34, fontSize: 13, color: 'text.secondary',
+            '&.Mui-selected': { bgcolor: '#fff', color: 'text.primary', boxShadow: PG.theme.shadows[2], '&:hover': { bgcolor: '#fff' } } } }
+      },
+        h(M.ToggleButton, { value: 'lottie' }, 'Lottie'),
+        h(M.ToggleButton, { value: 'gsap', disabled: !entry.gsap }, 'GSAP')));
+  }
+
+  /* ---------- stage ---------- */
+  function Stage(p){
+    var st = p.st, entry = p.entry;
+    var refA = R.useRef(null), refB = R.useRef(null), sw = R.useRef(null);
+    R.useEffect(function(){
+      ctl.attach(refA.current, refB.current);
+      var q = (/[?&]a=([^&#]+)/.exec(location.search) || [])[1];
+      var i0 = -1;
+      if (q) LIST.forEach(function(a, i){ if (a.slug === decodeURIComponent(q)) i0 = i; });
+      ctl.open(i0 < 0 ? 0 : i0);
+    }, []);
+    var scale = entry.scale || 1, size = 'calc(100% * ' + scale + ')';
+    return h(M.Paper, {
+        elevation: 3, 'aria-label': 'Animation (swipe for the next one)',
+        onPointerDown: function(e){ sw.current = { id: e.pointerId, x: e.clientX, y: e.clientY, t: Date.now() }; },
+        onPointerUp: function(e){
+          var s = sw.current; sw.current = null; if (!s || s.id !== e.pointerId) return;
+          var dx = e.clientX - s.x, dy = e.clientY - s.y;
+          if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5 && Date.now() - s.t < 600) ctl.go(dx < 0 ? 1 : -1);
+        },
+        onPointerCancel: function(){ sw.current = null; },
+        sx: Object.assign({ position: 'relative', mt: 2, aspectRatio: '1 / 1', width: '100%', borderRadius: '28px', overflow: 'hidden', touchAction: 'pan-y',
+          transition: 'background-color .2s ease' }, BG[st.bg] ? BG[st.bg].css : BG.white.css)
+      },
+      h('div', { ref: refA, className: 'ps-anim', style: { width: size, height: size } }),
+      h('div', { ref: refB, className: 'ps-anim', style: { width: size, height: size, visibility: 'hidden' } }),
+      st.loading ? h(M.Box, { sx: { position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' } },
+        h(M.CircularProgress, { size: 28, thickness: 4 })) : null,
+      st.error ? h(M.Box, { sx: { position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', p: 3, textAlign: 'center' } },
+        h(M.Typography, { variant: 'body2', color: 'text.secondary' }, st.error)) : null);
+  }
+
+  function Pager(p){
+    var navSx = { width: 40, height: 40, bgcolor: '#fff', boxShadow: PG.theme.shadows[2], '&:hover': { bgcolor: '#fff' } };
+    return h(M.MobileStepper, {
+      variant: LIST.length > 12 ? 'text' : 'dots', steps: LIST.length, activeStep: p.st.index, position: 'static',
+      backButton: h(M.IconButton, { 'aria-label': 'Previous animation', onClick: function(){ ctl.go(-1); }, sx: navSx }, h(Icon.back, null)),
+      nextButton: h(M.IconButton, { 'aria-label': 'Next animation', onClick: function(){ ctl.go(1); }, sx: navSx }, h(Icon.next, null)),
+      sx: { bgcolor: 'transparent', px: 0, mt: 1.5,
+        '& .MuiMobileStepper-dot': { width: 6, height: 6, mx: '3px', bgcolor: '#c9d1d5', transition: PG.reduce ? 'none' : 'width .2s ease' },
+        '& .MuiMobileStepper-dotActive': { width: 18, borderRadius: 3, bgcolor: 'primary.main' } }
     });
   }
-  function destroy(){
-    if (A) A.destroy(); if (B) B.destroy();
-    A = B = active = null;
-    boxA.innerHTML = ''; boxB.innerHTML = ''; boxA.hidden = false; boxB.hidden = true;
+
+  /* ---------- playback card ---------- */
+  function Timeline(p){
+    var st = p.st, entry = p.entry, f = useFrame();
+    var total = st.total || 1, v = Math.max(0, Math.min(f, total));
+    var key = st.paused ? ((st.phase === 'once' || st.phase === 'success') && f >= total - 1 ? 'done' : 'paused') : st.phase;
+    var ph = PHASE[key] || PHASE.paused;
+    var rail = entry.intro && entry.loop && st.success === 'none'
+      ? 'linear-gradient(90deg,' + C.blue200 + ' 0,' + C.blue200 + ' ' + (entry.intro[1] / total * 100) + '%,' + C.blue + ' ' + (entry.intro[1] / total * 100) + '%,' + C.blue + ' 100%)'
+      : C.blue100;
+    return h(R.Fragment, null,
+      h(M.Stack, { direction: 'row', alignItems: 'center', justifyContent: 'space-between' },
+        h(M.Chip, { size: 'small', label: ph.label,
+          icon: h(M.Box, { component: 'span', sx: { width: 8, height: 8, borderRadius: 99, bgcolor: ph.dot, ml: '8px !important' } }),
+          sx: { bgcolor: C.soft, color: 'text.primary', height: 26, fontSize: 12, border: '1px solid ' + C.line } }),
+        h(M.Typography, { variant: 'caption', color: 'text.secondary', sx: { fontVariantNumeric: 'tabular-nums' } },
+          'Frame ', h('b', { style: { color: C.ink, fontWeight: 600 } }, Math.floor(f + 0.0001)), ' / ' + Math.round(st.total || 0))),
+      h(M.Slider, {
+        value: v, min: 0, max: total, step: 0.01, track: false, disabled: !st.total, 'aria-label': 'Scrub frames',
+        marks: entry.intro && st.success === 'none' ? [{ value: entry.intro[1] }] : [],
+        onChange: function(e, val){ ctl.scrubMove(val); },
+        onChangeCommitted: function(e, val){ ctl.scrubEnd(val); },
+        sx: { mt: 0.5, '& .MuiSlider-rail': { background: rail } }
+      }),
+      entry.intro && st.success === 'none'
+        ? h(M.Stack, { direction: 'row', spacing: 2, sx: { mt: -0.5 } },
+            [['Intro · plays once', C.blue200], ['Loop', C.blue]].map(function(x){
+              return h(M.Stack, { key: x[0], direction: 'row', spacing: 0.75, alignItems: 'center' },
+                h(M.Box, { sx: { width: 14, height: 6, borderRadius: 3, bgcolor: x[1] } }),
+                h(M.Typography, { variant: 'caption', color: 'text.secondary' }, x[0]));
+            }))
+        : null);
   }
 
-  /* ---------- playback ---------- */
-  // Play from frame f following the hand-off rules (intro once → loop forever; one-shots hold).
-  function start(f){
-    paused = false;
-    if (cur.success) { coinPlay(f); return; }
-    var end = A.total;
-    if (cur.intro && f < cur.intro[1] - 0.5) { phase = 'intro'; A.play(f, cur.intro[1], enterLoop); }
-    else if (cur.loop) {
-      if (f > cur.loop[0] + 0.5 && f < cur.loop[1] - 0.5) { phase = 'tail'; A.play(f, cur.loop[1], enterLoop); }
-      else enterLoop();
+  function PlaybackCard(p){
+    var st = p.st, entry = p.entry;
+    return h(SectionCard, { sx: { mt: 2 } },
+      h(Timeline, { st: st, entry: entry }),
+      h(M.Stack, { direction: 'row', spacing: 1, sx: { mt: 2 } },
+        h(M.Button, { variant: 'outlined', size: 'large', onClick: ctl.replay, startIcon: h(Icon.replay, null), sx: { flex: 1 } }, 'Replay'),
+        h(M.Button, { variant: 'contained', size: 'large', onClick: ctl.togglePlay, sx: { flex: 1.35 },
+          startIcon: h(st.paused ? Icon.play : Icon.pause, null), 'aria-label': st.paused ? 'Play' : 'Pause' }, st.paused ? 'Play' : 'Pause'),
+        h(M.Tooltip, { title: 'Playback speed' },
+          h(M.Button, { variant: 'outlined', size: 'large', onClick: ctl.cycleSpeed, startIcon: h(Icon.speed, null),
+            sx: { flex: 1, fontVariantNumeric: 'tabular-nums' } }, SPEEDS[st.speedIx] + '×'))),
+      st.success !== 'none'
+        ? h(M.Button, { fullWidth: true, variant: st.success === 'done' ? 'outlined' : 'contained', size: 'large', sx: { mt: 1 },
+            disabled: st.success === 'waiting', onClick: ctl.showSuccess,
+            startIcon: st.success === 'waiting' ? h(M.CircularProgress, { size: 16, thickness: 5, color: 'inherit' })
+              : h(st.success === 'done' ? Icon.replay : Icon.done, null) },
+            st.success === 'waiting' ? 'Finishing the turn…' : st.success === 'done' ? 'Reset to loading' : 'Show success')
+        : null);
+  }
+
+  function DisplayCard(p){
+    var st = p.st;
+    return h(SectionCard, null,
+      h(M.Stack, { direction: 'row', alignItems: 'center', justifyContent: 'space-between', spacing: 2 },
+        h(M.Box, null,
+          h(M.Typography, { variant: 'subtitle2' }, 'Background'),
+          h(M.Typography, { variant: 'caption', color: 'text.secondary' }, BG[st.bg] ? BG[st.bg].label : '')),
+        h(M.ToggleButtonGroup, { exclusive: true, value: st.bg, 'aria-label': 'Background',
+            onChange: function(e, v){ if (v) ctl.setBg(v); },
+            sx: { gap: 1, '& .MuiToggleButton-root': { p: 0, width: 34, height: 34, border: '0 !important', borderRadius: '99px !important',
+              '&.Mui-selected': { bgcolor: 'transparent', boxShadow: '0 0 0 2px #fff, 0 0 0 3.5px ' + C.blue } } } },
+          Object.keys(BG).map(function(k){
+            return h(M.ToggleButton, { key: k, value: k, 'aria-label': BG[k].label },
+              h(M.Box, { sx: Object.assign({ width: 30, height: 30, borderRadius: 99, boxShadow: 'inset 0 0 0 1px ' + C.line }, BG[k].css,
+                k === 'grid' ? { backgroundSize: '10px 10px', backgroundPosition: '0 0,5px 5px' } : {}) }));
+          }))));
+  }
+
+  function DetailsCard(p){
+    var st = p.st, e = p.entry, m = st.meta, base = e.slug + '/', gs = st.renderer === 'gsap' && e.gsap;
+    function row(k, v){
+      return h(M.Stack, { key: k, direction: 'row', justifyContent: 'space-between', spacing: 2, sx: { py: 0.75 } },
+        h(M.Typography, { variant: 'body2', color: 'text.secondary' }, k),
+        h(M.Typography, { variant: 'body2', sx: { fontWeight: 500, textAlign: 'right' } }, v));
     }
-    else {
-      if (f >= end - 0.5) f = 0;
-      phase = 'once'; A.play(f, end, function(){ paused = true; ui(); });
-    }
-    ui();
-  }
-  function enterLoop(){ phase = 'loop'; A.loop(cur.loop[0], cur.loop[1]); ui(); }
-
-  /* Coin: loading loops until "Show success"; the loop then finishes its current turn
-     and the success part starts on its first frame (the two are cut to join seamlessly). */
-  function coinPlay(f){
-    paused = false;
-    if (active === A) {
-      phase = 'loading';
-      if (successReq) A.play(f, A.total, swapToSuccess);
-      else if (f > 0.5 && f < A.total - 0.5) A.play(f, A.total, coinLoop);
-      else coinLoop();
-    } else {
-      phase = 'success';
-      if (f >= B.total - 0.5) f = 0;
-      B.play(f, B.total, function(){ paused = true; ui(); });
-    }
-    ui();
-  }
-  function coinLoop(){ A.loop(0, A.total); ui(); }
-  function showSuccess(){
-    if (!B) return;
-    if (active === B) { resetCoin(); return; }
-    successReq = true; paused = false;
-    btnSuccess.textContent = 'Finishing the turn…'; btnSuccess.disabled = true;
-    A.finish(swapToSuccess);
-    ui();
-  }
-  function swapToSuccess(){
-    boxB.hidden = false; boxA.hidden = true; active = B; phase = 'success'; paused = false;
-    B.play(0, B.total, function(){ paused = true; ui(); });
-    btnSuccess.textContent = 'Reset to loading'; btnSuccess.disabled = false;
-    ui();
-  }
-  function resetCoin(){
-    successReq = false; B.seek(0);
-    boxA.hidden = false; boxB.hidden = true; active = A;
-    btnSuccess.textContent = 'Show success'; btnSuccess.disabled = false;
-    start(0);
+    var playback = e.success ? 'Loading loops → success once' : e.intro ? 'Intro ' + e.intro[0] + '–' + e.intro[1] + ' → loop ' + e.loop[0] + '–' + e.loop[1] : 'Plays once, holds the last frame';
+    var files = gs ? [e.gsap].concat(e.gsapSuccess ? [e.gsapSuccess] : []) : [e.json].concat(e.success ? [e.success] : [], e.lottie ? [e.lottie] : []);
+    return h(SectionCard, { title: 'Details' },
+      h(M.Box, { sx: { '& > * + *': { borderTop: '1px solid ' + C.line } } },
+        row('Canvas', m ? m.w + ' × ' + m.h : '—'),
+        row('Frame rate', m ? (Math.round(m.fps * 100) / 100) + ' fps' : '—'),
+        row('Renderer', m ? m.label : '—'),
+        row('Playback', playback)),
+      h(M.Typography, { variant: 'caption', color: 'text.secondary', sx: { display: 'block', mt: 1.5, mb: 1 } }, 'Files'),
+      h(M.Stack, { direction: 'row', useFlexGap: true, flexWrap: 'wrap', spacing: 1 },
+        files.map(function(f){
+          return h(M.Chip, { key: f, component: 'a', href: base + f, download: true, clickable: true, variant: 'outlined',
+            icon: h(Icon.download, { sx: { fontSize: 16 } }), label: f.split('/').pop(),
+            sx: { height: 30, borderRadius: '10px', fontWeight: 500, color: 'text.primary', borderColor: C.line, '& .MuiChip-icon': { color: 'primary.main' } } });
+        })));
   }
 
-  function togglePlay(){
-    if (!active || !active.total) return;
-    if (paused) {
-      var f = active.frame();
-      if (cur.success) coinPlay(f); else start(f);
-    } else { active.pause(); paused = true; ui(); }
-  }
-  function replay(){
-    if (!active || !active.total) return;
-    if (cur.success) { if (active === B) resetCoin(); else { successReq = false; btnSuccess.textContent = 'Show success'; btnSuccess.disabled = false; start(0); } return; }
-    start(0);
-  }
-
-  /* ---------- scrubbing ---------- */
-  function scrubTo(f){
-    var a = active; if (!a || !a.total) return;
-    a.seek(Math.max(0, Math.min(f, a.total - 0.01)));
-    ui(f);
-  }
-  scrub.addEventListener('input', function(){
-    if (!active || !active.total) return;
-    if (!scrubbing) { scrubbing = true; wasPlaying = !paused; active.pause(); paused = true; }
-    scrubTo(+scrub.value);
-  });
-  scrub.addEventListener('change', function(){
-    if (!scrubbing) return;
-    scrubbing = false;
-    if (wasPlaying) { if (cur.success) coinPlay(+scrub.value); else start(+scrub.value); }
-    else ui();
-  });
-
-  /* ---------- renderer tabs ---------- */
-  var tabL = $('r-lottie'), tabG = $('r-gsap');
-  function markTabs(){
-    var g = renderer === 'gsap' && hasGsap(cur);
-    tabL.setAttribute('aria-selected', String(!g));
-    tabG.setAttribute('aria-selected', String(g));
-    tabG.disabled = !hasGsap(cur);
-  }
-  function setRenderer(r){
-    if (r === renderer || !cur) return;
-    if (r === 'gsap' && !hasGsap(cur)) return;
-    var resume = null;
-    if (active && active.total && !cur.success) resume = { frame: active.frame(), paused: paused };
-    renderer = r; store('ps-lottie-renderer', r);
-    open(cur, resume);
-  }
-  tabL.addEventListener('click', function(){ setRenderer('lottie'); });
-  tabG.addEventListener('click', function(){ setRenderer('gsap'); });
-
-  /* ---------- UI ---------- */
-  var lastTrackKey = '';
-  function ui(fOverride){
-    var a = active; if (!a || !a.total) return;
-    var total = a.total;
-    var f = fOverride != null ? fOverride : a.frame();
-    if (!scrubbing) { scrub.max = total; scrub.value = f; }
-    $('frame').textContent = 'Frame ' + Math.floor(f + 0.0001) + ' / ' + Math.round(total);
-    var p = paused ? 'paused' : (phase === 'tail' ? 'loop' : phase);
-    var names = { intro:'Intro', loop:'Loop', once:'Playing', loading:'Loading (loop)', success:'Success', paused:'Paused' };
-    if (paused && (phase === 'once' || phase === 'success') && f >= total - 1) names.paused = 'Done';
-    $('phase').setAttribute('data-p', p);
-    $('phaseText').textContent = names[p] || p;
-    btnPlay.setAttribute('aria-label', paused ? 'Play' : 'Pause');
-    $('playText').textContent = paused ? 'Play' : 'Pause';
-    $('icPause').style.display = paused ? 'none' : '';
-    $('icPlay').style.display = paused ? '' : 'none';
-    // Track: intro region light, loop region darker (only for intro/loop animations).
-    var key = (cur.intro ? cur.intro.join() + cur.loop.join() : '-') + total;
-    if (key !== lastTrackKey) {
-      lastTrackKey = key;
-      var g;
-      if (cur.intro && cur.loop) {
-        var i1 = (cur.intro[1] / total * 100).toFixed(2) + '%';
-        g = 'linear-gradient(90deg,var(--blue-200) 0,var(--blue-200) ' + i1 + ',var(--blue) ' + i1 + ',var(--blue) 100%)';
-      } else g = 'var(--blue-100)';
-      scrub.style.setProperty('--track', g);
-    }
-  }
-  function renderSpecPending(){ $('spec').innerHTML = '&nbsp;'; }
-  function renderSpec(){
-    var e = cur, base = e.slug + '/', g = renderer === 'gsap' && hasGsap(e);
-    var fr = A.fps ? (Math.round(A.fps * 100) / 100) + ' fps' : '';
-    var size = A.w ? A.w + ' × ' + A.h : '';
-    var play = e.success ? 'Loading loops → <strong>Show success</strong> finishes the turn → success plays once'
-      : e.intro ? 'Intro <strong>' + e.intro[0] + '–' + e.intro[1] + '</strong> once → loop <strong>' + e.loop[0] + '–' + e.loop[1] + '</strong>'
-      : 'Plays once and holds the last frame';
-    var link = function(f){ return '<a href="' + base + f + '" download>' + f.split('/').pop() + '</a>'; };
-    var files = g ? link(e.gsap) + (e.gsapSuccess ? link(e.gsapSuccess) : '')
-      : link(e.json) + (e.success ? link(e.success) : '') + (e.lottie ? link(e.lottie) : '');
-    $('spec').innerHTML = '<div><strong>' + size + '</strong> · ' + fr + ' · ' + A.label + '</div><div>' + play + '</div><div class="files">' + files + '</div>';
+  /* ---------- app ---------- */
+  function App(){
+    var st = useCtl(), entry = LIST[st.index] || LIST[0];
+    R.useEffect(function(){
+      function onKey(e){
+        if (document.querySelector('.MuiMenu-paper') || (e.target && e.target.closest && e.target.closest('.MuiSlider-root'))) return;
+        if (e.key === 'ArrowRight') ctl.go(1);
+        else if (e.key === 'ArrowLeft') ctl.go(-1);
+        else if (e.key === ' ' && !(e.target && /^(BUTTON|A|INPUT)$/.test(e.target.tagName))) { e.preventDefault(); ctl.togglePlay(); }
+      }
+      var hid = false;
+      function onVis(){ if (document.hidden) hid = ctl.pauseHidden(); else if (hid) { hid = false; ctl.resumeHidden(); } }
+      document.addEventListener('keydown', onKey);
+      document.addEventListener('visibilitychange', onVis);
+      return function(){ document.removeEventListener('keydown', onKey); document.removeEventListener('visibilitychange', onVis); };
+    }, []);
+    if (!entry) return h(M.Typography, { sx: { p: 3 } }, 'No animations registered.');
+    return h(M.Container, { disableGutters: true, sx: {
+        maxWidth: 480, px: 2, pt: 'calc(env(safe-area-inset-top, 0px) + 8px)', pb: 'calc(env(safe-area-inset-bottom, 0px) + 32px)' } },
+      h(TopBar, { st: st }),
+      h(M.Box, { sx: { textAlign: 'center', mt: 2 } },
+        h(M.Typography, { variant: 'h5', component: 'h1' }, entry.title),
+        h(M.Typography, { variant: 'body2', color: 'text.secondary', sx: { mt: 0.75, mx: 'auto', maxWidth: 360, minHeight: 40 } }, entry.desc)),
+      h(RendererSwitch, { st: st, entry: entry }),
+      h(Stage, { st: st, entry: entry }),
+      h(Pager, { st: st }),
+      h(PlaybackCard, { st: st, entry: entry }),
+      h(DisplayCard, { st: st }),
+      h(DetailsCard, { st: st, entry: entry }));
   }
 
-  /* ---------- controls ---------- */
-  btnPlay.addEventListener('click', togglePlay);
-  $('replay').addEventListener('click', replay);
-  btnSuccess.addEventListener('click', showSuccess);
-  btnSpeed.addEventListener('click', function(){
-    speedIx = (speedIx + 1) % SPEEDS.length;
-    btnSpeed.textContent = SPEEDS[speedIx] + '×';
-    if (A) A.setSpeed(SPEEDS[speedIx]); if (B) B.setSpeed(SPEEDS[speedIx]);
-  });
-  $('prev').addEventListener('click', function(){ go(-1); });
-  $('next').addEventListener('click', function(){ go(1); });
-
-  function setBg(bg){
-    stage.setAttribute('data-bg', bg);
-    stage.style.setProperty('--stage', { white:'#fff', page:'#f0f5f4', dark:'#141e24', grid:'#fff' }[bg] || '#fff');
-    Array.prototype.forEach.call(document.querySelectorAll('.chip'), function(c){ c.setAttribute('aria-pressed', c.getAttribute('data-bg') === bg ? 'true' : 'false'); });
-    store('ps-lottie-bg', bg);
-  }
-  $('chips').addEventListener('click', function(e){ var c = e.target.closest('.chip'); if (c) setBg(c.getAttribute('data-bg')); });
-
-  // Swipe on the stage to switch animation.
-  var sx = 0, sy = 0, st = 0, sid = null;
-  stage.addEventListener('pointerdown', function(e){ sid = e.pointerId; sx = e.clientX; sy = e.clientY; st = Date.now(); });
-  stage.addEventListener('pointerup', function(e){
-    if (e.pointerId !== sid) return; sid = null;
-    var dx = e.clientX - sx, dy = e.clientY - sy;
-    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5 && Date.now() - st < 600) go(dx < 0 ? 1 : -1);
-  });
-  stage.addEventListener('pointercancel', function(){ sid = null; });
-
-  document.addEventListener('keydown', function(e){
-    if (e.target === scrub || menu.classList.contains('open')) return;
-    if (e.key === 'ArrowRight') go(1);
-    else if (e.key === 'ArrowLeft') go(-1);
-    else if (e.key === ' ') { e.preventDefault(); togglePlay(); }
-  });
-
-  // Pause while the tab is hidden (saves battery; resumes where it was).
-  var hiddenPaused = false;
-  document.addEventListener('visibilitychange', function(){
-    if (!active) return;
-    if (document.hidden) { if (!paused) { active.pause(); hiddenPaused = true; } }
-    else if (hiddenPaused) { hiddenPaused = false; active.resume(); }
-  });
-
-  /* ---------- animation list (menu) ---------- */
-  var menu = $('menu'), menuBtn = $('menuBtn'), scrim = $('scrim');
-  function esc(t){ return String(t).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
-  var tick = '<svg class="ck" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.5 10.5 8.2 14l7.3-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  menu.innerHTML = '<div class="menu-h">' + LIST.length + ' animations</div>' + LIST.map(function(a, i){
-    var how = a.success ? 'Loading → success' : a.intro ? 'Intro → loop' : 'Plays once';
-    return '<button class="item" role="menuitem" data-i="' + i + '">' +
-      '<img src="' + esc(a.slug) + '/' + esc(a.preview) + '" alt="" loading="lazy" decoding="async" width="48" height="48">' +
-      '<span class="t"><b>' + esc(a.title) + '</b><span>' + how + '</span></span>' + tick + '</button>';
-  }).join('');
-  function markCurrent(){
-    Array.prototype.forEach.call(menu.querySelectorAll('.item'), function(el){
-      el.setAttribute('aria-current', LIST[+el.getAttribute('data-i')] === cur ? 'true' : 'false');
-    });
-  }
-  function setMenu(open){
-    menu.classList.toggle('open', open); scrim.classList.toggle('open', open);
-    menuBtn.setAttribute('aria-expanded', String(open));
-    if (open) {
-      var c = menu.querySelector('.item[aria-current="true"]');
-      if (c) { var top = c.offsetTop - menu.clientHeight / 2 + c.offsetHeight / 2; menu.scrollTop = Math.max(0, top); }
-    }
-  }
-  menuBtn.addEventListener('click', function(){ setMenu(!menu.classList.contains('open')); });
-  scrim.addEventListener('click', function(){ setMenu(false); });
-  menu.addEventListener('click', function(e){
-    var it = e.target.closest('.item'); if (!it) return;
-    var a = LIST[+it.getAttribute('data-i')];
-    setMenu(false);
-    if (a !== cur) open(a);
-  });
-  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') setMenu(false); }, true);
-
-  /* ---------- boot ---------- */
-  setBg(store('ps-lottie-bg') || 'white');
-  if (!window.lottie) { msg.textContent = 'Player library failed to load.'; return; }
-  var q = (/[?&]a=([^&#]+)/.exec(location.search) || [])[1];
+  /* boot */
   var rq = (/[?&]r=(lottie|gsap)\b/.exec(location.search) || [])[1];
   renderer = rq || store('ps-lottie-renderer') || 'lottie';
-  var i0 = q ? indexOf(decodeURIComponent(q)) : 0;
-  if (!LIST.length) { msg.textContent = 'No animations registered.'; return; }
-  open(LIST[i0 < 0 ? 0 : i0]);
+  if (!window.lottie) { document.getElementById('root').textContent = 'Player library failed to load.'; return; }
+  PG.mount(document.getElementById('root'), App);
 })();
 </script>
 </body>

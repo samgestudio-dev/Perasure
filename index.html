@@ -5,93 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f0f5f4">
 <title>PeraSure Playground</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#f0f5f4; --card:#ffffff; --ink:#141e24; --sub:#6a757d; --mute:#97a0a6;
-    --line:#e0e3e5; --blue:#2c74be; --blue-50:#f3f8ff; --blue-100:#e4f0ff;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  html,body{background:var(--bg);color:var(--ink)}
-  body{
-    font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
-    -webkit-font-smoothing:antialiased;min-height:100vh;
-    padding:calc(env(safe-area-inset-top,0px) + 32px) 16px calc(env(safe-area-inset-bottom,0px) + 32px);
-  }
-  main{max-width:480px;margin:0 auto}
-  header{padding:0 4px 24px}
-  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--blue)}
-  h1{margin-top:6px;font-size:26px;line-height:32px;font-weight:700;letter-spacing:-.01em}
-  header p{margin-top:8px;font-size:14px;line-height:20px;color:var(--sub)}
-  .list{display:flex;flex-direction:column;gap:12px}
-  .demo{background:var(--card);border-radius:20px;padding:16px;
-    box-shadow:0 0 2px rgba(0,1,40,.16),0 4px 12px rgba(0,1,40,.08)}
-  .demo-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-  .demo h2{font-size:16px;line-height:22px;font-weight:600}
-  .demo .desc{margin-top:4px;font-size:13px;line-height:18px;color:var(--sub)}
-  .tag{flex:none;font-size:11px;line-height:16px;font-weight:600;color:var(--blue);background:var(--blue-50);
-    border:1px solid #c8deff;border-radius:999px;padding:2px 8px}
-  .variants{margin-top:14px;display:flex;flex-direction:column;gap:8px}
-  .variant{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;
-    background:#f4f6f7;border-radius:14px;padding:12px 12px 12px 14px;
-    transition:background-color .15s ease,transform .12s ease}
-  .variant:active{transform:scale(.985);background:#e9edef}
-  @media (hover:hover){.variant:hover{background:#eceff1}}
-  .variant .name{flex:1;min-width:0;font-size:14px;line-height:20px;font-weight:600}
-  .variant .note{display:block;margin-top:2px;font-size:12px;line-height:16px;font-weight:400;color:var(--mute)}
-  .variant .go{flex:none;width:28px;height:28px;border-radius:99px;display:grid;place-items:center;background:var(--card);
-    color:var(--sub);box-shadow:0 0 2px rgba(0,1,40,.12)}
-  .rec{display:inline-block;vertical-align:1px;margin-left:6px;font-size:10px;line-height:14px;font-weight:600;letter-spacing:.02em;
-    color:var(--blue);background:var(--blue-50);border-radius:99px;padding:1px 6px}
-  .tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin:0 0 16px;border-radius:14px;background:#e3eaea}
-  .tab{height:40px;border:0;border-radius:10px;background:transparent;font:inherit;font-size:14px;line-height:20px;font-weight:600;
-    color:var(--sub);cursor:pointer;touch-action:manipulation;display:inline-flex;align-items:center;justify-content:center;gap:6px;
-    transition:background-color .15s ease,color .15s ease}
-  .tab[aria-selected="true"]{background:var(--card);color:var(--ink);box-shadow:0 0 2px rgba(0,1,40,.12),0 2px 6px rgba(0,1,40,.06)}
-  .tab .n{font-size:11px;line-height:16px;font-weight:600;color:var(--mute);background:rgba(20,30,36,.06);border-radius:99px;padding:0 6px}
-  .tab[aria-selected="true"] .n{color:var(--blue);background:var(--blue-50)}
-  [hidden]{display:none!important}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .lot{display:block;min-width:0;text-decoration:none;color:inherit;background:var(--card);border-radius:18px;padding:6px 6px 10px;
-    box-shadow:0 0 2px rgba(0,1,40,.16),0 4px 12px rgba(0,1,40,.08);transition:transform .12s ease}
-  .lot:active{transform:scale(.97)}
-  .lot img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:contain;border-radius:13px;background:#fff}
-  .lot h3{margin:4px 6px 0;font-size:13px;line-height:18px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .lot p{margin:1px 6px 0;font-size:11px;line-height:16px;color:var(--mute)}
-  .cap{margin:-4px 4px 12px;font-size:13px;line-height:18px;color:var(--sub)}
-  footer{margin-top:24px;padding:0 4px;font-size:12px;line-height:16px;color:var(--mute)}
-  @media (prefers-reduced-motion: reduce){.variant{transition:none}}
+  html,body{margin:0;background:#f0f5f4}
+  #root:empty::after{content:"";display:block;height:100vh}
 </style>
 </head>
 <body>
-<main>
-  <header>
-    <div class="eyebrow">PeraSure</div>
-    <h1>Playground</h1>
-    <p>Interactive prototypes and illustration animations, made to be tried on a real phone.</p>
-  </header>
+<div id="root"></div>
 
-  <div class="tabs" role="tablist" aria-label="Library">
-    <button class="tab" role="tab" id="tab-motion" aria-controls="list" aria-selected="true">Prototypes <span class="n" id="n-motion"></span></button>
-    <button class="tab" role="tab" id="tab-lottie" aria-controls="lottie" aria-selected="false">Animations <span class="n" id="n-lottie"></span></button>
-  </div>
-
-  <div id="pane-motion">
-    <p class="cap">Tap-through product flows with real interactions.</p>
-    <section class="list" id="list" role="tabpanel" aria-label="Prototypes"></section>
-  </div>
-  <div id="pane-lottie" hidden>
-    <p class="cap">Illustrations, each playable as Lottie or GSAP.</p>
-    <section class="grid" id="lottie" role="tabpanel" aria-label="Animations"></section>
-  </div>
-
-  <footer>Best viewed on a phone. Animations open one at a time in the player.</footer>
-</main>
-
+<script src="vendor/react@18.3.1/react.production.min.js"></script>
+<script src="vendor/react-dom@18.3.1/react-dom.production.min.js"></script>
+<script src="vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
+<script src="assets/playground-ui.js"></script>
 <script src="animations/animations.js"></script>
 <script>
-/* ---- Demo registry -------------------------------------------------------------
-   To add a demo: put its files in prototypes/<slug>/ and add one entry below.
-   The first variant is the recommended one. */
+/* ---- Prototype registry (the "Prototypes" tab) -----------------------------------------
+   To add a prototype: put its files in prototypes/<slug>/ and add one entry below.
+   The first variant is the recommended one. Animations live in animations/animations.js. */
 var DEMOS = [
   {
     title: 'Loading page',
@@ -136,49 +69,127 @@ var DEMOS = [
   }
 ];
 
+</script>
+<script>
+/* ---- Picker UI (Material UI, see assets/playground-ui.js) --------------------------------
+   Two tabs: Prototypes (DEMOS above) and Animations (window.LOTTIES). #animations in the URL
+   opens the Animations tab (#lottie still accepted), so "back" from the player lands there. */
 (function(){
-  var list = document.getElementById('list');
-  var chev = '<span class="go"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7.5 4.5 13 10l-5.5 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
-  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
-  list.innerHTML = DEMOS.map(function(d){
-    return '<article class="demo">' +
-      '<div class="demo-head"><div><h2>' + esc(d.title) + '</h2><p class="desc">' + esc(d.desc) + '</p></div>' +
-      (d.tag ? '<span class="tag">' + esc(d.tag) + '</span>' : '') + '</div>' +
-      '<div class="variants">' + d.variants.map(function(v, i){
-        return '<a class="variant" href="' + esc(v.href) + '">' +
-          '<span class="name">' + esc(v.name) + (i === 0 && d.variants.length > 1 ? '<span class="rec">Recommended</span>' : '') + (v.note ? '<span class="note">' + esc(v.note) + '</span>' : '') + '</span>' + chev + '</a>';
-      }).join('') + '</div></article>';
-  }).join('');
-
-  /* ---- Lottie tab: still thumbnails only; tapping one opens the player, which plays
-     one animation at a time. The list lives in animations/animations.js. */
+  var M = MaterialUI, R = React, h = PG.h, Icon = PG.Icon, C = PG.C;
   var LOTTIES = window.LOTTIES || [];
-  document.getElementById('lottie').innerHTML = LOTTIES.map(function(a){
-    var how = (a.success ? 'Loading → success' : a.intro ? 'Intro → loop' : 'Plays once') + (a.gsap ? ' · Lottie, GSAP' : ' · Lottie');
-    return '<a class="lot" href="animations/player.html?a=' + encodeURIComponent(a.slug) + '">' +
-      '<img src="animations/' + esc(a.slug) + '/' + esc(a.preview) + '" alt="" loading="lazy" decoding="async" width="300" height="300">' +
-      '<h3>' + esc(a.title) + '</h3><p>' + how + '</p></a>';
-  }).join('');
-  document.getElementById('n-motion').textContent = DEMOS.length;
-  document.getElementById('n-lottie').textContent = LOTTIES.length;
 
-  /* ---- Tabs: #animations / #motion in the URL (#lottie still accepted for old links), so "back" from a player lands on the right tab. */
-  function show(tab){
-    var lot = tab === 'lottie';
-    document.getElementById('tab-motion').setAttribute('aria-selected', String(!lot));
-    document.getElementById('tab-lottie').setAttribute('aria-selected', String(lot));
-    document.getElementById('pane-motion').hidden = lot;
-    document.getElementById('pane-lottie').hidden = !lot;
+  function fromHash(){ return /^#(animations|lottie)$/.test(location.hash) ? 1 : 0; }
+
+  function TabLabel(p){
+    return h(M.Stack, { direction: 'row', spacing: 0.75, alignItems: 'center' },
+      h(p.icon, { sx: { fontSize: 18 } }),
+      h('span', null, p.text),
+      h(M.Box, { component: 'span', sx: {
+        fontSize: 11, lineHeight: '16px', fontWeight: 700, px: 0.75, borderRadius: 99,
+        bgcolor: p.on ? C.blue50 : 'rgba(20,30,36,0.06)', color: p.on ? 'primary.main' : 'text.secondary' } }, p.n));
   }
-  function pick(tab){
-    show(tab);
-    try { history.replaceState(null, '', tab === 'lottie' ? '#animations' : location.pathname + location.search); } catch (e) {}
+
+  function Segmented(p){
+    return h(M.Box, { sx: { p: 0.5, borderRadius: '16px', bgcolor: C.track } },
+      h(M.Tabs, {
+        value: p.value, onChange: function(e, v){ p.onChange(v); }, variant: 'fullWidth',
+        'aria-label': 'Library',
+        sx: { minHeight: 40, '& .MuiTabs-flexContainer': { position: 'relative', zIndex: 1 } },
+        TabIndicatorProps: { sx: { height: '100%', borderRadius: '12px', bgcolor: '#fff', boxShadow: PG.theme.shadows[2], zIndex: 0 } }
+      },
+        h(M.Tab, { disableRipple: true, label: h(TabLabel, { icon: Icon.touch, text: 'Prototypes', n: DEMOS.length, on: p.value === 0 }),
+          sx: { color: 'text.secondary', '&.Mui-selected': { color: 'text.primary' } } }),
+        h(M.Tab, { disableRipple: true, label: h(TabLabel, { icon: Icon.animation, text: 'Animations', n: LOTTIES.length, on: p.value === 1 }),
+          sx: { color: 'text.secondary', '&.Mui-selected': { color: 'text.primary' } } })));
   }
-  document.getElementById('tab-motion').addEventListener('click', function(){ pick('motion'); });
-  document.getElementById('tab-lottie').addEventListener('click', function(){ pick('lottie'); });
-  function fromHash(){ return /^#(animations|lottie)$/.test(location.hash) ? 'lottie' : 'motion'; }
-  show(fromHash());
-  window.addEventListener('hashchange', function(){ show(fromHash()); });
+
+  function Tag(p){
+    return h(M.Chip, { size: 'small', label: p.label, sx: { bgcolor: C.blue50, color: 'primary.main', border: '1px solid ' + C.blue200 } });
+  }
+
+  function PrototypeCard(p){
+    var d = p.d, many = d.variants.length > 1;
+    return h(M.Card, null,
+      h(M.Box, { sx: { px: 2, pt: 2, pb: 1.5 } },
+        h(M.Stack, { direction: 'row', spacing: 1.5, alignItems: 'flex-start' },
+          h(M.Box, { sx: { flex: 1, minWidth: 0 } },
+            h(M.Typography, { variant: 'h6', component: 'h2' }, d.title),
+            h(M.Typography, { variant: 'body2', color: 'text.secondary', sx: { mt: 0.5 } }, d.desc)),
+          d.tag ? h(Tag, { label: d.tag }) : null)),
+      h(M.Stack, { spacing: 1, sx: { px: 1.25, pb: 1.25 } },
+        d.variants.map(function(v, i){
+          return h(M.ListItemButton, {
+            key: v.href, component: 'a', href: v.href,
+            sx: { bgcolor: C.soft, py: 1.25, pl: 1.75, pr: 1.25, '&:hover': { bgcolor: '#eef1f3' } }
+          },
+            h(M.ListItemText, {
+              primary: h(M.Stack, { direction: 'row', spacing: 0.75, alignItems: 'center' },
+                h('span', null, v.name),
+                i === 0 && many ? h(M.Chip, { size: 'small', label: 'Recommended', color: 'primary', sx: { height: 18, fontSize: 10 } }) : null),
+              secondary: v.note,
+              primaryTypographyProps: { variant: 'subtitle2', component: 'div' },
+              secondaryTypographyProps: { variant: 'caption', sx: { display: 'block', mt: 0.25 } }
+            }),
+            h(M.Box, { sx: { ml: 1, width: 32, height: 32, borderRadius: 99, display: 'grid', placeItems: 'center',
+              bgcolor: '#fff', color: 'text.secondary', boxShadow: PG.theme.shadows[1], flex: 'none' } },
+              h(Icon.next, { sx: { fontSize: 20 } })));
+        })));
+  }
+
+  function MiniTag(p){
+    return h(M.Box, { component: 'span', sx: { fontSize: 10, lineHeight: '16px', fontWeight: 700, letterSpacing: '0.02em',
+      px: 0.75, borderRadius: '6px', color: p.strong ? 'primary.main' : 'text.secondary',
+      bgcolor: p.strong ? C.blue50 : 'rgba(20,30,36,0.05)' } }, p.label);
+  }
+
+  function AnimationCard(p){
+    var a = p.a;
+    var how = a.success ? 'Loading → success' : a.intro ? 'Intro → loop' : 'Plays once';
+    return h(M.Card, { sx: { minWidth: 0 } },
+      h(M.CardActionArea, { component: 'a', href: 'animations/player.html?a=' + encodeURIComponent(a.slug), sx: { borderRadius: '22px' } },
+        h(M.Box, { sx: { p: 0.75 } },
+          h(M.Box, { component: 'img', src: 'animations/' + a.slug + '/' + a.preview, alt: '', loading: 'lazy', decoding: 'async',
+            sx: { display: 'block', width: '100%', aspectRatio: '4 / 3', objectFit: 'contain', borderRadius: '16px', bgcolor: '#fff',
+              boxShadow: 'inset 0 0 0 1px rgba(20,30,36,0.05)' } })),
+        h(M.Box, { sx: { px: 1.5, pt: 0.5, pb: 1.5 } },
+          h(M.Typography, { variant: 'subtitle2', sx: { display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' } }, a.title),
+          h(M.Stack, { direction: 'row', spacing: 0.75, alignItems: 'center', sx: { mt: 0.5 } },
+            h(M.Typography, { variant: 'caption', color: 'text.secondary', noWrap: true }, how),
+            a.gsap ? null : h(MiniTag, { label: 'Lottie only' })))));
+  }
+
+  function App(){
+    var s = R.useState(fromHash()), tab = s[0], setTab = s[1];
+    R.useEffect(function(){
+      function onHash(){ setTab(fromHash()); }
+      window.addEventListener('hashchange', onHash);
+      return function(){ window.removeEventListener('hashchange', onHash); };
+    }, []);
+    function pick(v){
+      setTab(v);
+      try { history.replaceState(null, '', v === 1 ? '#animations' : location.pathname + location.search); } catch (e) {}
+    }
+    return h(M.Container, { maxWidth: 'sm', disableGutters: true, sx: {
+        px: 2, pt: 'calc(env(safe-area-inset-top, 0px) + 32px)', pb: 'calc(env(safe-area-inset-bottom, 0px) + 32px)', maxWidth: 520 } },
+      h(M.Box, { component: 'header', sx: { px: 0.5, pb: 3 } },
+        h(M.Typography, { variant: 'overline', color: 'primary' }, 'PeraSure'),
+        h(M.Typography, { variant: 'h4', component: 'h1', sx: { mt: 0.25 } }, 'Playground'),
+        h(M.Typography, { variant: 'body1', color: 'text.secondary', sx: { mt: 1 } },
+          'Interactive prototypes and illustration animations, made to be tried on a real phone.')),
+      h(Segmented, { value: tab, onChange: pick }),
+      h(M.Typography, { variant: 'body2', color: 'text.secondary', sx: { px: 0.5, mt: 2, mb: 1.5 } },
+        tab === 0 ? 'Tap-through product flows with real interactions.' : 'Illustrations, each playable as Lottie or GSAP.'),
+      tab === 0
+        ? h(M.Stack, { spacing: 1.5, role: 'tabpanel', 'aria-label': 'Prototypes' },
+            DEMOS.map(function(d){ return h(PrototypeCard, { key: d.title, d: d }); }))
+        : h(M.Box, { role: 'tabpanel', 'aria-label': 'Animations', sx: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 } },
+            LOTTIES.map(function(a){ return h(AnimationCard, { key: a.slug, a: a }); })),
+      h(M.Stack, { direction: 'row', spacing: 1, alignItems: 'center', sx: { mt: 3, px: 0.5, color: 'text.secondary' } },
+        h(Icon.phone, { sx: { fontSize: 16 } }),
+        h(M.Typography, { variant: 'caption' }, 'Best viewed on a phone. Animations open one at a time in the player.')));
+  }
+
+  PG.mount(document.getElementById('root'), App);
 })();
 </script>
 </body>
