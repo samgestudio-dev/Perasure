@@ -656,6 +656,29 @@
         })));
   }
 
+  /* Header stays pinned to the top. Transparent at the top of the page; once the page scrolls it
+     fades in a frosted, semi-transparent background with a hairline. */
+  function StickyHeader(p){
+    var s = R.useState(false), scrolled = s[0], setScrolled = s[1];
+    R.useEffect(function(){
+      var on = false, raf = 0;
+      function check(){ raf = 0; var v = (window.scrollY || document.documentElement.scrollTop) > 4; if (v !== on) { on = v; setScrolled(v); } }
+      function onScroll(){ if (!raf) raf = requestAnimationFrame(check); }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      check();
+      return function(){ window.removeEventListener('scroll', onScroll); if (raf) cancelAnimationFrame(raf); };
+    }, []);
+    var fade = PG.reduce ? 'none' : 'background-color .2s ease, box-shadow .2s ease, backdrop-filter .2s ease, -webkit-backdrop-filter .2s ease';
+    return h(M.Box, { component: 'header', sx: {
+        position: 'sticky', top: 0, zIndex: 10, mx: -2, px: 2,
+        pt: 'calc(env(safe-area-inset-top, 0px) + 8px)', pb: 1,
+        bgcolor: scrolled ? 'rgba(240,245,244,0.72)' : 'rgba(240,245,244,0)',
+        backdropFilter: scrolled ? 'blur(16px) saturate(180%)' : 'none',
+        WebkitBackdropFilter: scrolled ? 'blur(16px) saturate(180%)' : 'none',
+        boxShadow: scrolled ? '0 1px 0 rgba(20,30,36,0.08)' : '0 1px 0 rgba(20,30,36,0)',
+        transition: fade } }, p.children);
+  }
+
   /* ---------- app ---------- */
   function App(){
     var st = useCtl(), entry = LIST[st.index] || LIST[0];
@@ -674,9 +697,9 @@
     }, []);
     if (!entry) return h(M.Typography, { sx: { p: 3 } }, 'No animations registered.');
     return h(M.Container, { disableGutters: true, sx: {
-        maxWidth: 480, px: 2, pt: 'calc(env(safe-area-inset-top, 0px) + 8px)', pb: 'calc(env(safe-area-inset-bottom, 0px) + 32px)' } },
-      h(TopBar, { st: st }),
-      h(M.Box, { sx: { textAlign: 'center', mt: 2 } },
+        maxWidth: 480, px: 2, pb: 'calc(env(safe-area-inset-bottom, 0px) + 32px)' } },
+      h(StickyHeader, null, h(TopBar, { st: st })),
+      h(M.Box, { sx: { textAlign: 'center', mt: 1 } },
         h(M.Typography, { variant: 'h5', component: 'h1' }, entry.title),
         h(M.Typography, { variant: 'body2', color: 'text.secondary', sx: { mt: 0.75, mx: 'auto', maxWidth: 360, minHeight: 40 } }, entry.desc)),
       h(Stage, { st: st, entry: entry }),
