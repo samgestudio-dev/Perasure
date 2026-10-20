@@ -33,7 +33,7 @@ README.md                  human-facing summary + demo / animation tables
      title: 'Repayment success',          // sentence case, short
      tag: 'Loan',                          // optional small pill: product area / status
      desc: 'One sentence: what flow it covers and what motion to look at.',
-     variants: [                           // first entry = recommended, shown highlighted
+     variants: [                           // first entry = recommended ("Recommended" label when there are several)
        { name: 'Standard', note: 'What is special about this variant', href: 'demos/repayment-success/index.html' },
        { name: 'Gentle spring', note: 'Slower, softer settle', href: 'demos/repayment-success/gentle.html' }
      ]

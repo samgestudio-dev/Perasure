@@ -32,15 +32,16 @@
     border:1px solid #c8deff;border-radius:999px;padding:2px 8px}
   .variants{margin-top:14px;display:flex;flex-direction:column;gap:8px}
   .variant{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;
-    border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;
-    transition:background-color .15s ease,border-color .15s ease,transform .12s ease}
-  .variant:active{transform:scale(.985);background:var(--blue-50);border-color:#c8deff}
-  @media (hover:hover){.variant:hover{background:var(--blue-50);border-color:#c8deff}}
-  .variant .name{flex:1;font-size:14px;line-height:20px;font-weight:600}
+    background:#f4f6f7;border-radius:14px;padding:12px 12px 12px 14px;
+    transition:background-color .15s ease,transform .12s ease}
+  .variant:active{transform:scale(.985);background:#e9edef}
+  @media (hover:hover){.variant:hover{background:#eceff1}}
+  .variant .name{flex:1;min-width:0;font-size:14px;line-height:20px;font-weight:600}
   .variant .note{display:block;margin-top:2px;font-size:12px;line-height:16px;font-weight:400;color:var(--mute)}
-  .variant svg{flex:none;color:var(--mute)}
-  .variant.primary{border-color:var(--blue)}
-  .variant.primary .name{color:var(--blue)}
+  .variant .go{flex:none;width:28px;height:28px;border-radius:99px;display:grid;place-items:center;background:var(--card);
+    color:var(--sub);box-shadow:0 0 2px rgba(0,1,40,.12)}
+  .rec{display:inline-block;vertical-align:1px;margin-left:6px;font-size:10px;line-height:14px;font-weight:600;letter-spacing:.02em;
+    color:var(--blue);background:var(--blue-50);border-radius:99px;padding:1px 6px}
   .tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin:0 0 16px;border-radius:14px;background:#e3eaea}
   .tab{height:40px;border:0;border-radius:10px;background:transparent;font:inherit;font-size:14px;line-height:20px;font-weight:600;
     color:var(--sub);cursor:pointer;touch-action:manipulation;display:inline-flex;align-items:center;justify-content:center;gap:6px;
@@ -50,12 +51,12 @@
   .tab[aria-selected="true"] .n{color:var(--blue);background:var(--blue-50)}
   [hidden]{display:none!important}
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .lot{display:block;text-decoration:none;color:inherit;background:var(--card);border-radius:20px;padding:8px 8px 12px;
+  .lot{display:block;min-width:0;text-decoration:none;color:inherit;background:var(--card);border-radius:18px;padding:6px 6px 10px;
     box-shadow:0 0 2px rgba(0,1,40,.16),0 4px 12px rgba(0,1,40,.08);transition:transform .12s ease}
   .lot:active{transform:scale(.97)}
-  .lot img{display:block;width:100%;aspect-ratio:1/1;object-fit:contain;border-radius:14px;background:#fff}
-  .lot h3{margin:8px 4px 0;font-size:14px;line-height:20px;font-weight:600}
-  .lot p{margin:2px 4px 0;font-size:12px;line-height:16px;color:var(--mute)}
+  .lot img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:contain;border-radius:13px;background:#fff}
+  .lot h3{margin:4px 6px 0;font-size:13px;line-height:18px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lot p{margin:1px 6px 0;font-size:11px;line-height:16px;color:var(--mute)}
   footer{margin-top:24px;padding:0 4px;font-size:12px;line-height:16px;color:var(--mute)}
   @media (prefers-reduced-motion: reduce){.variant{transition:none}}
 </style>
@@ -130,15 +131,15 @@ var DEMOS = [
 
 (function(){
   var list = document.getElementById('list');
-  var chev = '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7.5 4.5 13 10l-5.5 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var chev = '<span class="go"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7.5 4.5 13 10l-5.5 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   list.innerHTML = DEMOS.map(function(d){
     return '<article class="demo">' +
       '<div class="demo-head"><div><h2>' + esc(d.title) + '</h2><p class="desc">' + esc(d.desc) + '</p></div>' +
       (d.tag ? '<span class="tag">' + esc(d.tag) + '</span>' : '') + '</div>' +
       '<div class="variants">' + d.variants.map(function(v, i){
-        return '<a class="variant' + (i === 0 ? ' primary' : '') + '" href="' + esc(v.href) + '">' +
-          '<span class="name">' + esc(v.name) + (v.note ? '<span class="note">' + esc(v.note) + '</span>' : '') + '</span>' + chev + '</a>';
+        return '<a class="variant" href="' + esc(v.href) + '">' +
+          '<span class="name">' + esc(v.name) + (i === 0 && d.variants.length > 1 ? '<span class="rec">Recommended</span>' : '') + (v.note ? '<span class="note">' + esc(v.note) + '</span>' : '') + '</span>' + chev + '</a>';
       }).join('') + '</div></article>';
   }).join('');
 

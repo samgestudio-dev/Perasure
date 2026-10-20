@@ -65,7 +65,7 @@ window.LOTTIES = [
   },
   {
     slug: 'coins-loading',
-    title: 'Coins loading → success',
+    title: 'Coins loading',
     desc: 'Coin spins while loading; on success it finishes the turn, speeds up and lands on the tick.',
     json: 'loading-coin.json', success: 'success-coin.json', lottie: 'perasure-coins.lottie', preview: 'preview.png',
     scale: 0.5   // 112px canvas: shown at half the stage instead of filling it

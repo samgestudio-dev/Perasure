@@ -32,7 +32,7 @@ shows still thumbnails.
 | Safe transaction | intro 0–54 → loop 54–114 |
 | Verification code | intro 0–56 → loop 56–116 |
 | Doc verify | intro 0–36 → loop 36–96 |
-| Coins loading → success | loading loops → "Show success" finishes the turn → success once |
+| Coins loading | loading loops → "Show success" finishes the turn → success once |
 
 To add one: put the `.json` (plus `.lottie` and a `preview.png`) in `lottie/<name>/` and add an entry to
 `lottie/animations.js`. Rendered with [lottie-web](https://github.com/airbnb/lottie-web) (SVG renderer).
