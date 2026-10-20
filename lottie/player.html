@@ -26,7 +26,17 @@
   .back{display:inline-flex;align-items:center;gap:4px;margin-left:-6px;padding:8px 6px;border-radius:10px;
     text-decoration:none;font-size:14px;line-height:20px;font-weight:600;color:var(--blue)}
   .back:active{background:var(--blue-50)}
-  .count{font-size:13px;line-height:18px;color:var(--mute);font-variant-numeric:tabular-nums}
+  .count{font-size:13px;line-height:18px;color:var(--sub);font-variant-numeric:tabular-nums}
+
+  /* pager under the stage: prev · position · next (kept away from the menu button) */
+  .pager{margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .pager .nav{width:36px;height:36px}
+  .dots{display:flex;align-items:center;justify-content:center;gap:6px;flex:1}
+  .dots i{width:6px;height:6px;border-radius:99px;background:#c9d1d5;transition:width .2s ease,background-color .2s ease}
+  .dots i.on{width:18px;background:var(--blue)}
+  .pager .count{display:none}
+  .pager.many .dots{display:none}
+  .pager.many .count{display:block;flex:1;text-align:center}
   main{position:relative}
   .top-r{display:flex;align-items:center;gap:10px}
   .menu-btn{width:40px;height:40px;border-radius:999px;display:grid;place-items:center;background:var(--card);
@@ -60,12 +70,12 @@
   .item[aria-current="true"] .ck{visibility:visible}
 
   /* title row with prev / next */
-  .head{display:flex;align-items:center;gap:8px;margin-top:12px}
-  .head h1{flex:1;min-width:0;text-align:center;font-size:20px;line-height:26px;font-weight:700;letter-spacing:-.01em}
+  .head{margin-top:16px}
+  .head h1{text-align:center;font-size:20px;line-height:26px;font-weight:700;letter-spacing:-.01em}
   .nav{flex:none;width:40px;height:40px;border-radius:999px;display:grid;place-items:center;background:var(--card);
     box-shadow:0 0 2px rgba(0,1,40,.16),0 2px 8px rgba(0,1,40,.06);transition:transform .12s ease}
   .nav:active{transform:scale(.92)}
-  .desc{margin-top:8px;text-align:center;font-size:13px;line-height:18px;color:var(--sub);min-height:36px}
+  .desc{margin-top:6px;text-align:center;font-size:13px;line-height:18px;color:var(--sub);min-height:36px}
 
   /* stage */
   .stage{position:relative;margin-top:28px;aspect-ratio:1/1;width:100%;border-radius:24px;overflow:hidden;
@@ -126,7 +136,7 @@
   .files{margin-top:6px;display:flex;flex-wrap:wrap;gap:4px 14px}
   .files a{color:var(--blue);font-weight:600;text-decoration:none}
 
-  @media (prefers-reduced-motion: reduce){.btn,.nav,.stage,.menu,.menu.open,.menu-btn{transition:none}}
+  @media (prefers-reduced-motion: reduce){.btn,.nav,.stage,.menu,.menu.open,.menu-btn,.dots i{transition:none}}
 </style>
 </head>
 <body>
@@ -138,7 +148,6 @@
       Lottie
     </a>
     <div class="top-r">
-      <span class="count" id="count"></span>
       <button class="menu-btn" id="menuBtn" aria-label="All animations" aria-haspopup="true" aria-expanded="false" aria-controls="menu">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3.5 5.5h13M3.5 10h13M3.5 14.5h13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
       </button>
@@ -147,13 +156,7 @@
   <div class="menu" id="menu" role="menu" aria-label="All animations"></div>
 
   <div class="head">
-    <button class="nav" id="prev" aria-label="Previous animation">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M12.5 4.5 7 10l5.5 5.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
     <h1 id="title"></h1>
-    <button class="nav" id="next" aria-label="Next animation">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7.5 4.5 13 10l-5.5 5.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
   </div>
   <p class="desc" id="desc"></p>
 
@@ -161,6 +164,17 @@
     <div class="anim" id="animA"></div>
     <div class="anim" id="animB" hidden></div>
     <div class="msg" id="msg">Loading…</div>
+  </div>
+
+  <div class="pager">
+    <button class="nav" id="prev" aria-label="Previous animation">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M12.5 4.5 7 10l5.5 5.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="dots" id="dots" aria-hidden="true"></div>
+    <span class="count" id="count"></span>
+    <button class="nav" id="next" aria-label="Next animation">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7.5 4.5 13 10l-5.5 5.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
   </div>
 
   <div class="time">
@@ -233,6 +247,10 @@
     $('title').textContent = entry.title;
     $('desc').textContent = entry.desc || '';
     $('count').textContent = (i + 1) + ' / ' + LIST.length;
+    var dots = $('dots');
+    if (dots.children.length !== LIST.length) dots.innerHTML = new Array(LIST.length + 1).join('<i></i>');
+    for (var k = 0; k < dots.children.length; k++) dots.children[k].className = k === i ? 'on' : '';
+    dots.parentNode.classList.toggle('many', LIST.length > 12);
     document.title = entry.title + ' · Lottie · PeraSure';
     markCurrent();
     try { history.replaceState(null, '', '?a=' + encodeURIComponent(entry.slug) + location.hash); } catch (e) {}
