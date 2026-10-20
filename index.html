@@ -19,8 +19,8 @@
 <script src="vendor/react@18.3.1/react.production.min.js"></script>
 <script src="vendor/react-dom@18.3.1/react-dom.production.min.js"></script>
 <script src="vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
-<script src="assets/playground-ui.js"></script>
-<script src="animations/animations.js"></script>
+<script src="assets/playground-ui.js?v=202610201733"></script>
+<script src="animations/animations.js?v=202610201733"></script>
 <script>
 /* ---- Prototype registry (the "Prototypes" tab) -----------------------------------------
    To add a prototype: put its files in prototypes/<slug>/ and add one entry below.
@@ -78,6 +78,8 @@ var DEMOS = [
   var M = MaterialUI, R = React, h = PG.h, Icon = PG.Icon, C = PG.C;
   var LOTTIES = window.LOTTIES || [];
 
+  // Links carry the deploy stamp, so a phone never reopens a page from a stale cache after an update.
+  function fresh(u){ return PG.v ? u + (u.indexOf('?') < 0 ? '?' : '&') + 'v=' + PG.v : u; }
   function fromHash(){ return /^#(animations|lottie)$/.test(location.hash) ? 1 : 0; }
 
   function TabLabel(p){
@@ -136,10 +138,10 @@ var DEMOS = [
       h(M.Stack, { spacing: 1, sx: { px: 1.25, pb: 1.25 } },
         d.variants.map(function(v, i){
           return h(M.ListItemButton, {
-            key: v.href, component: 'a', href: v.href,
+            key: v.href, component: 'a', href: fresh(v.href),
             sx: { bgcolor: C.soft, py: 1, pl: 1, pr: 1.25, alignItems: 'center', '&:hover': { bgcolor: '#eef1f3' } }
           },
-            h(Thumb, { src: thumbOf(v) }),
+            h(Thumb, { src: fresh(thumbOf(v)) }),
             h(M.ListItemText, {
               primary: h(M.Stack, { direction: 'row', spacing: 0.75, alignItems: 'center' },
                 h('span', null, v.name),
@@ -164,15 +166,39 @@ var DEMOS = [
     var a = p.a;
     var how = a.success ? 'Loading → success' : a.intro ? 'Intro → loop' : 'Plays once';
     return h(M.Card, { sx: { minWidth: 0 } },
-      h(M.CardActionArea, { component: 'a', href: 'animations/player.html?a=' + encodeURIComponent(a.slug), sx: { borderRadius: '22px', overflow: 'hidden' } },
+      h(M.CardActionArea, { component: 'a', href: fresh('animations/player.html?a=' + encodeURIComponent(a.slug)), sx: { borderRadius: '22px', overflow: 'hidden' } },
         // Full-bleed thumbnail: fills the top of the card, clipped by the card's corners — no stroke of its own.
-        h(M.Box, { component: 'img', src: 'animations/' + a.slug + '/' + a.preview, alt: '', loading: 'lazy', decoding: 'async',
+        h(M.Box, { component: 'img', src: fresh('animations/' + a.slug + '/' + a.preview), alt: '', loading: 'lazy', decoding: 'async',
           sx: { display: 'block', width: '100%', aspectRatio: '4 / 3', objectFit: 'contain', p: 0.75, bgcolor: '#fff' } }),
         h(M.Box, { sx: { px: 1.5, pt: 1.25, pb: 1.5, borderTop: '1px solid rgba(20,30,36,0.06)' } },
           h(M.Typography, { variant: 'subtitle2', sx: { display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' } }, a.title),
           h(M.Stack, { direction: 'row', spacing: 0.75, alignItems: 'center', sx: { mt: 0.5 } },
             h(M.Typography, { variant: 'caption', color: 'text.secondary', noWrap: true }, how),
             a.gsap ? null : h(MiniTag, { label: 'Lottie only' })))));
+  }
+
+  /* Prototypes / Animations switch sticks to the top once scrolled to. Plain page colour behind it
+     (no frosting). It sits below the status bar: the negative margin + equal padding keep its
+     resting position, and the padding (same colour) covers the status-bar area while stuck. */
+  function StickyTabs(p){
+    var s = R.useState(false), stuck = s[0], setStuck = s[1], ref = R.useRef(null);
+    R.useEffect(function(){
+      var on = false, raf = 0;
+      function check(){
+        raf = 0; if (!ref.current) return;
+        var v = ref.current.getBoundingClientRect().top <= 0.5 && window.scrollY > 0;
+        if (v !== on) { on = v; setStuck(v); }
+      }
+      function onScroll(){ if (!raf) raf = requestAnimationFrame(check); }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll);
+      check();
+      return function(){ window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); };
+    }, []);
+    return h(M.Box, { ref: ref, sx: {
+        position: 'sticky', top: 0, zIndex: 5, mx: -2, px: 2, pointerEvents: 'none',
+        mt: 'calc(-1 * env(safe-area-inset-top, 0px))', pt: 'calc(env(safe-area-inset-top, 0px) + 8px)', pb: 1,
+        bgcolor: stuck ? C.page : 'transparent', '& > *': { pointerEvents: 'auto' } } }, p.children);
   }
 
   function App(){
@@ -193,7 +219,7 @@ var DEMOS = [
         h(M.Typography, { variant: 'h4', component: 'h1', sx: { mt: 0.25 } }, 'Playground'),
         h(M.Typography, { variant: 'body1', color: 'text.secondary', sx: { mt: 1 } },
           'Interactive prototypes and illustration animations, made to be tried on a real phone.')),
-      h(Segmented, { value: tab, onChange: pick }),
+      h(StickyTabs, null, h(Segmented, { value: tab, onChange: pick })),
       h(M.Box, { sx: { height: 16 } }),
       tab === 0
         ? h(M.Stack, { spacing: 1.5, role: 'tabpanel', 'aria-label': 'Prototypes' },

@@ -120,5 +120,9 @@
     return root;
   }
 
-  window.PG = { h: h, theme: theme, Icon: Icon, mount: mount, C: C, reduce: reduce };
+  // Deploy stamp from this script's own ?v= (set by tools/stamp.py); appended to links and assets.
+  var me = document.currentScript && document.currentScript.src || '';
+  var v = (/[?&]v=([\w-]+)/.exec(me) || [])[1] || '';
+
+  window.PG = { h: h, theme: theme, Icon: Icon, mount: mount, C: C, reduce: reduce, v: v === 'STAMP' ? '' : v };
 })();

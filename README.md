@@ -46,7 +46,14 @@ any) in `animations/<name>/gsap/`, and add an entry to `animations/animations.js
 
 `vendor/` holds pinned copies so demos don't depend on a CDN: lottie-web 5.12.2, GSAP 3.15.0 (core +
 all plugins, as browser scripts and as ES modules in `esm/`), React 18.3.1, ReactDOM 18.3.1 and
-Material UI 5.18.0 (used by the Playground pages; theme in `assets/playground-ui.js`). Load them from a demo with a relative path, e.g.
+Material UI 5.18.0 (used by the Playground pages; theme in `assets/playground-ui.js`).
+
+Motion 14.4.0 (formerly Framer Motion) in `vendor/motion@14.4.0/`, two browser builds — load one per page,
+both define `window.Motion`:
+
+- `motion-react.js` — the React API (`motion` / `m` components, `LazyMotion`, `AnimatePresence`, …); load after
+  React and ReactDOM: `const { LazyMotion, domAnimation, m } = Motion;`
+- `motion.js` — the plain JavaScript API, no React: `const { animate, scroll, inView, stagger } = Motion;` Load them from a demo with a relative path, e.g.
 `<script src="../../vendor/gsap@3.15.0/gsap.min.js"></script>`, or for code that does `import { gsap } from "gsap"`
 an import map: `{"imports":{"gsap":"../../vendor/gsap@3.15.0/esm/index.js","gsap/":"../../vendor/gsap@3.15.0/esm/"}}`
 (see `animations/player.html`).

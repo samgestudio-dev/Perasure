@@ -17,7 +17,8 @@ animations/animations.js       Lottie registry (LOTTIES array) — shared by the
 animations/player.html         player, one animation at a time: player.html?a=<slug>[&r=gsap] (Lottie / GSAP tabs)
 animations/<slug>/             <slug>.json (+ <slug>.lottie, preview.png, gsap/<module>.js)
 tools/                     flatten-lottie-masks.py, flatten-svg-masks.py (Safari mask-blur fixes)
-vendor/<lib>@<version>/    pinned libraries: lottie-web, gsap (+ plugins; esm/ = ES modules), react, react-dom, mui-material
+vendor/<lib>@<version>/    pinned libraries: lottie-web, gsap (+ plugins; esm/ = ES modules), react, react-dom, mui-material,
+                           motion (motion-react.js = React API, motion.js = vanilla; both set window.Motion)
 README.md                  human-facing summary + demo / animation tables
 .nojekyll                  keep: Pages serves files as-is
 ```
@@ -94,7 +95,7 @@ implementation (`prototypes/withdraw-fund-flow/index.html`, see the comments in 
 - iOS Safari 26+ tints the status bar and toolbar from `position:fixed` layers that reach the screen edges.
   Don't leave a coloured fixed overlay (scrim, backdrop) in the page, even at `opacity:0`: use
   `display:none` when closed, and give tap-outside catchers no background.
-- Motion: prefer Framer Motion with `LazyMotion` + `m` (strict), drive continuous values with motion values
+- Motion: prefer Motion (formerly Framer Motion; `vendor/motion@14.4.0/motion-react.js`) with `LazyMotion` + `m` (strict), drive continuous values with motion values
   instead of React state, animate only `transform` / `opacity` where possible, and respect
   `prefers-reduced-motion`.
 - Keep a demo self-contained in one HTML file (inline or bundled assets) so Pages needs no build step.
@@ -113,6 +114,13 @@ implementation (`prototypes/withdraw-fund-flow/index.html`, see the comments in 
 - Open the picker and every new link at a phone viewport (e.g. 390×664, touch, DPR 3) and confirm the demo
   loads with no console errors.
 - Tap through the main flow once.
+
+## Caching (phones keep old copies otherwise)
+
+GitHub Pages lets browsers reuse a file for 10 minutes. Before committing a change to the Playground pages,
+`animations/` or `assets/`, run `python3 tools/stamp.py`: it stamps the shared scripts (`?v=<stamp>`), and the
+index adds that stamp to every link and thumbnail, so phones load the new version right away. The player
+fetches animation JSON with `cache: 'no-cache'` and loads GSAP modules with a per-load token.
 
 ## Publishing
 

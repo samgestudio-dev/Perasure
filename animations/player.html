@@ -24,8 +24,8 @@
 <script src="../vendor/react-dom@18.3.1/react-dom.production.min.js"></script>
 <script src="../vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
 <script src="../vendor/lottie-web@5.12.2/lottie_svg.min.js"></script>
-<script src="../assets/playground-ui.js"></script>
-<script src="animations.js"></script>
+<script src="../assets/playground-ui.js?v=202610201733"></script>
+<script src="animations.js?v=202610201733"></script>
 <script>
 /* ---- Animation player ------------------------------------------------------------------
    One animation at a time. Each animation exists twice, pixel-matched: the Lottie JSON played
@@ -44,6 +44,7 @@
   var LIST = window.LOTTIES || [];
   var SPEEDS = [1, 0.5, 0.25, 2];
   var renderer = 'lottie';             // 'lottie' | 'gsap' — read by engineFor()
+  var LOAD_TOKEN = Date.now().toString(36);   // fresh GSAP modules per page load (bypasses stale caches)
 
   function store(k, v){ try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
   function noop(){}
@@ -53,19 +54,27 @@
      loop(a, b) · finish(done): end the current pass, then done · pause() · resume()
      setSpeed(s) · destroy() · onFrame (callback, set by the player) */
   function lottieEngine(box, path){
-    var e = { onFrame: noop, label: 'lottie-web ' + (lottie.version || '') + ' · SVG' }, done = null;
-    var a = lottie.loadAnimation({
-      container: box, renderer: 'svg', loop: false, autoplay: false, path: path,
-      rendererSettings: { preserveAspectRatio: 'xMidYMid meet', progressiveLoad: false, hideOnTransparent: true }
-    });
-    e.ready = new Promise(function(res, rej){
-      a.addEventListener('DOMLoaded', function(){
-        var d = a.animationData; e.total = d.op - d.ip; e.fps = d.fr; e.w = d.w; e.h = d.h; res(e);
+    var e = { onFrame: noop, label: 'lottie-web ' + (lottie.version || '') + ' · SVG' }, done = null, a = null, dead = false;
+    // Fetch the JSON ourselves with cache: 'no-cache' (always revalidated, a cheap 304 when
+    // unchanged) so an updated animation shows up immediately instead of a cached copy.
+    e.ready = fetch(path, { cache: 'no-cache' }).then(function(r){
+      if (!r.ok) throw new Error('Couldn’t load ' + path);
+      return r.json();
+    }).then(function(json){
+      if (dead) throw new Error('cancelled');
+      return new Promise(function(res){
+        a = lottie.loadAnimation({
+          container: box, renderer: 'svg', loop: false, autoplay: false, animationData: json,
+          rendererSettings: { preserveAspectRatio: 'xMidYMid meet', progressiveLoad: false, hideOnTransparent: true }
+        });
+        a.addEventListener('enterFrame', function(){ e.onFrame(); });
+        a.addEventListener('complete', function(){ var d = done; done = null; if (d) d(); });
+        a.addEventListener('DOMLoaded', function(){
+          var d = a.animationData; e.total = d.op - d.ip; e.fps = d.fr; e.w = d.w; e.h = d.h; res(e);
+        });
+        a.setSpeed(e._speed || 1);
       });
-      a.addEventListener('data_failed', function(){ rej(new Error('Couldn’t load ' + path)); });
     });
-    a.addEventListener('enterFrame', function(){ e.onFrame(); });
-    a.addEventListener('complete', function(){ var d = done; done = null; if (d) d(); });
     e.frame = function(){ return a.firstFrame + a.currentFrame; };
     e.seek = function(f){ done = null; a.loop = false; a.resetSegments(true); a.goToAndStop(f, true); e.onFrame(); };
     e.play = function(s, t, cb){ done = cb || null; a.loop = false; a.playSegments([s, t], true); };
@@ -73,8 +82,8 @@
     e.finish = function(cb){ done = cb; a.loop = false; if (a.isPaused) a.play(); };
     e.pause = function(){ a.pause(); };
     e.resume = function(){ a.play(); };
-    e.setSpeed = function(s){ a.setSpeed(s); };
-    e.destroy = function(){ done = null; a.destroy(); };
+    e.setSpeed = function(s){ e._speed = s; if (a) a.setSpeed(s); };
+    e.destroy = function(){ dead = true; done = null; if (a) a.destroy(); };
     return e;
   }
 
@@ -88,7 +97,7 @@
       drv = tl.tweenFromTo(s * F, t * F, vars);
       drv.timeScale(speed);
     }
-    e.ready = Promise.all([import(url), import('gsap')]).then(function(r){
+    e.ready = Promise.all([import(url + (url.indexOf('?') < 0 ? '?' : '&') + 'v=' + LOAD_TOKEN), import('gsap')]).then(function(r){
       var m = r[0], g = r[1].gsap || r[1].default;
       if (dead) throw new Error('cancelled');
       var create = Object.keys(m).filter(function(k){ return /^create/.test(k) && typeof m[k] === 'function'; })[0];
@@ -657,7 +666,7 @@
   }
 
   /* Header stays pinned to the top. Transparent at the top of the page; once the page scrolls it
-     fades in a frosted, semi-transparent background with a hairline. */
+     takes the plain page colour (same as the index tabs), covering the status-bar area too. */
   function StickyHeader(p){
     var s = R.useState(false), scrolled = s[0], setScrolled = s[1];
     R.useEffect(function(){
@@ -668,15 +677,10 @@
       check();
       return function(){ window.removeEventListener('scroll', onScroll); if (raf) cancelAnimationFrame(raf); };
     }, []);
-    var fade = PG.reduce ? 'none' : 'background-color .2s ease, box-shadow .2s ease, backdrop-filter .2s ease, -webkit-backdrop-filter .2s ease';
     return h(M.Box, { component: 'header', sx: {
         position: 'sticky', top: 0, zIndex: 10, mx: -2, px: 2,
         pt: 'calc(env(safe-area-inset-top, 0px) + 8px)', pb: 1,
-        bgcolor: scrolled ? 'rgba(240,245,244,0.72)' : 'rgba(240,245,244,0)',
-        backdropFilter: scrolled ? 'blur(16px) saturate(180%)' : 'none',
-        WebkitBackdropFilter: scrolled ? 'blur(16px) saturate(180%)' : 'none',
-        boxShadow: scrolled ? '0 1px 0 rgba(20,30,36,0.08)' : '0 1px 0 rgba(20,30,36,0)',
-        transition: fade } }, p.children);
+        bgcolor: scrolled ? C.page : 'transparent' } }, p.children);
   }
 
   /* ---------- app ---------- */
