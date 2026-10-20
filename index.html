@@ -116,44 +116,42 @@ var DEMOS = [
     var i = v.href.lastIndexOf('/'), dir = v.href.slice(0, i + 1), stem = v.href.slice(i + 1).replace(/\.html$/, '');
     return dir + (stem === 'index' ? 'preview.webp' : 'preview-' + stem + '.webp');
   }
-  function Shot(p){
+  function Thumb(p){
     var s = R.useState(true), ok = s[0], setOk = s[1];
-    return h(M.Box, { component: 'a', href: p.href, 'aria-label': 'Open ' + p.title, tabIndex: -1,
-        sx: { display: 'block', flex: 'none', width: 104, alignSelf: 'flex-start', borderRadius: '16px', overflow: 'hidden', bgcolor: '#fff',
-          aspectRatio: '270 / 584', boxShadow: '0 0 0 1px rgba(20,30,36,0.08), 0 6px 16px rgba(16,24,40,0.10)',
-          transition: PG.reduce ? 'none' : 'transform .15s ease', '&:active': { transform: 'scale(0.98)' } } },
-      ok ? h('img', { src: p.src, alt: '', loading: 'lazy', decoding: 'async', onError: function(){ setOk(false); },
-        style: { display: 'block', width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' } }) : null);
+    if (!ok) return null;
+    return h(M.Box, { component: 'img', src: p.src, alt: '', loading: 'lazy', decoding: 'async', onError: function(){ setOk(false); },
+      sx: { display: 'block', flex: 'none', width: 56, aspectRatio: '270 / 584', objectFit: 'cover', objectPosition: 'top',
+        borderRadius: '10px', bgcolor: '#fff', mr: 1.5, boxShadow: '0 0 0 1px rgba(20,30,36,0.08), 0 2px 6px rgba(16,24,40,0.08)' } });
   }
 
-  /* Prototype card: phone screenshot of the recommended option on the left (tap opens it),
-     title / tag / description and the option rows on the right. */
   function PrototypeCard(p){
-    var d = p.d, many = d.variants.length > 1, first = d.variants[0];
-    return h(M.Card, { sx: { p: 1.5 } },
-      h(M.Stack, { direction: 'row', spacing: 1.75, alignItems: 'stretch' },
-        h(Shot, { href: first.href, src: thumbOf(first), title: d.title }),
-        h(M.Stack, { sx: { flex: 1, minWidth: 0, pt: 0.5 } },
-          h(M.Stack, { direction: 'row', spacing: 1, alignItems: 'flex-start' },
-            h(M.Typography, { variant: 'h6', component: 'h2', sx: { flex: 1, minWidth: 0 } }, d.title),
-            d.tag ? h(Tag, { label: d.tag }) : null),
-          h(M.Typography, { variant: 'body2', color: 'text.secondary', sx: { mt: 0.5 } }, d.desc),
-          h(M.Box, { sx: { flex: 1, minHeight: 12 } }),
-          h(M.Stack, { spacing: 0.75 },
-            d.variants.map(function(v, i){
-              return h(M.ListItemButton, { key: v.href, component: 'a', href: v.href,
-                  sx: { bgcolor: C.soft, py: 0.75, pl: 1.25, pr: 0.75, borderRadius: '12px', '&:hover': { bgcolor: '#eef1f3' } } },
-                h(M.ListItemText, {
-                  primary: h(M.Stack, { direction: 'row', spacing: 0.75, alignItems: 'center' },
-                    h('span', null, v.name),
-                    i === 0 && many ? h(M.Chip, { size: 'small', label: 'Recommended', color: 'primary', sx: { height: 18, fontSize: 10 } }) : null),
-                  secondary: v.note,
-                  primaryTypographyProps: { variant: 'subtitle2', component: 'div' },
-                  secondaryTypographyProps: { variant: 'caption', sx: { display: 'block', mt: 0.125 } },
-                  sx: { my: 0 }
-                }),
-                h(Icon.next, { sx: { fontSize: 20, color: 'text.secondary', ml: 0.5, flex: 'none' } }));
-            })))));
+    var d = p.d, many = d.variants.length > 1;
+    return h(M.Card, null,
+      h(M.Box, { sx: { px: 2, pt: 2, pb: 1.5 } },
+        h(M.Stack, { direction: 'row', spacing: 1.5, alignItems: 'flex-start' },
+          h(M.Box, { sx: { flex: 1, minWidth: 0 } },
+            h(M.Typography, { variant: 'h6', component: 'h2' }, d.title),
+            h(M.Typography, { variant: 'body2', color: 'text.secondary', sx: { mt: 0.5 } }, d.desc)),
+          d.tag ? h(Tag, { label: d.tag }) : null)),
+      h(M.Stack, { spacing: 1, sx: { px: 1.25, pb: 1.25 } },
+        d.variants.map(function(v, i){
+          return h(M.ListItemButton, {
+            key: v.href, component: 'a', href: v.href,
+            sx: { bgcolor: C.soft, py: 1, pl: 1, pr: 1.25, alignItems: 'center', '&:hover': { bgcolor: '#eef1f3' } }
+          },
+            h(Thumb, { src: thumbOf(v) }),
+            h(M.ListItemText, {
+              primary: h(M.Stack, { direction: 'row', spacing: 0.75, alignItems: 'center' },
+                h('span', null, v.name),
+                i === 0 && many ? h(M.Chip, { size: 'small', label: 'Recommended', color: 'primary', sx: { height: 18, fontSize: 10 } }) : null),
+              secondary: v.note,
+              primaryTypographyProps: { variant: 'subtitle2', component: 'div' },
+              secondaryTypographyProps: { variant: 'caption', sx: { display: 'block', mt: 0.25 } }
+            }),
+            h(M.Box, { sx: { ml: 1, width: 32, height: 32, borderRadius: 99, display: 'grid', placeItems: 'center',
+              bgcolor: '#fff', color: 'text.secondary', boxShadow: PG.theme.shadows[1], flex: 'none' } },
+              h(Icon.next, { sx: { fontSize: 20 } })));
+        })));
   }
 
   function MiniTag(p){
