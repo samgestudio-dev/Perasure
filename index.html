@@ -20,8 +20,8 @@
 <script src="vendor/react-dom@18.3.1/react-dom.production.min.js"></script>
 <script src="vendor/motion@14.4.0/motion-react.js"></script>
 <script src="vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
-<script src="assets/playground-ui.js?v=202610201743"></script>
-<script src="animations/animations.js?v=202610201743"></script>
+<script src="assets/playground-ui.js?v=202610201756"></script>
+<script src="animations/animations.js?v=202610201756"></script>
 <script>
 /* ---- Prototype registry (the "Prototypes" tab) -----------------------------------------
    To add a prototype: put its files in prototypes/<slug>/ and add one entry below.
@@ -124,7 +124,7 @@ var DEMOS = [
     var s = R.useState(true), ok = s[0], setOk = s[1];
     if (!ok) return null;
     return h('img', { src: p.src, alt: '', loading: 'lazy', decoding: 'async', onError: function(){ setOk(false); },
-      style: { display: 'block', flex: 'none', width: 56, aspectRatio: '270 / 584', objectFit: 'cover', objectPosition: 'top', alignSelf: 'flex-start',
+      style: { display: 'block', flex: 'none', width: 56, aspectRatio: '270 / 584', objectFit: 'cover', objectPosition: 'top', alignSelf: 'center',
         borderRadius: 10, background: '#fff', boxShadow: '0 0 0 1px rgba(20,30,36,0.08), 0 2px 6px rgba(16,24,40,0.08)' } });
   }
 

@@ -25,8 +25,8 @@
 <script src="../vendor/motion@14.4.0/motion-react.js"></script>
 <script src="../vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
 <script src="../vendor/lottie-web@5.12.2/lottie_svg.min.js"></script>
-<script src="../assets/playground-ui.js?v=202610201743"></script>
-<script src="animations.js?v=202610201743"></script>
+<script src="../assets/playground-ui.js?v=202610201756"></script>
+<script src="animations.js?v=202610201756"></script>
 <script>
 /* ---- Animation player ------------------------------------------------------------------
    One animation at a time. Each animation exists twice, pixel-matched: the Lottie JSON played
@@ -178,7 +178,9 @@
       token++; destroy();
       cur = LIST[i]; successReq = false; paused = false;
       phase = cur.success ? 'loading' : cur.intro ? 'intro' : 'once';
-      set({ index: i, renderer: renderer, loading: true, error: '', total: 0, meta: null, paused: false, phase: phase,
+      // total / meta keep the previous animation's values until the new one is loaded, so the
+      // interface changes once (animated) instead of blanking and refilling.
+      set({ index: i, renderer: renderer, loading: true, error: '', paused: false, phase: phase,
             success: cur.success ? 'idle' : 'none', dir: navDir, nav: (st.nav || 0) + (st.index !== i ? 1 : 0) });
       navDir = 0;
       syncUrl();
@@ -346,7 +348,7 @@
         h(m.span, { key: p.k,
           initial: { opacity: 0, y: p.dy == null ? 8 : p.dy, scale: 0.9 }, animate: { opacity: 1, y: 0, scale: 1 },
           exit: { opacity: 0, y: -(p.dy == null ? 8 : p.dy), scale: 0.9, transition: T.out }, transition: T.snap,
-          style: { display: 'inline-flex', alignItems: 'center', gap: p.gap == null ? 8 : p.gap, whiteSpace: 'nowrap' } }, p.children)));
+          style: { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: p.gap == null ? 8 : p.gap, whiteSpace: 'nowrap' } }, p.children)));
   }
 
   /* A card whose height follows its content with a layout spring (children counter-scaled). */
@@ -356,6 +358,11 @@
       h(m.div, { layout: 'position', transition: { layout: T.layout } },
         p.title ? h(M.Typography, { variant: 'overline', color: 'text.secondary', sx: { display: 'block', mb: 1 } }, p.title) : null,
         p.children));
+  }
+
+  /* A block inside a card that glides to its new position when something above it changes size. */
+  function Slot(p){
+    return h(m.div, { layout: 'position', transition: { layout: T.layout }, style: p.style }, p.children);
   }
 
   /* Pressable wrapper for MUI buttons (Motion tap feedback). */
@@ -513,12 +520,14 @@
       : '0 0 0 1px rgba(44,116,190,0), 0 2px 8px rgba(44,116,190,0.35)';
     var key = waiting ? 'w' : done ? 'd' : 's';
     var label = waiting ? 'Finishing…' : done ? 'Reset' : 'Show success';
-    var icon = waiting ? h(M.CircularProgress, { size: 12, thickness: 6, color: 'inherit' }) : h(done ? Icon.replay : Icon.done, { sx: { fontSize: 16 } });
+    var icon = waiting ? h(M.CircularProgress, { size: 12, thickness: 6, color: 'inherit', sx: { display: 'block' } })
+      : h(done ? Icon.replay : Icon.done, { sx: { fontSize: 16, display: 'block' } });
     return h(AP, null, show ? h(m.button, { key: 'action', type: 'button', disabled: waiting, onClick: ctl.showSuccess, onPointerDown: stop,
         layout: true, initial: { opacity: 0, scale: 0.8, y: 8 }, animate: { opacity: 1, scale: 1, y: 0, backgroundColor: bg, color: fg, boxShadow: sh },
         exit: { opacity: 0, scale: 0.8, transition: T.out }, whileTap: waiting ? undefined : TAP,
         transition: { default: T.pop, layout: T.snap, backgroundColor: T.fade, color: T.fade, boxShadow: T.fade },
         style: { position: 'absolute', right: 12, bottom: 12, zIndex: 2, height: 32, padding: '0 12px', border: 0, borderRadius: 16,
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           font: '600 13px/16px ' + FONT, cursor: waiting ? 'default' : 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' } },
       h(Swap, { k: key, gap: 6 }, icon, label)) : null);
   }
@@ -569,22 +578,43 @@
       h(StageAction, { st: st }));
   }
 
-  /* Pager: prev / next with tap feedback, dots whose active pill springs between positions. */
+  /* Pager: prev / next with spring tap feedback. Dots: every dot animates its own width and colour
+     (the old one shrinks while the new one grows), and a separate indicator stretches from the old
+     position towards the new one, then its trailing edge catches up — a liquid "worm" move.
+     All Motion springs; reduced motion snaps. */
+  var DOT = 6, DOT_ON = 18, DOT_GAP = 6;
   function Pager(p){
+    var idx = p.st.index, n = LIST.length;
+    var prev = R.useRef(idx), lead = R.useRef(idx);
+    var x0 = Mo.useMotionValue(0), x1 = Mo.useMotionValue(0);
+    function leftOf(i){ return i * (DOT + DOT_GAP); }   // left edge of dot i (inactive dots before it are DOT wide)
+    R.useLayoutEffect(function(){
+      var from = prev.current, to = idx; prev.current = idx;
+      var L = leftOf(to), R2 = leftOf(to) + DOT_ON;
+      if (PG.reduce || from === to) { x0.set(L); x1.set(R2); return; }
+      var fwd = to > from;
+      // leading edge goes first (snappy), trailing edge follows (softer) → stretch, then settle
+      var leadT = { type: 'spring', visualDuration: 0.26, bounce: 0.18 }, trailT = { type: 'spring', visualDuration: 0.42, bounce: 0.08 };
+      var c0 = Mo.animate(x0, L, fwd ? trailT : leadT), c1 = Mo.animate(x1, R2, fwd ? leadT : trailT);
+      return function(){ c0.stop(); c1.stop(); };
+    }, [idx]);
+    R.useLayoutEffect(function(){ x0.set(leftOf(idx)); x1.set(leftOf(idx) + DOT_ON); }, []);
+    var width = Mo.useTransform(function(){ return Math.max(DOT, x1.get() - x0.get()); });
     function nav(label, icon, d){
       return h(m.button, { type: 'button', 'aria-label': label, onClick: function(){ ctl.go(d); }, whileTap: { scale: 0.9 }, transition: T.snap,
         style: { width: 40, height: 40, border: 0, padding: 0, borderRadius: 20, background: '#fff', boxShadow: SHADOW2, color: C.ink,
-          display: 'grid', placeItems: 'center', cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' } }, h(icon, null));
+          display: 'grid', placeItems: 'center', cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' } },
+        h(m.span, { key: idx, initial: { x: d * -4, opacity: 0.6 }, animate: { x: 0, opacity: 1 }, transition: T.snap, style: { display: 'grid' } }, h(icon, null)));
     }
     return h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 12 } },
       nav('Previous animation', Icon.back, -1),
-      h('div', { 'aria-hidden': 'true', style: { display: 'flex', gap: 6, alignItems: 'center' } },
+      h('div', { 'aria-hidden': 'true', style: { position: 'relative', display: 'flex', gap: DOT_GAP, alignItems: 'center', height: DOT } },
         LIST.map(function(a, i){
-          var on = i === p.st.index;
-          return h('span', { key: a.slug, style: { position: 'relative', width: on ? 18 : 6, height: 6 } },
-            h('span', { style: { position: 'absolute', inset: 0, borderRadius: 3, background: '#c9d1d5' } }),
-            on ? h(m.span, { layoutId: 'pager-dot', transition: T.ui, style: { position: 'absolute', inset: 0, borderRadius: 3, background: C.blue } }) : null);
-        })),
+          var on = i === idx;
+          return h(m.span, { key: a.slug, initial: false, animate: { width: on ? DOT_ON : DOT, backgroundColor: on ? 'rgba(201,209,213,0)' : 'rgba(201,209,213,1)' },
+            transition: { width: T.ui, backgroundColor: T.fade }, style: { display: 'block', height: DOT, borderRadius: DOT / 2 } });
+        }),
+        h(m.span, { style: { position: 'absolute', top: 0, left: 0, height: DOT, borderRadius: DOT / 2, background: C.blue, x: x0, width: width } })),
       nav('Next animation', Icon.next, 1));
   }
 
@@ -600,8 +630,16 @@
     var bar = R.useRef(null), thumb = R.useRef(null), num = R.useRef(null), drag = R.useRef(null);
     var segs = entry.success ? [['loading', 'Loading'], ['success', 'Success']] : entry.intro ? [['intro', 'Intro'], ['loop', 'Loop']] : null;
     var rg = R.useState(0), region = rg[0], setRegion = rg[1], regionRef = R.useRef(0);
-    var total = st.total || 0;
-    function regionOf(f){ return entry.success ? (ctl.getState().success === 'done' ? 1 : 0) : (entry.intro && f >= entry.intro[1] - 0.001 ? 1 : 0); }
+    // Keep the last known total while the next animation loads (no blank "/ 0" flash).
+    var lastTotal = R.useRef(0); if (st.total) lastTotal.current = st.total;
+    var total = st.total || lastTotal.current || 0;
+    // While the next animation loads, keep the current highlight (the frame still belongs to the
+    // previous animation); decide once the new one is ready.
+    function regionOf(f){
+      var s2 = ctl.getState();
+      if (s2.loading) return regionRef.current;
+      return entry.success ? (s2.success === 'done' ? 1 : 0) : (entry.intro && f >= entry.intro[1] - 0.001 ? 1 : 0);
+    }
     function paint(f){
       var t = st.total || 0, x = t ? Math.max(0, Math.min(1, f / t)) : 0;
       if (thumb.current) thumb.current.style.left = (x * 100) + '%';
@@ -610,16 +648,19 @@
       if (segs) { var n = regionOf(f); if (n !== regionRef.current) { regionRef.current = n; setRegion(n); } }
     }
     R.useLayoutEffect(function(){
-      regionRef.current = regionOf(ctl.getFrame()); setRegion(regionRef.current);
+      var n = regionOf(ctl.getFrame()); if (n !== regionRef.current) { regionRef.current = n; setRegion(n); }
       paint(ctl.getFrame());
       return ctl.subscribeFrame(function(){ paint(ctl.getFrame()); });
-    }, [st.total, st.success, entry.slug]);
+    }, [st.total, st.success, st.loading, entry.slug]);
     function frameAt(clientX){
       var r = bar.current.getBoundingClientRect();
       return Math.max(0, Math.min(1, (clientX - r.left) / r.width)) * (st.total || 0);
     }
-    var hasRegions = entry.intro && entry.loop && st.success === 'none' && total;
-    var cut = hasRegions ? (entry.intro[1] / total * 100) + '%' : null;
+    // Decided from the animation's settings (known immediately), not from loaded data, so the legend
+    // stays put across switches and only animates when it really appears / disappears.
+    var hasRegions = !!(entry.intro && entry.loop && !entry.success);
+    var cutTotal = entry.loop ? entry.loop[1] : total;
+    var cut = hasRegions ? (entry.intro[1] / cutTotal * 100) + '%' : null;
     var rail = hasRegions
       ? 'linear-gradient(90deg,' + C.blue200 + ' 0,' + C.blue200 + ' ' + cut + ',' + C.blue + ' ' + cut + ',' + C.blue + ' 100%)'
       : C.blue100;
@@ -627,28 +668,39 @@
     var key = st.paused ? ((st.phase === 'once' || st.phase === 'success') && total && f0 >= total - 1 ? 'done' : 'paused') : st.phase;
     var ph = PHASE[key] || PHASE.paused;
     return h(R.Fragment, null,
-      h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between' } },
-        segs
-          ? h('div', { role: 'group', 'aria-label': 'Jump to', style: { position: 'relative', display: 'inline-flex', padding: 3, borderRadius: 99,
-                background: C.soft, boxShadow: 'inset 0 0 0 1px ' + C.line } },
-              segs.map(function(sg, k){
-                var on = k === region;
-                return h(m.button, { key: sg[0], type: 'button', 'aria-pressed': on ? 'true' : 'false', onClick: function(){ ctl.jumpTo(sg[0]); },
-                    whileTap: TAP, transition: T.snap,
-                    style: { position: 'relative', width: SEG_PILL, height: 26, border: 0, padding: 0, borderRadius: 99, background: 'transparent',
-                      font: '600 12px/16px ' + FONT, cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' } },
-                  on ? h(m.span, { layoutId: 'jump-pill-' + entry.slug, initial: false, animate: { backgroundColor: st.paused ? '#8e989e' : C.blue },
-                    transition: { layout: T.snap, backgroundColor: T.fade },
-                    style: { position: 'absolute', inset: 0, borderRadius: 99 } }) : null,
-                  h(m.span, { animate: { color: on ? '#ffffff' : C.sub }, transition: T.fade, style: { position: 'relative' } }, sg[1]));
-              }))
-          : h(m.div, { layout: true, transition: { layout: T.snap }, style: { display: 'inline-flex', alignItems: 'center', gap: 6, height: 26, padding: '0 10px', borderRadius: 13,
-                background: C.soft, boxShadow: 'inset 0 0 0 1px ' + C.line, font: '600 12px/16px ' + FONT, color: C.ink } },
-              h(m.span, { animate: { backgroundColor: ph.dot }, transition: T.fade, style: { width: 8, height: 8, borderRadius: 4 } }),
-              h(Swap, { k: ph.label, dy: 6, gap: 0 }, ph.label)),
-        h(M.Typography, { variant: 'caption', color: 'text.secondary', sx: { fontVariantNumeric: 'tabular-nums' } },
-          'Frame ', h('b', { ref: num, style: { color: C.ink, fontWeight: 600 } }, '0'), ' / ' + Math.round(total))),
-      h('div', {
+      h(Slot, { style: { position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between' } },
+        /* Status control. Two-option pills (Intro / Loop, Loading / Success) keep one shape: labels
+           slide-swap and the shared highlight glides; switching to / from the single status chip
+           (one-shots) crossfades with a small scale, and the frame counter glides to make room. */
+        h(AP, { mode: 'popLayout', initial: false },
+          segs
+            ? h(m.div, { key: 'seg', role: 'group', 'aria-label': 'Jump to', layout: true,
+                  initial: { opacity: 0, scale: 0.9 }, animate: { opacity: 1, scale: 1 }, exit: { opacity: 0, scale: 0.9, transition: T.out },
+                  transition: { default: T.pop, layout: T.snap },
+                  style: { position: 'relative', display: 'inline-flex', padding: 3, borderRadius: 99, background: C.soft, boxShadow: 'inset 0 0 0 1px ' + C.line, transformOrigin: 'left center' } },
+                segs.map(function(sg, k){
+                  var on = k === region;
+                  return h(m.button, { key: 'seg' + k, type: 'button', 'aria-pressed': on ? 'true' : 'false', 'aria-label': sg[1], onClick: function(){ ctl.jumpTo(sg[0]); },
+                      whileTap: TAP, transition: T.snap,
+                      style: { position: 'relative', width: SEG_PILL, height: 26, border: 0, padding: 0, borderRadius: 99, background: 'transparent',
+                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                        font: '600 12px/16px ' + FONT, cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' } },
+                    on ? h(m.span, { layoutId: 'jump-pill', initial: false, animate: { backgroundColor: st.paused ? '#8e989e' : C.blue },
+                      transition: { layout: T.snap, backgroundColor: T.fade },
+                      style: { position: 'absolute', inset: 0, borderRadius: 99 } }) : null,
+                    h(m.span, { animate: { color: on ? '#ffffff' : C.sub }, transition: T.fade, style: { position: 'relative', display: 'inline-flex' } },
+                      h(Swap, { k: sg[1], dy: 6, gap: 0 }, sg[1])));
+                }))
+            : h(m.div, { key: 'chip', layout: true,
+                  initial: { opacity: 0, scale: 0.9 }, animate: { opacity: 1, scale: 1 }, exit: { opacity: 0, scale: 0.9, transition: T.out },
+                  transition: { default: T.pop, layout: T.snap },
+                  style: { display: 'inline-flex', alignItems: 'center', gap: 6, height: 26, padding: '0 10px', borderRadius: 13, transformOrigin: 'left center',
+                    background: C.soft, boxShadow: 'inset 0 0 0 1px ' + C.line, font: '600 12px/16px ' + FONT, color: C.ink } },
+                h(m.span, { animate: { backgroundColor: ph.dot }, transition: T.fade, style: { width: 8, height: 8, borderRadius: 4 } }),
+                h(Swap, { k: ph.label, dy: 6, gap: 0 }, ph.label))),
+        h(m.div, { layout: 'position', transition: { layout: T.snap } }, h(M.Typography, { variant: 'caption', color: 'text.secondary', component: 'div', sx: { fontVariantNumeric: 'tabular-nums', display: 'flex', alignItems: 'center', gap: '3px' } },
+          'Frame ', h('b', { ref: num, style: { color: C.ink, fontWeight: 600 } }, '0'), ' / ', h(Swap, { k: 't' + Math.round(total), dy: 6, gap: 0 }, Math.round(total))))),
+      h(Slot, null, h('div', {
         ref: bar, role: 'slider', tabIndex: 0, 'aria-label': 'Scrub frames', 'aria-valuemin': 0, 'aria-valuemax': Math.round(total),
         onPointerDown: function(e){
           if (!st.total) return;
@@ -672,10 +724,11 @@
         h('div', { style: { position: 'absolute', left: 0, right: 0, top: 15, height: 6, borderRadius: 3, background: rail } }),
         cut ? h('div', { style: { position: 'absolute', left: cut, top: 13, width: 2, height: 10, marginLeft: -1, borderRadius: 1, background: '#fff' } }) : null,
         h('div', { ref: thumb, style: { position: 'absolute', top: 7, left: '0%', width: 22, height: 22, marginLeft: -11, borderRadius: 11,
-          background: '#fff', boxShadow: '0 0 0 1.5px ' + C.blue + ', 0 2px 6px rgba(0,1,40,0.18)', pointerEvents: 'none' } })),
+          background: '#fff', boxShadow: '0 0 0 1.5px ' + C.blue + ', 0 2px 6px rgba(0,1,40,0.18)', pointerEvents: 'none' } }))),
       h(AP, { initial: false }, hasRegions
-        ? h(m.div, { key: 'legend', initial: { opacity: 0, height: 0 }, animate: { opacity: 1, height: 'auto' }, exit: { opacity: 0, height: 0, transition: T.out },
-              transition: T.ui, style: { overflow: 'hidden' } },
+        ? h(m.div, { key: 'legend', layout: 'position', initial: { opacity: 0, height: 0 }, animate: { opacity: 1, height: 'auto' },
+              exit: { opacity: 0, height: 0, transition: { opacity: T.out, height: T.layout } },
+              transition: { opacity: T.fade, height: T.layout, layout: T.layout }, style: { overflow: 'hidden' } },
             h(M.Stack, { direction: 'row', spacing: 2, sx: { mt: 0.25 } },
               [['Intro · plays once', C.blue200], ['Loop', C.blue]].map(function(x){
                 return h(M.Stack, { key: x[0], direction: 'row', spacing: 0.75, alignItems: 'center' },
@@ -689,13 +742,15 @@
     var st = p.st, entry = p.entry;
     return h(SectionCard, { style: { marginTop: 16 } },
       h(Timeline, { st: st, entry: entry }),
-      h('div', { style: { display: 'flex', gap: 8, marginTop: 16 } },
-        h(Press, { style: { flex: 1 } },
+      // Fixed proportions (grid, not content-sized flex): Replay and speed equal, Play / Pause widest,
+      // so a label change never nudges the widths.
+      h(Slot, { style: { display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1.4fr) minmax(0,1fr)', gap: 8, marginTop: 16 } },
+        h(Press, { style: {} },
           h(M.Button, { fullWidth: true, variant: 'outlined', size: 'large', onClick: ctl.replay, startIcon: h(Icon.replay, null) }, 'Replay')),
-        h(Press, { style: { flex: 1.35 } },
+        h(Press, { style: {} },
           h(M.Button, { fullWidth: true, variant: 'contained', size: 'large', onClick: ctl.togglePlay, 'aria-label': st.paused ? 'Play' : 'Pause' },
             h(Swap, { k: st.paused ? 'play' : 'pause' }, h(st.paused ? Icon.play : Icon.pause, { sx: { fontSize: 20 } }), st.paused ? 'Play' : 'Pause'))),
-        h(Press, { style: { flex: 1 } },
+        h(Press, { style: {} },
           h(M.Button, { fullWidth: true, variant: 'outlined', size: 'large', onClick: ctl.cycleSpeed, 'aria-label': 'Playback speed',
               startIcon: h(Icon.speed, null), sx: { fontVariantNumeric: 'tabular-nums' } },
             h(Swap, { k: 's' + st.speedIx, dy: 10 }, SPEEDS[st.speedIx] + '×')))));
@@ -704,20 +759,20 @@
   function DetailsCard(p){
     var st = p.st, e = p.entry, mt = st.meta, base = e.slug + '/', gs = st.renderer === 'gsap' && e.gsap;
     function row(k, v){
-      return h('div', { key: k, style: { display: 'flex', justifyContent: 'space-between', gap: 16, padding: '6px 0' } },
+      return h(m.div, { key: k, layout: 'position', transition: { layout: T.layout }, style: { display: 'flex', justifyContent: 'space-between', gap: 16, padding: '6px 0' } },
         h(M.Typography, { variant: 'body2', color: 'text.secondary' }, k),
         h(M.Typography, { variant: 'body2', component: 'div', sx: { fontWeight: 500, textAlign: 'right' } }, h(Swap, { k: k + ':' + v, dy: 6, gap: 0 }, v)));
     }
     var playback = e.success ? 'Loading loops → success once' : e.intro ? 'Intro ' + e.intro[0] + '–' + e.intro[1] + ' → loop ' + e.loop[0] + '–' + e.loop[1] : 'Plays once, holds the last frame';
     var files = gs ? [e.gsap].concat(e.gsapSuccess ? [e.gsapSuccess] : []) : [e.json].concat(e.success ? [e.success] : [], e.lottie ? [e.lottie] : []);
     return h(SectionCard, { title: 'Details' },
-      h(M.Box, { sx: { '& > * + *': { borderTop: '1px solid ' + C.line } } },
+      h(Slot, { style: {} }, h(M.Box, { sx: { '& > * + *': { borderTop: '1px solid ' + C.line } } },
         row('Canvas', mt ? mt.w + ' × ' + mt.h : '—'),
         row('Frame rate', mt ? (Math.round(mt.fps * 100) / 100) + ' fps' : '—'),
         row('Renderer', mt ? mt.label : '—'),
-        row('Playback', playback)),
-      h(M.Typography, { variant: 'caption', color: 'text.secondary', sx: { display: 'block', mt: 1.5, mb: 1 } }, 'Files'),
-      h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 8 } },
+        row('Playback', playback))),
+      h(Slot, null, h(M.Typography, { variant: 'caption', color: 'text.secondary', sx: { display: 'block', mt: 1.5, mb: 1 } }, 'Files')),
+      h(Slot, { style: { display: 'flex', flexWrap: 'wrap', gap: 8 } },
         h(AP, { mode: 'popLayout', initial: false },
           files.map(function(f){
             return h(m.div, { key: base + f, layout: true, initial: { opacity: 0, scale: 0.9 }, animate: { opacity: 1, scale: 1 }, exit: { opacity: 0, scale: 0.9, transition: T.out },
