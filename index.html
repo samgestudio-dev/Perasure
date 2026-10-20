@@ -55,7 +55,7 @@
 
   <section class="list" id="list" aria-label="Demos"></section>
 
-  <footer>Best viewed on a phone. On desktop each demo shows as a single 360px column.</footer>
+  <footer>Best viewed on a phone.</footer>
 </main>
 
 <script>
@@ -63,6 +63,38 @@
    To add a demo: put its files in demos/<slug>/ and add one entry below.
    The first variant is the recommended one. */
 var DEMOS = [
+  {
+    title: 'Loading page',
+    tag: 'Loading',
+    desc: 'Full-screen loading state: the PeraSure coin with the animated dots.',
+    variants: [
+      { name: 'Standard', note: 'Plays on open', href: 'demos/loading-page/index.html' }
+    ]
+  },
+  {
+    title: 'OTP sheet morph',
+    tag: 'Loan',
+    desc: 'Loan confirmation → “Verify it’s you” sheet morphs into code entry, with the digits filling in.',
+    variants: [
+      { name: 'Standard', note: 'Tap “Get verification code” to start', href: 'demos/otp-sheet-morph/index.html' }
+    ]
+  },
+  {
+    title: 'Order submit',
+    tag: 'Loan',
+    desc: '“Confirming your loan details…” loader with the per-letter text animation.',
+    variants: [
+      { name: 'Standard', note: 'Tap anywhere to replay', href: 'demos/order-submit/index.html' }
+    ]
+  },
+  {
+    title: 'Landing page',
+    tag: 'Website',
+    desc: 'PeraSure marketing site — hero and scroll motion. A full website, not a phone screen.',
+    variants: [
+      { name: 'Standard', note: 'Large file (about 15 MB), give it a moment to load', href: 'demos/landing-page/index.html' }
+    ]
+  },
   {
     title: 'Withdraw fund flow',
     tag: 'Loan',

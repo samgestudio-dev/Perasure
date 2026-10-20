@@ -8,6 +8,10 @@ Phone-first motion prototypes, served with GitHub Pages.
 
 | Demo | Variants |
 | --- | --- |
+| Loading page | [Standard](demos/loading-page/index.html) |
+| OTP sheet morph | [Standard](demos/otp-sheet-morph/index.html) |
+| Order submit | [Standard](demos/order-submit/index.html) |
+| Landing page (website) | [Standard](demos/landing-page/index.html) |
 | Withdraw fund flow | [Standard](demos/withdraw-fund-flow/index.html) (no gradient blur) · [With gradient blur](demos/withdraw-fund-flow/with-blur.html) |
 
 ## Adding a demo
