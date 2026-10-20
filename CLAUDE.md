@@ -68,6 +68,9 @@ implementation (`demos/withdraw-fund-flow/index.html`, see the comments in its h
 - iOS Safari 26+ (floating toolbar): `viewport-fit=cover`, extend the top/bottom bars behind the status bar
   and search bar; bottom nav / primary button sits 24px above the search bar. `?debug=1` on the withdraw
   demo shows the measured insets.
+- iOS Safari 26+ tints the status bar and toolbar from `position:fixed` layers that reach the screen edges.
+  Don't leave a coloured fixed overlay (scrim, backdrop) in the page, even at `opacity:0`: use
+  `display:none` when closed, and give tap-outside catchers no background.
 - Motion: prefer Framer Motion with `LazyMotion` + `m` (strict), drive continuous values with motion values
   instead of React state, animate only `transform` / `opacity` where possible, and respect
   `prefers-reduced-motion`.

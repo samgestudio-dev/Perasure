@@ -35,12 +35,14 @@
   .menu-btn[aria-expanded="true"]{background:var(--blue-50);color:var(--blue)}
 
   /* animation list: a dropdown panel under the menu button, not full screen */
-  .scrim{position:fixed;inset:0;z-index:20;background:rgba(20,30,36,.12);opacity:0;pointer-events:none;transition:opacity .18s ease}
-  .scrim.open{opacity:1;pointer-events:auto}
+  /* Tap-outside catcher. No background and display:none while closed: iOS Safari 26 tints its
+     status bar / toolbar from fixed full-screen layers, so a colour here turns the bars solid. */
+  .scrim{position:fixed;inset:0;z-index:20;display:none;background:transparent}
+  .scrim.open{display:block}
   .menu{position:absolute;z-index:21;top:46px;right:0;width:min(320px,calc(100vw - 32px));
     max-height:min(60vh,520px);overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
     background:var(--card);border-radius:20px;padding:6px;
-    box-shadow:0 0 2px rgba(0,1,40,.16),0 12px 32px rgba(0,1,40,.16);
+    box-shadow:0 0 2px rgba(0,1,40,.16),0 16px 40px rgba(0,1,40,.22);
     transform-origin:top right;opacity:0;transform:translateY(-6px) scale(.97);pointer-events:none;visibility:hidden;
     transition:opacity .16s ease,transform .2s cubic-bezier(.2,.8,.2,1),visibility 0s linear .2s}
   .menu.open{opacity:1;transform:none;pointer-events:auto;visibility:visible;transition:opacity .16s ease,transform .2s cubic-bezier(.2,.8,.2,1)}
@@ -58,15 +60,15 @@
   .item[aria-current="true"] .ck{visibility:visible}
 
   /* title row with prev / next */
-  .head{display:flex;align-items:center;gap:8px;margin-top:4px}
+  .head{display:flex;align-items:center;gap:8px;margin-top:12px}
   .head h1{flex:1;min-width:0;text-align:center;font-size:20px;line-height:26px;font-weight:700;letter-spacing:-.01em}
   .nav{flex:none;width:40px;height:40px;border-radius:999px;display:grid;place-items:center;background:var(--card);
     box-shadow:0 0 2px rgba(0,1,40,.16),0 2px 8px rgba(0,1,40,.06);transition:transform .12s ease}
   .nav:active{transform:scale(.92)}
-  .desc{margin-top:6px;text-align:center;font-size:13px;line-height:18px;color:var(--sub);min-height:36px}
+  .desc{margin-top:8px;text-align:center;font-size:13px;line-height:18px;color:var(--sub);min-height:36px}
 
   /* stage */
-  .stage{position:relative;margin-top:14px;aspect-ratio:1/1;width:100%;border-radius:24px;overflow:hidden;
+  .stage{position:relative;margin-top:28px;aspect-ratio:1/1;width:100%;border-radius:24px;overflow:hidden;
     background:var(--stage,#fff);box-shadow:0 0 2px rgba(0,1,40,.16),0 4px 12px rgba(0,1,40,.08);
     touch-action:pan-y;transition:background-color .2s ease}
   .stage[data-bg="grid"]{background-color:#fff;
@@ -124,7 +126,7 @@
   .files{margin-top:6px;display:flex;flex-wrap:wrap;gap:4px 14px}
   .files a{color:var(--blue);font-weight:600;text-decoration:none}
 
-  @media (prefers-reduced-motion: reduce){.btn,.nav,.stage,.menu,.menu.open,.scrim,.menu-btn{transition:none}}
+  @media (prefers-reduced-motion: reduce){.btn,.nav,.stage,.menu,.menu.open,.menu-btn{transition:none}}
 </style>
 </head>
 <body>
