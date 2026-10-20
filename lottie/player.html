@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f0f5f4">
 <title>Lottie · PeraSure</title>
+<!-- GSAP modules import "gsap" as a package; map it to the vendored ES build (no build step). -->
+<script type="importmap">{"imports":{"gsap":"../vendor/gsap@3.15.0/esm/index.js","gsap/":"../vendor/gsap@3.15.0/esm/","gsap/MotionPathPlugin":"../vendor/gsap@3.15.0/esm/MotionPathPlugin.js"}}</script>
 <style>
   :root{
     --bg:#f0f5f4; --card:#ffffff; --ink:#141e24; --sub:#6a757d; --mute:#97a0a6;
@@ -77,8 +79,14 @@
   .nav:active{transform:scale(.92)}
   .desc{margin-top:6px;text-align:center;font-size:13px;line-height:18px;color:var(--sub);min-height:36px}
 
+  /* renderer tabs */
+  .seg{margin:18px auto 0;width:200px;display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:3px;border-radius:12px;background:#e3eaea}
+  .seg-b{height:32px;border-radius:9px;font-size:13px;line-height:18px;font-weight:600;color:var(--sub);transition:background-color .15s ease,color .15s ease}
+  .seg-b[aria-selected="true"]{background:var(--card);color:var(--ink);box-shadow:0 0 2px rgba(0,1,40,.12),0 2px 6px rgba(0,1,40,.06)}
+  .seg-b[disabled]{opacity:.4}
+
   /* stage */
-  .stage{position:relative;margin-top:28px;aspect-ratio:1/1;width:100%;border-radius:24px;overflow:hidden;
+  .stage{position:relative;margin-top:16px;aspect-ratio:1/1;width:100%;border-radius:24px;overflow:hidden;
     background:var(--stage,#fff);box-shadow:0 0 2px rgba(0,1,40,.16),0 4px 12px rgba(0,1,40,.08);
     touch-action:pan-y;transition:background-color .2s ease}
   .stage[data-bg="grid"]{background-color:#fff;
@@ -136,7 +144,7 @@
   .files{margin-top:6px;display:flex;flex-wrap:wrap;gap:4px 14px}
   .files a{color:var(--blue);font-weight:600;text-decoration:none}
 
-  @media (prefers-reduced-motion: reduce){.btn,.nav,.stage,.menu,.menu.open,.menu-btn,.dots i{transition:none}}
+  @media (prefers-reduced-motion: reduce){.btn,.nav,.stage,.menu,.menu.open,.menu-btn,.dots i,.seg-b{transition:none}}
 </style>
 </head>
 <body>
@@ -159,6 +167,11 @@
     <h1 id="title"></h1>
   </div>
   <p class="desc" id="desc"></p>
+
+  <div class="seg" role="tablist" aria-label="Renderer">
+    <button class="seg-b" role="tab" id="r-lottie" aria-selected="true">Lottie</button>
+    <button class="seg-b" role="tab" id="r-gsap" aria-selected="false">GSAP</button>
+  </div>
 
   <div class="stage" id="stage" data-bg="white" aria-label="Animation (swipe for the next one)">
     <div class="anim" id="animA"></div>
@@ -214,11 +227,13 @@
 <script src="../vendor/lottie-web@5.12.2/lottie_svg.min.js"></script>
 <script src="animations.js"></script>
 <script>
-/* ---- Lottie player -------------------------------------------------------------------
-   One animation at a time, rendered with lottie-web (SVG renderer — the renderer the
-   delivery package was checked against). Animations with intro/loop play the intro
-   once, then loop the loop segment, exactly as the hand-off README specifies.
-   ?a=<slug> picks the animation; prev/next, swipe on the stage and ←/→ switch it. */
+/* ---- Lottie / GSAP player --------------------------------------------------------------
+   One animation at a time. Each animation exists twice, pixel-matched: the Lottie JSON played
+   by lottie-web (SVG renderer) and a GSAP module (inline SVG + one timeline). The tab above the
+   stage picks the renderer; both are driven through the same small "engine" interface, so the
+   playback rules (intro once → loop, one-shot holds, coin loading → success), the scrubber,
+   speed and replay behave identically. Switching tabs keeps the current frame.
+   ?a=<slug> picks the animation, ?r=gsap the renderer; prev/next, swipe and ←/→ switch it. */
 (function(){
   var LIST = window.LOTTIES || [];
   var $ = function(id){ return document.getElementById(id); };
@@ -226,13 +241,89 @@
   var scrub = $('scrub'), btnPlay = $('play'), btnSpeed = $('speed'), btnSuccess = $('success');
   var SPEEDS = [1, 0.5, 0.25, 2];
 
-  var cur = null;       // registry entry
-  var A = null, B = null, active = null;   // lottie instances (B = success part of coin)
-  var phase = 'intro';  // intro | tail | loop | once | loading | success
+  var cur = null;                      // registry entry
+  var renderer = 'lottie';             // 'lottie' | 'gsap'
+  var A = null, B = null, active = null;   // engines (B = success part of the coin)
+  var phase = 'intro';                 // intro | tail | loop | once | loading | success
   var paused = false, scrubbing = false, wasPlaying = false, speedIx = 0, token = 0;
   var successReq = false;
 
   function store(k, v){ try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+  function noop(){}
+
+  /* ---------- engines ----------------------------------------------------------------
+     ready (Promise) · total · fps · w · h · label · frame() · seek(f) · play(a, b, done)
+     loop(a, b) · finish(done): end the current pass, then done · pause() · resume()
+     setSpeed(s) · destroy() · onFrame (callback, set by the player) */
+  function lottieEngine(box, path){
+    var e = { onFrame: noop, label: 'lottie-web ' + (lottie.version || '') + ' · SVG' }, done = null;
+    var a = lottie.loadAnimation({
+      container: box, renderer: 'svg', loop: false, autoplay: false, path: path,
+      rendererSettings: { preserveAspectRatio: 'xMidYMid meet', progressiveLoad: false, hideOnTransparent: true }
+    });
+    e.ready = new Promise(function(res, rej){
+      a.addEventListener('DOMLoaded', function(){
+        var d = a.animationData; e.total = d.op - d.ip; e.fps = d.fr; e.w = d.w; e.h = d.h; res(e);
+      });
+      a.addEventListener('data_failed', function(){ rej(new Error('Couldn’t load ' + path)); });
+    });
+    a.addEventListener('enterFrame', function(){ e.onFrame(); });
+    a.addEventListener('complete', function(){ var d = done; done = null; if (d) d(); });
+    e.frame = function(){ return a.firstFrame + a.currentFrame; };
+    e.seek = function(f){ done = null; a.loop = false; a.resetSegments(true); a.goToAndStop(f, true); e.onFrame(); };
+    e.play = function(s, t, cb){ done = cb || null; a.loop = false; a.playSegments([s, t], true); };
+    e.loop = function(s, t){ done = null; a.loop = true; a.playSegments([s, t], true); };
+    e.finish = function(cb){ done = cb; a.loop = false; if (a.isPaused) a.play(); };
+    e.pause = function(){ a.pause(); };
+    e.resume = function(){ a.play(); };
+    e.setSpeed = function(s){ a.setSpeed(s); };
+    e.destroy = function(){ done = null; a.destroy(); };
+    return e;
+  }
+
+  function gsapEngine(box, url){
+    var e = { onFrame: noop }, api = null, tl = null, F = 1, drv = null, end = 0, speed = 1, dead = false;
+    function upd(){ e.onFrame(); }
+    function kill(){ if (drv) { drv.kill(); drv = null; } }
+    function drive(s, t, vars){
+      kill(); end = t;
+      vars.onUpdate = upd;
+      drv = tl.tweenFromTo(s * F, t * F, vars);
+      drv.timeScale(speed);
+    }
+    e.ready = Promise.all([import(url), import('gsap')]).then(function(r){
+      var m = r[0], g = r[1].gsap || r[1].default;
+      if (dead) throw new Error('cancelled');
+      var create = Object.keys(m).filter(function(k){ return /^create/.test(k) && typeof m[k] === 'function'; })[0];
+      api = m[create](box, { autoplay: false });
+      tl = api.timeline; e.fps = m.FPS; e.total = m.FRAMES; F = 1 / m.FPS;
+      var vb = api.svg.viewBox && api.svg.viewBox.baseVal; e.w = vb ? vb.width : 0; e.h = vb ? vb.height : 0;
+      e.label = 'GSAP ' + (g && g.version || '') + ' · inline SVG';
+      return e;
+    });
+    e.frame = function(){ return tl ? tl.time() * e.fps : 0; };
+    e.seek = function(f){ kill(); tl.seek(f * F, false); e.onFrame(); };
+    e.play = function(s, t, cb){ drive(s, t, { onComplete: function(){ drv = null; if (cb) cb(); } }); };
+    e.loop = function(s, t){ drive(s, t, { repeat: -1 }); };
+    e.finish = function(cb){
+      var from = e.frame();
+      if (end - from < 0.01) { kill(); if (cb) cb(); return; }
+      drive(from, end, { onComplete: function(){ drv = null; if (cb) cb(); } });
+    };
+    e.pause = function(){ if (drv) drv.pause(); };
+    e.resume = function(){ if (drv) drv.resume(); };
+    e.setSpeed = function(s){ speed = s; if (drv) drv.timeScale(s); };
+    e.destroy = function(){ dead = true; kill(); if (api) api.destroy(); };
+    return e;
+  }
+
+  function hasGsap(entry){ return !!entry.gsap; }
+  function engineFor(box, entry, part){
+    var base = entry.slug + '/';
+    if (renderer === 'gsap' && hasGsap(entry))
+      return gsapEngine(box, './' + base + (part === 'success' ? entry.gsapSuccess : entry.gsap));
+    return lottieEngine(box, base + (part === 'success' ? entry.success : entry.json));
+  }
 
   /* ---------- selection ---------- */
   function indexOf(slug){ for (var i = 0; i < LIST.length; i++) if (LIST[i].slug === slug) return i; return -1; }
@@ -240,7 +331,13 @@
     var i = (indexOf(cur.slug) + delta + LIST.length) % LIST.length;
     open(LIST[i]);
   }
-  function open(entry){
+  function syncUrl(){
+    try {
+      history.replaceState(null, '', '?a=' + encodeURIComponent(cur.slug) + (renderer === 'gsap' ? '&r=gsap' : '') + location.hash);
+    } catch (e) {}
+  }
+  // resume: { frame, paused } to continue where the other renderer was
+  function open(entry, resume){
     cur = entry; token++;
     destroy();
     var i = indexOf(entry.slug);
@@ -251,37 +348,31 @@
     if (dots.children.length !== LIST.length) dots.innerHTML = new Array(LIST.length + 1).join('<i></i>');
     for (var k = 0; k < dots.children.length; k++) dots.children[k].className = k === i ? 'on' : '';
     dots.parentNode.classList.toggle('many', LIST.length > 12);
-    document.title = entry.title + ' · Lottie · PeraSure';
-    markCurrent();
-    try { history.replaceState(null, '', '?a=' + encodeURIComponent(entry.slug) + location.hash); } catch (e) {}
+    document.title = entry.title + ' · ' + (renderer === 'gsap' ? 'GSAP' : 'Lottie') + ' · PeraSure';
+    markCurrent(); markTabs(); syncUrl();
     stage.style.setProperty('--scale', entry.scale || 1);
     btnSuccess.hidden = !entry.success;
+    btnSuccess.textContent = 'Show success'; btnSuccess.disabled = false;
     $('legend').style.visibility = entry.intro ? 'visible' : 'hidden';
     msg.textContent = 'Loading…'; msg.hidden = false;
     successReq = false; paused = false;
     renderSpecPending();
 
-    var base = entry.slug + '/';
     var my = token;
-    A = load(boxA, base + entry.json, !!entry.success);
-    active = A;
-    if (entry.success) { B = load(boxB, base + entry.success, false); boxB.hidden = true; }
-    A.addEventListener('DOMLoaded', function(){ if (my !== token) return; msg.hidden = true; renderSpec(); start(0); });
-    A.addEventListener('data_failed', function(){ if (my !== token) return; msg.textContent = 'Couldn’t load ' + entry.json; msg.hidden = false; });
-    A.addEventListener('enterFrame', function(){ if (active === A) ui(); });
-    A.addEventListener('complete', onCompleteA);
-    if (B) {
-      B.addEventListener('enterFrame', function(){ if (active === B) ui(); });
-      B.addEventListener('complete', function(){ if (active === B) { paused = true; ui(); } });
-    }
-  }
-  function load(box, path, loop){
-    var a = lottie.loadAnimation({
-      container: box, renderer: 'svg', loop: loop, autoplay: false, path: path,
-      rendererSettings: { preserveAspectRatio: 'xMidYMid meet', progressiveLoad: false, hideOnTransparent: true }
+    A = engineFor(boxA, entry, 'main'); active = A;
+    if (entry.success) { B = engineFor(boxB, entry, 'success'); boxB.hidden = true; }
+    [A, B].forEach(function(e){ if (e) { e.onFrame = function(){ if (active === e && my === token) ui(); }; e.setSpeed(SPEEDS[speedIx]); } });
+    Promise.all([A.ready, B ? B.ready : null]).then(function(){
+      if (my !== token) return;
+      msg.hidden = true; renderSpec();
+      if (B) B.seek(0);
+      var f = resume ? Math.max(0, Math.min(resume.frame, A.total - 0.01)) : 0;
+      if (resume && resume.paused) { A.seek(f); paused = true; ui(); }
+      else start(f);
+    }, function(err){
+      if (my !== token) return;
+      msg.textContent = (err && err.message) || 'Couldn’t load the animation.'; msg.hidden = false;
     });
-    a.setSpeed(SPEEDS[speedIx]);
-    return a;
   }
   function destroy(){
     if (A) A.destroy(); if (B) B.destroy();
@@ -290,90 +381,83 @@
   }
 
   /* ---------- playback ---------- */
-  // Frames of the whole file (getDuration/totalFrames only cover the current segment).
-  function totalOf(a){ var d = a.animationData; return d ? d.op - d.ip : a.totalFrames; }
-  function absFrame(a){ return a.firstFrame + a.currentFrame; }
-
-  // Play from absolute frame f, following the hand-off rules
-  // (intro once → loop forever; one-shots play to the end and hold).
+  // Play from frame f following the hand-off rules (intro once → loop forever; one-shots hold).
   function start(f){
     paused = false;
-    if (cur.success) { return coinPlay(f); }
-    var end = totalOf(A);
-    A.loop = false;
-    if (cur.intro && f < cur.intro[1] - 0.5) { phase = 'intro'; A.playSegments([f, cur.intro[1]], true); }
+    if (cur.success) { coinPlay(f); return; }
+    var end = A.total;
+    if (cur.intro && f < cur.intro[1] - 0.5) { phase = 'intro'; A.play(f, cur.intro[1], enterLoop); }
     else if (cur.loop) {
-      if (f > cur.loop[0] + 0.5 && f < cur.loop[1] - 0.5) { phase = 'tail'; A.playSegments([f, cur.loop[1]], true); }
+      if (f > cur.loop[0] + 0.5 && f < cur.loop[1] - 0.5) { phase = 'tail'; A.play(f, cur.loop[1], enterLoop); }
       else enterLoop();
     }
     else {
       if (f >= end - 0.5) f = 0;
-      phase = 'once'; A.playSegments([f, end], true);
+      phase = 'once'; A.play(f, end, function(){ paused = true; ui(); });
     }
     ui();
   }
-  function enterLoop(){ phase = 'loop'; A.loop = true; A.playSegments([cur.loop[0], cur.loop[1]], true); }
-  function onCompleteA(){
-    if (cur.success) { if (active === A && successReq) swapToSuccess(); return; }
-    if (phase === 'intro' || phase === 'tail') { if (cur.loop) { enterLoop(); return; } }
-    if (phase === 'once') { paused = true; ui(); }
-  }
+  function enterLoop(){ phase = 'loop'; A.loop(cur.loop[0], cur.loop[1]); ui(); }
 
   /* Coin: loading loops until "Show success"; the loop then finishes its current turn
      and the success part starts on its first frame (the two are cut to join seamlessly). */
   function coinPlay(f){
+    paused = false;
     if (active === A) {
-      phase = 'loading'; A.loop = !successReq;
-      A.goToAndPlay(f, true);
+      phase = 'loading';
+      if (successReq) A.play(f, A.total, swapToSuccess);
+      else if (f > 0.5 && f < A.total - 0.5) A.play(f, A.total, coinLoop);
+      else coinLoop();
     } else {
       phase = 'success';
-      if (f >= totalOf(B) - 0.5) f = 0;
-      B.goToAndPlay(f, true);
+      if (f >= B.total - 0.5) f = 0;
+      B.play(f, B.total, function(){ paused = true; ui(); });
     }
     ui();
   }
+  function coinLoop(){ A.loop(0, A.total); ui(); }
   function showSuccess(){
     if (!B) return;
     if (active === B) { resetCoin(); return; }
-    successReq = true; A.loop = false;
+    successReq = true; paused = false;
     btnSuccess.textContent = 'Finishing the turn…'; btnSuccess.disabled = true;
-    if (paused) { paused = false; A.play(); }
+    A.finish(swapToSuccess);
+    ui();
   }
   function swapToSuccess(){
-    boxB.hidden = false; boxA.hidden = true; active = B; phase = 'success';
-    B.goToAndPlay(0, true);
+    boxB.hidden = false; boxA.hidden = true; active = B; phase = 'success'; paused = false;
+    B.play(0, B.total, function(){ paused = true; ui(); });
     btnSuccess.textContent = 'Reset to loading'; btnSuccess.disabled = false;
     ui();
   }
   function resetCoin(){
-    successReq = false; B.goToAndStop(0, true);
+    successReq = false; B.seek(0);
     boxA.hidden = false; boxB.hidden = true; active = A;
-    btnSuccess.textContent = 'Show success';
+    btnSuccess.textContent = 'Show success'; btnSuccess.disabled = false;
     start(0);
   }
 
   function togglePlay(){
-    if (!active) return;
+    if (!active || !active.total) return;
     if (paused) {
-      var f = absFrame(active);
+      var f = active.frame();
       if (cur.success) coinPlay(f); else start(f);
     } else { active.pause(); paused = true; ui(); }
   }
   function replay(){
-    if (!active) return;
+    if (!active || !active.total) return;
     if (cur.success) { if (active === B) resetCoin(); else { successReq = false; btnSuccess.textContent = 'Show success'; btnSuccess.disabled = false; start(0); } return; }
     start(0);
   }
 
   /* ---------- scrubbing ---------- */
   function scrubTo(f){
-    var a = active; if (!a) return;
-    a.resetSegments(true);
-    a.goToAndStop(Math.max(0, Math.min(f, totalOf(a) - 0.01)), true);
+    var a = active; if (!a || !a.total) return;
+    a.seek(Math.max(0, Math.min(f, a.total - 0.01)));
     ui(f);
   }
   scrub.addEventListener('input', function(){
-    if (!active) return;
+    if (!active || !active.total) return;
     if (!scrubbing) { scrubbing = true; wasPlaying = !paused; active.pause(); paused = true; }
     scrubTo(+scrub.value);
   });
@@ -384,12 +468,31 @@
     else ui();
   });
 
+  /* ---------- renderer tabs ---------- */
+  var tabL = $('r-lottie'), tabG = $('r-gsap');
+  function markTabs(){
+    var g = renderer === 'gsap' && hasGsap(cur);
+    tabL.setAttribute('aria-selected', String(!g));
+    tabG.setAttribute('aria-selected', String(g));
+    tabG.disabled = !hasGsap(cur);
+  }
+  function setRenderer(r){
+    if (r === renderer || !cur) return;
+    if (r === 'gsap' && !hasGsap(cur)) return;
+    var resume = null;
+    if (active && active.total && !cur.success) resume = { frame: active.frame(), paused: paused };
+    renderer = r; store('ps-lottie-renderer', r);
+    open(cur, resume);
+  }
+  tabL.addEventListener('click', function(){ setRenderer('lottie'); });
+  tabG.addEventListener('click', function(){ setRenderer('gsap'); });
+
   /* ---------- UI ---------- */
   var lastTrackKey = '';
   function ui(fOverride){
-    var a = active; if (!a || !a.isLoaded) return;
-    var total = totalOf(a);
-    var f = fOverride != null ? fOverride : absFrame(a);
+    var a = active; if (!a || !a.total) return;
+    var total = a.total;
+    var f = fOverride != null ? fOverride : a.frame();
     if (!scrubbing) { scrub.max = total; scrub.value = f; }
     $('frame').textContent = 'Frame ' + Math.floor(f + 0.0001) + ' / ' + Math.round(total);
     var p = paused ? 'paused' : (phase === 'tail' ? 'loop' : phase);
@@ -415,16 +518,16 @@
   }
   function renderSpecPending(){ $('spec').innerHTML = '&nbsp;'; }
   function renderSpec(){
-    var d = A.animationData || {}, e = cur, base = e.slug + '/';
-    var fr = d.fr ? (Math.round(d.fr * 100) / 100) + ' fps' : '';
-    var size = d.w ? d.w + ' × ' + d.h : '';
+    var e = cur, base = e.slug + '/', g = renderer === 'gsap' && hasGsap(e);
+    var fr = A.fps ? (Math.round(A.fps * 100) / 100) + ' fps' : '';
+    var size = A.w ? A.w + ' × ' + A.h : '';
     var play = e.success ? 'Loading loops → <strong>Show success</strong> finishes the turn → success plays once'
       : e.intro ? 'Intro <strong>' + e.intro[0] + '–' + e.intro[1] + '</strong> once → loop <strong>' + e.loop[0] + '–' + e.loop[1] + '</strong>'
       : 'Plays once and holds the last frame';
-    var files = '<a href="' + base + e.json + '" download>' + e.json + '</a>' +
-      (e.success ? '<a href="' + base + e.success + '" download>' + e.success + '</a>' : '') +
-      (e.lottie ? '<a href="' + base + e.lottie + '" download>' + e.lottie + '</a>' : '');
-    $('spec').innerHTML = '<div><strong>' + size + '</strong> · ' + fr + ' · lottie-web SVG</div><div>' + play + '</div><div class="files">' + files + '</div>';
+    var link = function(f){ return '<a href="' + base + f + '" download>' + f.split('/').pop() + '</a>'; };
+    var files = g ? link(e.gsap) + (e.gsapSuccess ? link(e.gsapSuccess) : '')
+      : link(e.json) + (e.success ? link(e.success) : '') + (e.lottie ? link(e.lottie) : '');
+    $('spec').innerHTML = '<div><strong>' + size + '</strong> · ' + fr + ' · ' + A.label + '</div><div>' + play + '</div><div class="files">' + files + '</div>';
   }
 
   /* ---------- controls ---------- */
@@ -469,7 +572,7 @@
   document.addEventListener('visibilitychange', function(){
     if (!active) return;
     if (document.hidden) { if (!paused) { active.pause(); hiddenPaused = true; } }
-    else if (hiddenPaused) { hiddenPaused = false; active.play(); }
+    else if (hiddenPaused) { hiddenPaused = false; active.resume(); }
   });
 
   /* ---------- animation list (menu) ---------- */
@@ -509,6 +612,8 @@
   setBg(store('ps-lottie-bg') || 'white');
   if (!window.lottie) { msg.textContent = 'Player library failed to load.'; return; }
   var q = (/[?&]a=([^&#]+)/.exec(location.search) || [])[1];
+  var rq = (/[?&]r=(lottie|gsap)\b/.exec(location.search) || [])[1];
+  renderer = rq || store('ps-lottie-renderer') || 'lottie';
   var i0 = q ? indexOf(decodeURIComponent(q)) : 0;
   if (!LIST.length) { msg.textContent = 'No animations registered.'; return; }
   open(LIST[i0 < 0 ? 0 : i0]);

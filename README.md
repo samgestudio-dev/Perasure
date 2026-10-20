@@ -34,14 +34,21 @@ shows still thumbnails.
 | Doc verify | intro 0–36 → loop 36–96 |
 | Coins loading | loading loops → "Show success" finishes the turn → success once |
 
-To add one: put the `.json` (plus `.lottie` and a `preview.png`) in `lottie/<name>/` and add an entry to
-`lottie/animations.js`. Rendered with [lottie-web](https://github.com/airbnb/lottie-web) (SVG renderer).
+Every animation also has a **GSAP version** (`lottie/<name>/gsap/*.js`: inline SVG + one GSAP timeline,
+pixel-matched to the Lottie). The **Lottie / GSAP** tab above the animation switches renderer; the
+controls work the same for both and the current frame is kept when you switch.
+
+To add one: put the `.json` (plus `.lottie` and a `preview.png`) in `lottie/<name>/`, the GSAP module (if
+any) in `lottie/<name>/gsap/`, and add an entry to `lottie/animations.js`. Rendered with
+[lottie-web](https://github.com/airbnb/lottie-web) (SVG renderer) and GSAP 3.15.
 
 ## Shared libraries
 
 `vendor/` holds pinned copies so demos don't depend on a CDN: lottie-web 5.12.2, GSAP 3.15.0 (core +
-all plugins), React 18.3.1 and ReactDOM 18.3.1. Load them from a demo with a relative path, e.g.
-`<script src="../../vendor/gsap@3.15.0/gsap.min.js"></script>`.
+all plugins, as browser scripts and as ES modules in `esm/`), React 18.3.1 and ReactDOM 18.3.1. Load them from a demo with a relative path, e.g.
+`<script src="../../vendor/gsap@3.15.0/gsap.min.js"></script>`, or for code that does `import { gsap } from "gsap"`
+an import map: `{"imports":{"gsap":"../../vendor/gsap@3.15.0/esm/index.js","gsap/":"../../vendor/gsap@3.15.0/esm/"}}`
+(see `lottie/player.html`).
 
 ## Adding a demo
 

@@ -13,9 +13,10 @@ index.html                 picker: "Motion demos" tab (DEMOS array) + "Lottie" t
 demos/<slug>/index.html    main / recommended variant of a demo
 demos/<slug>/<variant>.html  other variants of the same demo (optional)
 lottie/animations.js       Lottie registry (LOTTIES array) — shared by the picker and the player
-lottie/player.html         Lottie player, one animation at a time: player.html?a=<slug>
-lottie/<slug>/             <slug>.json (+ <slug>.lottie, preview.png)
-vendor/<lib>@<version>/    pinned libraries: lottie-web, gsap (+ plugins), react, react-dom
+lottie/player.html         player, one animation at a time: player.html?a=<slug>[&r=gsap] (Lottie / GSAP tabs)
+lottie/<slug>/             <slug>.json (+ <slug>.lottie, preview.png, gsap/<module>.js)
+tools/                     flatten-lottie-masks.py, flatten-svg-masks.py (Safari mask-blur fixes)
+vendor/<lib>@<version>/    pinned libraries: lottie-web, gsap (+ plugins; esm/ = ES modules), react, react-dom
 README.md                  human-facing summary + demo / animation tables
 .nojekyll                  keep: Pages serves files as-is
 ```
@@ -53,12 +54,18 @@ README.md                  human-facing summary + demo / animation tables
 2. Add an entry to `LOTTIES` in `lottie/animations.js` (field reference at the top of that file):
    `intro` / `loop` frame ranges from the hand-off README (they match the `intro` / `loop` markers in the
    JSON); omit both for a one-shot; `success` for a two-part loading → success animation.
-3. Add a row to the Lottie table in `README.md`. Don't edit `player.html` for a normal addition.
-4. If any layer combines masks (an add mask plus intersect / subtract masks), run
+3. GSAP version (optional, shown under the player's "GSAP" tab): put the module(s) in `lottie/<slug>/gsap/` and
+   set `gsap` (and `gsapSuccess` for coin-style) in the entry. A module must export `create…(container,
+   { autoplay })` returning `{ svg, timeline, … destroy() }` plus `FPS` / `FRAMES` — the format produced by
+   lottie2gsap. It imports `"gsap"`, which the player's import map points at `vendor/gsap@3.15.0/esm/`.
+   If its inline SVG has nested `<mask>`s, run `python3 tools/flatten-svg-masks.py <module>.js` (same Safari
+   blur as below).
+4. Add a row to the Lottie table in `README.md`. Don't edit `player.html` for a normal addition.
+5. If any layer combines masks (an add mask plus intersect / subtract masks), run
    `python3 tools/flatten-lottie-masks.py in.json out.json` (needs `pip install skia-pathops`) and rebuild the
    `.lottie` from the result. lottie-web draws such layers with nested SVG `<mask>`s, which iOS Safari renders
    blurry when the art is scaled up; the script merges them into one exact clip shape (pixel-identical in Chrome).
-5. Renderer: lottie-web SVG (`vendor/lottie-web@5.12.2/lottie_svg.min.js`). Don't switch to the canvas
+6. Renderer: lottie-web SVG (`vendor/lottie-web@5.12.2/lottie_svg.min.js`). Don't switch to the canvas
    renderer — it mis-renders the masks in Doc verify and Safe transaction.
 
 ## Requirements for a demo page
@@ -72,6 +79,9 @@ implementation (`demos/withdraw-fund-flow/index.html`, see the comments in its h
 - iOS Safari 26+ (floating toolbar): `viewport-fit=cover`, extend the top/bottom bars behind the status bar
   and search bar; bottom nav / primary button sits 24px above the search bar. `?debug=1` on the withdraw
   demo shows the measured insets.
+- Bottom sheets with text inputs must avoid the on-screen keyboard: lift the sheet with a transform using
+  `visualViewport` (`offsetTop + height` = keyboard top), and don't re-fit / re-zoom the page on resize while
+  an input has focus (Android keyboards resize the viewport). See the OTP demo's head script.
 - iOS Safari 26+ tints the status bar and toolbar from `position:fixed` layers that reach the screen edges.
   Don't leave a coloured fixed overlay (scrim, backdrop) in the page, even at `opacity:0`: use
   `display:none` when closed, and give tap-outside catchers no background.
