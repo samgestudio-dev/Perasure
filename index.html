@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f0f5f4">
+<title>PeraSure Motion Demos</title>
+<style>
+  :root{
+    --bg:#f0f5f4; --card:#ffffff; --ink:#141e24; --sub:#6a757d; --mute:#97a0a6;
+    --line:#e0e3e5; --blue:#2c74be; --blue-50:#f3f8ff; --blue-100:#e4f0ff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{background:var(--bg);color:var(--ink)}
+  body{
+    font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;min-height:100vh;
+    padding:calc(env(safe-area-inset-top,0px) + 32px) 16px calc(env(safe-area-inset-bottom,0px) + 32px);
+  }
+  main{max-width:480px;margin:0 auto}
+  header{padding:0 4px 24px}
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--blue)}
+  h1{margin-top:6px;font-size:26px;line-height:32px;font-weight:700;letter-spacing:-.01em}
+  header p{margin-top:8px;font-size:14px;line-height:20px;color:var(--sub)}
+  .list{display:flex;flex-direction:column;gap:12px}
+  .demo{background:var(--card);border-radius:20px;padding:16px;
+    box-shadow:0 0 2px rgba(0,1,40,.16),0 4px 12px rgba(0,1,40,.08)}
+  .demo-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+  .demo h2{font-size:16px;line-height:22px;font-weight:600}
+  .demo .desc{margin-top:4px;font-size:13px;line-height:18px;color:var(--sub)}
+  .tag{flex:none;font-size:11px;line-height:16px;font-weight:600;color:var(--blue);background:var(--blue-50);
+    border:1px solid #c8deff;border-radius:999px;padding:2px 8px}
+  .variants{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+  .variant{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;
+    border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;
+    transition:background-color .15s ease,border-color .15s ease,transform .12s ease}
+  .variant:active{transform:scale(.985);background:var(--blue-50);border-color:#c8deff}
+  @media (hover:hover){.variant:hover{background:var(--blue-50);border-color:#c8deff}}
+  .variant .name{flex:1;font-size:14px;line-height:20px;font-weight:600}
+  .variant .note{display:block;margin-top:2px;font-size:12px;line-height:16px;font-weight:400;color:var(--mute)}
+  .variant svg{flex:none;color:var(--mute)}
+  .variant.primary{border-color:var(--blue)}
+  .variant.primary .name{color:var(--blue)}
+  footer{margin-top:24px;padding:0 4px;font-size:12px;line-height:16px;color:var(--mute)}
+  @media (prefers-reduced-motion: reduce){.variant{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="eyebrow">PeraSure</div>
+    <h1>Motion demos</h1>
+    <p>Prototypes for testing motion on a real phone. Pick a demo and open it on your device.</p>
+  </header>
+
+  <section class="list" id="list" aria-label="Demos"></section>
+
+  <footer>Best viewed on a phone. On desktop each demo shows as a single 360px column.</footer>
+</main>
+
+<script>
+/* ---- Demo registry -------------------------------------------------------------
+   To add a demo: put its files in demos/<slug>/ and add one entry below.
+   The first variant is the recommended one. */
+var DEMOS = [
+  {
+    title: 'Withdraw fund flow',
+    tag: 'Loan',
+    desc: 'Home → withdraw sheet → amount entry ⇄ order confirmation, with the amount morph, keypad and term pills.',
+    variants: [
+      { name: 'Standard', note: 'No gradient blur on the header and bottom bar', href: 'demos/withdraw-fund-flow/index.html' },
+      { name: 'With gradient blur', note: 'Progressive blur on the header and bottom bar', href: 'demos/withdraw-fund-flow/with-blur.html' }
+    ]
+  }
+];
+
+(function(){
+  var list = document.getElementById('list');
+  var chev = '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7.5 4.5 13 10l-5.5 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  list.innerHTML = DEMOS.map(function(d){
+    return '<article class="demo">' +
+      '<div class="demo-head"><div><h2>' + esc(d.title) + '</h2><p class="desc">' + esc(d.desc) + '</p></div>' +
+      (d.tag ? '<span class="tag">' + esc(d.tag) + '</span>' : '') + '</div>' +
+      '<div class="variants">' + d.variants.map(function(v, i){
+        return '<a class="variant' + (i === 0 ? ' primary' : '') + '" href="' + esc(v.href) + '">' +
+          '<span class="name">' + esc(v.name) + (v.note ? '<span class="note">' + esc(v.note) + '</span>' : '') + '</span>' + chev + '</a>';
+      }).join('') + '</div></article>';
+  }).join('');
+})();
+</script>
+</body>
+</html>
