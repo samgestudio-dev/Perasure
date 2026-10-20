@@ -194,8 +194,7 @@ var DEMOS = [
         h(M.Typography, { variant: 'body1', color: 'text.secondary', sx: { mt: 1 } },
           'Interactive prototypes and illustration animations, made to be tried on a real phone.')),
       h(Segmented, { value: tab, onChange: pick }),
-      h(M.Typography, { variant: 'body2', color: 'text.secondary', sx: { px: 0.5, mt: 2, mb: 1.5 } },
-        tab === 0 ? 'Tap-through product flows with real interactions.' : 'Illustrations, each playable as Lottie or GSAP.'),
+      h(M.Box, { sx: { height: 16 } }),
       tab === 0
         ? h(M.Stack, { spacing: 1.5, role: 'tabpanel', 'aria-label': 'Prototypes' },
             DEMOS.map(function(d){ return h(PrototypeCard, { key: d.title, d: d }); }))

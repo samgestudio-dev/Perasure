@@ -277,6 +277,15 @@
         if (wasPlaying) { if (cur.success) coinPlay(f); else start(f); } else sync();
       },
       setBg: function(bg){ store('ps-lottie-bg', bg); set({ bg: bg }); },
+      // Jump straight to a state: 'intro' (replay from frame 0), 'loop' (start of the loop),
+      // 'loading' / 'success' for the coin (success starts immediately, no waiting for the turn).
+      jumpTo: function(k){
+        if (!active || !active.total) return;
+        if (k === 'intro') { start(0); }
+        else if (k === 'loop' && cur.loop) { paused = false; enterLoop(); }
+        else if (k === 'loading' && cur.success) { if (active === B) resetCoin(); else { successReq = false; start(0); } }
+        else if (k === 'success' && cur.success) { successReq = true; A.pause(); swapToSuccess(); }
+      },
       pauseHidden: function(){ if (active && !paused) { active.pause(); return true; } return false; },
       resumeHidden: function(){ if (active) active.resume(); }
     };
@@ -367,20 +376,25 @@
   var BLUE_ON_DARK = '#6aa7e6';
   function stop(e){ e.stopPropagation(); }
 
+  /* Two-option segmented control with a sliding indicator (used for Lottie / GSAP). */
+  var SEG_W = 56;
   function RendererSwitch(p){
-    var entry = p.entry, dark = p.st.bg === 'dark';
-    return h(M.ToggleButtonGroup, {
-      exclusive: true, value: p.st.renderer, 'aria-label': 'Renderer',
-      onChange: function(e, v){ if (v) ctl.setRenderer(v); }, onPointerDown: stop,
-      sx: Object.assign(pillSx(dark), { left: 12, gap: '2px',
-        '& .MuiToggleButton-root': { border: 0, borderRadius: '99px !important', minWidth: 56, height: 26, px: 1.25, fontSize: 12, lineHeight: '16px',
-          color: dark ? 'rgba(255,255,255,0.72)' : 'text.secondary',
-          '&:hover': { bgcolor: dark ? 'rgba(255,255,255,0.08)' : 'rgba(20,30,36,0.05)' },
-          '&.Mui-selected': { bgcolor: C.blue, color: '#fff', '&:hover': { bgcolor: C.blueDark } },
-          '&.Mui-disabled': { color: dark ? 'rgba(255,255,255,0.3)' : 'text.disabled' } } })
-    },
-      h(M.ToggleButton, { value: 'lottie' }, 'Lottie'),
-      h(M.ToggleButton, { value: 'gsap', disabled: !entry.gsap }, 'GSAP'));
+    var entry = p.entry, dark = p.st.bg === 'dark', ix = p.st.renderer === 'gsap' ? 1 : 0;
+    var opts = [['lottie', 'Lottie', true], ['gsap', 'GSAP', !!entry.gsap]];
+    return h(M.Box, { role: 'radiogroup', 'aria-label': 'Renderer', onPointerDown: stop,
+        sx: Object.assign(pillSx(dark), { left: 12, display: 'flex' }) },
+      h(M.Box, { 'aria-hidden': 'true', sx: { position: 'absolute', top: 3, left: 3, width: SEG_W, height: 26, borderRadius: 99, bgcolor: C.blue,
+        boxShadow: '0 1px 3px rgba(44,116,190,0.35)', transform: 'translateX(' + (ix * SEG_W) + 'px)',
+        transition: PG.reduce ? 'none' : 'transform 260ms cubic-bezier(.3,1.25,.5,1)' } }),
+      opts.map(function(o, n){
+        var on = n === ix;
+        return h(M.ButtonBase, { key: o[0], role: 'radio', 'aria-checked': on ? 'true' : 'false', disabled: !o[2],
+            onClick: function(){ ctl.setRenderer(o[0]); },
+            sx: { position: 'relative', zIndex: 1, width: SEG_W, height: 26, borderRadius: 99, fontSize: 12, fontWeight: 600, lineHeight: '16px',
+              color: on ? '#fff' : (dark ? 'rgba(255,255,255,0.72)' : 'text.secondary'),
+              transition: PG.reduce ? 'none' : 'color 200ms ease',
+              '&.Mui-disabled': { color: dark ? 'rgba(255,255,255,0.3)' : 'text.disabled' } } }, o[1]);
+      }));
   }
 
   /* Background picker, top-right of the stage. Collapsed: a palette icon. Tap: the pill widens,
@@ -507,20 +521,34 @@
      position and the frame number straight to the DOM — no transitions, no easing, no React
      re-render — so the dot is always exactly at the current time and jumps instantly when the
      loop restarts. Drag (or ←/→ when focused) scrubs. */
+  var SEG_PILL = 70;
   function Timeline(p){
     var st = p.st, entry = p.entry;
     var bar = R.useRef(null), thumb = R.useRef(null), num = R.useRef(null), drag = R.useRef(null);
     var total = st.total || 0;
+    function paintSeg(f){
+      if (!segs || !ind.current) return;
+      var s2 = ctl.getState();
+      var n = entry.success ? (s2.success === 'done' ? 1 : 0) : (f < entry.intro[1] - 0.001 ? 0 : 1);
+      ind.current.style.transform = 'translateX(' + (n * SEG_PILL) + 'px)';
+      ind.current.style.backgroundColor = s2.paused ? '#8e989e' : C.blue;
+      if (n !== lastSeg.current) {
+        lastSeg.current = n;
+        segBtns.current.forEach(function(b, k){ if (b) { b.style.color = k === n ? '#fff' : C.sub; b.setAttribute('aria-pressed', k === n ? 'true' : 'false'); } });
+      }
+    }
     function paint(f){
+      paintSeg(f);
       var t = st.total || 0, x = t ? Math.max(0, Math.min(1, f / t)) : 0;
       if (thumb.current) thumb.current.style.left = (x * 100) + '%';
       if (num.current) num.current.textContent = String(Math.floor(f + 0.0001));
       if (bar.current) bar.current.setAttribute('aria-valuenow', String(Math.round(f)));
     }
     R.useLayoutEffect(function(){
+      lastSeg.current = -1;
       paint(ctl.getFrame());
       return ctl.subscribeFrame(function(){ paint(ctl.getFrame()); });
-    }, [st.total]);
+    }, [st.total, st.paused, st.success, entry.slug]);
     function frameAt(clientX){
       var r = bar.current.getBoundingClientRect();
       return Math.max(0, Math.min(1, (clientX - r.left) / r.width)) * (st.total || 0);
@@ -533,11 +561,27 @@
     var f0 = ctl.getFrame();
     var key = st.paused ? ((st.phase === 'once' || st.phase === 'success') && total && f0 >= total - 1 ? 'done' : 'paused') : st.phase;
     var ph = PHASE[key] || PHASE.paused;
+    // Two-state pill (intro / loop, or loading / success): both shown, the current one follows
+    // the frame (painted per frame like the thumb), tap jumps there.
+    var segs = entry.success ? [['loading', 'Loading'], ['success', 'Success']] : entry.intro ? [['intro', 'Intro'], ['loop', 'Loop']] : null;
+    var ind = R.useRef(null), segBtns = R.useRef([]), lastSeg = R.useRef(-1);
     return h(R.Fragment, null,
       h(M.Stack, { direction: 'row', alignItems: 'center', justifyContent: 'space-between' },
-        h(M.Chip, { size: 'small', label: ph.label,
-          icon: h(M.Box, { component: 'span', sx: { width: 8, height: 8, borderRadius: 99, bgcolor: ph.dot, ml: '8px !important' } }),
-          sx: { bgcolor: C.soft, color: 'text.primary', height: 26, fontSize: 12, border: '1px solid ' + C.line } }),
+        segs
+          ? h('div', { role: 'group', 'aria-label': 'Jump to', style: { position: 'relative', display: 'inline-flex', padding: 3, borderRadius: 99,
+                background: C.soft, boxShadow: 'inset 0 0 0 1px ' + C.line } },
+              h('div', { ref: ind, 'aria-hidden': 'true', style: { position: 'absolute', top: 3, left: 3, width: SEG_PILL, height: 26, borderRadius: 99,
+                background: C.blue, transition: PG.reduce ? 'none' : 'transform 220ms cubic-bezier(.2,.8,.2,1), background-color 200ms ease' } }),
+              segs.map(function(sg, k){
+                return h('button', { key: sg[0], type: 'button', ref: function(el){ segBtns.current[k] = el; }, 'aria-pressed': 'false',
+                  onClick: function(){ ctl.jumpTo(sg[0]); },
+                  style: { position: 'relative', zIndex: 1, width: SEG_PILL, height: 26, border: 0, padding: 0, borderRadius: 99, background: 'transparent',
+                    font: '600 12px/16px Inter, -apple-system, BlinkMacSystemFont, sans-serif', color: C.sub, cursor: 'pointer',
+                    touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', transition: PG.reduce ? 'none' : 'color 200ms ease' } }, sg[1]);
+              }))
+          : h(M.Chip, { size: 'small', label: ph.label,
+              icon: h(M.Box, { component: 'span', sx: { width: 8, height: 8, borderRadius: 99, bgcolor: ph.dot, ml: '8px !important' } }),
+              sx: { bgcolor: C.soft, color: 'text.primary', height: 26, fontSize: 12, border: '1px solid ' + C.line } }),
         h(M.Typography, { variant: 'caption', color: 'text.secondary', sx: { fontVariantNumeric: 'tabular-nums' } },
           'Frame ', h('b', { ref: num, style: { color: C.ink, fontWeight: 600 } }, '0'), ' / ' + Math.round(total))),
       h('div', {
