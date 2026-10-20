@@ -1,11 +1,11 @@
 /* ---- Lottie registry --------------------------------------------------------------
    Shared by the picker (../index.html, "Lottie" tab) and the player (player.html).
-   To add an animation: put its files in lottie/<slug>/ and add one entry below.
+   To add an animation: put its files in animations/<slug>/ and add one entry below.
 
    slug     folder name = file name, lowercase-kebab-case
    title    sentence case, short
    desc     one line: what happens in the animation
-   json     Lottie JSON played by the player (relative to lottie/<slug>/)
+   json     Lottie JSON played by the player (relative to animations/<slug>/)
    lottie   optional .lottie (dotLottie) file offered as a download
    preview  still thumbnail shown on the picker (never an animation)
    intro    [start, end] frames, played once        } omit both for a one-shot

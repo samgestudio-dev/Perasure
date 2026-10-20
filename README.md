@@ -9,16 +9,16 @@ Phone-first motion prototypes, served with GitHub Pages.
 
 | Demo | Variants |
 | --- | --- |
-| Loading page | [Standard](demos/loading-page/index.html) |
-| OTP sheet morph | [Standard](demos/otp-sheet-morph/index.html) |
-| Order submit | [Standard](demos/order-submit/index.html) |
-| Landing page (website) | [Standard](demos/landing-page/index.html) |
-| Withdraw fund flow | [Standard](demos/withdraw-fund-flow/index.html) (no gradient blur) · [With gradient blur](demos/withdraw-fund-flow/with-blur.html) |
+| Loading page | [Standard](prototypes/loading-page/index.html) |
+| OTP sheet morph | [Standard](prototypes/otp-sheet-morph/index.html) |
+| Order submit | [Standard](prototypes/order-submit/index.html) |
+| Landing page (website) | [Standard](prototypes/landing-page/index.html) |
+| Withdraw fund flow | [Standard](prototypes/withdraw-fund-flow/index.html) (no gradient blur) · [With gradient blur](prototypes/withdraw-fund-flow/with-blur.html) |
 
 ## Animations
 
 Open the **Animations** tab on the picker, tap an animation, and it plays in the player
-(`lottie/player.html?a=<name>`): intro once → seamless loop, as specified in each hand-off README.
+(`animations/player.html?a=<name>`): intro once → seamless loop, as specified in each hand-off README.
 The player has replay, play/pause, a frame scrubber, speed (1× / 0.5× / 0.25× / 2×), background
 swatches, prev / next (or swipe on the animation), and a menu button (top right) that lists every animation. Only one animation plays at a time; the list
 shows still thumbnails.
@@ -34,12 +34,12 @@ shows still thumbnails.
 | Doc verify | intro 0–36 → loop 36–96 |
 | Coins loading | loading loops → "Show success" finishes the turn → success once |
 
-Every animation also has a **GSAP version** (`lottie/<name>/gsap/*.js`: inline SVG + one GSAP timeline,
+Every animation also has a **GSAP version** (`animations/<name>/gsap/*.js`: inline SVG + one GSAP timeline,
 pixel-matched to the Lottie). The **Lottie / GSAP** tab above the animation switches renderer; the
 controls work the same for both and the current frame is kept when you switch.
 
-To add one: put the `.json` (plus `.lottie` and a `preview.png`) in `lottie/<name>/`, the GSAP module (if
-any) in `lottie/<name>/gsap/`, and add an entry to `lottie/animations.js`. Rendered with
+To add one: put the `.json` (plus `.lottie` and a `preview.png`) in `animations/<name>/`, the GSAP module (if
+any) in `animations/<name>/gsap/`, and add an entry to `animations/animations.js`. Rendered with
 [lottie-web](https://github.com/airbnb/lottie-web) (SVG renderer) and GSAP 3.15.
 
 ## Shared libraries
@@ -48,7 +48,7 @@ any) in `lottie/<name>/gsap/`, and add an entry to `lottie/animations.js`. Rende
 all plugins, as browser scripts and as ES modules in `esm/`), React 18.3.1 and ReactDOM 18.3.1. Load them from a demo with a relative path, e.g.
 `<script src="../../vendor/gsap@3.15.0/gsap.min.js"></script>`, or for code that does `import { gsap } from "gsap"`
 an import map: `{"imports":{"gsap":"../../vendor/gsap@3.15.0/esm/index.js","gsap/":"../../vendor/gsap@3.15.0/esm/"}}`
-(see `lottie/player.html`).
+(see `animations/player.html`).
 
 ## Adding a demo
 
@@ -57,7 +57,7 @@ Easiest: give the demo's HTML file to Claude and say "add this to the motion dem
 
 By hand:
 
-1. Put the file(s) in `demos/<name>/`, with the main version as `index.html`.
+1. Put the file(s) in `prototypes/<name>/`, with the main version as `index.html`.
 2. Open the root `index.html`, find the `DEMOS` list near the bottom and copy an entry:
    title, a one-line description, and one line per variant (the first one is shown as recommended).
 3. Add a row to the table above, commit to `main` and push. The live site updates in about a minute.

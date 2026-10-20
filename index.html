@@ -87,10 +87,10 @@
   <footer>Best viewed on a phone. Animations open one at a time in the player.</footer>
 </main>
 
-<script src="lottie/animations.js"></script>
+<script src="animations/animations.js"></script>
 <script>
 /* ---- Demo registry -------------------------------------------------------------
-   To add a demo: put its files in demos/<slug>/ and add one entry below.
+   To add a demo: put its files in prototypes/<slug>/ and add one entry below.
    The first variant is the recommended one. */
 var DEMOS = [
   {
@@ -98,7 +98,7 @@ var DEMOS = [
     tag: 'Loading',
     desc: 'Full-screen loading state: the PeraSure coin with the animated dots.',
     variants: [
-      { name: 'Standard', note: 'Plays on open', href: 'demos/loading-page/index.html' }
+      { name: 'Standard', note: 'Plays on open', href: 'prototypes/loading-page/index.html' }
     ]
   },
   {
@@ -106,7 +106,7 @@ var DEMOS = [
     tag: 'Loan',
     desc: 'Loan confirmation → “Verify it’s you” sheet morphs into code entry, with the digits filling in.',
     variants: [
-      { name: 'Standard', note: 'Tap “Get verification code” to start', href: 'demos/otp-sheet-morph/index.html' }
+      { name: 'Standard', note: 'Tap “Get verification code” to start', href: 'prototypes/otp-sheet-morph/index.html' }
     ]
   },
   {
@@ -114,7 +114,7 @@ var DEMOS = [
     tag: 'Loan',
     desc: '“Confirming your loan details…” loader with the per-letter text animation.',
     variants: [
-      { name: 'Standard', note: 'Tap anywhere to replay', href: 'demos/order-submit/index.html' }
+      { name: 'Standard', note: 'Tap anywhere to replay', href: 'prototypes/order-submit/index.html' }
     ]
   },
   {
@@ -122,7 +122,7 @@ var DEMOS = [
     tag: 'Website',
     desc: 'PeraSure marketing site — hero and scroll motion. A full website, not a phone screen.',
     variants: [
-      { name: 'Standard', note: 'Large file (about 15 MB), give it a moment to load', href: 'demos/landing-page/index.html' }
+      { name: 'Standard', note: 'Large file (about 15 MB), give it a moment to load', href: 'prototypes/landing-page/index.html' }
     ]
   },
   {
@@ -130,8 +130,8 @@ var DEMOS = [
     tag: 'Loan',
     desc: 'Home → withdraw sheet → amount entry ⇄ order confirmation, with the amount morph, keypad and term pills.',
     variants: [
-      { name: 'Standard', note: 'No gradient blur on the header and bottom bar', href: 'demos/withdraw-fund-flow/index.html' },
-      { name: 'With gradient blur', note: 'Progressive blur on the header and bottom bar', href: 'demos/withdraw-fund-flow/with-blur.html' }
+      { name: 'Standard', note: 'No gradient blur on the header and bottom bar', href: 'prototypes/withdraw-fund-flow/index.html' },
+      { name: 'With gradient blur', note: 'Progressive blur on the header and bottom bar', href: 'prototypes/withdraw-fund-flow/with-blur.html' }
     ]
   }
 ];
@@ -151,18 +151,18 @@ var DEMOS = [
   }).join('');
 
   /* ---- Lottie tab: still thumbnails only; tapping one opens the player, which plays
-     one animation at a time. The list lives in lottie/animations.js. */
+     one animation at a time. The list lives in animations/animations.js. */
   var LOTTIES = window.LOTTIES || [];
   document.getElementById('lottie').innerHTML = LOTTIES.map(function(a){
     var how = (a.success ? 'Loading → success' : a.intro ? 'Intro → loop' : 'Plays once') + (a.gsap ? ' · Lottie, GSAP' : ' · Lottie');
-    return '<a class="lot" href="lottie/player.html?a=' + encodeURIComponent(a.slug) + '">' +
-      '<img src="lottie/' + esc(a.slug) + '/' + esc(a.preview) + '" alt="" loading="lazy" decoding="async" width="300" height="300">' +
+    return '<a class="lot" href="animations/player.html?a=' + encodeURIComponent(a.slug) + '">' +
+      '<img src="animations/' + esc(a.slug) + '/' + esc(a.preview) + '" alt="" loading="lazy" decoding="async" width="300" height="300">' +
       '<h3>' + esc(a.title) + '</h3><p>' + how + '</p></a>';
   }).join('');
   document.getElementById('n-motion').textContent = DEMOS.length;
   document.getElementById('n-lottie').textContent = LOTTIES.length;
 
-  /* ---- Tabs: #lottie / #motion in the URL, so "back" from a player lands on the right tab. */
+  /* ---- Tabs: #animations / #motion in the URL (#lottie still accepted for old links), so "back" from a player lands on the right tab. */
   function show(tab){
     var lot = tab === 'lottie';
     document.getElementById('tab-motion').setAttribute('aria-selected', String(!lot));
@@ -172,12 +172,13 @@ var DEMOS = [
   }
   function pick(tab){
     show(tab);
-    try { history.replaceState(null, '', tab === 'lottie' ? '#lottie' : location.pathname + location.search); } catch (e) {}
+    try { history.replaceState(null, '', tab === 'lottie' ? '#animations' : location.pathname + location.search); } catch (e) {}
   }
   document.getElementById('tab-motion').addEventListener('click', function(){ pick('motion'); });
   document.getElementById('tab-lottie').addEventListener('click', function(){ pick('lottie'); });
-  show(location.hash === '#lottie' ? 'lottie' : 'motion');
-  window.addEventListener('hashchange', function(){ show(location.hash === '#lottie' ? 'lottie' : 'motion'); });
+  function fromHash(){ return /^#(animations|lottie)$/.test(location.hash) ? 'lottie' : 'motion'; }
+  show(fromHash());
+  window.addEventListener('hashchange', function(){ show(fromHash()); });
 })();
 </script>
 </body>

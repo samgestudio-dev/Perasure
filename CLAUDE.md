@@ -9,12 +9,12 @@ Phone-first motion prototypes for PeraSure, served by GitHub Pages from `main` /
 ## Layout
 
 ```
-index.html                 picker ("Playground"): "Prototypes" tab (DEMOS array) + "Animations" tab (reads lottie/animations.js)
-demos/<slug>/index.html    main / recommended variant of a demo
-demos/<slug>/<variant>.html  other variants of the same demo (optional)
-lottie/animations.js       Lottie registry (LOTTIES array) — shared by the picker and the player
-lottie/player.html         player, one animation at a time: player.html?a=<slug>[&r=gsap] (Lottie / GSAP tabs)
-lottie/<slug>/             <slug>.json (+ <slug>.lottie, preview.png, gsap/<module>.js)
+index.html                 picker ("Playground"): "Prototypes" tab (DEMOS array) + "Animations" tab (reads animations/animations.js)
+prototypes/<slug>/index.html    main / recommended variant of a demo
+prototypes/<slug>/<variant>.html  other variants of the same demo (optional)
+animations/animations.js       Lottie registry (LOTTIES array) — shared by the picker and the player
+animations/player.html         player, one animation at a time: player.html?a=<slug>[&r=gsap] (Lottie / GSAP tabs)
+animations/<slug>/             <slug>.json (+ <slug>.lottie, preview.png, gsap/<module>.js)
 tools/                     flatten-lottie-masks.py, flatten-svg-masks.py (Safari mask-blur fixes)
 vendor/<lib>@<version>/    pinned libraries: lottie-web, gsap (+ plugins; esm/ = ES modules), react, react-dom
 README.md                  human-facing summary + demo / animation tables
@@ -25,7 +25,7 @@ README.md                  human-facing summary + demo / animation tables
 
 ## Adding a demo
 
-1. Put the demo's file(s) in `demos/<slug>/`. The recommended variant is `index.html`;
+1. Put the demo's file(s) in `prototypes/<slug>/`. The recommended variant is `index.html`;
    name other variants by what differs (`with-blur.html`, `snappy-spring.html`).
 2. Register it in the `DEMOS` array in the root `index.html` (inside the `<script>`):
 
@@ -35,8 +35,8 @@ README.md                  human-facing summary + demo / animation tables
      tag: 'Loan',                          // optional small pill: product area / status
      desc: 'One sentence: what flow it covers and what motion to look at.',
      variants: [                           // first entry = recommended ("Recommended" label when there are several)
-       { name: 'Standard', note: 'What is special about this variant', href: 'demos/repayment-success/index.html' },
-       { name: 'Gentle spring', note: 'Slower, softer settle', href: 'demos/repayment-success/gentle.html' }
+       { name: 'Standard', note: 'What is special about this variant', href: 'prototypes/repayment-success/index.html' },
+       { name: 'Gentle spring', note: 'Slower, softer settle', href: 'prototypes/repayment-success/gentle.html' }
      ]
    }
    ```
@@ -49,12 +49,12 @@ README.md                  human-facing summary + demo / animation tables
 
 ## Adding a Lottie animation
 
-1. Put the files in `lottie/<slug>/`: the Lottie JSON (played), the `.lottie` (download only) and a still
+1. Put the files in `animations/<slug>/`: the Lottie JSON (played), the `.lottie` (download only) and a still
    `preview.png` (thumbnail on the picker; never show animated thumbnails — one animation plays at a time).
-2. Add an entry to `LOTTIES` in `lottie/animations.js` (field reference at the top of that file):
+2. Add an entry to `LOTTIES` in `animations/animations.js` (field reference at the top of that file):
    `intro` / `loop` frame ranges from the hand-off README (they match the `intro` / `loop` markers in the
    JSON); omit both for a one-shot; `success` for a two-part loading → success animation.
-3. GSAP version (optional, shown under the player's "GSAP" tab): put the module(s) in `lottie/<slug>/gsap/` and
+3. GSAP version (optional, shown under the player's "GSAP" tab): put the module(s) in `animations/<slug>/gsap/` and
    set `gsap` (and `gsapSuccess` for coin-style) in the entry. A module must export `create…(container,
    { autoplay })` returning `{ svg, timeline, … destroy() }` plus `FPS` / `FRAMES` — the format produced by
    lottie2gsap. It imports `"gsap"`, which the player's import map points at `vendor/gsap@3.15.0/esm/`.
@@ -71,7 +71,7 @@ README.md                  human-facing summary + demo / animation tables
 ## Requirements for a demo page
 
 Demos are full-screen phone pages, not device mockups. The withdraw demo is the reference
-implementation (`demos/withdraw-fund-flow/index.html`, see the comments in its head script):
+implementation (`prototypes/withdraw-fund-flow/index.html`, see the comments in its head script):
 
 - Designed at 360 CSS px wide: set the viewport to `width=360` on touch devices so the browser
   scales it to the screen, and fill the visible height (no green backdrop / phone frame / fake status bar).
@@ -97,7 +97,7 @@ implementation (`demos/withdraw-fund-flow/index.html`, see the comments in its h
   React`. Fix: in the template, add `<script src="<react uuid>">` and `<script src="<react-dom uuid>">` (uuids
   from `__bundler/ext_resources`) before the runtime's `<script src>`; the unpacker runs template scripts in
   order and the runtime then reuses that React.
-- Don't break existing demos: never edit another demo's files when adding a new one.
+- Don't break existing prototypes: never edit another prototype's files when adding a new one.
 
 ## Checking before you push
 
