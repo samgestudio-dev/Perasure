@@ -20,7 +20,7 @@ Phone-first motion prototypes, served with GitHub Pages.
 Open the **Lottie** tab on the picker, tap an animation, and it plays in the player
 (`lottie/player.html?a=<name>`): intro once → seamless loop, as specified in each hand-off README.
 The player has replay, play/pause, a frame scrubber, speed (1× / 0.5× / 0.25× / 2×), background
-swatches, and prev / next (or swipe on the animation). Only one animation plays at a time; the list
+swatches, prev / next (or swipe on the animation), and a menu button (top right) that lists every animation. Only one animation plays at a time; the list
 shows still thumbnails.
 
 | Animation | Playback |
