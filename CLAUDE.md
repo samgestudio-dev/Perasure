@@ -47,8 +47,10 @@ README.md                  human-facing summary + demo / animation tables
    - Only edit the `DEMOS` array for a normal addition; don't restyle the picker unless asked.
    - The picker and the player are React + Material UI 5 (browser builds in `vendor/`, no JSX, no build step;
      `PG.h` = `React.createElement`). Style through the theme in `assets/playground-ui.js`, not per page.
-3. Add a row to the demo table in `README.md`.
-4. Removing or renaming a demo: update the folder, the `DEMOS` entry and the README row together.
+3. Make the option screenshots shown on the index: `python3 tools/prototype-thumbs.py <slug>` (writes
+   `prototypes/<slug>/preview.webp`, `preview-<variant>.webp`; adjust its `WAIT` if the first screen needs time).
+4. Add a row to the demo table in `README.md`.
+5. Removing or renaming a demo: update the folder, the `DEMOS` entry and the README row together.
 
 ## Adding a Lottie animation
 

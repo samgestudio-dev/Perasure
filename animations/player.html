@@ -293,7 +293,7 @@
     white: { label: 'White', css: { bgcolor: '#fff' } },
     page: { label: 'Page', css: { bgcolor: C.page } },
     dark: { label: 'Dark', css: { bgcolor: '#141e24' } },
-    grid: { label: 'Transparency grid', css: { bgcolor: '#fff',
+    grid: { label: 'Transparency grid', short: 'Grid', css: { bgcolor: '#fff',
       backgroundImage: 'linear-gradient(45deg,#eef0f2 25%,transparent 25%,transparent 75%,#eef0f2 75%),linear-gradient(45deg,#eef0f2 25%,transparent 25%,transparent 75%,#eef0f2 75%)',
       backgroundSize: '20px 20px', backgroundPosition: '0 0,10px 10px' } }
   };
@@ -317,15 +317,27 @@
       h(M.Button, { href: '../index.html#animations', size: 'large', startIcon: h(Icon.back, { sx: { fontSize: '28px !important' } }),
         'aria-label': 'Back to the Playground',
         sx: { ml: -1.25, pl: 0.75, pr: 1.5, fontSize: 17, lineHeight: '24px', letterSpacing: '-0.01em', '& .MuiButton-startIcon': { mr: 0.25 } } }, 'Playground'),
-      h(M.IconButton, { 'aria-label': 'All animations', 'aria-haspopup': 'true', 'aria-expanded': anchor ? 'true' : 'false',
-        onClick: function(e){ setAnchor(e.currentTarget); },
-        sx: { width: 44, height: 44, bgcolor: anchor ? C.blue50 : '#fff', color: anchor ? 'primary.main' : 'text.primary',
-          boxShadow: PG.theme.shadows[2], '&:hover': { bgcolor: '#fff' } } },
-        h(Icon.menu, null)),
+      h(M.Stack, { direction: 'row', spacing: 1 },
+        h(M.IconButton, { 'aria-label': 'Background colour', 'aria-haspopup': 'dialog', onClick: p.onBg,
+          sx: { width: 44, height: 44, bgcolor: '#fff', color: 'text.primary', boxShadow: PG.theme.shadows[2], '&:hover': { bgcolor: '#fff' } } },
+          h(M.Box, { sx: Object.assign({ position: 'absolute', right: 7, bottom: 7, width: 12, height: 12, borderRadius: 99,
+            boxShadow: '0 0 0 2px #fff, inset 0 0 0 1px ' + C.line }, BG[st.bg] ? BG[st.bg].css : {}, st.bg === 'grid' ? { backgroundSize: '6px 6px', backgroundPosition: '0 0,3px 3px' } : {}) }),
+          h(Icon.palette, null)),
+        h(M.IconButton, { 'aria-label': 'All animations', 'aria-haspopup': 'true', 'aria-expanded': anchor ? 'true' : 'false',
+          onClick: function(e){ setAnchor(e.currentTarget); },
+          sx: { width: 44, height: 44, bgcolor: anchor ? C.blue50 : '#fff', color: anchor ? 'primary.main' : 'text.primary',
+            boxShadow: PG.theme.shadows[2], '&:hover': { bgcolor: '#fff' } } },
+          h(Icon.menu, null))),
       h(M.Menu, {
         anchorEl: anchor, open: !!anchor, onClose: function(){ setAnchor(null); },
         anchorOrigin: { vertical: 'bottom', horizontal: 'right' }, transformOrigin: { vertical: 'top', horizontal: 'right' },
-        slotProps: { paper: { sx: { width: 'min(320px, calc(100vw - 32px))', maxHeight: 'min(62vh, 540px)', mt: 1, boxShadow: PG.theme.shadows[4] } } },
+        // Open: a short pop from the button (scale .96 → 1 + fade). Close: a plain quick fade —
+        // MUI's default Grow shrinks unevenly on exit, which reads as a glitch.
+        TransitionComponent: M.Fade, transitionDuration: PG.reduce ? 0 : { enter: 200, exit: 130 },
+        slotProps: { paper: { sx: { width: 'min(320px, calc(100vw - 32px))', maxHeight: 'min(62vh, 540px)', mt: 1, boxShadow: PG.theme.shadows[4],
+          transformOrigin: 'top right',
+          '@keyframes psMenuIn': { from: { transform: 'translateY(-4px) scale(0.96)' }, to: { transform: 'none' } },
+          animation: PG.reduce ? 'none' : 'psMenuIn 200ms cubic-bezier(.2,.8,.2,1)' } } },
         MenuListProps: { sx: { py: 0.75 }, 'aria-label': 'All animations' }
       },
         h(M.ListSubheader, { sx: { lineHeight: '36px', fontSize: 12, fontWeight: 600, color: 'text.secondary', bgcolor: '#fff', px: 2 } },
@@ -388,7 +400,24 @@
       st.loading ? h(M.Box, { sx: { position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' } },
         h(M.CircularProgress, { size: 28, thickness: 4 })) : null,
       st.error ? h(M.Box, { sx: { position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', p: 3, textAlign: 'center' } },
-        h(M.Typography, { variant: 'body2', color: 'text.secondary' }, st.error)) : null);
+        h(M.Typography, { variant: 'body2', color: 'text.secondary' }, st.error)) : null,
+      h(StageAction, { st: st }));
+  }
+
+  /* Interactive animations (coin loading → success) get their trigger inside the stage,
+     bottom-right, as a small pill — it acts on what you're looking at. */
+  function StageAction(p){
+    var st = p.st;
+    if (st.success === 'none' || st.loading) return null;
+    var waiting = st.success === 'waiting', done = st.success === 'done';
+    return h(M.Button, {
+      variant: done ? 'outlined' : 'contained', size: 'small', disabled: waiting, onClick: ctl.showSuccess,
+      onPointerDown: function(e){ e.stopPropagation(); },
+      startIcon: waiting ? h(M.CircularProgress, { size: 12, thickness: 6, color: 'inherit' }) : h(done ? Icon.replay : Icon.done, { sx: { fontSize: '16px !important' } }),
+      sx: { position: 'absolute', right: 12, bottom: 12, minHeight: 32, height: 32, px: 1.5, borderRadius: 99, fontSize: 13,
+        boxShadow: done ? PG.theme.shadows[2] : '0 2px 8px rgba(44,116,190,0.35)', bgcolor: done ? '#fff' : undefined,
+        '&.Mui-disabled': { bgcolor: '#fff', color: 'text.secondary', boxShadow: PG.theme.shadows[2] } }
+    }, waiting ? 'Finishing…' : done ? 'Reset' : 'Show success');
   }
 
   function Pager(p){
@@ -446,32 +475,40 @@
           startIcon: h(st.paused ? Icon.play : Icon.pause, null), 'aria-label': st.paused ? 'Play' : 'Pause' }, st.paused ? 'Play' : 'Pause'),
         h(M.Tooltip, { title: 'Playback speed' },
           h(M.Button, { variant: 'outlined', size: 'large', onClick: ctl.cycleSpeed, startIcon: h(Icon.speed, null),
-            sx: { flex: 1, fontVariantNumeric: 'tabular-nums' } }, SPEEDS[st.speedIx] + '×'))),
-      st.success !== 'none'
-        ? h(M.Button, { fullWidth: true, variant: st.success === 'done' ? 'outlined' : 'contained', size: 'large', sx: { mt: 1 },
-            disabled: st.success === 'waiting', onClick: ctl.showSuccess,
-            startIcon: st.success === 'waiting' ? h(M.CircularProgress, { size: 16, thickness: 5, color: 'inherit' })
-              : h(st.success === 'done' ? Icon.replay : Icon.done, null) },
-            st.success === 'waiting' ? 'Finishing the turn…' : st.success === 'done' ? 'Reset to loading' : 'Show success')
-        : null);
+            sx: { flex: 1, fontVariantNumeric: 'tabular-nums' } }, SPEEDS[st.speedIx] + '×'))));
   }
 
-  function DisplayCard(p){
+  /* Background picker: a short bottom drawer opened from the palette button in the top bar.
+     Invisible backdrop (tap outside closes): the stage keeps its true colour while choosing, and
+     iOS Safari 26 doesn't tint its bars from a scrim. The drawer unmounts when closed. */
+  function BackgroundDrawer(p){
     var st = p.st;
-    return h(SectionCard, null,
-      h(M.Stack, { direction: 'row', alignItems: 'center', justifyContent: 'space-between', spacing: 2 },
-        h(M.Box, null,
-          h(M.Typography, { variant: 'subtitle2' }, 'Background'),
-          h(M.Typography, { variant: 'caption', color: 'text.secondary' }, BG[st.bg] ? BG[st.bg].label : '')),
-        h(M.ToggleButtonGroup, { exclusive: true, value: st.bg, 'aria-label': 'Background',
-            onChange: function(e, v){ if (v) ctl.setBg(v); },
-            sx: { gap: 1, '& .MuiToggleButton-root': { p: 0, width: 34, height: 34, border: '0 !important', borderRadius: '99px !important',
-              '&.Mui-selected': { bgcolor: 'transparent', boxShadow: '0 0 0 2px #fff, 0 0 0 3.5px ' + C.blue } } } },
-          Object.keys(BG).map(function(k){
-            return h(M.ToggleButton, { key: k, value: k, 'aria-label': BG[k].label },
-              h(M.Box, { sx: Object.assign({ width: 30, height: 30, borderRadius: 99, boxShadow: 'inset 0 0 0 1px ' + C.line }, BG[k].css,
-                k === 'grid' ? { backgroundSize: '10px 10px', backgroundPosition: '0 0,5px 5px' } : {}) }));
-          }))));
+    return h(M.Drawer, {
+        anchor: 'bottom', open: p.open, onClose: p.onClose,
+        transitionDuration: PG.reduce ? 0 : { enter: 260, exit: 200 },
+        slotProps: { backdrop: { invisible: true } },
+        PaperProps: { sx: { borderRadius: '24px 24px 0 0', maxWidth: 480, mx: 'auto', left: 0, right: 0,
+          px: 2, pt: 1, pb: 'calc(env(safe-area-inset-bottom, 0px) + 20px)', boxShadow: PG.theme.shadows[4] } }
+      },
+      h(M.Box, { sx: { width: 36, height: 4, borderRadius: 2, bgcolor: '#d5dbde', mx: 'auto', mb: 1.5 } }),
+      h(M.Stack, { direction: 'row', alignItems: 'baseline', justifyContent: 'space-between', sx: { px: 0.5, mb: 1.5 } },
+        h(M.Typography, { variant: 'h6' }, 'Background'),
+        h(M.Typography, { variant: 'caption', color: 'text.secondary' }, 'Behind the animation')),
+      h(M.ToggleButtonGroup, { exclusive: true, value: st.bg, 'aria-label': 'Background',
+          onChange: function(e, v){ if (v) ctl.setBg(v); },
+          sx: { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1,
+            '& .MuiToggleButton-root': { flexDirection: 'column', gap: 0.75, p: 1, border: '0 !important', borderRadius: '16px !important',
+              color: 'text.secondary', fontSize: 12, fontWeight: 600,
+              '&.Mui-selected': { bgcolor: C.blue50, color: 'primary.main', '&:hover': { bgcolor: C.blue50 } } } } },
+        Object.keys(BG).map(function(k){
+          var on = st.bg === k;
+          return h(M.ToggleButton, { key: k, value: k, 'aria-label': BG[k].label },
+            h(M.Box, { sx: Object.assign({ width: '100%', aspectRatio: '1 / 1', borderRadius: '14px',
+              boxShadow: on ? '0 0 0 2px ' + C.blue : 'inset 0 0 0 1px ' + C.line, display: 'grid', placeItems: 'center' }, BG[k].css,
+              k === 'grid' ? { backgroundSize: '12px 12px', backgroundPosition: '0 0,6px 6px' } : {}) },
+              on ? h(Icon.check, { sx: { fontSize: 22, color: k === 'dark' ? '#fff' : 'primary.main' } }) : null),
+            BG[k].short || BG[k].label);
+        })));
   }
 
   function DetailsCard(p){
@@ -501,9 +538,10 @@
   /* ---------- app ---------- */
   function App(){
     var st = useCtl(), entry = LIST[st.index] || LIST[0];
+    var bo = R.useState(false), bgOpen = bo[0], setBgOpen = bo[1];
     R.useEffect(function(){
       function onKey(e){
-        if (document.querySelector('.MuiMenu-paper') || (e.target && e.target.closest && e.target.closest('.MuiSlider-root'))) return;
+        if (document.querySelector('.MuiMenu-paper, .MuiDrawer-paper') || (e.target && e.target.closest && e.target.closest('.MuiSlider-root'))) return;
         if (e.key === 'ArrowRight') ctl.go(1);
         else if (e.key === 'ArrowLeft') ctl.go(-1);
         else if (e.key === ' ' && !(e.target && /^(BUTTON|A|INPUT)$/.test(e.target.tagName))) { e.preventDefault(); ctl.togglePlay(); }
@@ -517,7 +555,7 @@
     if (!entry) return h(M.Typography, { sx: { p: 3 } }, 'No animations registered.');
     return h(M.Container, { disableGutters: true, sx: {
         maxWidth: 480, px: 2, pt: 'calc(env(safe-area-inset-top, 0px) + 8px)', pb: 'calc(env(safe-area-inset-bottom, 0px) + 32px)' } },
-      h(TopBar, { st: st }),
+      h(TopBar, { st: st, onBg: function(){ setBgOpen(true); } }),
       h(M.Box, { sx: { textAlign: 'center', mt: 2 } },
         h(M.Typography, { variant: 'h5', component: 'h1' }, entry.title),
         h(M.Typography, { variant: 'body2', color: 'text.secondary', sx: { mt: 0.75, mx: 'auto', maxWidth: 360, minHeight: 40 } }, entry.desc)),
@@ -525,8 +563,8 @@
       h(Stage, { st: st, entry: entry }),
       h(Pager, { st: st }),
       h(PlaybackCard, { st: st, entry: entry }),
-      h(DisplayCard, { st: st }),
-      h(DetailsCard, { st: st, entry: entry }));
+      h(DetailsCard, { st: st, entry: entry }),
+      h(BackgroundDrawer, { st: st, open: bgOpen, onClose: function(){ setBgOpen(false); } }));
   }
 
   /* boot */
