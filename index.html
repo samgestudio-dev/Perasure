@@ -41,6 +41,21 @@
   .variant svg{flex:none;color:var(--mute)}
   .variant.primary{border-color:var(--blue)}
   .variant.primary .name{color:var(--blue)}
+  .tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin:0 0 16px;border-radius:14px;background:#e3eaea}
+  .tab{height:40px;border:0;border-radius:10px;background:transparent;font:inherit;font-size:14px;line-height:20px;font-weight:600;
+    color:var(--sub);cursor:pointer;touch-action:manipulation;display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    transition:background-color .15s ease,color .15s ease}
+  .tab[aria-selected="true"]{background:var(--card);color:var(--ink);box-shadow:0 0 2px rgba(0,1,40,.12),0 2px 6px rgba(0,1,40,.06)}
+  .tab .n{font-size:11px;line-height:16px;font-weight:600;color:var(--mute);background:rgba(20,30,36,.06);border-radius:99px;padding:0 6px}
+  .tab[aria-selected="true"] .n{color:var(--blue);background:var(--blue-50)}
+  [hidden]{display:none!important}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .lot{display:block;text-decoration:none;color:inherit;background:var(--card);border-radius:20px;padding:8px 8px 12px;
+    box-shadow:0 0 2px rgba(0,1,40,.16),0 4px 12px rgba(0,1,40,.08);transition:transform .12s ease}
+  .lot:active{transform:scale(.97)}
+  .lot img{display:block;width:100%;aspect-ratio:1/1;object-fit:contain;border-radius:14px;background:#fff}
+  .lot h3{margin:8px 4px 0;font-size:14px;line-height:20px;font-weight:600}
+  .lot p{margin:2px 4px 0;font-size:12px;line-height:16px;color:var(--mute)}
   footer{margin-top:24px;padding:0 4px;font-size:12px;line-height:16px;color:var(--mute)}
   @media (prefers-reduced-motion: reduce){.variant{transition:none}}
 </style>
@@ -50,14 +65,21 @@
   <header>
     <div class="eyebrow">PeraSure</div>
     <h1>Motion demos</h1>
-    <p>Prototypes for testing motion on a real phone. Pick a demo and open it on your device.</p>
+    <p>Prototypes and Lottie animations for testing motion on a real phone.</p>
   </header>
 
-  <section class="list" id="list" aria-label="Demos"></section>
+  <div class="tabs" role="tablist" aria-label="Library">
+    <button class="tab" role="tab" id="tab-motion" aria-controls="list" aria-selected="true">Motion demos <span class="n" id="n-motion"></span></button>
+    <button class="tab" role="tab" id="tab-lottie" aria-controls="lottie" aria-selected="false">Lottie <span class="n" id="n-lottie"></span></button>
+  </div>
+
+  <section class="list" id="list" role="tabpanel" aria-label="Motion demos"></section>
+  <section class="grid" id="lottie" role="tabpanel" aria-label="Lottie animations" hidden></section>
 
   <footer>Best viewed on a phone.</footer>
 </main>
 
+<script src="lottie/animations.js"></script>
 <script>
 /* ---- Demo registry -------------------------------------------------------------
    To add a demo: put its files in demos/<slug>/ and add one entry below.
@@ -119,6 +141,35 @@ var DEMOS = [
           '<span class="name">' + esc(v.name) + (v.note ? '<span class="note">' + esc(v.note) + '</span>' : '') + '</span>' + chev + '</a>';
       }).join('') + '</div></article>';
   }).join('');
+
+  /* ---- Lottie tab: still thumbnails only; tapping one opens the player, which plays
+     one animation at a time. The list lives in lottie/animations.js. */
+  var LOTTIES = window.LOTTIES || [];
+  document.getElementById('lottie').innerHTML = LOTTIES.map(function(a){
+    var how = a.success ? 'Loading → success' : a.intro ? 'Intro → loop' : 'Plays once';
+    return '<a class="lot" href="lottie/player.html?a=' + encodeURIComponent(a.slug) + '">' +
+      '<img src="lottie/' + esc(a.slug) + '/' + esc(a.preview) + '" alt="" loading="lazy" decoding="async" width="300" height="300">' +
+      '<h3>' + esc(a.title) + '</h3><p>' + how + '</p></a>';
+  }).join('');
+  document.getElementById('n-motion').textContent = DEMOS.length;
+  document.getElementById('n-lottie').textContent = LOTTIES.length;
+
+  /* ---- Tabs: #lottie / #motion in the URL, so "back" from a player lands on the right tab. */
+  function show(tab){
+    var lot = tab === 'lottie';
+    document.getElementById('tab-motion').setAttribute('aria-selected', String(!lot));
+    document.getElementById('tab-lottie').setAttribute('aria-selected', String(lot));
+    document.getElementById('list').hidden = lot;
+    document.getElementById('lottie').hidden = !lot;
+  }
+  function pick(tab){
+    show(tab);
+    try { history.replaceState(null, '', tab === 'lottie' ? '#lottie' : location.pathname + location.search); } catch (e) {}
+  }
+  document.getElementById('tab-motion').addEventListener('click', function(){ pick('motion'); });
+  document.getElementById('tab-lottie').addEventListener('click', function(){ pick('lottie'); });
+  show(location.hash === '#lottie' ? 'lottie' : 'motion');
+  window.addEventListener('hashchange', function(){ show(location.hash === '#lottie' ? 'lottie' : 'motion'); });
 })();
 </script>
 </body>

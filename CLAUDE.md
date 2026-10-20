@@ -9,10 +9,14 @@ Phone-first motion prototypes for PeraSure, served by GitHub Pages from `main` /
 ## Layout
 
 ```
-index.html                 demo picker (the only page you edit when adding a demo)
+index.html                 picker: "Motion demos" tab (DEMOS array) + "Lottie" tab (reads lottie/animations.js)
 demos/<slug>/index.html    main / recommended variant of a demo
 demos/<slug>/<variant>.html  other variants of the same demo (optional)
-README.md                  human-facing summary + demo table
+lottie/animations.js       Lottie registry (LOTTIES array) — shared by the picker and the player
+lottie/player.html         Lottie player, one animation at a time: player.html?a=<slug>
+lottie/<slug>/             <slug>.json (+ <slug>.lottie, preview.png)
+vendor/<lib>@<version>/    pinned libraries: lottie-web, gsap (+ plugins), react, react-dom
+README.md                  human-facing summary + demo / animation tables
 .nojekyll                  keep: Pages serves files as-is
 ```
 
@@ -42,6 +46,17 @@ README.md                  human-facing summary + demo table
 3. Add a row to the demo table in `README.md`.
 4. Removing or renaming a demo: update the folder, the `DEMOS` entry and the README row together.
 
+## Adding a Lottie animation
+
+1. Put the files in `lottie/<slug>/`: the Lottie JSON (played), the `.lottie` (download only) and a still
+   `preview.png` (thumbnail on the picker; never show animated thumbnails — one animation plays at a time).
+2. Add an entry to `LOTTIES` in `lottie/animations.js` (field reference at the top of that file):
+   `intro` / `loop` frame ranges from the hand-off README (they match the `intro` / `loop` markers in the
+   JSON); omit both for a one-shot; `success` for a two-part loading → success animation.
+3. Add a row to the Lottie table in `README.md`. Don't edit `player.html` for a normal addition.
+4. Renderer: lottie-web SVG (`vendor/lottie-web@5.12.2/lottie_svg.min.js`). Don't switch to the canvas
+   renderer — it mis-renders the masks in Doc verify and Safe transaction.
+
 ## Requirements for a demo page
 
 Demos are full-screen phone pages, not device mockups. The withdraw demo is the reference
@@ -57,6 +72,14 @@ implementation (`demos/withdraw-fund-flow/index.html`, see the comments in its h
   instead of React state, animate only `transform` / `opacity` where possible, and respect
   `prefers-reduced-motion`.
 - Keep a demo self-contained in one HTML file (inline or bundled assets) so Pages needs no build step.
+  Shared libraries may instead be loaded from `vendor/` with a relative path
+  (`../../vendor/gsap@3.15.0/gsap.min.js`); never from a CDN at runtime.
+- Claude Design bundled exports (`__bundler/template` + dc-runtime): the runtime loads React on its own and
+  does not wait for it, so any bundled script that needs `window.React` at load time (e.g. the Framer Motion
+  UMD, `window.__FM_UMD`) races it — iOS Safari loses and shows `[bundle] ReferenceError: Can't find variable:
+  React`. Fix: in the template, add `<script src="<react uuid>">` and `<script src="<react-dom uuid>">` (uuids
+  from `__bundler/ext_resources`) before the runtime's `<script src>`; the unpacker runs template scripts in
+  order and the runtime then reuses that React.
 - Don't break existing demos: never edit another demo's files when adding a new one.
 
 ## Checking before you push

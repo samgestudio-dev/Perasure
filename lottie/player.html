@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f0f5f4">
+<title>Lottie · PeraSure</title>
+<style>
+  :root{
+    --bg:#f0f5f4; --card:#ffffff; --ink:#141e24; --sub:#6a757d; --mute:#97a0a6;
+    --line:#e0e3e5; --blue:#2c74be; --blue-50:#f3f8ff; --blue-100:#e4f0ff; --blue-200:#c8deff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{background:var(--bg);color:var(--ink)}
+  body{
+    font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;min-height:100vh;-webkit-text-size-adjust:100%;
+    padding:calc(env(safe-area-inset-top,0px) + 12px) 16px calc(env(safe-area-inset-bottom,0px) + 28px);
+  }
+  button,a,input{touch-action:manipulation;font:inherit;color:inherit}
+  button{border:0;background:none;cursor:pointer;-webkit-user-select:none;user-select:none}
+  main{max-width:440px;margin:0 auto}
+
+  /* top row */
+  .top{display:flex;align-items:center;justify-content:space-between;height:40px}
+  .back{display:inline-flex;align-items:center;gap:4px;margin-left:-6px;padding:8px 6px;border-radius:10px;
+    text-decoration:none;font-size:14px;line-height:20px;font-weight:600;color:var(--blue)}
+  .back:active{background:var(--blue-50)}
+  .count{font-size:13px;line-height:18px;color:var(--mute);font-variant-numeric:tabular-nums}
+
+  /* title row with prev / next */
+  .head{display:flex;align-items:center;gap:8px;margin-top:4px}
+  .head h1{flex:1;min-width:0;text-align:center;font-size:20px;line-height:26px;font-weight:700;letter-spacing:-.01em}
+  .nav{flex:none;width:40px;height:40px;border-radius:999px;display:grid;place-items:center;background:var(--card);
+    box-shadow:0 0 2px rgba(0,1,40,.16),0 2px 8px rgba(0,1,40,.06);transition:transform .12s ease}
+  .nav:active{transform:scale(.92)}
+  .desc{margin-top:6px;text-align:center;font-size:13px;line-height:18px;color:var(--sub);min-height:36px}
+
+  /* stage */
+  .stage{position:relative;margin-top:14px;aspect-ratio:1/1;width:100%;border-radius:24px;overflow:hidden;
+    background:var(--stage,#fff);box-shadow:0 0 2px rgba(0,1,40,.16),0 4px 12px rgba(0,1,40,.08);
+    touch-action:pan-y;transition:background-color .2s ease}
+  .stage[data-bg="grid"]{background-color:#fff;
+    background-image:linear-gradient(45deg,#eef0f2 25%,transparent 25%,transparent 75%,#eef0f2 75%),
+                     linear-gradient(45deg,#eef0f2 25%,transparent 25%,transparent 75%,#eef0f2 75%);
+    background-size:20px 20px;background-position:0 0,10px 10px}
+  .anim{position:absolute;inset:0;margin:auto;width:calc(100% * var(--scale,1));height:calc(100% * var(--scale,1))}
+  .anim[hidden]{display:block!important;visibility:hidden}
+  .anim svg{display:block}
+  .msg{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;font-size:13px;color:var(--mute)}
+  .msg[hidden]{display:none}
+
+  /* timeline */
+  .time{margin-top:16px;display:flex;align-items:center;justify-content:space-between;font-size:12px;line-height:16px;color:var(--sub);font-variant-numeric:tabular-nums}
+  .phase{display:inline-flex;align-items:center;gap:6px;font-weight:600;color:var(--ink)}
+  .phase i{width:8px;height:8px;border-radius:99px;background:var(--blue)}
+  .phase[data-p="intro"] i,.phase[data-p="loading"] i{background:#7aa7d8}
+  .phase[data-p="paused"] i{background:var(--mute)}
+  input[type=range]{-webkit-appearance:none;appearance:none;display:block;width:100%;height:32px;margin-top:4px;background:transparent}
+  input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:99px;background:var(--track)}
+  input[type=range]::-moz-range-track{height:6px;border-radius:99px;background:var(--track)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;margin-top:-8px;border-radius:99px;
+    background:#fff;border:0;box-shadow:0 0 0 1.5px var(--blue),0 2px 6px rgba(0,1,40,.18)}
+  input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:99px;background:#fff;border:0;box-shadow:0 0 0 1.5px var(--blue),0 2px 6px rgba(0,1,40,.18)}
+  .legend{display:flex;gap:14px;margin-top:2px;font-size:11px;line-height:14px;color:var(--mute)}
+  .legend span{display:inline-flex;align-items:center;gap:5px}
+  .legend b{width:14px;height:6px;border-radius:99px;background:var(--blue-200)}
+  .legend b.l{background:var(--blue)}
+
+  /* controls */
+  .ctrls{margin-top:14px;display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:8px}
+  .btn{height:48px;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    background:var(--card);border:1.5px solid var(--line);font-size:14px;line-height:20px;font-weight:600;
+    transition:transform .12s ease,background-color .15s ease,border-color .15s ease}
+  .btn:active{transform:scale(.97);background:var(--blue-50);border-color:var(--blue-200)}
+  .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+  .btn.primary:active{background:#255f9c}
+  .btn[disabled]{opacity:.55;pointer-events:none}
+  .btn.wide{width:100%;margin-top:8px}
+  .btn[hidden]{display:none}
+
+  .row{margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .label{font-size:12px;line-height:16px;color:var(--sub)}
+  .chips{display:flex;gap:6px}
+  .chip{width:32px;height:32px;border-radius:99px;border:1.5px solid var(--line);position:relative}
+  .chip[aria-pressed="true"]{box-shadow:0 0 0 2px var(--bg),0 0 0 3.5px var(--blue);border-color:transparent}
+  .chip[data-bg="white"]{background:#fff}
+  .chip[data-bg="page"]{background:#f0f5f4}
+  .chip[data-bg="dark"]{background:#141e24}
+  .chip[data-bg="grid"]{background:#fff linear-gradient(45deg,#dfe3e6 25%,transparent 25%,transparent 75%,#dfe3e6 75%),#fff linear-gradient(45deg,#dfe3e6 25%,transparent 25%,transparent 75%,#dfe3e6 75%);
+    background-size:10px 10px;background-position:0 0,5px 5px}
+
+  .spec{margin-top:16px;padding:12px 14px;border-radius:14px;background:var(--card);font-size:12px;line-height:18px;color:var(--sub)}
+  .spec strong{color:var(--ink);font-weight:600}
+  .files{margin-top:6px;display:flex;flex-wrap:wrap;gap:4px 14px}
+  .files a{color:var(--blue);font-weight:600;text-decoration:none}
+
+  @media (prefers-reduced-motion: reduce){.btn,.nav,.stage{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <a class="back" href="../index.html#lottie" aria-label="All Lottie animations">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M12.5 4.5 7 10l5.5 5.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Lottie
+    </a>
+    <span class="count" id="count"></span>
+  </div>
+
+  <div class="head">
+    <button class="nav" id="prev" aria-label="Previous animation">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M12.5 4.5 7 10l5.5 5.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <h1 id="title"></h1>
+    <button class="nav" id="next" aria-label="Next animation">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7.5 4.5 13 10l-5.5 5.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+  <p class="desc" id="desc"></p>
+
+  <div class="stage" id="stage" data-bg="white" aria-label="Animation (swipe for the next one)">
+    <div class="anim" id="animA"></div>
+    <div class="anim" id="animB" hidden></div>
+    <div class="msg" id="msg">Loading…</div>
+  </div>
+
+  <div class="time">
+    <span class="phase" id="phase" data-p="intro"><i></i><span id="phaseText">—</span></span>
+    <span id="frame">0 / 0</span>
+  </div>
+  <input type="range" id="scrub" min="0" max="100" step="0.01" value="0" aria-label="Scrub frames">
+  <div class="legend" id="legend"><span><b></b>Intro (plays once)</span><span><b class="l"></b>Loop</span></div>
+
+  <div class="ctrls">
+    <button class="btn" id="replay" aria-label="Replay from the start">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10a6 6 0 1 0 1.8-4.3M4 3.5v3.2h3.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Replay
+    </button>
+    <button class="btn primary" id="play" aria-label="Pause">
+      <svg id="icPause" width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.4" height="12" rx="1.2" fill="currentColor"/><rect x="11.6" y="4" width="3.4" height="12" rx="1.2" fill="currentColor"/></svg>
+      <svg id="icPlay" width="18" height="18" viewBox="0 0 20 20" aria-hidden="true" style="display:none"><path d="M6 4.2v11.6c0 .8.9 1.3 1.6.8l8.6-5.8c.6-.4.6-1.2 0-1.6L7.6 3.4C6.9 2.9 6 3.4 6 4.2z" fill="currentColor"/></svg>
+      <span id="playText">Pause</span>
+    </button>
+    <button class="btn" id="speed" aria-label="Playback speed">1×</button>
+  </div>
+  <button class="btn primary wide" id="success" hidden>Show success</button>
+
+  <div class="row">
+    <span class="label">Background</span>
+    <div class="chips" id="chips">
+      <button class="chip" data-bg="white" aria-label="White background"></button>
+      <button class="chip" data-bg="page" aria-label="Page background"></button>
+      <button class="chip" data-bg="dark" aria-label="Dark background"></button>
+      <button class="chip" data-bg="grid" aria-label="Transparency grid"></button>
+    </div>
+  </div>
+
+  <div class="spec" id="spec"></div>
+</main>
+
+<script src="../vendor/lottie-web@5.12.2/lottie_svg.min.js"></script>
+<script src="animations.js"></script>
+<script>
+/* ---- Lottie player -------------------------------------------------------------------
+   One animation at a time, rendered with lottie-web (SVG renderer — the renderer the
+   delivery package was checked against). Animations with intro/loop play the intro
+   once, then loop the loop segment, exactly as the hand-off README specifies.
+   ?a=<slug> picks the animation; prev/next, swipe on the stage and ←/→ switch it. */
+(function(){
+  var LIST = window.LOTTIES || [];
+  var $ = function(id){ return document.getElementById(id); };
+  var stage = $('stage'), boxA = $('animA'), boxB = $('animB'), msg = $('msg');
+  var scrub = $('scrub'), btnPlay = $('play'), btnSpeed = $('speed'), btnSuccess = $('success');
+  var SPEEDS = [1, 0.5, 0.25, 2];
+
+  var cur = null;       // registry entry
+  var A = null, B = null, active = null;   // lottie instances (B = success part of coin)
+  var phase = 'intro';  // intro | tail | loop | once | loading | success
+  var paused = false, scrubbing = false, wasPlaying = false, speedIx = 0, token = 0;
+  var successReq = false;
+
+  function store(k, v){ try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+
+  /* ---------- selection ---------- */
+  function indexOf(slug){ for (var i = 0; i < LIST.length; i++) if (LIST[i].slug === slug) return i; return -1; }
+  function go(delta){
+    var i = (indexOf(cur.slug) + delta + LIST.length) % LIST.length;
+    open(LIST[i]);
+  }
+  function open(entry){
+    cur = entry; token++;
+    destroy();
+    var i = indexOf(entry.slug);
+    $('title').textContent = entry.title;
+    $('desc').textContent = entry.desc || '';
+    $('count').textContent = (i + 1) + ' / ' + LIST.length;
+    document.title = entry.title + ' · Lottie · PeraSure';
+    try { history.replaceState(null, '', '?a=' + encodeURIComponent(entry.slug) + location.hash); } catch (e) {}
+    stage.style.setProperty('--scale', entry.scale || 1);
+    btnSuccess.hidden = !entry.success;
+    $('legend').style.visibility = entry.intro ? 'visible' : 'hidden';
+    msg.textContent = 'Loading…'; msg.hidden = false;
+    successReq = false; paused = false;
+    renderSpecPending();
+
+    var base = entry.slug + '/';
+    var my = token;
+    A = load(boxA, base + entry.json, !!entry.success);
+    active = A;
+    if (entry.success) { B = load(boxB, base + entry.success, false); boxB.hidden = true; }
+    A.addEventListener('DOMLoaded', function(){ if (my !== token) return; msg.hidden = true; renderSpec(); start(0); });
+    A.addEventListener('data_failed', function(){ if (my !== token) return; msg.textContent = 'Couldn’t load ' + entry.json; msg.hidden = false; });
+    A.addEventListener('enterFrame', function(){ if (active === A) ui(); });
+    A.addEventListener('complete', onCompleteA);
+    if (B) {
+      B.addEventListener('enterFrame', function(){ if (active === B) ui(); });
+      B.addEventListener('complete', function(){ if (active === B) { paused = true; ui(); } });
+    }
+  }
+  function load(box, path, loop){
+    var a = lottie.loadAnimation({
+      container: box, renderer: 'svg', loop: loop, autoplay: false, path: path,
+      rendererSettings: { preserveAspectRatio: 'xMidYMid meet', progressiveLoad: false, hideOnTransparent: true }
+    });
+    a.setSpeed(SPEEDS[speedIx]);
+    return a;
+  }
+  function destroy(){
+    if (A) A.destroy(); if (B) B.destroy();
+    A = B = active = null;
+    boxA.innerHTML = ''; boxB.innerHTML = ''; boxA.hidden = false; boxB.hidden = true;
+  }
+
+  /* ---------- playback ---------- */
+  // Frames of the whole file (getDuration/totalFrames only cover the current segment).
+  function totalOf(a){ var d = a.animationData; return d ? d.op - d.ip : a.totalFrames; }
+  function absFrame(a){ return a.firstFrame + a.currentFrame; }
+
+  // Play from absolute frame f, following the hand-off rules
+  // (intro once → loop forever; one-shots play to the end and hold).
+  function start(f){
+    paused = false;
+    if (cur.success) { return coinPlay(f); }
+    var end = totalOf(A);
+    A.loop = false;
+    if (cur.intro && f < cur.intro[1] - 0.5) { phase = 'intro'; A.playSegments([f, cur.intro[1]], true); }
+    else if (cur.loop) {
+      if (f > cur.loop[0] + 0.5 && f < cur.loop[1] - 0.5) { phase = 'tail'; A.playSegments([f, cur.loop[1]], true); }
+      else enterLoop();
+    }
+    else {
+      if (f >= end - 0.5) f = 0;
+      phase = 'once'; A.playSegments([f, end], true);
+    }
+    ui();
+  }
+  function enterLoop(){ phase = 'loop'; A.loop = true; A.playSegments([cur.loop[0], cur.loop[1]], true); }
+  function onCompleteA(){
+    if (cur.success) { if (active === A && successReq) swapToSuccess(); return; }
+    if (phase === 'intro' || phase === 'tail') { if (cur.loop) { enterLoop(); return; } }
+    if (phase === 'once') { paused = true; ui(); }
+  }
+
+  /* Coin: loading loops until "Show success"; the loop then finishes its current turn
+     and the success part starts on its first frame (the two are cut to join seamlessly). */
+  function coinPlay(f){
+    if (active === A) {
+      phase = 'loading'; A.loop = !successReq;
+      A.goToAndPlay(f, true);
+    } else {
+      phase = 'success';
+      if (f >= totalOf(B) - 0.5) f = 0;
+      B.goToAndPlay(f, true);
+    }
+    ui();
+  }
+  function showSuccess(){
+    if (!B) return;
+    if (active === B) { resetCoin(); return; }
+    successReq = true; A.loop = false;
+    btnSuccess.textContent = 'Finishing the turn…'; btnSuccess.disabled = true;
+    if (paused) { paused = false; A.play(); }
+  }
+  function swapToSuccess(){
+    boxB.hidden = false; boxA.hidden = true; active = B; phase = 'success';
+    B.goToAndPlay(0, true);
+    btnSuccess.textContent = 'Reset to loading'; btnSuccess.disabled = false;
+    ui();
+  }
+  function resetCoin(){
+    successReq = false; B.goToAndStop(0, true);
+    boxA.hidden = false; boxB.hidden = true; active = A;
+    btnSuccess.textContent = 'Show success';
+    start(0);
+  }
+
+  function togglePlay(){
+    if (!active) return;
+    if (paused) {
+      var f = absFrame(active);
+      if (cur.success) coinPlay(f); else start(f);
+    } else { active.pause(); paused = true; ui(); }
+  }
+  function replay(){
+    if (!active) return;
+    if (cur.success) { if (active === B) resetCoin(); else { successReq = false; btnSuccess.textContent = 'Show success'; btnSuccess.disabled = false; start(0); } return; }
+    start(0);
+  }
+
+  /* ---------- scrubbing ---------- */
+  function scrubTo(f){
+    var a = active; if (!a) return;
+    a.resetSegments(true);
+    a.goToAndStop(Math.max(0, Math.min(f, totalOf(a) - 0.01)), true);
+    ui(f);
+  }
+  scrub.addEventListener('input', function(){
+    if (!active) return;
+    if (!scrubbing) { scrubbing = true; wasPlaying = !paused; active.pause(); paused = true; }
+    scrubTo(+scrub.value);
+  });
+  scrub.addEventListener('change', function(){
+    if (!scrubbing) return;
+    scrubbing = false;
+    if (wasPlaying) { if (cur.success) coinPlay(+scrub.value); else start(+scrub.value); }
+    else ui();
+  });
+
+  /* ---------- UI ---------- */
+  var lastTrackKey = '';
+  function ui(fOverride){
+    var a = active; if (!a || !a.isLoaded) return;
+    var total = totalOf(a);
+    var f = fOverride != null ? fOverride : absFrame(a);
+    if (!scrubbing) { scrub.max = total; scrub.value = f; }
+    $('frame').textContent = 'Frame ' + Math.floor(f + 0.0001) + ' / ' + Math.round(total);
+    var p = paused ? 'paused' : (phase === 'tail' ? 'loop' : phase);
+    var names = { intro:'Intro', loop:'Loop', once:'Playing', loading:'Loading (loop)', success:'Success', paused:'Paused' };
+    if (paused && (phase === 'once' || phase === 'success') && f >= total - 1) names.paused = 'Done';
+    $('phase').setAttribute('data-p', p);
+    $('phaseText').textContent = names[p] || p;
+    btnPlay.setAttribute('aria-label', paused ? 'Play' : 'Pause');
+    $('playText').textContent = paused ? 'Play' : 'Pause';
+    $('icPause').style.display = paused ? 'none' : '';
+    $('icPlay').style.display = paused ? '' : 'none';
+    // Track: intro region light, loop region darker (only for intro/loop animations).
+    var key = (cur.intro ? cur.intro.join() + cur.loop.join() : '-') + total;
+    if (key !== lastTrackKey) {
+      lastTrackKey = key;
+      var g;
+      if (cur.intro && cur.loop) {
+        var i1 = (cur.intro[1] / total * 100).toFixed(2) + '%';
+        g = 'linear-gradient(90deg,var(--blue-200) 0,var(--blue-200) ' + i1 + ',var(--blue) ' + i1 + ',var(--blue) 100%)';
+      } else g = 'var(--blue-100)';
+      scrub.style.setProperty('--track', g);
+    }
+  }
+  function renderSpecPending(){ $('spec').innerHTML = '&nbsp;'; }
+  function renderSpec(){
+    var d = A.animationData || {}, e = cur, base = e.slug + '/';
+    var fr = d.fr ? (Math.round(d.fr * 100) / 100) + ' fps' : '';
+    var size = d.w ? d.w + ' × ' + d.h : '';
+    var play = e.success ? 'Loading loops → <strong>Show success</strong> finishes the turn → success plays once'
+      : e.intro ? 'Intro <strong>' + e.intro[0] + '–' + e.intro[1] + '</strong> once → loop <strong>' + e.loop[0] + '–' + e.loop[1] + '</strong>'
+      : 'Plays once and holds the last frame';
+    var files = '<a href="' + base + e.json + '" download>' + e.json + '</a>' +
+      (e.success ? '<a href="' + base + e.success + '" download>' + e.success + '</a>' : '') +
+      (e.lottie ? '<a href="' + base + e.lottie + '" download>' + e.lottie + '</a>' : '');
+    $('spec').innerHTML = '<div><strong>' + size + '</strong> · ' + fr + ' · lottie-web SVG</div><div>' + play + '</div><div class="files">' + files + '</div>';
+  }
+
+  /* ---------- controls ---------- */
+  btnPlay.addEventListener('click', togglePlay);
+  $('replay').addEventListener('click', replay);
+  btnSuccess.addEventListener('click', showSuccess);
+  btnSpeed.addEventListener('click', function(){
+    speedIx = (speedIx + 1) % SPEEDS.length;
+    btnSpeed.textContent = SPEEDS[speedIx] + '×';
+    if (A) A.setSpeed(SPEEDS[speedIx]); if (B) B.setSpeed(SPEEDS[speedIx]);
+  });
+  $('prev').addEventListener('click', function(){ go(-1); });
+  $('next').addEventListener('click', function(){ go(1); });
+
+  function setBg(bg){
+    stage.setAttribute('data-bg', bg);
+    stage.style.setProperty('--stage', { white:'#fff', page:'#f0f5f4', dark:'#141e24', grid:'#fff' }[bg] || '#fff');
+    Array.prototype.forEach.call(document.querySelectorAll('.chip'), function(c){ c.setAttribute('aria-pressed', c.getAttribute('data-bg') === bg ? 'true' : 'false'); });
+    store('ps-lottie-bg', bg);
+  }
+  $('chips').addEventListener('click', function(e){ var c = e.target.closest('.chip'); if (c) setBg(c.getAttribute('data-bg')); });
+
+  // Swipe on the stage to switch animation.
+  var sx = 0, sy = 0, st = 0, sid = null;
+  stage.addEventListener('pointerdown', function(e){ sid = e.pointerId; sx = e.clientX; sy = e.clientY; st = Date.now(); });
+  stage.addEventListener('pointerup', function(e){
+    if (e.pointerId !== sid) return; sid = null;
+    var dx = e.clientX - sx, dy = e.clientY - sy;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5 && Date.now() - st < 600) go(dx < 0 ? 1 : -1);
+  });
+  stage.addEventListener('pointercancel', function(){ sid = null; });
+
+  document.addEventListener('keydown', function(e){
+    if (e.target === scrub) return;
+    if (e.key === 'ArrowRight') go(1);
+    else if (e.key === 'ArrowLeft') go(-1);
+    else if (e.key === ' ') { e.preventDefault(); togglePlay(); }
+  });
+
+  // Pause while the tab is hidden (saves battery; resumes where it was).
+  var hiddenPaused = false;
+  document.addEventListener('visibilitychange', function(){
+    if (!active) return;
+    if (document.hidden) { if (!paused) { active.pause(); hiddenPaused = true; } }
+    else if (hiddenPaused) { hiddenPaused = false; active.play(); }
+  });
+
+  /* ---------- boot ---------- */
+  setBg(store('ps-lottie-bg') || 'white');
+  if (!window.lottie) { msg.textContent = 'Player library failed to load.'; return; }
+  var q = (/[?&]a=([^&#]+)/.exec(location.search) || [])[1];
+  var i0 = q ? indexOf(decodeURIComponent(q)) : 0;
+  if (!LIST.length) { msg.textContent = 'No animations registered.'; return; }
+  open(LIST[i0 < 0 ? 0 : i0]);
+})();
+</script>
+</body>
+</html>

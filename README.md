@@ -2,7 +2,8 @@
 
 Phone-first motion prototypes, served with GitHub Pages.
 
-**Open on your phone:** https://samgestudio-dev.github.io/Perasure/ — a picker page that lists every demo and its variants.
+**Open on your phone:** https://samgestudio-dev.github.io/Perasure/ — a picker page with two tabs:
+**Motion demos** (interactive prototypes) and **Lottie** (exported Lottie animations, one at a time in a player).
 
 ## Demos
 
@@ -13,6 +14,34 @@ Phone-first motion prototypes, served with GitHub Pages.
 | Order submit | [Standard](demos/order-submit/index.html) |
 | Landing page (website) | [Standard](demos/landing-page/index.html) |
 | Withdraw fund flow | [Standard](demos/withdraw-fund-flow/index.html) (no gradient blur) · [With gradient blur](demos/withdraw-fund-flow/with-blur.html) |
+
+## Lottie animations
+
+Open the **Lottie** tab on the picker, tap an animation, and it plays in the player
+(`lottie/player.html?a=<name>`): intro once → seamless loop, as specified in each hand-off README.
+The player has replay, play/pause, a frame scrubber, speed (1× / 0.5× / 0.25× / 2×), background
+swatches, and prev / next (or swipe on the animation). Only one animation plays at a time; the list
+shows still thumbnails.
+
+| Animation | Playback |
+| --- | --- |
+| Customer service chat | intro 0–36 → loop 36–96 |
+| Customer service | intro 0–45 → loop 45–105 |
+| Empty box | plays once, holds |
+| Loading state OTP | intro 0–36 → loop 36–96 |
+| Safe transaction | intro 0–54 → loop 54–114 |
+| Verification code | intro 0–56 → loop 56–116 |
+| Doc verify | intro 0–36 → loop 36–96 |
+| Coins loading → success | loading loops → "Show success" finishes the turn → success once |
+
+To add one: put the `.json` (plus `.lottie` and a `preview.png`) in `lottie/<name>/` and add an entry to
+`lottie/animations.js`. Rendered with [lottie-web](https://github.com/airbnb/lottie-web) (SVG renderer).
+
+## Shared libraries
+
+`vendor/` holds pinned copies so demos don't depend on a CDN: lottie-web 5.12.2, GSAP 3.15.0 (core +
+all plugins), React 18.3.1 and ReactDOM 18.3.1. Load them from a demo with a relative path, e.g.
+`<script src="../../vendor/gsap@3.15.0/gsap.min.js"></script>`.
 
 ## Adding a demo
 
