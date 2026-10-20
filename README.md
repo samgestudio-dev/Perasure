@@ -1,11 +1,11 @@
-# PeraSure motion demos
+# PeraSure Playground
 
 Phone-first motion prototypes, served with GitHub Pages.
 
 **Open on your phone:** https://samgestudio-dev.github.io/Perasure/ — a picker page with two tabs:
-**Motion demos** (interactive prototypes) and **Lottie** (exported Lottie animations, one at a time in a player).
+**Prototypes** (interactive flows) and **Animations** (illustration animations, played one at a time as Lottie or GSAP).
 
-## Demos
+## Prototypes
 
 | Demo | Variants |
 | --- | --- |
@@ -15,9 +15,9 @@ Phone-first motion prototypes, served with GitHub Pages.
 | Landing page (website) | [Standard](demos/landing-page/index.html) |
 | Withdraw fund flow | [Standard](demos/withdraw-fund-flow/index.html) (no gradient blur) · [With gradient blur](demos/withdraw-fund-flow/with-blur.html) |
 
-## Lottie animations
+## Animations
 
-Open the **Lottie** tab on the picker, tap an animation, and it plays in the player
+Open the **Animations** tab on the picker, tap an animation, and it plays in the player
 (`lottie/player.html?a=<name>`): intro once → seamless loop, as specified in each hand-off README.
 The player has replay, play/pause, a frame scrubber, speed (1× / 0.5× / 0.25× / 2×), background
 swatches, prev / next (or swipe on the animation), and a menu button (top right) that lists every animation. Only one animation plays at a time; the list

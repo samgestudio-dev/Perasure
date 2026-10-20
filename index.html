@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f0f5f4">
-<title>PeraSure Motion Demos</title>
+<title>PeraSure Playground</title>
 <style>
   :root{
     --bg:#f0f5f4; --card:#ffffff; --ink:#141e24; --sub:#6a757d; --mute:#97a0a6;
@@ -57,6 +57,7 @@
   .lot img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:contain;border-radius:13px;background:#fff}
   .lot h3{margin:4px 6px 0;font-size:13px;line-height:18px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .lot p{margin:1px 6px 0;font-size:11px;line-height:16px;color:var(--mute)}
+  .cap{margin:-4px 4px 12px;font-size:13px;line-height:18px;color:var(--sub)}
   footer{margin-top:24px;padding:0 4px;font-size:12px;line-height:16px;color:var(--mute)}
   @media (prefers-reduced-motion: reduce){.variant{transition:none}}
 </style>
@@ -65,19 +66,25 @@
 <main>
   <header>
     <div class="eyebrow">PeraSure</div>
-    <h1>Motion demos</h1>
-    <p>Prototypes and Lottie animations for testing motion on a real phone.</p>
+    <h1>Playground</h1>
+    <p>Interactive prototypes and illustration animations, made to be tried on a real phone.</p>
   </header>
 
   <div class="tabs" role="tablist" aria-label="Library">
-    <button class="tab" role="tab" id="tab-motion" aria-controls="list" aria-selected="true">Motion demos <span class="n" id="n-motion"></span></button>
-    <button class="tab" role="tab" id="tab-lottie" aria-controls="lottie" aria-selected="false">Lottie <span class="n" id="n-lottie"></span></button>
+    <button class="tab" role="tab" id="tab-motion" aria-controls="list" aria-selected="true">Prototypes <span class="n" id="n-motion"></span></button>
+    <button class="tab" role="tab" id="tab-lottie" aria-controls="lottie" aria-selected="false">Animations <span class="n" id="n-lottie"></span></button>
   </div>
 
-  <section class="list" id="list" role="tabpanel" aria-label="Motion demos"></section>
-  <section class="grid" id="lottie" role="tabpanel" aria-label="Lottie animations" hidden></section>
+  <div id="pane-motion">
+    <p class="cap">Tap-through product flows with real interactions.</p>
+    <section class="list" id="list" role="tabpanel" aria-label="Prototypes"></section>
+  </div>
+  <div id="pane-lottie" hidden>
+    <p class="cap">Illustrations, each playable as Lottie or GSAP.</p>
+    <section class="grid" id="lottie" role="tabpanel" aria-label="Animations"></section>
+  </div>
 
-  <footer>Best viewed on a phone.</footer>
+  <footer>Best viewed on a phone. Animations open one at a time in the player.</footer>
 </main>
 
 <script src="lottie/animations.js"></script>
@@ -147,7 +154,7 @@ var DEMOS = [
      one animation at a time. The list lives in lottie/animations.js. */
   var LOTTIES = window.LOTTIES || [];
   document.getElementById('lottie').innerHTML = LOTTIES.map(function(a){
-    var how = a.success ? 'Loading → success' : a.intro ? 'Intro → loop' : 'Plays once';
+    var how = (a.success ? 'Loading → success' : a.intro ? 'Intro → loop' : 'Plays once') + (a.gsap ? ' · Lottie, GSAP' : ' · Lottie');
     return '<a class="lot" href="lottie/player.html?a=' + encodeURIComponent(a.slug) + '">' +
       '<img src="lottie/' + esc(a.slug) + '/' + esc(a.preview) + '" alt="" loading="lazy" decoding="async" width="300" height="300">' +
       '<h3>' + esc(a.title) + '</h3><p>' + how + '</p></a>';
@@ -160,8 +167,8 @@ var DEMOS = [
     var lot = tab === 'lottie';
     document.getElementById('tab-motion').setAttribute('aria-selected', String(!lot));
     document.getElementById('tab-lottie').setAttribute('aria-selected', String(lot));
-    document.getElementById('list').hidden = lot;
-    document.getElementById('lottie').hidden = !lot;
+    document.getElementById('pane-motion').hidden = lot;
+    document.getElementById('pane-lottie').hidden = !lot;
   }
   function pick(tab){
     show(tab);

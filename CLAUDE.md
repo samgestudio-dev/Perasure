@@ -1,4 +1,4 @@
-# PeraSure motion demos — agent guide
+# PeraSure Playground — agent guide
 
 Phone-first motion prototypes for PeraSure, served by GitHub Pages from `main` / root.
 
@@ -9,7 +9,7 @@ Phone-first motion prototypes for PeraSure, served by GitHub Pages from `main` /
 ## Layout
 
 ```
-index.html                 picker: "Motion demos" tab (DEMOS array) + "Lottie" tab (reads lottie/animations.js)
+index.html                 picker ("Playground"): "Prototypes" tab (DEMOS array) + "Animations" tab (reads lottie/animations.js)
 demos/<slug>/index.html    main / recommended variant of a demo
 demos/<slug>/<variant>.html  other variants of the same demo (optional)
 lottie/animations.js       Lottie registry (LOTTIES array) — shared by the picker and the player

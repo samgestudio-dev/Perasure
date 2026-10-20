@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f0f5f4">
-<title>Lottie · PeraSure</title>
+<title>Animations · PeraSure Playground</title>
 <!-- GSAP modules import "gsap" as a package; map it to the vendored ES build (no build step). -->
 <script type="importmap">{"imports":{"gsap":"../vendor/gsap@3.15.0/esm/index.js","gsap/":"../vendor/gsap@3.15.0/esm/","gsap/MotionPathPlugin":"../vendor/gsap@3.15.0/esm/MotionPathPlugin.js"}}</script>
 <style>
@@ -151,9 +151,9 @@
 <div class="scrim" id="scrim"></div>
 <main>
   <div class="top">
-    <a class="back" href="../index.html#lottie" aria-label="All Lottie animations">
+    <a class="back" href="../index.html#lottie" aria-label="All animations">
       <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M12.5 4.5 7 10l5.5 5.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Lottie
+      Animations
     </a>
     <div class="top-r">
       <button class="menu-btn" id="menuBtn" aria-label="All animations" aria-haspopup="true" aria-expanded="false" aria-controls="menu">
@@ -348,7 +348,7 @@
     if (dots.children.length !== LIST.length) dots.innerHTML = new Array(LIST.length + 1).join('<i></i>');
     for (var k = 0; k < dots.children.length; k++) dots.children[k].className = k === i ? 'on' : '';
     dots.parentNode.classList.toggle('many', LIST.length > 12);
-    document.title = entry.title + ' · ' + (renderer === 'gsap' ? 'GSAP' : 'Lottie') + ' · PeraSure';
+    document.title = entry.title + ' · ' + (renderer === 'gsap' ? 'GSAP' : 'Lottie') + ' · PeraSure Playground';
     markCurrent(); markTabs(); syncUrl();
     stage.style.setProperty('--scale', entry.scale || 1);
     btnSuccess.hidden = !entry.success;
