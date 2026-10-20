@@ -54,7 +54,11 @@ README.md                  human-facing summary + demo / animation tables
    `intro` / `loop` frame ranges from the hand-off README (they match the `intro` / `loop` markers in the
    JSON); omit both for a one-shot; `success` for a two-part loading → success animation.
 3. Add a row to the Lottie table in `README.md`. Don't edit `player.html` for a normal addition.
-4. Renderer: lottie-web SVG (`vendor/lottie-web@5.12.2/lottie_svg.min.js`). Don't switch to the canvas
+4. If any layer combines masks (an add mask plus intersect / subtract masks), run
+   `python3 tools/flatten-lottie-masks.py in.json out.json` (needs `pip install skia-pathops`) and rebuild the
+   `.lottie` from the result. lottie-web draws such layers with nested SVG `<mask>`s, which iOS Safari renders
+   blurry when the art is scaled up; the script merges them into one exact clip shape (pixel-identical in Chrome).
+5. Renderer: lottie-web SVG (`vendor/lottie-web@5.12.2/lottie_svg.min.js`). Don't switch to the canvas
    renderer — it mis-renders the masks in Doc verify and Safe transaction.
 
 ## Requirements for a demo page
