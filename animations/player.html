@@ -25,8 +25,8 @@
 <script src="../vendor/motion@14.4.0/motion-react.js"></script>
 <script src="../vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
 <script src="../vendor/lottie-web@5.12.2/lottie_svg.min.js"></script>
-<script src="../assets/playground-ui.js?v=202610210708"></script>
-<script src="animations.js?v=202610210708"></script>
+<script src="../assets/playground-ui.js?v=202610210710"></script>
+<script src="animations.js?v=202610210710"></script>
 <script>
 /* ---- Animation player ------------------------------------------------------------------
    One animation at a time. Each animation exists twice, pixel-matched: the Lottie JSON played
@@ -585,22 +585,6 @@
             style: { display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } }, entry.title)));
   }
 
-  /* Prev / next, inside the stage at mid-height. Half transparent at rest; a tap brings it to full
-     opacity, and 1 s after the last tap it fades back. */
-  function StageArrow(p){
-    var dark = p.st.bg === 'dark', d = p.dir;
-    var a = R.useState(false), on = a[0], setOn = a[1], timer = R.useRef(0);
-    R.useEffect(function(){ return function(){ clearTimeout(timer.current); }; }, []);
-    function tap(){ setOn(true); clearTimeout(timer.current); timer.current = setTimeout(function(){ setOn(false); }, 1000); ctl.go(d); }
-    return h(m.button, { type: 'button', 'aria-label': d < 0 ? 'Previous animation' : 'Next animation', onClick: tap, onPointerDown: stop,
-        initial: false, animate: { opacity: on ? 1 : 0.5, backgroundColor: dark ? 'rgba(36,46,53,0.92)' : '#ffffff', color: dark ? '#ffffff' : C.ink },
-        whileTap: { scale: 0.9 }, transition: { opacity: T.fade, backgroundColor: T.fade, color: T.fade, default: T.snap },
-        style: { position: 'absolute', top: '50%', marginTop: -20, zIndex: 2, left: d < 0 ? 8 : 'auto', right: d > 0 ? 8 : 'auto',
-          width: 40, height: 40, border: 0, padding: 0, borderRadius: 20, boxShadow: SHADOW2,
-          display: 'grid', placeItems: 'center', cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' } },
-      h(d < 0 ? Icon.back : Icon.next, null));
-  }
-
   /* ---------- stage ---------- */
   var ART = 0.86;
   function Stage(p){
@@ -646,12 +630,10 @@
         h(M.Typography, { variant: 'body2', color: 'text.secondary' }, st.error)) : null,
       h(RendererSwitch, { st: st, entry: entry }),
       h(BgSwatches, { st: st }),
-      h(StageArrow, { st: st, dir: -1 }),
-      h(StageArrow, { st: st, dir: 1 }),
       h(StageAction, { st: st }));
   }
 
-  /* Pager (dots; prev / next live on the stage). Dots: every dot animates its own width and colour
+  /* Pager: prev / next with spring tap feedback. Dots: every dot animates its own width and colour
      (the old one shrinks while the new one grows), and a separate indicator stretches from the old
      position towards the new one, then its trailing edge catches up — a liquid "worm" move.
      All Motion springs; reduced motion snaps. */
@@ -673,14 +655,22 @@
     }, [idx]);
     R.useLayoutEffect(function(){ x0.set(leftOf(idx)); x1.set(leftOf(idx) + DOT_ON); }, []);
     var width = Mo.useTransform(function(){ return Math.max(DOT, x1.get() - x0.get()); });
-    return h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'center', height: 24, marginTop: 8 } },
+    function nav(label, icon, d){
+      return h(m.button, { type: 'button', 'aria-label': label, onClick: function(){ ctl.go(d); }, whileTap: { scale: 0.9 }, transition: T.snap,
+        style: { width: 40, height: 40, border: 0, padding: 0, borderRadius: 20, background: '#fff', boxShadow: SHADOW2, color: C.ink,
+          display: 'grid', placeItems: 'center', cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' } },
+        h(icon, null));
+    }
+    return h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 12 } },
+      nav('Previous animation', Icon.back, -1),
       h('div', { 'aria-hidden': 'true', style: { position: 'relative', display: 'flex', gap: DOT_GAP, alignItems: 'center', height: DOT } },
         LIST.map(function(a, i){
           var on = i === idx;
           return h(m.span, { key: a.slug, initial: false, animate: { width: on ? DOT_ON : DOT, backgroundColor: on ? 'rgba(201,209,213,0)' : 'rgba(201,209,213,1)' },
             transition: { width: T.ui, backgroundColor: T.fade }, style: { display: 'block', height: DOT, borderRadius: DOT / 2 } });
         }),
-        h(m.span, { style: { position: 'absolute', top: 0, left: 0, height: DOT, borderRadius: DOT / 2, background: C.blue, x: x0, width: width } })));
+        h(m.span, { style: { position: 'absolute', top: 0, left: 0, height: DOT, borderRadius: DOT / 2, background: C.blue, x: x0, width: width } })),
+      nav('Next animation', Icon.next, 1));
   }
 
   /* ---------- playback card ---------- */
