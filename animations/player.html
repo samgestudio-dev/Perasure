@@ -25,8 +25,8 @@
 <script src="../vendor/motion@14.4.0/motion-react.js"></script>
 <script src="../vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
 <script src="../vendor/lottie-web@5.12.2/lottie_svg.min.js"></script>
-<script src="../assets/playground-ui.js?v=202610210621"></script>
-<script src="animations.js?v=202610210621"></script>
+<script src="../assets/playground-ui.js?v=202610210635"></script>
+<script src="animations.js?v=202610210635"></script>
 <script>
 /* ---- Animation player ------------------------------------------------------------------
    One animation at a time. Each animation exists twice, pixel-matched: the Lottie JSON played
@@ -479,12 +479,12 @@
   }
   var BLUE_ON_DARK = '#6aa7e6';
 
-  /* Two options with a shared sliding indicator (layoutId) — Lottie / GSAP. Bottom-left of the stage. */
+  /* Two options with a shared sliding indicator (layoutId) — Lottie / GSAP. Top-left of the stage. */
   function RendererSwitch(p){
     var entry = p.entry, dark = p.st.bg === 'dark', cur = p.st.renderer === 'gsap' ? 'gsap' : 'lottie';
     var opts = [['lottie', 'Lottie', true], ['gsap', 'GSAP', !!entry.gsap]];
     return h(m.div, { role: 'radiogroup', 'aria-label': 'Renderer', onPointerDown: stop,
-        animate: pillAnim(dark), transition: T.fade, style: Object.assign(pillStyle(dark), { top: 'auto', bottom: 12, left: 12, display: 'flex' }) },
+        animate: pillAnim(dark), transition: T.fade, style: Object.assign(pillStyle(dark), { left: 12, display: 'flex' }) },
       opts.map(function(o){
         var on = o[0] === cur, off = !o[2];
         return h(m.button, { key: o[0], type: 'button', role: 'radio', 'aria-checked': on ? 'true' : 'false', disabled: off,
@@ -573,14 +573,11 @@
       h(Swap, { k: key, gap: 6 }, icon, label)) : null);
   }
 
-  /* Animation name, top-left of the stage (next to the palette pill). Slides / fades in the direction of
-     navigation; turns white on the dark background. */
-  function StageTitle(p){
-    var entry = p.entry, dark = p.st.bg === 'dark', dx = (p.st.dir || 0) * 16;
-    return h(m.h1, { initial: false, animate: { color: dark ? '#ffffff' : C.ink }, transition: T.fade,
-        style: { position: 'absolute', left: 16, top: 12, zIndex: 2, margin: 0, height: 32, maxWidth: 'calc(100% - 16px - 150px)',
-          display: 'flex', alignItems: 'center', pointerEvents: 'none',
-          font: '700 18px/24px ' + PG.theme.typography.h6.fontFamily, letterSpacing: '-0.01em' } },
+  /* Animation name, first row of the playback bar. Slides / fades in the direction of navigation. */
+  function BarTitle(p){
+    var entry = p.entry, dx = (p.st.dir || 0) * 16;
+    return h('h1', { style: { position: 'relative', flex: 1, minWidth: 0, margin: 0, color: C.ink,
+          font: '700 17px/22px ' + PG.theme.typography.h6.fontFamily, letterSpacing: '-0.01em' } },
       h(AP, { mode: 'popLayout', initial: false, custom: dx },
         h(m.span, { key: entry.slug, custom: dx,
             variants: { enter: function(d){ return { opacity: 0, x: d }; }, center: { opacity: 1, x: 0 }, leave: function(d){ return { opacity: 0, x: -d, transition: T.out }; } },
@@ -588,8 +585,23 @@
             style: { display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } }, entry.title)));
   }
 
+  /* Prev / next, inside the stage at mid-height. Half transparent at rest; a tap brings it to full
+     opacity, and 1 s after the last tap it fades back. */
+  function StageArrow(p){
+    var dark = p.st.bg === 'dark', d = p.dir;
+    var a = R.useState(false), on = a[0], setOn = a[1], timer = R.useRef(0);
+    R.useEffect(function(){ return function(){ clearTimeout(timer.current); }; }, []);
+    function tap(){ setOn(true); clearTimeout(timer.current); timer.current = setTimeout(function(){ setOn(false); }, 1000); ctl.go(d); }
+    return h(m.button, { type: 'button', 'aria-label': d < 0 ? 'Previous animation' : 'Next animation', onClick: tap, onPointerDown: stop,
+        initial: false, animate: { opacity: on ? 1 : 0.5, backgroundColor: dark ? 'rgba(36,46,53,0.92)' : '#ffffff', color: dark ? '#ffffff' : C.ink },
+        whileTap: { scale: 0.9 }, transition: { opacity: T.fade, backgroundColor: T.fade, color: T.fade, default: T.snap },
+        style: { position: 'absolute', top: '50%', marginTop: -20, zIndex: 2, left: d < 0 ? 8 : 'auto', right: d > 0 ? 8 : 'auto',
+          width: 40, height: 40, border: 0, padding: 0, borderRadius: 20, boxShadow: SHADOW2,
+          display: 'grid', placeItems: 'center', cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' } },
+      h(d < 0 ? Icon.back : Icon.next, null));
+  }
+
   /* ---------- stage ---------- */
-  var BAR_H = 56;   // control rows above / below the art (32px pills, 12px inset)
   function Stage(p){
     var st = p.st, entry = p.entry;
     var refA = R.useRef(null), refB = R.useRef(null), sw = R.useRef(null), content = R.useRef(null), first = R.useRef(true);
@@ -618,30 +630,26 @@
         },
         onPointerCancel: function(){ sw.current = null; },
         initial: false, animate: { backgroundColor: b.color }, transition: { backgroundColor: { type: 'tween', duration: BG_FADE / 1000, ease: [0.2, 0, 0, 1] } },
-        style: { position: 'relative', marginTop: 16, width: '100%', borderRadius: 28, overflow: 'hidden', touchAction: 'pan-y', boxShadow: PG.theme.shadows[3] }
+        style: { position: 'relative', marginTop: 16, aspectRatio: '1 / 1', width: '100%', borderRadius: 28, overflow: 'hidden', touchAction: 'pan-y', boxShadow: PG.theme.shadows[3] }
       },
       h(m.div, { 'aria-hidden': 'true', initial: false, animate: { opacity: b.grid ? 1 : 0 }, transition: T.fade,
         style: { position: 'absolute', inset: 0, backgroundImage: GRID, backgroundSize: '20px 20px', backgroundPosition: '0 0,10px 10px' } }),
-      // Controls have rows of their own (title + colour on top, renderer + action below); the art is
-      // never covered.
-      h('div', { style: { position: 'relative', height: BAR_H } },
-        h(StageTitle, { st: st, entry: entry }),
-        h(BgSwatches, { st: st })),
-      h('div', { style: { position: 'relative', aspectRatio: '1 / 1', width: '100%' } },
-        h('div', { ref: content, style: { position: 'absolute', inset: 0 } },
-          h('div', { ref: refA, className: 'ps-anim', style: { width: size, height: size } }),
-          h('div', { ref: refB, className: 'ps-anim', style: { width: size, height: size, visibility: 'hidden' } })),
-        h(AP, null, st.loading && !st.keep ? h(m.div, { key: 'ld', initial: { opacity: 0 }, animate: { opacity: 1, transition: Object.assign({}, T.fade, { delay: 0.15 }) },
-            exit: { opacity: 0, transition: T.out }, style: { position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' } },
-          h(M.CircularProgress, { size: 28, thickness: 4 })) : null),
-        st.error ? h(M.Box, { sx: { position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', p: 3, textAlign: 'center' } },
-          h(M.Typography, { variant: 'body2', color: 'text.secondary' }, st.error)) : null),
-      h('div', { style: { position: 'relative', height: BAR_H } },
-        h(RendererSwitch, { st: st, entry: entry }),
-        h(StageAction, { st: st })));
+      h('div', { ref: content, style: { position: 'absolute', inset: 0 } },
+        h('div', { ref: refA, className: 'ps-anim', style: { width: size, height: size } }),
+        h('div', { ref: refB, className: 'ps-anim', style: { width: size, height: size, visibility: 'hidden' } })),
+      h(AP, null, st.loading && !st.keep ? h(m.div, { key: 'ld', initial: { opacity: 0 }, animate: { opacity: 1, transition: Object.assign({}, T.fade, { delay: 0.15 }) },
+          exit: { opacity: 0, transition: T.out }, style: { position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' } },
+        h(M.CircularProgress, { size: 28, thickness: 4 })) : null),
+      st.error ? h(M.Box, { sx: { position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', p: 3, textAlign: 'center' } },
+        h(M.Typography, { variant: 'body2', color: 'text.secondary' }, st.error)) : null,
+      h(RendererSwitch, { st: st, entry: entry }),
+      h(BgSwatches, { st: st }),
+      h(StageArrow, { st: st, dir: -1 }),
+      h(StageArrow, { st: st, dir: 1 }),
+      h(StageAction, { st: st }));
   }
 
-  /* Pager: prev / next with spring tap feedback. Dots: every dot animates its own width and colour
+  /* Pager (dots; prev / next live on the stage). Dots: every dot animates its own width and colour
      (the old one shrinks while the new one grows), and a separate indicator stretches from the old
      position towards the new one, then its trailing edge catches up — a liquid "worm" move.
      All Motion springs; reduced motion snaps. */
@@ -663,22 +671,14 @@
     }, [idx]);
     R.useLayoutEffect(function(){ x0.set(leftOf(idx)); x1.set(leftOf(idx) + DOT_ON); }, []);
     var width = Mo.useTransform(function(){ return Math.max(DOT, x1.get() - x0.get()); });
-    function nav(label, icon, d){
-      return h(m.button, { type: 'button', 'aria-label': label, onClick: function(){ ctl.go(d); }, whileTap: { scale: 0.9 }, transition: T.snap,
-        style: { width: 40, height: 40, border: 0, padding: 0, borderRadius: 20, background: '#fff', boxShadow: SHADOW2, color: C.ink,
-          display: 'grid', placeItems: 'center', cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' } },
-        h(m.span, { key: idx, initial: { x: d * -4, opacity: 0.6 }, animate: { x: 0, opacity: 1 }, transition: T.snap, style: { display: 'grid' } }, h(icon, null)));
-    }
-    return h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 12 } },
-      nav('Previous animation', Icon.back, -1),
+    return h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'center', height: 24, marginTop: 8 } },
       h('div', { 'aria-hidden': 'true', style: { position: 'relative', display: 'flex', gap: DOT_GAP, alignItems: 'center', height: DOT } },
         LIST.map(function(a, i){
           var on = i === idx;
           return h(m.span, { key: a.slug, initial: false, animate: { width: on ? DOT_ON : DOT, backgroundColor: on ? 'rgba(201,209,213,0)' : 'rgba(201,209,213,1)' },
             transition: { width: T.ui, backgroundColor: T.fade }, style: { display: 'block', height: DOT, borderRadius: DOT / 2 } });
         }),
-        h(m.span, { style: { position: 'absolute', top: 0, left: 0, height: DOT, borderRadius: DOT / 2, background: C.blue, x: x0, width: width } })),
-      nav('Next animation', Icon.next, 1));
+        h(m.span, { style: { position: 'absolute', top: 0, left: 0, height: DOT, borderRadius: DOT / 2, background: C.blue, x: x0, width: width } })));
   }
 
   /* ---------- playback card ---------- */
@@ -729,7 +729,8 @@
     var key = st.paused ? ((st.phase === 'once' || st.phase === 'success') && total && f0 >= total - 1 ? 'done' : 'paused') : st.phase;
     var ph = PHASE[key] || PHASE.paused;
     return h(R.Fragment, null,
-      h(Slot, { style: { position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between' } },
+      h(Slot, { style: { position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, minHeight: 32 } },
+        h(BarTitle, { st: st, entry: entry }),
         /* Status control. Two-option pills (Intro / Loop, Loading / Success) keep one shape: labels
            slide-swap and the shared highlight glides; switching to / from the single status chip
            (one-shots) crossfades with a small scale, and the frame counter glides to make room. */
@@ -738,7 +739,7 @@
             ? h(m.div, { key: 'seg', role: 'group', 'aria-label': 'Jump to', layout: true,
                   initial: { opacity: 0, scale: 0.9 }, animate: { opacity: 1, scale: 1 }, exit: { opacity: 0, scale: 0.9, transition: T.out },
                   transition: { default: T.pop, layout: T.snap },
-                  style: { position: 'relative', display: 'inline-flex', padding: 3, borderRadius: 99, background: C.soft, boxShadow: 'inset 0 0 0 1px ' + C.line, transformOrigin: 'left center' } },
+                  style: { position: 'relative', flex: 'none', display: 'inline-flex', padding: 3, borderRadius: 99, background: C.soft, boxShadow: 'inset 0 0 0 1px ' + C.line, transformOrigin: 'right center' } },
                 segs.map(function(sg, k){
                   var on = k === region;
                   return h(m.button, { key: 'seg' + k, type: 'button', 'aria-pressed': on ? 'true' : 'false', 'aria-label': sg[1], onClick: function(){ ctl.jumpTo(sg[0]); },
@@ -755,13 +756,11 @@
             : h(m.div, { key: 'chip', layout: true,
                   initial: { opacity: 0, scale: 0.9 }, animate: { opacity: 1, scale: 1 }, exit: { opacity: 0, scale: 0.9, transition: T.out },
                   transition: { default: T.pop, layout: T.snap },
-                  style: { display: 'inline-flex', alignItems: 'center', gap: 6, height: 26, padding: '0 10px', borderRadius: 13, transformOrigin: 'left center',
+                  style: { flex: 'none', display: 'inline-flex', alignItems: 'center', gap: 6, height: 26, padding: '0 10px', borderRadius: 13, transformOrigin: 'right center',
                     background: C.soft, boxShadow: 'inset 0 0 0 1px ' + C.line, font: '600 12px/16px ' + FONT, color: C.ink } },
                 h(m.span, { animate: { backgroundColor: ph.dot }, transition: T.fade, style: { width: 8, height: 8, borderRadius: 4 } }),
-                h(Swap, { k: ph.label, dy: 6, gap: 0 }, ph.label))),
-        h(m.div, { layout: 'position', transition: { layout: T.snap } }, h(M.Typography, { variant: 'caption', color: 'text.secondary', component: 'div', sx: { fontVariantNumeric: 'tabular-nums', display: 'flex', alignItems: 'center', gap: '3px' } },
-          'Frame ', h('b', { ref: num, style: { color: C.ink, fontWeight: 600 } }, '0'), ' / ', h(Swap, { k: 't' + Math.round(total), dy: 6, gap: 0 }, Math.round(total))))),
-      h(Slot, null, h('div', {
+                h(Swap, { k: ph.label, dy: 6, gap: 0 }, ph.label)))),
+      h(Slot, { style: { display: 'flex', alignItems: 'center', gap: 12 } }, h('div', {
         ref: bar, role: 'slider', tabIndex: 0, 'aria-label': 'Scrub frames', 'aria-valuemin': 0, 'aria-valuemax': Math.round(total),
         onPointerDown: function(e){
           if (!st.total) return;
@@ -779,7 +778,7 @@
           var f = Math.max(0, Math.min((st.total || 0) - 0.01, Math.round(ctl.getFrame()) + (e.key === 'ArrowRight' ? 1 : -1)));
           ctl.scrubMove(f); paint(f); ctl.scrubEnd(f);
         },
-        style: { position: 'relative', height: 36, marginTop: 4, touchAction: 'none', cursor: 'pointer', outline: 'none',
+        style: { position: 'relative', flex: 1, minWidth: 0, height: 36, marginTop: 4, touchAction: 'none', cursor: 'pointer', outline: 'none',
           WebkitUserSelect: 'none', userSelect: 'none' }
       },
         /* Rail: the intro / loop proportions spring quickly to the new animation's values (the thumb
@@ -793,7 +792,11 @@
             transition: { x: RAIL, opacity: T.fade }, style: { position: 'absolute', left: 0, right: 0, top: 13, height: 10, pointerEvents: 'none' } },
           h('div', { style: { position: 'absolute', left: -1, top: 0, width: 2, height: 10, borderRadius: 1, background: '#fff' } })),
         h('div', { ref: thumb, style: { position: 'absolute', top: 7, left: '0%', width: 22, height: 22, marginLeft: -11, borderRadius: 11,
-          background: '#fff', boxShadow: '0 0 0 1.5px ' + C.blue + ', 0 2px 6px rgba(0,1,40,0.18)', pointerEvents: 'none' } }))));
+          background: '#fff', boxShadow: '0 0 0 1.5px ' + C.blue + ', 0 2px 6px rgba(0,1,40,0.18)', pointerEvents: 'none' } })),
+        // frame counter at the end of the rail (media-player style): current / total
+        h(M.Typography, { variant: 'caption', color: 'text.secondary', component: 'div', 'aria-label': 'Frame',
+            sx: { flex: 'none', marginTop: '4px', minWidth: 58, justifyContent: 'flex-end', fontVariantNumeric: 'tabular-nums', display: 'flex', alignItems: 'center', gap: '3px' } },
+          h('b', { ref: num, style: { color: C.ink, fontWeight: 600 } }, '0'), ' / ', h(Swap, { k: 't' + Math.round(total), dy: 6, gap: 0 }, Math.round(total)))));
   }
 
   /* Replay ↔ Play/Pause merge. Two buttons, each pinned by its outer edge, revealed by Motion springs
@@ -880,7 +883,7 @@
     // Replay merge into one wide primary Replay until it plays again.
     var ended = !!(st.paused && !st.loading && (st.phase === 'once' || st.phase === 'success') && st.total && ctl.getFrame() >= st.total - 1.01);
     return h(m.nav, { ref: ref, 'aria-label': 'Playback', initial: false, animate: { y: -p.lift }, transition: T.ui,
-        style: { position: 'fixed', left: 16, right: 16, bottom: 0, zIndex: 20, maxWidth: 448, margin: '0 auto', padding: 8,
+        style: { position: 'fixed', left: 8, right: 8, bottom: 0, zIndex: 20, padding: 8,
           borderRadius: 30, background: '#ffffff',
           boxShadow: '0 0 0 0.5px rgba(16,24,40,0.08), 0 10px 30px rgba(16,24,40,0.14), 0 2px 6px rgba(16,24,40,0.05)' } },
       h('div', { style: { padding: '4px 8px 0' } }, h(Timeline, { st: st, entry: entry })),
