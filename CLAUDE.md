@@ -54,6 +54,9 @@ README.md                  human-facing summary + demo / animation tables
      for content that swaps (button labels/icons via the player's `Swap`), and `layout` on cards so size changes
      animate. Exception: the player's timeline is painted per frame with no easing (it must show the exact time);
      the one exception is switching animations, when it glides back to 0 s in a fixed 0.2 s before the next one may start.
+     An element that is still on the page after an interaction (or replaced by a similar one) stays put and only
+     changes what differs (text swap, colour, size); it never disappears and plays its entrance again. Reloads keep
+     the previous state on screen until the new one is ready (e.g. the renderer switch keeps a still frame).
 3. Make the option screenshots shown on the index: `python3 tools/prototype-thumbs.py <slug>` (writes
    `prototypes/<slug>/preview.webp`, `preview-<variant>.webp`; adjust its `WAIT` if the first screen needs time).
 4. Add a row to the demo table in `README.md`.

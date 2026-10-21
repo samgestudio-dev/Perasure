@@ -25,8 +25,8 @@
 <script src="../vendor/motion@14.4.0/motion-react.js"></script>
 <script src="../vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
 <script src="../vendor/lottie-web@5.12.2/lottie_svg.min.js"></script>
-<script src="../assets/playground-ui.js?v=202610210359"></script>
-<script src="animations.js?v=202610210359"></script>
+<script src="../assets/playground-ui.js?v=202610210410"></script>
+<script src="animations.js?v=202610210410"></script>
 <script>
 /* ---- Animation player ------------------------------------------------------------------
    One animation at a time. Each animation exists twice, pixel-matched: the Lottie JSON played
@@ -194,15 +194,27 @@
     }
 
     // resume: { frame, paused } to continue where the other renderer was
+    // Renderer switch: the same artwork stays on screen (a still copy of the current frame) until the
+    // other renderer has drawn it, instead of blanking and appearing again.
+    var ghost = null;
+    function dropGhost(){ if (ghost) { ghost.remove(); ghost = null; } }
+    function keepGhost(){
+      dropGhost();
+      var src = boxB && boxB.style.visibility === 'visible' ? boxB : boxA;
+      if (!src || !src.firstChild) return;
+      ghost = src.cloneNode(true); ghost.removeAttribute('id'); ghost.style.visibility = 'visible'; ghost.setAttribute('aria-hidden', 'true');
+      src.parentNode.appendChild(ghost);
+    }
     function open(i, resume){
       if (!boxA) return;
+      if (resume !== undefined && st.index === i) keepGhost(); else dropGhost();
       token++; destroy();
       cur = LIST[i]; successReq = false; paused = false;
       phase = cur.success ? 'loading' : cur.intro ? 'intro' : 'once';
       // total / meta keep the previous animation's values until the new one is loaded, so the
       // interface changes once (animated) instead of blanking and refilling.
       set({ index: i, renderer: renderer, loading: true, error: '', paused: false, phase: phase,
-            success: cur.success ? 'idle' : 'none', switching: !resume, dir: navDir, nav: (st.nav || 0) + (st.index !== i ? 1 : 0) });
+            success: cur.success ? 'idle' : 'none', switching: !resume, keep: !!ghost, dir: navDir, nav: (st.nav || 0) + (st.index !== i ? 1 : 0) });
       navDir = 0;
       syncUrl();
       var my = token;
@@ -214,6 +226,7 @@
         if (my !== token) return;
         return back.then(function(){
         if (my !== token) return;
+        dropGhost();
         set({ loading: false, switching: false, meta: { w: A.w, h: A.h, fps: A.fps, label: A.label } });
         if (B) B.seek(0);
         var f = resume ? Math.max(0, Math.min(resume.frame, A.total - 0.01)) : 0;
@@ -222,6 +235,7 @@
         });
       }, function(err){
         if (my !== token) return;
+        dropGhost();
         set({ loading: false, switching: false, error: (err && err.message) || 'Couldn’t load the animation.' });
       });
     }
@@ -296,7 +310,7 @@
         start(0);
       },
       showSuccess: function(){
-        if (!B || !active || !active.total) return;
+        if (!B || !active || !active.total || st.loading) return;
         if (active === B) { resetCoin(); return; }
         successReq = true; paused = false;
         A.finish(swapToSuccess);
@@ -538,7 +552,8 @@
      icon swap with a slide, through Show success → Finishing… → Reset. */
   function StageAction(p){
     var st = p.st;
-    var show = st.success !== 'none' && !st.loading;
+    // stays on screen while the animation reloads (renderer switch); it simply ignores taps then
+    var show = st.success !== 'none';
     var waiting = st.success === 'waiting', done = st.success === 'done', dark = st.bg === 'dark';
     var bg = done || waiting ? (dark ? 'rgba(36,46,53,0.92)' : '#ffffff') : C.blue;
     var fg = done || waiting ? (dark ? '#ffffff' : C.ink) : '#ffffff';
@@ -574,6 +589,7 @@
   }
 
   /* ---------- stage ---------- */
+  var BAR_H = 56;   // control rows above / below the art (32px pills, 12px inset)
   function Stage(p){
     var st = p.st, entry = p.entry;
     var refA = R.useRef(null), refB = R.useRef(null), sw = R.useRef(null), content = R.useRef(null), first = R.useRef(true);
@@ -602,22 +618,27 @@
         },
         onPointerCancel: function(){ sw.current = null; },
         initial: false, animate: { backgroundColor: b.color }, transition: { backgroundColor: { type: 'tween', duration: BG_FADE / 1000, ease: [0.2, 0, 0, 1] } },
-        style: { position: 'relative', marginTop: 16, aspectRatio: '1 / 1', width: '100%', borderRadius: 28, overflow: 'hidden', touchAction: 'pan-y', boxShadow: PG.theme.shadows[3] }
+        style: { position: 'relative', marginTop: 16, width: '100%', borderRadius: 28, overflow: 'hidden', touchAction: 'pan-y', boxShadow: PG.theme.shadows[3] }
       },
       h(m.div, { 'aria-hidden': 'true', initial: false, animate: { opacity: b.grid ? 1 : 0 }, transition: T.fade,
         style: { position: 'absolute', inset: 0, backgroundImage: GRID, backgroundSize: '20px 20px', backgroundPosition: '0 0,10px 10px' } }),
-      h('div', { ref: content, style: { position: 'absolute', inset: 0 } },
-        h('div', { ref: refA, className: 'ps-anim', style: { width: size, height: size } }),
-        h('div', { ref: refB, className: 'ps-anim', style: { width: size, height: size, visibility: 'hidden' } })),
-      h(AP, null, st.loading ? h(m.div, { key: 'ld', initial: { opacity: 0 }, animate: { opacity: 1, transition: Object.assign({}, T.fade, { delay: 0.15 }) },
-          exit: { opacity: 0, transition: T.out }, style: { position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' } },
-        h(M.CircularProgress, { size: 28, thickness: 4 })) : null),
-      st.error ? h(M.Box, { sx: { position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', p: 3, textAlign: 'center' } },
-        h(M.Typography, { variant: 'body2', color: 'text.secondary' }, st.error)) : null,
-      h(StageTitle, { st: st, entry: entry }),
-      h(RendererSwitch, { st: st, entry: entry }),
-      h(BgSwatches, { st: st }),
-      h(StageAction, { st: st }));
+      // Controls have rows of their own (title + colour on top, renderer + action below); the art is
+      // never covered.
+      h('div', { style: { position: 'relative', height: BAR_H } },
+        h(StageTitle, { st: st, entry: entry }),
+        h(BgSwatches, { st: st })),
+      h('div', { style: { position: 'relative', aspectRatio: '1 / 1', width: '100%' } },
+        h('div', { ref: content, style: { position: 'absolute', inset: 0 } },
+          h('div', { ref: refA, className: 'ps-anim', style: { width: size, height: size } }),
+          h('div', { ref: refB, className: 'ps-anim', style: { width: size, height: size, visibility: 'hidden' } })),
+        h(AP, null, st.loading && !st.keep ? h(m.div, { key: 'ld', initial: { opacity: 0 }, animate: { opacity: 1, transition: Object.assign({}, T.fade, { delay: 0.15 }) },
+            exit: { opacity: 0, transition: T.out }, style: { position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' } },
+          h(M.CircularProgress, { size: 28, thickness: 4 })) : null),
+        st.error ? h(M.Box, { sx: { position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', p: 3, textAlign: 'center' } },
+          h(M.Typography, { variant: 'body2', color: 'text.secondary' }, st.error)) : null),
+      h('div', { style: { position: 'relative', height: BAR_H } },
+        h(RendererSwitch, { st: st, entry: entry }),
+        h(StageAction, { st: st })));
   }
 
   /* Pager: prev / next with spring tap feedback. Dots: every dot animates its own width and colour
