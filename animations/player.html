@@ -25,8 +25,8 @@
 <script src="../vendor/motion@14.4.0/motion-react.js"></script>
 <script src="../vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
 <script src="../vendor/lottie-web@5.12.2/lottie_svg.min.js"></script>
-<script src="../assets/playground-ui.js?v=202610210239"></script>
-<script src="animations.js?v=202610210239"></script>
+<script src="../assets/playground-ui.js?v=202610210251"></script>
+<script src="animations.js?v=202610210251"></script>
 <script>
 /* ---- Animation player ------------------------------------------------------------------
    One animation at a time. Each animation exists twice, pixel-matched: the Lottie JSON played
@@ -755,38 +755,13 @@
         : null));
   }
 
-  /* Large control button (Motion): colours fade between outlined and filled, size changes ride a
-     layout spring, label/icon swap with Swap. */
-  function CtlButton(p){
-    var primary = !!p.primary;
-    return h(m.button, { type: 'button', layout: true, onClick: p.onClick, 'aria-label': p.label, whileTap: TAP,
-        initial: p.initial || false, animate: Object.assign({ opacity: 1, scale: 1,
-          backgroundColor: primary ? C.blue : '#ffffff', color: primary ? '#ffffff' : C.ink,
-          boxShadow: primary ? '0 0 0 1px rgba(44,116,190,1), 0 2px 8px rgba(44,116,190,0.28)' : '0 0 0 1px rgba(20,30,36,0.10), 0 0px 0px rgba(44,116,190,0)' }, p.animate || {}),
-        exit: p.exit, transition: { default: T.snap, layout: T.layout, backgroundColor: T.fade, color: T.fade, boxShadow: T.fade },
-        style: Object.assign({ height: 52, minWidth: 0, width: '100%', border: 0, padding: '0 12px', borderRadius: 16,
-          display: 'inline-flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
-          font: '600 15px/20px ' + FONT, cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }, p.style || {}) },
-      h(Swap, { k: p.k, dy: p.dy }, p.icon ? h(p.icon, { sx: { fontSize: 20, display: 'block' } }) : null, p.text));
-  }
-
-  /* Liquid Replay ↔ Play/Pause. The two button backgrounds are blobs in one layer with an SVG
-     "goo" filter (blur, then a hard alpha threshold) so shapes that come close fuse like liquid:
-     on merge the Replay blob stretches across both slots and turns blue while the Play blob slides in
-     and is absorbed; on split the Play droplet pulls back out and Replay shrinks and turns white.
-     Labels sit above, unfiltered and sharp. The outline of the white Replay is drawn outside the
-     filter (a blurred hairline would disappear). */
-  var GOO_GAP = 8, GOO_H = 52;
-  function GooDefs(){
-    return h('svg', { width: 0, height: 0, 'aria-hidden': 'true', style: { position: 'absolute', width: 0, height: 0 } },
-      h('defs', null,
-        h('filter', { id: 'ps-goo', x: '-20%', y: '-40%', width: '140%', height: '180%', colorInterpolationFilters: 'sRGB' },
-          h('feGaussianBlur', { in: 'SourceGraphic', stdDeviation: 5, result: 'blur' }),
-          // threshold at alpha 0.5: two shapes 8px apart stay separate at rest (0.21 + 0.21 < 0.5), and fuse once closer
-          h('feColorMatrix', { in: 'blur', mode: 'matrix', values: '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10', result: 'goo' }))));
-  }
-  function LiquidPair(p){
-    var ended = p.ended, box = R.useRef(null);
+  /* Replay ↔ Play/Pause merge. Two buttons, each pinned by its outer edge, sized by Motion springs
+     (visualDuration + bounce). Outer edges never move: on merge the white Replay's right edge
+     retracts to its left edge and fades, and the blue button's left edge follows it to take the space;
+     on split the blue left edge springs back and the white Replay grows out from the left. */
+  var PAIR_GAP = 8, PAIR_H = 52;
+  function PairButtons(p){
+    var ended = p.ended, st = p.st, box = R.useRef(null);
     var sz = R.useState(0), S = sz[0], setS = sz[1];
     R.useLayoutEffect(function(){
       var el = box.current; if (!el) return;
@@ -796,35 +771,37 @@
       if (ro) ro.observe(el);
       return function(){ if (ro) ro.disconnect(); };
     }, []);
-    var w1 = (S - GOO_GAP) / 2.4, w2 = (S - GOO_GAP) * 1.4 / 2.4;
-    // Outer edges stay put (Replay's left, Play's right); only the facing edges move: they reach into each
-    // other and fuse through the goo filter (merge), or pull apart with a liquid neck (split).
-    var aT = ended ? { type: 'spring', visualDuration: 0.42, bounce: 0.14 } : { type: 'spring', visualDuration: 0.5, bounce: 0.1, delay: 0.05 };
-    var bT = ended ? { type: 'spring', visualDuration: 0.5, bounce: 0.06, delay: 0.04 } : { type: 'spring', visualDuration: 0.42, bounce: 0.16 };
-    var colT = ended ? { type: 'tween', duration: 0.22, ease: [0.2, 0, 0, 1] } : { type: 'tween', duration: 0.24, delay: 0.16, ease: [0.2, 0, 0, 1] };
-    var blob = { position: 'absolute', top: 0, left: 0, height: GOO_H, borderRadius: 16 };
-    return h('div', { ref: box, 'aria-hidden': 'true', style: { gridColumn: '1 / span 2', gridRow: 1, position: 'relative', height: GOO_H, pointerEvents: 'none' } },
-      S ? h('div', { style: { position: 'absolute', inset: 0, filter: 'url(#ps-goo) drop-shadow(0 2px 6px rgba(16,24,40,0.12))' } },
-        h(m.div, { initial: false, animate: { x: 0, width: ended ? w1 + GOO_GAP + 16 : w1, backgroundColor: ended ? C.blue : '#ffffff' },
-          transition: { x: aT, width: aT, backgroundColor: colT }, style: blob }),
-        h(m.div, { initial: false,
-          animate: ended ? { x: w1 - 16, width: S - w1 + 16 } : { x: w1 + GOO_GAP, width: w2 },
-          transition: { default: bT }, style: Object.assign({}, blob, { background: C.blue }) })) : null,
-      // hairline outline of the white Replay (outside the filter)
-      S ? h(m.div, { initial: false, animate: { width: ended ? w1 + GOO_GAP + 16 : w1, opacity: ended ? 0 : 1 },
-        transition: { width: aT, opacity: ended ? T.out : colT },
-        style: { position: 'absolute', top: 0, left: 0, height: GOO_H, borderRadius: 16, boxShadow: 'inset 0 0 0 1px rgba(20,30,36,0.10)' } }) : null);
+    var w1 = (S - PAIR_GAP) / 2.4, w2 = S - w1 - PAIR_GAP;
+    var tr = pairSprings(ended);
+    var btn = { position: 'absolute', top: 0, height: PAIR_H, border: 0, padding: 0, borderRadius: 16, overflow: 'hidden',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', font: '600 15px/20px ' + FONT,
+      cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' };
+    var icon = function(I){ return h(I, { sx: { fontSize: 20, display: 'block' } }); };
+    var mainK = ended ? 'replay' : (st.paused ? 'play' : 'pause');
+    var mainText = ended ? 'Replay' : (st.paused ? 'Play' : 'Pause');
+    var mainIcon = ended ? Icon.replay : (st.paused ? Icon.play : Icon.pause);
+    return h('div', { ref: box, style: { gridColumn: '1 / span 2', gridRow: 1, position: 'relative', height: PAIR_H } },
+      // white Replay: pinned left; its right edge retracts (the label stays put and is clipped), then fades
+      S ? h(m.button, { type: 'button', 'aria-label': 'Replay', 'aria-hidden': ended ? 'true' : undefined, tabIndex: ended ? -1 : 0,
+          onClick: ctl.replay, whileTap: ended ? undefined : TAP,
+          initial: false, animate: { width: ended ? 0 : w1, opacity: ended ? 0 : 1 },
+          transition: { width: tr.white, opacity: ended ? { type: 'tween', duration: 0.14, delay: 0.2 } : { type: 'tween', duration: 0.08 } },
+          style: Object.assign({}, btn, { left: 0, justifyContent: 'flex-start', background: '#ffffff', color: C.ink,
+            boxShadow: 'inset 0 0 0 1px rgba(20,30,36,0.10)', pointerEvents: ended ? 'none' : 'auto' }) },
+        h('span', { style: { flex: '0 0 auto', width: w1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, whiteSpace: 'nowrap' } },
+          icon(Icon.replay), 'Replay')) : null,
+      // blue: pinned right; only its left edge moves. The label stays centred in it and swaps.
+      S ? h(m.button, { type: 'button', 'aria-label': mainText, onClick: ended ? ctl.replay : ctl.togglePlay, whileTap: TAP,
+          initial: false, animate: { width: ended ? S : w2 }, transition: { width: tr.blue },
+          style: Object.assign({}, btn, { right: 0, background: C.blue, color: '#ffffff', boxShadow: '0 2px 8px rgba(44,116,190,0.28)' }) },
+        h(Swap, { k: mainK, gap: 6 }, icon(mainIcon), mainText)) : null);
   }
-
-  /* Label + hit area on top of the liquid layer. */
-  function PairLabel(p){
-    return h(m.button, { type: 'button', layout: true, 'aria-label': p.label, onClick: p.onClick, whileTap: TAP,
-        initial: p.initial || false, animate: { opacity: 1, scale: 1, color: p.light ? '#ffffff' : C.ink }, exit: p.exit,
-        transition: { default: T.snap, layout: { type: 'spring', visualDuration: 0.42, bounce: 0.14 }, color: T.fade },
-        style: Object.assign({ gridRow: 1, position: 'relative', zIndex: 1, height: GOO_H, minWidth: 0, border: 0, padding: '0 4px', borderRadius: 16,
-          background: 'transparent', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          font: '600 15px/20px ' + FONT, cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }, p.style) },
-      h(Swap, { k: p.k, gap: 6 }, h(p.icon, { sx: { fontSize: 20, display: 'block' } }), p.text));
+  function pairSprings(ended){
+    return ended
+      // merge: white retracts first, blue chases it and lands exactly at the left edge (no bounce past it)
+      ? { white: { type: 'spring', visualDuration: 0.34, bounce: 0 }, blue: { type: 'spring', visualDuration: 0.42, bounce: 0, delay: 0.05 } }
+      // split: blue edge springs back with a little life, white grows out behind it
+      : { white: { type: 'spring', visualDuration: 0.4, bounce: 0.12, delay: 0.06 }, blue: { type: 'spring', visualDuration: 0.4, bounce: 0.18 } };
   }
 
   /* Large control button (Motion): colours fade between outlined and filled, label/icon swap. */
@@ -834,7 +811,7 @@
         initial: false, animate: { backgroundColor: primary ? C.blue : '#ffffff', color: primary ? '#ffffff' : C.ink,
           boxShadow: primary ? '0 0 0 1px rgba(44,116,190,1), 0 2px 8px rgba(44,116,190,0.28)' : '0 0 0 1px rgba(20,30,36,0.10), 0 0px 0px rgba(44,116,190,0)' },
         transition: { default: T.snap, layout: T.layout, backgroundColor: T.fade, color: T.fade, boxShadow: T.fade },
-        style: Object.assign({ height: GOO_H, minWidth: 0, width: '100%', border: 0, padding: '0 12px', borderRadius: 16,
+        style: Object.assign({ height: PAIR_H, minWidth: 0, width: '100%', border: 0, padding: '0 12px', borderRadius: 16,
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
           font: '600 15px/20px ' + FONT, cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }, p.style || {}) },
       h(Swap, { k: p.k, dy: p.dy }, p.icon ? h(p.icon, { sx: { fontSize: 20, display: 'block' } }) : null, p.text));
@@ -843,21 +820,13 @@
   function PlaybackCard(p){
     var st = p.st, entry = p.entry;
     // A one-shot (or the coin's success) that has finished: Play would only restart it, so Play and
-    // Replay merge (liquid) into one wide primary Replay until it plays again.
+    // Replay merge into one wide primary Replay until it plays again.
     var ended = !!(st.paused && !st.loading && (st.phase === 'once' || st.phase === 'success') && st.total && ctl.getFrame() >= st.total - 1.01);
     return h(SectionCard, { style: { marginTop: 16 } },
       h(Timeline, { st: st, entry: entry }),
       // Fixed proportions (grid): Replay and speed equal, Play / Pause widest; merged Replay spans both.
-      h(Slot, { style: { position: 'relative', display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1.4fr) minmax(0,1fr)', gap: GOO_GAP, marginTop: 16 } },
-        h(GooDefs, null),
-        h(LiquidPair, { ended: ended }),
-        h(PairLabel, { key: 'replay', k: 'replay', label: 'Replay', light: ended, onClick: ctl.replay, icon: Icon.replay, text: 'Replay',
-          style: { gridColumn: ended ? '1 / span 2' : '1' } }),
-        h(AP, { mode: 'popLayout', initial: false },
-          ended ? null : h(PairLabel, { key: 'play', k: st.paused ? 'play' : 'pause', label: st.paused ? 'Play' : 'Pause', light: true,
-            onClick: ctl.togglePlay, icon: st.paused ? Icon.play : Icon.pause, text: st.paused ? 'Play' : 'Pause',
-            initial: { opacity: 0, scale: 0.85 }, exit: { opacity: 0, scale: 0.7, transition: T.out },
-            style: { gridColumn: '2' } })),
+      h(Slot, { style: { position: 'relative', display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1.4fr) minmax(0,1fr)', gap: PAIR_GAP, marginTop: 16 } },
+        h(PairButtons, { ended: ended, st: st }),
         h(CtlButton, { key: 'speed', k: 's' + st.speedIx, dy: 10, label: 'Playback speed', onClick: ctl.cycleSpeed, icon: Icon.speed,
           text: SPEEDS[st.speedIx] + '×', style: { gridColumn: '3', gridRow: 1, fontVariantNumeric: 'tabular-nums' } })));
   }
