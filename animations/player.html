@@ -25,8 +25,8 @@
 <script src="../vendor/motion@14.4.0/motion-react.js"></script>
 <script src="../vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
 <script src="../vendor/lottie-web@5.12.2/lottie_svg.min.js"></script>
-<script src="../assets/playground-ui.js?v=202610210256"></script>
-<script src="animations.js?v=202610210256"></script>
+<script src="../assets/playground-ui.js?v=202610210304"></script>
+<script src="animations.js?v=202610210304"></script>
 <script>
 /* ---- Animation player ------------------------------------------------------------------
    One animation at a time. Each animation exists twice, pixel-matched: the Lottie JSON played
@@ -146,10 +146,31 @@
     var subs = [], fsubs = [], frame = 0;
     var cur = null, A = null, B = null, active = null, boxA = null, boxB = null, token = 0, navDir = 0;
     var phase = 'intro', paused = false, scrubbing = false, wasPlaying = false, successReq = false;
+    var rewinding = 0;   // rAF id while the time indicator returns to 0 s
+
+    /* Switching animations: the time indicator glides back to 0 s in a fixed 0.2 s (ease-out) on the
+       previous total; the next animation may only start once it is there. Resolves immediately when
+       it is already at 0. */
+    function rewind(my){
+      if (rewinding) { cancelAnimationFrame(rewinding); rewinding = 0; }
+      var from = frame;
+      if (!(from > 0) || reduceMotion()) { tick(0); return Promise.resolve(); }
+      return new Promise(function(done){
+        var t0 = performance.now();
+        (function step(now){
+          if (my !== token) { rewinding = 0; return; }
+          var k = Math.min(1, (now - t0) / 200), e = 1 - Math.pow(1 - k, 3);
+          tick(from * (1 - e));
+          if (k < 1) rewinding = requestAnimationFrame(step);
+          else { rewinding = 0; tick(0); done(); }
+        })(t0);
+      });
+    }
+    function reduceMotion(){ try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } }
 
     function emit(){ subs.forEach(function(f){ f(); }); }
     function set(p){ st = Object.assign({}, st, p); emit(); }
-    function tick(f){ frame = f != null ? f : (active && active.total ? active.frame() : 0); fsubs.forEach(function(fn){ fn(); }); }
+    function tick(f){ if (f == null && rewinding) return; frame = f != null ? f : (active && active.total ? active.frame() : 0); fsubs.forEach(function(fn){ fn(); }); }
     function sync(){
       set({
         paused: paused, phase: phase, total: active && active.total || 0,
@@ -185,16 +206,20 @@
       navDir = 0;
       syncUrl();
       var my = token;
+      var back = resume ? Promise.resolve() : rewind(my);
       A = engineFor(boxA, cur, 'main'); active = A;
       if (cur.success) B = engineFor(boxB, cur, 'success');
       [A, B].forEach(function(e){ if (e) { e.onFrame = function(){ if (active === e && my === token) tick(); }; e.setSpeed(SPEEDS[st.speedIx]); } });
       Promise.all([A.ready, B ? B.ready : null]).then(function(){
+        if (my !== token) return;
+        return back.then(function(){
         if (my !== token) return;
         set({ loading: false, meta: { w: A.w, h: A.h, fps: A.fps, label: A.label } });
         if (B) B.seek(0);
         var f = resume ? Math.max(0, Math.min(resume.frame, A.total - 0.01)) : 0;
         if (resume && resume.paused) { A.seek(f); paused = true; sync(); }
         else start(f);
+        });
       }, function(err){
         if (my !== token) return;
         set({ loading: false, error: (err && err.message) || 'Couldn’t load the animation.' });
@@ -261,12 +286,12 @@
         open(st.index, resume);
       },
       togglePlay: function(){
-        if (!active || !active.total) return;
+        if (!active || !active.total || st.loading) return;   // not while loading / rewinding
         if (paused) { var f = active.frame(); if (cur.success) coinPlay(f); else start(f); }
         else { active.pause(); paused = true; sync(); }
       },
       replay: function(){
-        if (!active || !active.total) return;
+        if (!active || !active.total || st.loading) return;   // not while loading / rewinding
         if (cur.success) { if (active === B) resetCoin(); else { successReq = false; start(0); } return; }
         start(0);
       },
@@ -283,7 +308,7 @@
         set({ speedIx: ix });
       },
       scrubMove: function(f){
-        if (!active || !active.total) return;
+        if (!active || !active.total || st.loading) return;   // not while loading / rewinding
         if (!scrubbing) { scrubbing = true; wasPlaying = !paused; active.pause(); paused = true; sync(); }
         active.seek(Math.max(0, Math.min(f, active.total - 0.01)));
         tick(f);
@@ -297,7 +322,7 @@
       // Jump straight to a state: 'intro' (replay from frame 0), 'loop' (start of the loop),
       // 'loading' / 'success' for the coin (success starts immediately, no waiting for the turn).
       jumpTo: function(k){
-        if (!active || !active.total) return;
+        if (!active || !active.total || st.loading) return;   // not while loading / rewinding
         if (k === 'intro') { start(0); }
         else if (k === 'loop' && cur.loop) { paused = false; enterLoop(); }
         else if (k === 'loading' && cur.success) { if (active === B) resetCoin(); else { successReq = false; start(0); } }

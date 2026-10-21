@@ -52,7 +52,8 @@ README.md                  human-facing summary + demo / animation tables
      transitions or the MUI ripple: springs from `PG.T` (ui / snap / pop / layout, defined by visualDuration + bounce),
      `whileTap: PG.TAP` on everything pressable, `layoutId` for indicators that move between options, `AnimatePresence`
      for content that swaps (button labels/icons via the player's `Swap`), and `layout` on cards so size changes
-     animate. Exception: the player's timeline is painted per frame with no easing (it must show the exact time).
+     animate. Exception: the player's timeline is painted per frame with no easing (it must show the exact time);
+     the one exception is switching animations, when it glides back to 0 s in a fixed 0.2 s before the next one may start.
 3. Make the option screenshots shown on the index: `python3 tools/prototype-thumbs.py <slug>` (writes
    `prototypes/<slug>/preview.webp`, `preview-<variant>.webp`; adjust its `WAIT` if the first screen needs time).
 4. Add a row to the demo table in `README.md`.
