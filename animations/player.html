@@ -25,8 +25,8 @@
 <script src="../vendor/motion@14.4.0/motion-react.js"></script>
 <script src="../vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
 <script src="../vendor/lottie-web@5.12.2/lottie_svg.min.js"></script>
-<script src="../assets/playground-ui.js?v=202610210736"></script>
-<script src="animations.js?v=202610210736"></script>
+<script src="../assets/playground-ui.js?v=202610210731"></script>
+<script src="animations.js?v=202610210731"></script>
 <script>
 /* ---- Animation player ------------------------------------------------------------------
    One animation at a time. Each animation exists twice, pixel-matched: the Lottie JSON played
@@ -963,7 +963,6 @@
   }
 
   /* ---------- app ---------- */
-  var SHADOW_ROOM = 64;
   function App(){
     var st = useCtl(), entry = LIST[st.index] || LIST[0];
     var lift = useNavInset();
@@ -982,13 +981,9 @@
     }, []);
     if (!entry) return h(M.Typography, { sx: { p: 3 } }, 'No animations registered.');
     return h(M.Container, { disableGutters: true, sx: {
-        // The page runs SHADOW_ROOM past the bar and is always at least that much taller than the screen:
-        // the bar's shadow has page underneath it (iOS Safari stops painting at the end of the document and
-        // fills the rest of its toolbar area with a solid colour, cutting the shadow), and the bar
-        // (margin-top: auto) still rests at the bottom of the screen on short pages.
-        maxWidth: 480, px: 2, pb: (lift + SHADOW_ROOM) + 'px',
-        display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh + ' + SHADOW_ROOM + 'px)',
-        '@supports (min-height: 100dvh)': { minHeight: 'calc(100dvh + ' + SHADOW_ROOM + 'px)' } } },
+        maxWidth: 480, px: 2, pb: lift + 'px',
+        // at least one screen tall, so the sticky bar (margin-top: auto) sits at the bottom on short pages too
+        display: 'flex', flexDirection: 'column', minHeight: '100vh', '@supports (min-height: 100dvh)': { minHeight: '100dvh' } } },
       h(StickyHeader, null, h(TopBar, { st: st })),
       h(Mo.LayoutGroup, null,
         h(TitleBlock, { st: st, entry: entry }),
