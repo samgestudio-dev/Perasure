@@ -25,8 +25,8 @@
 <script src="../vendor/motion@14.4.0/motion-react.js"></script>
 <script src="../vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
 <script src="../vendor/lottie-web@5.12.2/lottie_svg.min.js"></script>
-<script src="../assets/playground-ui.js?v=202610210738"></script>
-<script src="animations.js?v=202610210738"></script>
+<script src="../assets/playground-ui.js?v=202610210740"></script>
+<script src="animations.js?v=202610210740"></script>
 <script>
 /* ---- Animation player ------------------------------------------------------------------
    One animation at a time. Each animation exists twice, pixel-matched: the Lottie JSON played
@@ -896,6 +896,8 @@
      collapsed / hidden), clear the home indicator instead. Other browsers: home indicator + 12.
      ?debug=1 shows the numbers. */
   var NAV_DBG = /[?&]debug=1/.test(location.search);
+  var SAFARI_LIFT = 20;
+  var LIFT_Q = (function(){ var m = /[?&]lift=(\d+)/.exec(location.search); return m ? +m[1] : null; })();
   function navInset(){
     var p = document.createElement('div');
     p.style.cssText = 'position:absolute;left:0;top:0;width:0;visibility:hidden;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)';
@@ -908,8 +910,11 @@
       var sh = Math.max(screen.width, screen.height);
       var top = et > 0 ? 0 : (sh >= 874 ? 62 : sh >= 852 ? 59 : sh >= 812 ? 47 : 20);
       zone = Math.max(0, sh - window.innerHeight - top);     // screen below the layout viewport
-      lift = zone > 40 ? 6 : eb + 12;
+      // Safari 26 treats a fixed / sticky element close to the viewport's bottom edge as a bottom bar and
+      // paints a solid strip under it (content stops showing through); keep the bar clear of that edge.
+      lift = zone > 40 ? SAFARI_LIFT : eb + 12;
     } else lift = eb + 12;
+    if (LIFT_Q != null) lift = LIFT_Q;   // ?lift=N to try heights on a device
     if (NAV_DBG) {
       var d = document.getElementById('ps-nav-dbg');
       if (!d) { d = document.createElement('pre'); d.id = 'ps-nav-dbg';
