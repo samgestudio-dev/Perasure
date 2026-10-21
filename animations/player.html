@@ -25,8 +25,8 @@
 <script src="../vendor/motion@14.4.0/motion-react.js"></script>
 <script src="../vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
 <script src="../vendor/lottie-web@5.12.2/lottie_svg.min.js"></script>
-<script src="../assets/playground-ui.js?v=202610210220"></script>
-<script src="animations.js?v=202610210220"></script>
+<script src="../assets/playground-ui.js?v=202610210239"></script>
+<script src="animations.js?v=202610210239"></script>
 <script>
 /* ---- Animation player ------------------------------------------------------------------
    One animation at a time. Each animation exists twice, pixel-matched: the Lottie JSON played
@@ -797,20 +797,21 @@
       return function(){ if (ro) ro.disconnect(); };
     }, []);
     var w1 = (S - GOO_GAP) / 2.4, w2 = (S - GOO_GAP) * 1.4 / 2.4;
-    // merge: A grows first-ish, B follows into it (slower) → a liquid neck; split: B leads out, A trails.
+    // Outer edges stay put (Replay's left, Play's right); only the facing edges move: they reach into each
+    // other and fuse through the goo filter (merge), or pull apart with a liquid neck (split).
     var aT = ended ? { type: 'spring', visualDuration: 0.42, bounce: 0.14 } : { type: 'spring', visualDuration: 0.5, bounce: 0.1, delay: 0.05 };
     var bT = ended ? { type: 'spring', visualDuration: 0.5, bounce: 0.06, delay: 0.04 } : { type: 'spring', visualDuration: 0.42, bounce: 0.16 };
     var colT = ended ? { type: 'tween', duration: 0.22, ease: [0.2, 0, 0, 1] } : { type: 'tween', duration: 0.24, delay: 0.16, ease: [0.2, 0, 0, 1] };
     var blob = { position: 'absolute', top: 0, left: 0, height: GOO_H, borderRadius: 16 };
     return h('div', { ref: box, 'aria-hidden': 'true', style: { gridColumn: '1 / span 2', gridRow: 1, position: 'relative', height: GOO_H, pointerEvents: 'none' } },
       S ? h('div', { style: { position: 'absolute', inset: 0, filter: 'url(#ps-goo) drop-shadow(0 2px 6px rgba(16,24,40,0.12))' } },
-        h(m.div, { initial: false, animate: { x: 0, width: ended ? S : w1, backgroundColor: ended ? C.blue : '#ffffff' },
+        h(m.div, { initial: false, animate: { x: 0, width: ended ? w1 + GOO_GAP + 16 : w1, backgroundColor: ended ? C.blue : '#ffffff' },
           transition: { x: aT, width: aT, backgroundColor: colT }, style: blob }),
         h(m.div, { initial: false,
-          animate: ended ? { x: S / 2 - 26, y: 6, width: 52, height: 40, borderRadius: 20 } : { x: w1 + GOO_GAP, y: 0, width: w2, height: GOO_H, borderRadius: 16 },
+          animate: ended ? { x: w1 - 16, width: S - w1 + 16 } : { x: w1 + GOO_GAP, width: w2 },
           transition: { default: bT }, style: Object.assign({}, blob, { background: C.blue }) })) : null,
       // hairline outline of the white Replay (outside the filter)
-      S ? h(m.div, { initial: false, animate: { width: ended ? S : w1, opacity: ended ? 0 : 1 },
+      S ? h(m.div, { initial: false, animate: { width: ended ? w1 + GOO_GAP + 16 : w1, opacity: ended ? 0 : 1 },
         transition: { width: aT, opacity: ended ? T.out : colT },
         style: { position: 'absolute', top: 0, left: 0, height: GOO_H, borderRadius: 16, boxShadow: 'inset 0 0 0 1px rgba(20,30,36,0.10)' } }) : null);
   }
