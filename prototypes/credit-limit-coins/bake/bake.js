@@ -23,12 +23,12 @@ const FALL = .3;
 const PILE_X = 363;                              // where the heap gathers
 /* heap shape and kick: coins per foot pile / side column, placement jitter, flight time (base + per layer),
    slot assignment order, end settling (seconds, extra air friction) */
-let PROFILE = { mode: 'engine', dropJit: 26, misses: false, kick: [1.5, 1.8, 1.4], tail: .8,
-  material: { friction: 1, frictionStatic: 2.5, restitution: .02, floor: 1.2 },
+let PROFILE = { mode: 'engine', dropJit: 26, misses: false, kick: [1, 1, 1], tail: 1, minKnocked: 10, restFrames: 30, searchDrops: 500, searchKicks: 3, dropVar: { ang: .14, av: 1.2, vx: 15, y: 24 },
+  material: { friction: .7, frictionStatic: 1.6, restitution: .04, floor: 1.2 },   // as Standard (floor .9 there)
   tumble: { keep: .5, inward: .6, reach0: 60, reach1: 110, maxTilt: .2, sway: 18, freq: 3.2, tau: .2, first: .16, gap: .022, leave0: .02, leaveK: .012, hopV: 260, spin: .5, lie: .1, nudgeIn: 30, nudgeOut: 10 },
   rattle: { sway: 22, freq: 3.2, tau: .2, walk: 6, loose: 3, hop: 30, hopBase: 12, hopT: .32, spin: .35, out: 38, outT: .55, settleT: .5 },
   collapse_was: 'collapse', collapse: { keep: .45, keepBack: .5, inward: .6, jit: 10, fly0: .2, flyOut: .4, flyK: .03 },
-  mode_jolt_was: 'jolt', settle: .35, settleAir: .2, fric: .7, fricS: 1.6, vmax: 1500, vxmax: 900, missOff: 190, missJit: 3, missVx: 0, missTilt: .03, missSpin: 0, maxOutSteps: 1, catch: .25,
+  mode_jolt_was: 'jolt', settle: .45, settleAir: .3, fric: .7, fricS: 1.6, vmax: 1500, vxmax: 900, missOff: 190, missJit: 3, missVx: 0, missTilt: .03, missSpin: 0, maxOutSteps: 1, catch: .25,
   jolt: { up0: 0, up1: 10, upH: 450, h0: .3, jit: 50, spin0: .3, spinH: 1.5 },
   /* the older aimed-heap kick (mode 'heap'), kept for comparison */
   foot: 3, side: 9, wob: 2.4, fly0: .18, flyK: .02, topFirst: false, ghost: false };
@@ -48,7 +48,7 @@ function makeDrops(dropSeed) {
     /* misses (coins landing on the floor beside a stack) are off by default: coins only fall onto the three stacks */
     const m = PROFILE.misses && missAt[i] && kind !== 'teal' ? missAt[i] : 0;
     const off = m ? m * (PROFILE.missOff || 64) + m * r() * (PROFILE.missJit ?? 26) : (r() - .5) * (PROFILE.dropJit ?? 16);
-    out.push({ at, kind, off, miss: !!m, spin: (r() - .5) });
+    out.push({ at, kind, off, miss: !!m, spin: (r() - .5), jit: [r() - .5, r() - .5, r() - .5, r() - .5] });
   }
   return out;
 }
@@ -89,9 +89,14 @@ function simulate(opts) {
     const S = STACK[d.kind], c = make(d.kind, 0, -400);
     c.drop = d; c.spawnT = d.at - FALL;
     const vx = d.miss ? (d.off > 0 ? 1 : -1) * (PROFILE.missVx ?? 110) : (d.kind === 'orange' ? 50 : d.kind === 'lime' ? -25 : 0);
-    c.sx = S.x + d.off - vx * FALL; c.sy = 300 - .5 * g * FALL * FALL;
     /* the live demo applied these per step at 240 Hz, i.e. a quarter of the nominal value per second — keep that look */
     c.vx = vx / 4; c.ang = d.miss ? (d.off > 0 ? 1 : -1) * (PROFILE.missTilt ?? .25) : d.spin * .08; c.av = (d.miss ? (d.off > 0 ? 1 : -1) * (PROFILE.missSpin ?? 2) : d.spin * .6) / 4;
+    /* every throw a little different: a slight tilt and spin of its own, its own sideways drift, and a start a bit
+       higher or lower (with the starting speed adjusted so it still passes the top of the scene on time) */
+    const V = PROFILE.dropVar || { ang: 0, av: 0, vx: 0, y: 0 };
+    c.ang += d.jit[0] * 2 * V.ang; c.av += d.jit[1] * 2 * V.av; c.vx += d.jit[2] * 2 * V.vx;
+    const dY = d.jit[3] * 2 * V.y;
+    c.sx = S.x + d.off - c.vx * FALL; c.sy = 300 - .5 * g * FALL * FALL + dY; c.vy = -dY / FALL;
     coins.push(c);
   });
 
@@ -106,7 +111,7 @@ function simulate(opts) {
         c.live = true;
         M.Body.setPosition(c.body, { x: c.sx, y: c.sy }); M.Body.setAngle(c.body, c.ang);
         M.Composite.add(engine.world, c.body);
-        M.Body.setVelocity(c.body, { x: c.vx / 60, y: 0 }); M.Body.setAngularVelocity(c.body, c.av / 60);
+        M.Body.setVelocity(c.body, { x: c.vx / 60, y: (c.vy || 0) / 60 }); M.Body.setAngularVelocity(c.body, c.av / 60);
       }
     }
     if (!kicked && t >= KICK_T) {
@@ -489,7 +494,7 @@ if (mode === 'sweep') {
   const hz = +(process.argv[4] || 960), p = +(process.argv[5] || 20), v = +(process.argv[6] || 14);
   /* try drop variations x kick variations until a run passes every check */
   let r, seed, dropSeed, report = { ok: false };
-  search: for (dropSeed = 20261021; dropSeed < 20261021 + 60; dropSeed++) for (seed = 7; seed < 10; seed++) {
+  search: for (dropSeed = 20261021; dropSeed < 20261021 + (PROFILE.searchDrops || 120); dropSeed++) for (seed = 7; seed < 7 + (PROFILE.searchKicks || 3); seed++) {
     r = simulate({ dt: 1 / hz, posIt: p, velIt: v, record: true, gather: true, seed, dropSeed });
     report = validate(r.frames, r.coins);
     if (report.ok) break search;
@@ -525,7 +530,7 @@ function validate(frames, coins) {
       if (!p || !q) { still = 0; continue; }
       const resting = Math.hypot(q[0] - p[0], q[1] - p[1]) < .05 && Math.abs(q[2] - p[2]) < .002;
       still = resting ? still + 1 : 0;
-      if (still >= 6) {                       /* at rest for a tenth of a second */
+      if (still >= (PROFILE.restFrames || 6)) {   /* at rest for a while (a coin that only pauses tilted and slides on is fine) */
         const tl = tilt(q[2]); maxTilt = Math.max(maxTilt, tl);
         if (tl > MAX_TILT) return { ok: false, why: `coin ${j} (${coins[j].kind}) rests at ${(tl * 57.3).toFixed(0)} deg, t=${(i / 60).toFixed(2)}s`, maxTilt };
       }
@@ -539,7 +544,16 @@ function validate(frames, coins) {
   }
   /* The checks below shaped the earlier aimed heaps. A plain engine run ('engine') is kept as the engine leaves it:
      only the two checks above apply (no coin resting tilted more than 30 degrees, nothing frozen mid-motion). */
-  if (PROFILE.mode === 'engine') return { ok: true, maxTilt };
+  if (PROFILE.mode === 'engine') {
+    /* and enough of a hit: at least PROFILE.minKnocked coins end up off their stack (more than 100 units from it) */
+    const SX = { orange: STACK.orange.x, lime: STACK.lime.x, teal: STACK.teal.x }, endF = frames[n - 1];
+    const knocked = endF.filter((f, j) => Math.abs(f[0] - SX[coins[j].kind]) > 100).length;
+    if (knocked < (PROFILE.minKnocked || 0)) return { ok: false, why: `only ${knocked} coins knocked off`, maxTilt };
+    /* the stacks are still standing when the amount lands: it is the hit that knocks the coins off */
+    const kF = frames[Math.round(KICK_T * 60)], early = kF.filter((f, j) => f && Math.abs(f[0] - SX[coins[j].kind]) > 100).length;
+    if (early > 1) return { ok: false, why: `${early} coins already off their stack before the hit`, maxTilt };
+    return { ok: true, maxTilt, knocked };
+  }
   /* 3. nothing floats: every coin at the end lies on its floor or on a coin of its own row just below it */
   const last = frames[n - 1];
   for (let j = 0; j < coins.length; j++) {
