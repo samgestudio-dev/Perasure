@@ -151,12 +151,19 @@ The count-up interpolates between whatever the two amounts are, so a ₱3,000 ra
 ## 5. Other behaviour worth knowing
 
 - **Layout** is responsive, in normal document flow. Sizes scale with the screen width (designed at 360 px wide, capped at 480 px), and the coin artwork keeps its aspect ratio, using at most 42% of the screen height. No page zoom or fixed viewport is used.
-- **Reduced motion**: if the phone has "Reduce motion" turned on, the page jumps straight to the final state (new amount and pills) without the coin animation.
+- **Reduced motion**: if the phone has "Reduce motion" turned on, the page jumps straight to the final state (new amount and pills) without the coin animation. Both events still fire, right away. In Baked heap no timeline is built at all: the last recorded frame is drawn once, the stars don't twinkle and there is no Replay button. The page follows the setting live (`gsap.matchMedia()`).
 - **Replay**: the button appears at the end. `PeraCreditLimit.replay()` replays from code.
+- **Start-up** (Baked heap): the page starts at once, without waiting for the fonts, and re-measures the amount when they are ready. Until it plays, it shows the first frame (nothing visible), not the sample's end state.
 - `PeraCreditLimit.getData()` returns the normalised data the page is using, which helps with debugging.
 - **Standard**: coins are inline SVG, moved by a Matter.js simulation stepped on the GSAP timeline's clock, so every playback looks identical.
-- **Baked heap**: coin positions come from `bake/baked.json`, recorded at 60 fps from an offline run. The page interpolates between frames and computes each coin's shadow from the light direction every frame. To change the coin motion, edit `bake/bake.js` (scene, drops, the heap target) and re-run:
-  `npm i matter-js@0.19.0 && node bake/bake.js bake bake/baked.json 960 20 14`. Then paste the JSON into `baked-heap.html` (the `var BAKED = …;` line). `node bake/bake.js sweep` prints the accuracy and cost table used to pick 960 Hz with 20/14 iterations: below that the coins visibly sink into each other, and above it the gains flatten while the cost keeps doubling.
+- **Baked heap**: coin positions come from `bake/baked.json`, recorded at 60 fps from an offline run. No physics runs on the phone, so the simulation settings cost nothing at runtime. The page interpolates between frames and works out the shadows from the light direction. It only redraws the coins that moved, and only the shadows those coins affect. A coin at rest costs nothing per frame.
+  - To change the coin motion, edit `bake/bake.js` (scene, drops, the heap target in `PROFILE`) and re-run `npm i matter-js@0.19.0 && node bake/bake.js bake bake/baked.json 960 20 14`. Then paste the JSON into `baked-heap.html` (the `var BAKED = …;` line).
+  - The bake tries drop and kick variations until `validate()` passes, and throws away any run where:
+    - a coin rests tilted more than about 17°;
+    - a coin floats, or overhangs its support by more than 0.7 of its radius;
+    - anything is still moving at 3.4 s.
+  - The screen edge is not a wall: coins may spill partly off screen.
+  - `node bake/bake.js sweep` prints the accuracy and cost table used to pick 960 Hz with 20/14 iterations. Below that the coins visibly sink into each other; above it the gains flatten while the cost keeps doubling.
 
 ---
 
