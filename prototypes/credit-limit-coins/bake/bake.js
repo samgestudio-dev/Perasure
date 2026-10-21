@@ -16,12 +16,15 @@ const STACK = {
 };
 const COUNT = { start: .45, dur: 1.85 };
 const KICK_T = COUNT.start + COUNT.dur;          // 2.30 s: the amount lands
-const END = KICK_T + 1.1;                        // 3.40 s
+const END = KICK_T + 1.1;                        // 3.40 s: the page's 'done'
+/* the coins may keep settling a little after 'done' (PROFILE.tail seconds); the recording runs to SIM_END */
+const simEnd = () => END + (PROFILE.tail || 0);
 const FALL = .3;
 const PILE_X = 363;                              // where the heap gathers
 /* heap shape and kick: coins per foot pile / side column, placement jitter, flight time (base + per layer),
    slot assignment order, end settling (seconds, extra air friction) */
-let PROFILE = { mode: 'engine', dropJit: 26, misses: false,
+let PROFILE = { mode: 'engine', dropJit: 26, misses: false, kick: [1.5, 1.8, 1.4], tail: .8,
+  material: { friction: 1, frictionStatic: 2.5, restitution: .02, floor: 1.2 },
   tumble: { keep: .5, inward: .6, reach0: 60, reach1: 110, maxTilt: .2, sway: 18, freq: 3.2, tau: .2, first: .16, gap: .022, leave0: .02, leaveK: .012, hopV: 260, spin: .5, lie: .1, nudgeIn: 30, nudgeOut: 10 },
   rattle: { sway: 22, freq: 3.2, tau: .2, walk: 6, loose: 3, hop: 30, hopBase: 12, hopT: .32, spin: .35, out: 38, outT: .55, settleT: .5 },
   collapse_was: 'collapse', collapse: { keep: .45, keepBack: .5, inward: .6, jit: 10, fly0: .2, flyOut: .4, flyK: .03 },
@@ -53,12 +56,14 @@ function makeDrops(dropSeed) {
 function simulate(opts) {
   const { dt, posIt, velIt, record, gather, seed = 7, dropSeed = 20261021 } = opts;
   const DROPS = makeDrops(dropSeed);
-  const BODY = { friction: .7, frictionStatic: 1.6, frictionAir: .003, restitution: .04, density: .006, slop: .01, chamfer: { radius: 2 } };
+  /* coin material: PROFILE.material overrides friction / static friction / restitution / floor friction */
+  const MAT = PROFILE.material || {};
+  const BODY = { friction: MAT.friction ?? .7, frictionStatic: MAT.frictionStatic ?? 1.6, frictionAir: .003, restitution: MAT.restitution ?? .04, density: .006, slop: .01, chamfer: { radius: 2 } };
   /* no sleeping: Matter measures "motion" per step, so at 960 Hz a coin slowing near the top of its arc reads as
      still and was put to sleep in mid-air (a coin floating beside the heap). Offline, the extra cost doesn't matter. */
   const engine = M.Engine.create({ positionIterations: posIt, velocityIterations: velIt, enableSleeping: false });
-  engine.gravity.y = 3.4;
-  const fl = { isStatic: true, friction: .9 };
+  engine.gravity.y = PROFILE.gravity || 3.4;
+  const fl = { isStatic: true, friction: MAT.floor ?? .9 };
   M.Composite.add(engine.world, [
     M.Bodies.rectangle(363, FLOOR + 50, 3000, 100, { ...fl, collisionFilter: { category: CAT.floor, mask: CAT.front } }),
     M.Bodies.rectangle(363, FLOOR - Z_BACK + 50, 3000, 100, { ...fl, collisionFilter: { category: CAT.floor, mask: CAT.back } })
@@ -94,7 +99,8 @@ function simulate(opts) {
   const FPS = 60, frames = [];
   const kr = rng(seed);
   const t0 = process.hrtime.bigint();
-  while (t <= END + 1e-9) {
+  const SIM_END = simEnd();
+  while (t <= SIM_END + 1e-9) {
     for (const c of coins) {
       if (!c.live && c.drop && t >= c.spawnT) {
         c.live = true;
@@ -127,8 +133,10 @@ function simulate(opts) {
       else for (const c of live) {
         M.Sleeping.set(c.body, false);
         const p = c.body.position, h = Math.max(0, (FLOOR - p.y) / 280);
-        M.Body.setVelocity(c.body, { x: (kr() - .5) * (60 + 420 * h * h) / 60, y: -(420 + kr() * 260) / 60 });
-        M.Body.setAngularVelocity(c.body, (kr() - .5) * (2 + 9 * h) / 60);
+        /* PROFILE.kick scales how hard the landing hits: [up, sideways, spin] (1 = the live Standard demo) */
+        const K = PROFILE.kick || [1, 1, 1];
+        M.Body.setVelocity(c.body, { x: (kr() - .5) * (60 + 420 * h * h) * K[1] / 60, y: -(420 + kr() * 260) * K[0] / 60 });
+        M.Body.setAngularVelocity(c.body, (kr() - .5) * (2 + 9 * h) * K[2] / 60);
       }
     }
     /* a flying coin turns solid again once it is near its slot and not overlapping anything in its row */
@@ -147,8 +155,8 @@ function simulate(opts) {
     }
     /* settling: over the last moments the coins lose energy faster (like heavy coins coming to rest),
        so the heap is still when the recording ends instead of freezing mid-slide */
-    if (gather && PROFILE.settle && t > END - PROFILE.settle) {
-      const u = Math.min(1, (t - (END - PROFILE.settle)) / PROFILE.settle), fa = .003 + PROFILE.settleAir * u * u * (3 - 2 * u);
+    if (gather && PROFILE.settle && t > SIM_END - PROFILE.settle) {
+      const u = Math.min(1, (t - (SIM_END - PROFILE.settle)) / PROFILE.settle), fa = .003 + PROFILE.settleAir * u * u * (3 - 2 * u);
       for (const c of coins) c.body.frictionAir = fa;
     }
     M.Engine.update(engine, dt * 1000);
@@ -488,7 +496,7 @@ if (mode === 'sweep') {
     console.log('drops', dropSeed, 'kick', seed, 'rejected:', report.why);
   }
   if (!report.ok) { console.error('no seed passed the checks'); process.exit(1); }
-  const out = { fps: 60, end: END, kickT: KICK_T, hz, iterations: [p, v], seed, dropSeed, profile: PROFILE,
+  const out = { fps: 60, end: simEnd(), done: END, kickT: KICK_T, hz, iterations: [p, v], seed, dropSeed, profile: PROFILE,
     coins: r.coins.map((c, i) => ({ kind: c.kind, lane: c.lane, spawn: +(c.spawnT || 0).toFixed(4) })),
     frames: r.frames };
   require('fs').writeFileSync(process.argv[3], JSON.stringify(out));
