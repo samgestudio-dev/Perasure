@@ -20,13 +20,21 @@
 <script src="vendor/react-dom@18.3.1/react-dom.production.min.js"></script>
 <script src="vendor/motion@14.4.0/motion-react.js"></script>
 <script src="vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
-<script src="assets/playground-ui.js?v=202610210744"></script>
-<script src="animations/animations.js?v=202610210744"></script>
+<script src="assets/playground-ui.js?v=202610211029"></script>
+<script src="animations/animations.js?v=202610211029"></script>
 <script>
 /* ---- Prototype registry (the "Prototypes" tab) -----------------------------------------
    To add a prototype: put its files in prototypes/<slug>/ and add one entry below.
    The first variant is the recommended one. Animations live in animations/animations.js. */
 var DEMOS = [
+  {
+    title: 'Credit limit increase',
+    tag: 'Credit limit',
+    desc: 'The limit counts up from ₱45,000 to ₱50,000 while gold coins rain onto three stacks with real physics; burst and coin jump when it lands.',
+    variants: [
+      { name: 'Standard', note: 'Plays on open, tap Replay to watch again', href: 'prototypes/credit-limit-coins/index.html' }
+    ]
+  },
   {
     title: 'Loading page',
     tag: 'Loading',

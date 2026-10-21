@@ -9,6 +9,7 @@ Phone-first motion prototypes, served with GitHub Pages.
 
 | Demo | Variants |
 | --- | --- |
+| Credit limit increase | [Standard](prototypes/credit-limit-coins/index.html) |
 | Loading page | [Standard](prototypes/loading-page/index.html) |
 | OTP sheet morph | [Standard](prototypes/otp-sheet-morph/index.html) |
 | Order submit | [Standard](prototypes/order-submit/index.html) |
