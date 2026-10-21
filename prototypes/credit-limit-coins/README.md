@@ -4,6 +4,15 @@
 
 The numbers come from the backend and change per user. **The timing never changes**: whatever the amounts, the count-up, the coins and the landing always take the same time.
 
+### Two versions, same interface
+
+| File | Coins | Use when |
+| --- | --- | --- |
+| `index.html` (Standard) | simulated live in the browser with Matter.js; at the landing the coins jump and fall where they fall | you want every play to be computed on the device |
+| `baked-heap.html` (Baked heap) | pre-simulated offline at 960 Hz and played back as a fixed recording (no physics engine shipped); every coin casts its own shadow onto the coins below and behind it; at the landing the coins are shaken into one loose heap | you want the exact same, polished motion on every phone |
+
+Everything below (data fields, the three ways to pass data, events, timing) is identical for both files.
+
 > 中文摘要：页面只需要接入下面表格里的 4 个后端字段（旧额度、新额度、提额金额、过期时间）。数字怎么变，动画时长都固定 3.4 秒。接入方式三选一：URL 参数 / 预先注入 `window.CREDIT_LIMIT_DATA` / 调用 `PeraCreditLimit.play(data)`。
 
 ---
@@ -15,8 +24,8 @@ The numbers come from the backend and change per user. **The timing never change
 | `oldLimit` | `old_limit` | number, or numeric string such as `"45,000"` | yes | `45000` | the starting value of the big number, and the struck-through `₱45,000` |
 | `newLimit` | `new_limit` | number, or numeric string | yes | `50000` | the big number after the count-up |
 | `increase` | `increase_amount` | number | no (defaults to `newLimit − oldLimit`) | `5000` | the blue `+₱5,000` pill |
-| `expiresAt` | `expires_at` | `"YYYY-MM-DD"` or an ISO date-time string | no | `"2026-11-30"` | the pill `Valid until 30 Nov 2026`; **hidden when empty** |
-| `expiresText` | `expires_text` | string | no | `"Valid until 30 Nov 2026"` | overrides the formatted `expiresAt` text when you want the backend's own wording |
+| `expiresAt` | `expires_at` | `"YYYY-MM-DD"` or an ISO date-time string | no | `"2026-11-30"` | the pill `Valid until Nov 30 2026`; **hidden when empty** |
+| `expiresText` | `expires_text` | string | no | `"Valid until Nov 30 2026"` | overrides the formatted `expiresAt` text when you want the backend's own wording |
 | `currency` | | string | no (default `₱`) | `"₱"` | prefix on every amount |
 | `label` | | string | no (default `Your credit limit is going up`) | | the small line above the number |
 
@@ -25,7 +34,7 @@ Rules:
 - Amounts are whole pesos and have **at most 5 digits** (≤ ₱99,999), per the product rule. The layout is designed for that range. Longer numbers still shrink to fit the width, but that path is only a fallback.
 - Formatting is done for you: `₱` plus a thousands separator (`₱50,000`). Pass plain numbers, not formatted strings, whenever you can.
 - If `increase` is `0`, or `oldLimit === newLimit`, the `+increase` pill and the struck-through amount are hidden.
-- `expiresAt` given as a date-time is shown in the phone's local time zone, formatted as `d MMM yyyy` (for example `31 Jan 2027`).
+- Dates use the Philippine style `MMM d yyyy`, for example `Oct 16 2026` (English month abbreviation, no comma, the same on every phone whatever its language setting). An `expiresAt` given as a date-time is shown in the phone's local time zone.
 
 ### Mapping your API response
 
@@ -90,7 +99,7 @@ index.html?old=45000&new=50000&inc=5000&exp=2026-11-30
 
 `cur=` sets the currency. `from=` and `to=` are accepted as aliases of `old=` and `new=`.
 
-If none of the three is provided, the page plays the built-in sample: ₱45,000 → ₱50,000, valid until 30 Nov 2026.
+If none of the three is provided, the page plays the built-in sample: ₱45,000 → ₱50,000, valid until Nov 30 2026.
 
 ---
 
@@ -145,7 +154,9 @@ The count-up interpolates between whatever the two amounts are, so a ₱3,000 ra
 - **Reduced motion**: if the phone has "Reduce motion" turned on, the page jumps straight to the final state (new amount and pills) without the coin animation.
 - **Replay**: the button appears at the end. `PeraCreditLimit.replay()` replays from code.
 - `PeraCreditLimit.getData()` returns the normalised data the page is using, which helps with debugging.
-- Coins are drawn as inline SVG and moved by a physics simulation stepped on the GSAP timeline's clock, so every playback with the same data looks identical.
+- **Standard**: coins are inline SVG, moved by a Matter.js simulation stepped on the GSAP timeline's clock, so every playback looks identical.
+- **Baked heap**: coin positions come from `bake/baked.json`, recorded at 60 fps from an offline run. The page interpolates between frames and computes each coin's shadow from the light direction every frame. To change the coin motion, edit `bake/bake.js` (scene, drops, the heap target) and re-run:
+  `npm i matter-js@0.19.0 && node bake/bake.js bake bake/baked.json 960 20 14`. Then paste the JSON into `baked-heap.html` (the `var BAKED = …;` line). `node bake/bake.js sweep` prints the accuracy and cost table used to pick 960 Hz with 20/14 iterations: below that the coins visibly sink into each other, and above it the gains flatten while the cost keeps doubling.
 
 ---
 

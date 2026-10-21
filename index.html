@@ -20,8 +20,8 @@
 <script src="vendor/react-dom@18.3.1/react-dom.production.min.js"></script>
 <script src="vendor/motion@14.4.0/motion-react.js"></script>
 <script src="vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
-<script src="assets/playground-ui.js?v=202610211205"></script>
-<script src="animations/animations.js?v=202610211205"></script>
+<script src="assets/playground-ui.js?v=202610211214"></script>
+<script src="animations/animations.js?v=202610211214"></script>
 <script>
 /* ---- Prototype registry (the "Prototypes" tab) -----------------------------------------
    To add a prototype: put its files in prototypes/<slug>/ and add one entry below.
@@ -32,7 +32,8 @@ var DEMOS = [
     tag: 'Credit limit',
     desc: 'The limit counts up from ₱45,000 to ₱50,000 while gold coins rain onto three stacks with real physics; burst and coin jump when it lands.',
     variants: [
-      { name: 'Standard', note: 'Plays on open, tap Replay to watch again', href: 'prototypes/credit-limit-coins/index.html' }
+      { name: 'Standard', note: 'Live physics in the browser; tap Replay to watch again', href: 'prototypes/credit-limit-coins/index.html' },
+      { name: 'Baked heap', note: 'Pre-simulated coins, every coin casts its own shadow, shaken into one heap at the landing', href: 'prototypes/credit-limit-coins/baked-heap.html' }
     ]
   },
   {
