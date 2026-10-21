@@ -16,7 +16,7 @@ prototypes/<slug>/<variant>.html  other variants of the same demo (optional)
 animations/animations.js       Lottie registry (LOTTIES array) — shared by the picker and the player
 animations/player.html         player, one animation at a time: player.html?a=<slug>[&r=gsap] (Lottie / GSAP tabs)
 animations/<slug>/             <slug>.json (+ <slug>.lottie, preview.png, gsap/<module>.js)
-tools/                     flatten-lottie-masks.py, flatten-svg-masks.py (Safari mask-blur fixes)
+tools/                     flatten-lottie-masks.py, flatten-svg-masks.py (Safari mask-blur fixes), unscale-gsap-svg.py (Safari scale glitch)
 vendor/<lib>@<version>/    pinned libraries: lottie-web, gsap (+ plugins; esm/ = ES modules), react, react-dom, mui-material,
                            motion (motion-react.js = React API, motion.js = vanilla; both set window.Motion)
 README.md                  human-facing summary + demo / animation tables
@@ -61,7 +61,7 @@ README.md                  human-facing summary + demo / animation tables
 
 ## Adding a Lottie animation
 
-1. Put the files in `animations/<slug>/`: the Lottie JSON (played), the `.lottie` (download only) and a still
+1. Put the files in `animations/<slug>/`: the Lottie JSON (played), the `.lottie` (kept for hand-off; the player does not show it) and a still
    `preview.png` (thumbnail on the picker; never show animated thumbnails — one animation plays at a time).
 2. Add an entry to `LOTTIES` in `animations/animations.js` (field reference at the top of that file):
    `intro` / `loop` frame ranges from the hand-off README (they match the `intro` / `loop` markers in the
@@ -72,6 +72,8 @@ README.md                  human-facing summary + demo / animation tables
    lottie2gsap. It imports `"gsap"`, which the player's import map points at `vendor/gsap@3.15.0/esm/`.
    If its inline SVG has nested `<mask>`s, run `python3 tools/flatten-svg-masks.py <module>.js` (same Safari
    blur as below).
+   Then run `python3 tools/unscale-gsap-svg.py <module>.js`: lottie2gsap draws shapes at 1/100 size inside
+   `scale(0.01)` groups and enlarges them 100×; nested, that glitches on iOS Safari (Customer service chat's dots).
 4. Add a row to the Lottie table in `README.md`. Don't edit `player.html` for a normal addition.
 5. If any layer combines masks (an add mask plus intersect / subtract masks), run
    `python3 tools/flatten-lottie-masks.py in.json out.json` (needs `pip install skia-pathops`) and rebuild the

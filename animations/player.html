@@ -25,8 +25,8 @@
 <script src="../vendor/motion@14.4.0/motion-react.js"></script>
 <script src="../vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
 <script src="../vendor/lottie-web@5.12.2/lottie_svg.min.js"></script>
-<script src="../assets/playground-ui.js?v=202610210335"></script>
-<script src="animations.js?v=202610210335"></script>
+<script src="../assets/playground-ui.js?v=202610210357"></script>
+<script src="animations.js?v=202610210357"></script>
 <script>
 /* ---- Animation player ------------------------------------------------------------------
    One animation at a time. Each animation exists twice, pixel-matched: the Lottie JSON played
@@ -368,7 +368,7 @@
   /* Content that changes inside a button (label / icon) swaps with a short slide + fade, and the
      wrapper resizes with a layout spring, so state changes never snap. */
   function Swap(p){
-    return h(m.span, { layout: true, transition: { layout: T.snap },
+    return h(m.span, { layout: p.fixed ? false : true, transition: { layout: T.snap },
         style: { position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' } },
       h(AP, { mode: 'popLayout', initial: false },
         h(m.span, { key: p.k,
@@ -465,12 +465,12 @@
   }
   var BLUE_ON_DARK = '#6aa7e6';
 
-  /* Two options with a shared sliding indicator (layoutId) — Lottie / GSAP. */
+  /* Two options with a shared sliding indicator (layoutId) — Lottie / GSAP. Bottom-left of the stage. */
   function RendererSwitch(p){
     var entry = p.entry, dark = p.st.bg === 'dark', cur = p.st.renderer === 'gsap' ? 'gsap' : 'lottie';
     var opts = [['lottie', 'Lottie', true], ['gsap', 'GSAP', !!entry.gsap]];
     return h(m.div, { role: 'radiogroup', 'aria-label': 'Renderer', onPointerDown: stop,
-        animate: pillAnim(dark), transition: T.fade, style: Object.assign(pillStyle(dark), { left: 12, display: 'flex' }) },
+        animate: pillAnim(dark), transition: T.fade, style: Object.assign(pillStyle(dark), { top: 'auto', bottom: 12, left: 12, display: 'flex' }) },
       opts.map(function(o){
         var on = o[0] === cur, off = !o[2];
         return h(m.button, { key: o[0], type: 'button', role: 'radio', 'aria-checked': on ? 'true' : 'false', disabled: off,
@@ -558,6 +558,21 @@
       h(Swap, { k: key, gap: 6 }, icon, label)) : null);
   }
 
+  /* Animation name, top-left of the stage (next to the palette pill). Slides / fades in the direction of
+     navigation; turns white on the dark background. */
+  function StageTitle(p){
+    var entry = p.entry, dark = p.st.bg === 'dark', dx = (p.st.dir || 0) * 16;
+    return h(m.h1, { initial: false, animate: { color: dark ? '#ffffff' : C.ink }, transition: T.fade,
+        style: { position: 'absolute', left: 16, top: 12, zIndex: 2, margin: 0, height: 32, maxWidth: 'calc(100% - 16px - 150px)',
+          display: 'flex', alignItems: 'center', pointerEvents: 'none',
+          font: '700 18px/24px ' + PG.theme.typography.h6.fontFamily, letterSpacing: '-0.01em' } },
+      h(AP, { mode: 'popLayout', initial: false, custom: dx },
+        h(m.span, { key: entry.slug, custom: dx,
+            variants: { enter: function(d){ return { opacity: 0, x: d }; }, center: { opacity: 1, x: 0 }, leave: function(d){ return { opacity: 0, x: -d, transition: T.out }; } },
+            initial: 'enter', animate: 'center', exit: 'leave', transition: T.ui,
+            style: { display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } }, entry.title)));
+  }
+
   /* ---------- stage ---------- */
   function Stage(p){
     var st = p.st, entry = p.entry;
@@ -599,6 +614,7 @@
         h(M.CircularProgress, { size: 28, thickness: 4 })) : null),
       st.error ? h(M.Box, { sx: { position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', p: 3, textAlign: 'center' } },
         h(M.Typography, { variant: 'body2', color: 'text.secondary' }, st.error)) : null,
+      h(StageTitle, { st: st, entry: entry }),
       h(RendererSwitch, { st: st, entry: entry }),
       h(BgSwatches, { st: st }),
       h(StageAction, { st: st }));
@@ -824,7 +840,8 @@
           initial: false, animate: { clipPath: clip(0, 0, 0, lead, 16) }, transition: { clipPath: tr.blue },
           style: Object.assign({}, btn, { width: S, color: '#ffffff', background: C.blue }) },
         h(m.span, { initial: false, animate: { x: lead / 2 }, transition: { x: tr.blue }, style: { display: 'inline-flex' } },
-          h(Swap, { k: ended ? 'replay' : (st.paused ? 'play' : 'pause'), gap: 6 },
+          // fixed: the label rides inside its button; its own layout animation would run ahead of it
+          h(Swap, { k: ended ? 'replay' : (st.paused ? 'play' : 'pause'), gap: 6, fixed: true },
             icon(ended ? Icon.replay : (st.paused ? Icon.play : Icon.pause)), mainText))));
   }
   function pairSprings(ended){
@@ -863,30 +880,19 @@
   }
 
   function DetailsCard(p){
-    var st = p.st, e = p.entry, mt = st.meta, base = e.slug + '/', gs = st.renderer === 'gsap' && e.gsap;
+    var st = p.st, e = p.entry, mt = st.meta;
     function row(k, v){
       return h(m.div, { key: k, layout: 'position', transition: { layout: T.layout }, style: { display: 'flex', justifyContent: 'space-between', gap: 16, padding: '6px 0' } },
         h(M.Typography, { variant: 'body2', color: 'text.secondary' }, k),
         h(M.Typography, { variant: 'body2', component: 'div', sx: { fontWeight: 500, textAlign: 'right' } }, h(Swap, { k: k + ':' + v, dy: 6, gap: 0 }, v)));
     }
     var playback = e.success ? 'Loading loops → success once' : e.intro ? 'Intro ' + e.intro[0] + '–' + e.intro[1] + ' → loop ' + e.loop[0] + '–' + e.loop[1] : 'Plays once, holds the last frame';
-    var files = gs ? [e.gsap].concat(e.gsapSuccess ? [e.gsapSuccess] : []) : [e.json].concat(e.success ? [e.success] : [], e.lottie ? [e.lottie] : []);
     return h(SectionCard, { title: 'Details' },
       h(Slot, { style: {} }, h(M.Box, { sx: { '& > * + *': { borderTop: '1px solid ' + C.line } } },
         row('Canvas', mt ? mt.w + ' × ' + mt.h : '—'),
         row('Frame rate', mt ? (Math.round(mt.fps * 100) / 100) + ' fps' : '—'),
         row('Renderer', mt ? mt.label : '—'),
-        row('Playback', playback))),
-      h(Slot, null, h(M.Typography, { variant: 'caption', color: 'text.secondary', sx: { display: 'block', mt: 1.5, mb: 1 } }, 'Files')),
-      h(Slot, { style: { display: 'flex', flexWrap: 'wrap', gap: 8 } },
-        h(AP, { mode: 'popLayout', initial: false },
-          files.map(function(f){
-            return h(m.div, { key: base + f, layout: true, initial: { opacity: 0, scale: 0.9 }, animate: { opacity: 1, scale: 1 }, exit: { opacity: 0, scale: 0.9, transition: T.out },
-                whileTap: TAP, transition: T.pop },
-              h(M.Chip, { component: 'a', href: base + f, download: true, clickable: true, variant: 'outlined',
-                icon: h(Icon.download, { sx: { fontSize: 16 } }), label: f.split('/').pop(),
-                sx: { height: 30, borderRadius: '10px', fontWeight: 500, color: 'text.primary', borderColor: C.line, '& .MuiChip-icon': { color: 'primary.main' } } }));
-          }))));
+        row('Playback', playback))));
   }
 
   /* Header stays pinned to the top. Transparent at the top of the page; once the page scrolls its
@@ -903,18 +909,6 @@
     }, []);
     return h(m.header, { initial: false, animate: { backgroundColor: scrolled ? 'rgba(240,245,244,1)' : 'rgba(240,245,244,0)' }, transition: T.fade,
         style: { position: 'sticky', top: 0, zIndex: 10, margin: '0 -16px', padding: 'calc(env(safe-area-inset-top, 0px) + 8px) 16px 8px' } }, p.children);
-  }
-
-  /* Title + description: crossfade / slide in the direction of navigation; height follows. */
-  function TitleBlock(p){
-    var entry = p.entry, dx = (p.st.dir || 0) * 24;
-    return h(m.div, { layout: true, transition: { layout: T.layout }, style: { textAlign: 'center', marginTop: 8, position: 'relative' } },
-      h(AP, { mode: 'popLayout', initial: false, custom: dx },
-        h(m.div, { key: entry.slug, custom: dx,
-            variants: { enter: function(d){ return { opacity: 0, x: d }; }, center: { opacity: 1, x: 0 }, leave: function(d){ return { opacity: 0, x: -d, transition: T.out }; } },
-            initial: 'enter', animate: 'center', exit: 'leave', transition: T.ui },
-          h(M.Typography, { variant: 'h5', component: 'h1' }, entry.title),
-          h(M.Typography, { variant: 'body2', color: 'text.secondary', sx: { mt: 0.75, mx: 'auto', maxWidth: 360, minHeight: 40 } }, entry.desc))));
   }
 
   /* ---------- app ---------- */
@@ -938,7 +932,6 @@
         maxWidth: 480, px: 2, pb: 'calc(env(safe-area-inset-bottom, 0px) + 32px)' } },
       h(StickyHeader, null, h(TopBar, { st: st })),
       h(Mo.LayoutGroup, null,
-        h(TitleBlock, { st: st, entry: entry }),
         h(m.div, { layout: 'position', transition: { layout: T.layout } }, h(Stage, { st: st, entry: entry })),
         h(m.div, { layout: 'position', transition: { layout: T.layout } }, h(Pager, { st: st })),
         h(PlaybackCard, { st: st, entry: entry }),

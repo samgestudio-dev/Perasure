@@ -6,7 +6,7 @@
    title    sentence case, short
    desc     one line: what happens in the animation
    json     Lottie JSON played by the player (relative to animations/<slug>/)
-   lottie   optional .lottie (dotLottie) file offered as a download
+   lottie   optional .lottie (dotLottie) file kept for hand-off (not shown in the player)
    preview  still thumbnail shown on the picker (never an animation)
    intro    [start, end] frames, played once        } omit both for a one-shot
    loop     [start, end] frames, looped seamlessly  } animation (plays once, holds)
