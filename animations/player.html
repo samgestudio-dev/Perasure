@@ -25,8 +25,8 @@
 <script src="../vendor/motion@14.4.0/motion-react.js"></script>
 <script src="../vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
 <script src="../vendor/lottie-web@5.12.2/lottie_svg.min.js"></script>
-<script src="../assets/playground-ui.js?v=202610210410"></script>
-<script src="animations.js?v=202610210410"></script>
+<script src="../assets/playground-ui.js?v=202610210621"></script>
+<script src="animations.js?v=202610210621"></script>
 <script>
 /* ---- Animation player ------------------------------------------------------------------
    One animation at a time. Each animation exists twice, pixel-matched: the Lottie JSON played
@@ -793,34 +793,14 @@
             transition: { x: RAIL, opacity: T.fade }, style: { position: 'absolute', left: 0, right: 0, top: 13, height: 10, pointerEvents: 'none' } },
           h('div', { style: { position: 'absolute', left: -1, top: 0, width: 2, height: 10, borderRadius: 1, background: '#fff' } })),
         h('div', { ref: thumb, style: { position: 'absolute', top: 7, left: '0%', width: 22, height: 22, marginLeft: -11, borderRadius: 11,
-          background: '#fff', boxShadow: '0 0 0 1.5px ' + C.blue + ', 0 2px 6px rgba(0,1,40,0.18)', pointerEvents: 'none' } }))),
-      /* Legend: fades in with a small rise and its two items arrive in turn; on exit it lifts out of
-         the layout (popLayout) and fades while the content below glides into place. */
-      h(AP, { initial: false, mode: 'popLayout' }, hasRegions
-        ? h(m.div, { key: 'legend', layout: 'position',
-              initial: 'hide', animate: 'show', exit: 'gone',
-              variants: {
-                hide: { opacity: 0, y: -6 },
-                show: { opacity: 1, y: 0, transition: Object.assign({}, T.ui, { staggerChildren: 0.06, delayChildren: 0.04 }) },
-                gone: { opacity: 0, y: -4, scale: 0.98, transition: T.out }
-              },
-              transition: { layout: T.layout },
-              style: { display: 'flex', gap: 16, marginTop: 2, transformOrigin: 'left center' } },
-            [['Intro · plays once', C.blue200, 14], ['Loop', C.blue, 14]].map(function(x){
-              return h(m.div, { key: x[0], variants: { hide: { opacity: 0, x: -6 }, show: { opacity: 1, x: 0, transition: T.ui } },
-                  style: { display: 'flex', alignItems: 'center', gap: 6 } },
-                h(m.span, { variants: { hide: { scaleX: 0 }, show: { scaleX: 1, transition: T.pop } },
-                  style: { display: 'block', width: x[2], height: 6, borderRadius: 3, background: x[1], transformOrigin: 'left center' } }),
-                h(M.Typography, { variant: 'caption', color: 'text.secondary' }, x[0]));
-            }))
-        : null));
+          background: '#fff', boxShadow: '0 0 0 1.5px ' + C.blue + ', 0 2px 6px rgba(0,1,40,0.18)', pointerEvents: 'none' } }))));
   }
 
   /* Replay ↔ Play/Pause merge. Two buttons, each pinned by its outer edge, revealed by Motion springs
      (visualDuration + bounce). Outer edges never move: on merge the white Replay's right edge
      retracts to its left edge and fades, and the blue button's left edge follows it to take the space;
      on split the blue left edge springs back and the white Replay grows out from the left. */
-  var PAIR_GAP = 8, PAIR_H = 52;
+  var PAIR_GAP = 8, PAIR_H = 44, PAIR_R = 22, FILL = '#eef2f4';   // iOS-size capsules; secondary fill
   function PairButtons(p){
     var ended = p.ended, st = p.st, box = R.useRef(null);
     var sz = R.useState(0), S = sz[0], setS = sz[1];
@@ -846,19 +826,17 @@
     var icon = function(I){ return h(I, { sx: { fontSize: 20, display: 'block' } }); };
     var mainText = ended ? 'Replay' : (st.paused ? 'Play' : 'Pause');
     return h('div', { ref: box, style: { gridColumn: '1 / span 2', gridRow: 1, position: 'relative', height: PAIR_H } },
-      // white Replay, pinned left: hairline layer + white face, both clipped from the right
+      // grey Replay, pinned left, clipped from the right
       h(m.button, { type: 'button', 'aria-label': 'Replay', 'aria-hidden': ended ? 'true' : undefined, tabIndex: ended ? -1 : 0,
           onClick: ctl.replay, whileTap: ended ? undefined : TAP,
-          initial: false, animate: { clipPath: clip(0, cut, 0, 0, 16), opacity: ended ? 0 : 1 },
+          initial: false, animate: { clipPath: clip(0, cut, 0, 0, PAIR_R), opacity: ended ? 0 : 1 },
           transition: { clipPath: tr.white, opacity: ended ? { type: 'tween', duration: 0.1, delay: 0.14 } : { type: 'tween', duration: 0.08 } },
-          style: Object.assign({}, btn, { width: w1, color: C.ink, background: 'rgba(20,30,36,0.10)', pointerEvents: ended ? 'none' : 'auto' }) },
-        h(m.span, { initial: false, animate: { clipPath: clip(1, cut + 1, 1, 1, 15) }, transition: { clipPath: tr.white },
-          style: { position: 'absolute', inset: 0, background: '#ffffff' } }),
+          style: Object.assign({}, btn, { width: w1, color: C.ink, background: FILL, pointerEvents: ended ? 'none' : 'auto' }) },
         h('span', { style: { position: 'relative', display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' } },
           icon(Icon.replay), 'Replay')),
       // blue, pinned right: full width, clipped from the left; the label rides at the centre of what shows
       h(m.button, { type: 'button', 'aria-label': mainText, onClick: ended ? ctl.replay : ctl.togglePlay, whileTap: TAP,
-          initial: false, animate: { clipPath: clip(0, 0, 0, lead, 16) }, transition: { clipPath: tr.blue },
+          initial: false, animate: { clipPath: clip(0, 0, 0, lead, PAIR_R) }, transition: { clipPath: tr.blue },
           style: Object.assign({}, btn, { width: S, color: '#ffffff', background: C.blue }) },
         h(m.span, { initial: false, animate: { x: lead / 2 }, transition: { x: tr.blue }, style: { display: 'inline-flex' } },
           // fixed: the label rides inside its button; its own layout animation would run ahead of it
@@ -877,27 +855,68 @@
   function CtlButton(p){
     var primary = !!p.primary;
     return h(m.button, { type: 'button', layout: true, onClick: p.onClick, 'aria-label': p.label, whileTap: TAP,
-        initial: false, animate: { backgroundColor: primary ? C.blue : '#ffffff', color: primary ? '#ffffff' : C.ink,
-          boxShadow: primary ? '0 0 0 1px rgba(44,116,190,1), 0 2px 8px rgba(44,116,190,0.28)' : '0 0 0 1px rgba(20,30,36,0.10), 0 0px 0px rgba(44,116,190,0)' },
-        transition: { default: T.snap, layout: T.layout, backgroundColor: T.fade, color: T.fade, boxShadow: T.fade },
-        style: Object.assign({ height: PAIR_H, minWidth: 0, width: '100%', border: 0, padding: '0 12px', borderRadius: 16,
+        initial: false, animate: { backgroundColor: primary ? C.blue : FILL, color: primary ? '#ffffff' : C.ink },
+        transition: { default: T.snap, layout: T.layout, backgroundColor: T.fade, color: T.fade },
+        style: Object.assign({ height: PAIR_H, minWidth: 0, width: '100%', border: 0, padding: '0 12px', borderRadius: PAIR_R,
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
           font: '600 15px/20px ' + FONT, cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }, p.style || {}) },
       h(Swap, { k: p.k, dy: p.dy }, p.icon ? h(p.icon, { sx: { fontSize: 20, display: 'block' } }) : null, p.text));
   }
 
-  function PlaybackCard(p){
-    var st = p.st, entry = p.entry;
+  /* Playback bar, pinned to the bottom of the screen (iOS-style floating bar, solid white): status +
+     frame, scrub rail, buttons. Radii are concentric (22 buttons + 8 inset = 30). It sits above the home
+     indicator / Safari 26's floating toolbar (navInset) and the page reserves its height (onHeight). */
+  function PlaybackBar(p){
+    var st = p.st, entry = p.entry, ref = R.useRef(null);
+    R.useLayoutEffect(function(){
+      var el = ref.current; if (!el) return;
+      function report(){ p.onHeight(el.offsetHeight); }
+      report();
+      var ro = typeof ResizeObserver === 'function' ? new ResizeObserver(report) : null;
+      if (ro) ro.observe(el);
+      return function(){ if (ro) ro.disconnect(); };
+    }, []);
     // A one-shot (or the coin's success) that has finished: Play would only restart it, so Play and
     // Replay merge into one wide primary Replay until it plays again.
     var ended = !!(st.paused && !st.loading && (st.phase === 'once' || st.phase === 'success') && st.total && ctl.getFrame() >= st.total - 1.01);
-    return h(SectionCard, { style: { marginTop: 16 } },
-      h(Timeline, { st: st, entry: entry }),
+    return h(m.nav, { ref: ref, 'aria-label': 'Playback', initial: false, animate: { y: -p.lift }, transition: T.ui,
+        style: { position: 'fixed', left: 16, right: 16, bottom: 0, zIndex: 20, maxWidth: 448, margin: '0 auto', padding: 8,
+          borderRadius: 30, background: '#ffffff',
+          boxShadow: '0 0 0 0.5px rgba(16,24,40,0.08), 0 10px 30px rgba(16,24,40,0.14), 0 2px 6px rgba(16,24,40,0.05)' } },
+      h('div', { style: { padding: '4px 8px 0' } }, h(Timeline, { st: st, entry: entry })),
       // Fixed proportions (grid): Replay and speed equal, Play / Pause widest; merged Replay spans both.
-      h(Slot, { style: { position: 'relative', display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1.4fr) minmax(0,1fr)', gap: PAIR_GAP, marginTop: 16 } },
+      h('div', { style: { position: 'relative', display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1.4fr) minmax(0,1fr)', gap: PAIR_GAP, marginTop: 4 } },
         h(PairButtons, { ended: ended, st: st }),
         h(CtlButton, { key: 'speed', k: 's' + st.speedIx, dy: 10, label: 'Playback speed', onClick: ctl.cycleSpeed, icon: Icon.speed,
           text: SPEEDS[st.speedIx] + '×', style: { gridColumn: '3', gridRow: 1, fontVariantNumeric: 'tabular-nums' } })));
+  }
+
+  /* Distance from the bottom of the layout viewport to the bar: the home indicator, and on iOS Safari 26+
+     the floating toolbar (same measurement as the withdraw demo), plus a gap. */
+  function navInset(){
+    var p = document.createElement('div');
+    p.style.cssText = 'position:absolute;left:0;top:0;width:0;visibility:hidden;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)';
+    document.body.appendChild(p);
+    var cs = getComputedStyle(p), et = parseFloat(cs.paddingTop) || 0, eb = parseFloat(cs.paddingBottom) || 0; p.remove();
+    var ua = navigator.userAgent, ver = +((/Version\/(\d+)/.exec(ua) || [])[1] || 0);
+    var iosSafari = /iP(hone|od)/.test(ua) && /Safari\//.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS|GSA\/|DuckDuckGo|YaBrowser/.test(ua);
+    if (!(iosSafari && ver >= 26)) return eb + 12;
+    var sh = Math.max(screen.width, screen.height);
+    var top = et > 0 ? 0 : (sh >= 874 ? 62 : sh >= 852 ? 59 : sh >= 812 ? 47 : 20);
+    var zone = Math.max(0, sh - window.innerHeight - top);
+    var sb = eb > 40 ? eb : Math.max(eb, zone - 15);
+    return sb + 12;
+  }
+  function useNavInset(){
+    var s = R.useState(function(){ return Math.round(navInset()); }), v = s[0], set = s[1];   // right on first paint
+    R.useEffect(function(){
+      function upd(){ set(Math.round(navInset())); }
+      upd();
+      window.addEventListener('resize', upd);
+      if (window.visualViewport) window.visualViewport.addEventListener('resize', upd);
+      return function(){ window.removeEventListener('resize', upd); if (window.visualViewport) window.visualViewport.removeEventListener('resize', upd); };
+    }, []);
+    return v;
   }
 
   function DetailsCard(p){
@@ -935,6 +954,7 @@
   /* ---------- app ---------- */
   function App(){
     var st = useCtl(), entry = LIST[st.index] || LIST[0];
+    var lift = useNavInset(), bh = R.useState(0), barH = bh[0], setBarH = bh[1];
     R.useEffect(function(){
       function onKey(e){
         if (document.querySelector('[role="menu"]') || (e.target && e.target.getAttribute && e.target.getAttribute('role') === 'slider')) return;
@@ -950,13 +970,13 @@
     }, []);
     if (!entry) return h(M.Typography, { sx: { p: 3 } }, 'No animations registered.');
     return h(M.Container, { disableGutters: true, sx: {
-        maxWidth: 480, px: 2, pb: 'calc(env(safe-area-inset-bottom, 0px) + 32px)' } },
+        maxWidth: 480, px: 2, pb: (barH + lift + 16) + 'px' } },
       h(StickyHeader, null, h(TopBar, { st: st })),
       h(Mo.LayoutGroup, null,
         h(m.div, { layout: 'position', transition: { layout: T.layout } }, h(Stage, { st: st, entry: entry })),
         h(m.div, { layout: 'position', transition: { layout: T.layout } }, h(Pager, { st: st })),
-        h(PlaybackCard, { st: st, entry: entry }),
-        h(DetailsCard, { st: st, entry: entry })));
+        h(DetailsCard, { st: st, entry: entry })),
+      h(PlaybackBar, { st: st, entry: entry, lift: lift, onHeight: setBarH }));
   }
 
   /* boot */
