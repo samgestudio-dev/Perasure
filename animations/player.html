@@ -25,8 +25,8 @@
 <script src="../vendor/motion@14.4.0/motion-react.js"></script>
 <script src="../vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
 <script src="../vendor/lottie-web@5.12.2/lottie_svg.min.js"></script>
-<script src="../assets/playground-ui.js?v=202610210357"></script>
-<script src="animations.js?v=202610210357"></script>
+<script src="../assets/playground-ui.js?v=202610210359"></script>
+<script src="animations.js?v=202610210359"></script>
 <script>
 /* ---- Animation player ------------------------------------------------------------------
    One animation at a time. Each animation exists twice, pixel-matched: the Lottie JSON played
@@ -829,7 +829,7 @@
       h(m.button, { type: 'button', 'aria-label': 'Replay', 'aria-hidden': ended ? 'true' : undefined, tabIndex: ended ? -1 : 0,
           onClick: ctl.replay, whileTap: ended ? undefined : TAP,
           initial: false, animate: { clipPath: clip(0, cut, 0, 0, 16), opacity: ended ? 0 : 1 },
-          transition: { clipPath: tr.white, opacity: ended ? { type: 'tween', duration: 0.14, delay: 0.2 } : { type: 'tween', duration: 0.08 } },
+          transition: { clipPath: tr.white, opacity: ended ? { type: 'tween', duration: 0.1, delay: 0.14 } : { type: 'tween', duration: 0.08 } },
           style: Object.assign({}, btn, { width: w1, color: C.ink, background: 'rgba(20,30,36,0.10)', pointerEvents: ended ? 'none' : 'auto' }) },
         h(m.span, { initial: false, animate: { clipPath: clip(1, cut + 1, 1, 1, 15) }, transition: { clipPath: tr.white },
           style: { position: 'absolute', inset: 0, background: '#ffffff' } }),
@@ -847,9 +847,9 @@
   function pairSprings(ended){
     return ended
       // merge: white retracts first, blue chases it and lands exactly at the left edge (no bounce past it)
-      ? { white: { type: 'spring', visualDuration: 0.34, bounce: 0 }, blue: { type: 'spring', visualDuration: 0.42, bounce: 0, delay: 0.05 } }
+      ? { white: { type: 'spring', visualDuration: 0.24, bounce: 0 }, blue: { type: 'spring', visualDuration: 0.28, bounce: 0, delay: 0.03 } }
       // split: blue edge springs back with a little life, white grows out behind it
-      : { white: { type: 'spring', visualDuration: 0.4, bounce: 0.12, delay: 0.06 }, blue: { type: 'spring', visualDuration: 0.4, bounce: 0.18 } };
+      : { white: { type: 'spring', visualDuration: 0.28, bounce: 0.12, delay: 0.04 }, blue: { type: 'spring', visualDuration: 0.28, bounce: 0.16 } };
   }
 
   /* Large control button (Motion): colours fade between outlined and filled, label/icon swap. */
