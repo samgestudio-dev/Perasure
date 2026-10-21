@@ -165,6 +165,7 @@ The count-up interpolates between whatever the two amounts are, so a ₱3,000 ra
     - anything is still visibly moving at 3.4 s, where the recording stops.
   - **Engine fixes**: sleeping is off, because at 960 Hz the engine put slow coins to sleep in mid-air. Speeds above 1,500 units/s (900 sideways) are capped, because those only come from solver errors. The last 0.35 s adds a little air friction so the coins settle by the end.
   - **Other landings**: the earlier landing modes (`heap`, `tumble`, …) are still in the script for reference, but are not used.
+  - **Where coins fall**: only onto the three stacks. All 44 drops land on them; the six that used to miss and land on the floor at the far left and right now land on their own stacks, so the count and timing are unchanged. Set `misses: true` in `PROFILE` to bring the misses back.
   - **Screen edge**: it is not a wall, so coins may spill partly off screen.
   - `node bake/bake.js sweep` prints the accuracy and cost table used to pick 960 Hz with 20/14 iterations. Below that the coins visibly sink into each other; above it the gains flatten while the cost keeps doubling.
 

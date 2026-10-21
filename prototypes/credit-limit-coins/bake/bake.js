@@ -21,7 +21,7 @@ const FALL = .3;
 const PILE_X = 363;                              // where the heap gathers
 /* heap shape and kick: coins per foot pile / side column, placement jitter, flight time (base + per layer),
    slot assignment order, end settling (seconds, extra air friction) */
-let PROFILE = { mode: 'engine', dropJit: 26,
+let PROFILE = { mode: 'engine', dropJit: 26, misses: false,
   tumble: { keep: .5, inward: .6, reach0: 60, reach1: 110, maxTilt: .2, sway: 18, freq: 3.2, tau: .2, first: .16, gap: .022, leave0: .02, leaveK: .012, hopV: 260, spin: .5, lie: .1, nudgeIn: 30, nudgeOut: 10 },
   rattle: { sway: 22, freq: 3.2, tau: .2, walk: 6, loose: 3, hop: 30, hopBase: 12, hopT: .32, spin: .35, out: 38, outT: .55, settleT: .5 },
   collapse_was: 'collapse', collapse: { keep: .45, keepBack: .5, inward: .6, jit: 10, fly0: .2, flyOut: .4, flyK: .03 },
@@ -42,7 +42,8 @@ function makeDrops(dropSeed) {
     const u = (i + 1) / N;
     const at = COUNT.start + .08 + (COUNT.dur - .08) * (1 - Math.sqrt(1 - u));
     const kind = order[i % order.length];
-    const m = missAt[i] && kind !== 'teal' ? missAt[i] : 0;
+    /* misses (coins landing on the floor beside a stack) are off by default: coins only fall onto the three stacks */
+    const m = PROFILE.misses && missAt[i] && kind !== 'teal' ? missAt[i] : 0;
     const off = m ? m * (PROFILE.missOff || 64) + m * r() * (PROFILE.missJit ?? 26) : (r() - .5) * (PROFILE.dropJit ?? 16);
     out.push({ at, kind, off, miss: !!m, spin: (r() - .5) });
   }
