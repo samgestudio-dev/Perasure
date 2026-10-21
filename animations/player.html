@@ -25,8 +25,8 @@
 <script src="../vendor/motion@14.4.0/motion-react.js"></script>
 <script src="../vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
 <script src="../vendor/lottie-web@5.12.2/lottie_svg.min.js"></script>
-<script src="../assets/playground-ui.js?v=202610210251"></script>
-<script src="animations.js?v=202610210251"></script>
+<script src="../assets/playground-ui.js?v=202610210256"></script>
+<script src="animations.js?v=202610210256"></script>
 <script>
 /* ---- Animation player ------------------------------------------------------------------
    One animation at a time. Each animation exists twice, pixel-matched: the Lottie JSON played
@@ -662,10 +662,7 @@
     // stays put across switches and only animates when it really appears / disappears.
     var hasRegions = !!(entry.intro && entry.loop && !entry.success);
     var cutTotal = entry.loop ? entry.loop[1] : total;
-    var cut = hasRegions ? (entry.intro[1] / cutTotal * 100) + '%' : null;
-    var rail = hasRegions
-      ? 'linear-gradient(90deg,' + C.blue200 + ' 0,' + C.blue200 + ' ' + cut + ',' + C.blue + ' ' + cut + ',' + C.blue + ' 100%)'
-      : C.blue100;
+    var frac = hasRegions ? entry.intro[1] / cutTotal : 0;
     var f0 = ctl.getFrame();
     var key = st.paused ? ((st.phase === 'once' || st.phase === 'success') && total && f0 >= total - 1 ? 'done' : 'paused') : st.phase;
     var ph = PHASE[key] || PHASE.paused;
@@ -727,10 +724,12 @@
            below is still painted per frame, never animated). */
         h(m.div, { initial: false, animate: { backgroundColor: hasRegions ? C.blue : C.blue100 }, transition: T.fade,
           style: { position: 'absolute', left: 0, right: 0, top: 15, height: 6, borderRadius: 3, overflow: 'hidden' } },
-          h(m.div, { initial: false, animate: { width: hasRegions ? cut : '0%' }, transition: RAIL,
-            style: { position: 'absolute', left: 0, top: 0, bottom: 0, background: C.blue200 } })),
-        h(m.div, { initial: false, animate: { left: hasRegions ? cut : '0%', opacity: hasRegions ? 1 : 0 }, transition: { left: RAIL, opacity: T.fade },
-          style: { position: 'absolute', top: 13, width: 2, height: 10, marginLeft: -1, borderRadius: 1, background: '#fff' } }),
+          h(m.div, { initial: false, animate: { scaleX: hasRegions ? frac : 0 }, transition: RAIL,
+            style: { position: 'absolute', inset: 0, transformOrigin: '0 50%', background: C.blue200 } })),
+        // divider: a full-width carrier moved by a % of its own width (= the rail's), transform only
+        h(m.div, { initial: false, animate: { x: (hasRegions ? frac * 100 : 0) + '%', opacity: hasRegions ? 1 : 0 },
+            transition: { x: RAIL, opacity: T.fade }, style: { position: 'absolute', left: 0, right: 0, top: 13, height: 10, pointerEvents: 'none' } },
+          h('div', { style: { position: 'absolute', left: -1, top: 0, width: 2, height: 10, borderRadius: 1, background: '#fff' } })),
         h('div', { ref: thumb, style: { position: 'absolute', top: 7, left: '0%', width: 22, height: 22, marginLeft: -11, borderRadius: 11,
           background: '#fff', boxShadow: '0 0 0 1.5px ' + C.blue + ', 0 2px 6px rgba(0,1,40,0.18)', pointerEvents: 'none' } }))),
       /* Legend: fades in with a small rise and its two items arrive in turn; on exit it lifts out of
@@ -755,7 +754,7 @@
         : null));
   }
 
-  /* Replay ↔ Play/Pause merge. Two buttons, each pinned by its outer edge, sized by Motion springs
+  /* Replay ↔ Play/Pause merge. Two buttons, each pinned by its outer edge, revealed by Motion springs
      (visualDuration + bounce). Outer edges never move: on merge the white Replay's right edge
      retracts to its left edge and fades, and the blue button's left edge follows it to take the space;
      on split the blue left edge springs back and the white Replay grows out from the left. */
@@ -765,36 +764,43 @@
     var sz = R.useState(0), S = sz[0], setS = sz[1];
     R.useLayoutEffect(function(){
       var el = box.current; if (!el) return;
-      function measure(){ setS(el.getBoundingClientRect().width); }
+      function measure(){ setS(el.offsetWidth); }
       measure();
       var ro = typeof ResizeObserver === 'function' ? new ResizeObserver(measure) : null;
       if (ro) ro.observe(el);
       return function(){ if (ro) ro.disconnect(); };
     }, []);
-    var w1 = (S - PAIR_GAP) / 2.4, w2 = S - w1 - PAIR_GAP;
+    if (!S) return h('div', { ref: box, style: { gridColumn: '1 / span 2', gridRow: 1, height: PAIR_H } });
+    var w1 = (S - PAIR_GAP) / 2.4;
     var tr = pairSprings(ended);
-    var btn = { position: 'absolute', top: 0, height: PAIR_H, border: 0, padding: 0, borderRadius: 16, overflow: 'hidden',
+    // Sizes never change: each button keeps its full box and a clip-path (and transforms) reveal it.
+    // Motion runs clipPath / transform / opacity on the compositor (WAAPI), so no layout per frame.
+    var cut = ended ? w1 : 0;                       // how far the white Replay's right edge has retracted
+    var lead = ended ? 0 : w1 + PAIR_GAP;           // where the blue button's left edge is
+    var clip = function(t, r, b, l, rad){ return 'inset(' + t + 'px ' + r + 'px ' + b + 'px ' + l + 'px round ' + rad + 'px)'; };
+    var btn = { position: 'absolute', top: 0, left: 0, height: PAIR_H, border: 0, padding: 0, background: 'none',
       display: 'flex', alignItems: 'center', justifyContent: 'center', font: '600 15px/20px ' + FONT,
       cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' };
     var icon = function(I){ return h(I, { sx: { fontSize: 20, display: 'block' } }); };
-    var mainK = ended ? 'replay' : (st.paused ? 'play' : 'pause');
     var mainText = ended ? 'Replay' : (st.paused ? 'Play' : 'Pause');
-    var mainIcon = ended ? Icon.replay : (st.paused ? Icon.play : Icon.pause);
     return h('div', { ref: box, style: { gridColumn: '1 / span 2', gridRow: 1, position: 'relative', height: PAIR_H } },
-      // white Replay: pinned left; its right edge retracts (the label stays put and is clipped), then fades
-      S ? h(m.button, { type: 'button', 'aria-label': 'Replay', 'aria-hidden': ended ? 'true' : undefined, tabIndex: ended ? -1 : 0,
+      // white Replay, pinned left: hairline layer + white face, both clipped from the right
+      h(m.button, { type: 'button', 'aria-label': 'Replay', 'aria-hidden': ended ? 'true' : undefined, tabIndex: ended ? -1 : 0,
           onClick: ctl.replay, whileTap: ended ? undefined : TAP,
-          initial: false, animate: { width: ended ? 0 : w1, opacity: ended ? 0 : 1 },
-          transition: { width: tr.white, opacity: ended ? { type: 'tween', duration: 0.14, delay: 0.2 } : { type: 'tween', duration: 0.08 } },
-          style: Object.assign({}, btn, { left: 0, justifyContent: 'flex-start', background: '#ffffff', color: C.ink,
-            boxShadow: 'inset 0 0 0 1px rgba(20,30,36,0.10)', pointerEvents: ended ? 'none' : 'auto' }) },
-        h('span', { style: { flex: '0 0 auto', width: w1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, whiteSpace: 'nowrap' } },
-          icon(Icon.replay), 'Replay')) : null,
-      // blue: pinned right; only its left edge moves. The label stays centred in it and swaps.
-      S ? h(m.button, { type: 'button', 'aria-label': mainText, onClick: ended ? ctl.replay : ctl.togglePlay, whileTap: TAP,
-          initial: false, animate: { width: ended ? S : w2 }, transition: { width: tr.blue },
-          style: Object.assign({}, btn, { right: 0, background: C.blue, color: '#ffffff', boxShadow: '0 2px 8px rgba(44,116,190,0.28)' }) },
-        h(Swap, { k: mainK, gap: 6 }, icon(mainIcon), mainText)) : null);
+          initial: false, animate: { clipPath: clip(0, cut, 0, 0, 16), opacity: ended ? 0 : 1 },
+          transition: { clipPath: tr.white, opacity: ended ? { type: 'tween', duration: 0.14, delay: 0.2 } : { type: 'tween', duration: 0.08 } },
+          style: Object.assign({}, btn, { width: w1, color: C.ink, background: 'rgba(20,30,36,0.10)', pointerEvents: ended ? 'none' : 'auto' }) },
+        h(m.span, { initial: false, animate: { clipPath: clip(1, cut + 1, 1, 1, 15) }, transition: { clipPath: tr.white },
+          style: { position: 'absolute', inset: 0, background: '#ffffff' } }),
+        h('span', { style: { position: 'relative', display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' } },
+          icon(Icon.replay), 'Replay')),
+      // blue, pinned right: full width, clipped from the left; the label rides at the centre of what shows
+      h(m.button, { type: 'button', 'aria-label': mainText, onClick: ended ? ctl.replay : ctl.togglePlay, whileTap: TAP,
+          initial: false, animate: { clipPath: clip(0, 0, 0, lead, 16) }, transition: { clipPath: tr.blue },
+          style: Object.assign({}, btn, { width: S, color: '#ffffff', background: C.blue }) },
+        h(m.span, { initial: false, animate: { x: lead / 2 }, transition: { x: tr.blue }, style: { display: 'inline-flex' } },
+          h(Swap, { k: ended ? 'replay' : (st.paused ? 'play' : 'pause'), gap: 6 },
+            icon(ended ? Icon.replay : (st.paused ? Icon.play : Icon.pause)), mainText))));
   }
   function pairSprings(ended){
     return ended

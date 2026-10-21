@@ -20,8 +20,8 @@
 <script src="vendor/react-dom@18.3.1/react-dom.production.min.js"></script>
 <script src="vendor/motion@14.4.0/motion-react.js"></script>
 <script src="vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
-<script src="assets/playground-ui.js?v=202610210251"></script>
-<script src="animations/animations.js?v=202610210251"></script>
+<script src="assets/playground-ui.js?v=202610210256"></script>
+<script src="animations/animations.js?v=202610210256"></script>
 <script>
 /* ---- Prototype registry (the "Prototypes" tab) -----------------------------------------
    To add a prototype: put its files in prototypes/<slug>/ and add one entry below.
@@ -88,7 +88,6 @@ var DEMOS = [
   // Links carry the deploy stamp, so a phone never reopens a page from a stale cache after an update.
   function fresh(u){ return PG.v ? u + (u.indexOf('?') < 0 ? '?' : '&') + 'v=' + PG.v : u; }
   function fromHash(){ return /^#(animations|lottie)$/.test(location.hash) ? 1 : 0; }
-  var tapFx = { whileTap: TAP, transition: T.snap };
 
   /* Segmented tabs: the white pill is one shared element (layoutId) that springs between tabs. */
   function Segmented(p){
