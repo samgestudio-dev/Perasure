@@ -96,16 +96,67 @@ main{box-sizing:border-box;width:100%;max-width:480px;flex:1;display:flex;flex-d
 <script>
 (function(){
 "use strict";
-/* ============ reuse: change these (or pass ?from=&to=&exp=YYYY-MM-DD) ============ */
+/* ============================== DATA INTERFACE ==============================
+   Everything the backend changes per user. See README.md next to this file.
+
+   Fields (camelCase or snake_case both accepted):
+     oldLimit     | old_limit       number  required  current credit limit before the raise, e.g. 45000
+     newLimit     | new_limit       number  required  credit limit after the raise, e.g. 50000
+     increase     | increase_amount number  optional  shown in the "+₱5,000" pill; defaults to newLimit - oldLimit
+     expiresAt    | expires_at      string  optional  'YYYY-MM-DD' or ISO date-time; pill is hidden when absent
+     expiresText  | expires_text    string  optional  ready-made pill text, overrides expiresAt formatting
+     currency                       string  optional  default '₱'
+     label                          string  optional  default 'Your credit limit is going up'
+
+   How data gets in (first match wins):
+     1. window.PeraCreditLimit.play(data)        call any time; plays (or replays) with this data
+     2. window.CREDIT_LIMIT_DATA = { ... }       set before this script runs; autoplays with it
+     3. URL ?old=45000&new=50000&inc=5000&exp=2026-11-30&cur=₱   (handy for testing links)
+     4. the built-in sample: 45,000 → 50,000, valid until 30 Nov 2026
+   Set window.CREDIT_LIMIT_AUTOPLAY = false before this script to wait for play().
+
+   Timing never depends on the numbers: count-up 0.45–2.30 s, landing at 2.30 s, done at 3.40 s, 44 coins.
+   ============================================================================ */
 var Q = new URLSearchParams(location.search);
-var CONFIG = {
-  from:     +(Q.get('from') || 45000),        /* old credit limit */
-  to:       +(Q.get('to')   || 50000),        /* new credit limit */
-  currency: Q.get('cur') || '₱',
-  expires:  Q.get('exp') || '2026-11-30',     /* the pill: when the new limit offer ends */
-  label:    'Your credit limit is going up'
-};
-/* ================================================================================== */
+var SAMPLE = { oldLimit:45000, newLimit:50000, expiresAt:'2026-11-30' };
+function num(v){ if (v === null || v === undefined || v === '') return NaN; return typeof v === 'number' ? v : Number(String(v).replace(/[^0-9.\-]/g, '')); }
+function pick(o, keys){ for (var i = 0; i < keys.length; i++) if (o && o[keys[i]] !== undefined && o[keys[i]] !== null && o[keys[i]] !== '') return o[keys[i]]; }
+/* turn whatever the caller passes into the one shape the animation uses */
+function normalize(d){
+  d = d || {};
+  var from = num(pick(d, ['oldLimit', 'old_limit', 'from'])), to = num(pick(d, ['newLimit', 'new_limit', 'to']));
+  if (!isFinite(to)) { to = isFinite(from) ? from : SAMPLE.newLimit; }
+  if (!isFinite(from)) from = to;
+  var inc = num(pick(d, ['increase', 'increase_amount', 'inc']));
+  if (!isFinite(inc)) inc = to - from;
+  return {
+    from:from, to:to, increase:inc,
+    currency:pick(d, ['currency', 'cur']) || '₱',
+    label:pick(d, ['label']) || 'Your credit limit is going up',
+    expiresAt:pick(d, ['expiresAt', 'expires_at', 'exp']) || '',
+    expiresText:pick(d, ['expiresText', 'expires_text']) || ''
+  };
+}
+function initialData(){
+  if (window.CREDIT_LIMIT_DATA) return window.CREDIT_LIMIT_DATA;
+  if (Q.has('old') || Q.has('new') || Q.has('from') || Q.has('to'))
+    return { old_limit:Q.get('old') || Q.get('from'), new_limit:Q.get('new') || Q.get('to'), increase_amount:Q.get('inc'), expires_at:Q.get('exp'), currency:Q.get('cur') };
+  return SAMPLE;
+}
+var CONFIG = normalize(initialData());
+var HOOKS = {};
+/* tell the host page / native app what happened */
+function emit(name, extra){
+  var detail = Object.assign({ oldLimit:CONFIG.from, newLimit:CONFIG.to, increase:CONFIG.increase }, extra || {});
+  try { window.dispatchEvent(new CustomEvent('creditlimit:' + name, { detail:detail })); } catch (e) {}
+  var cb = HOOKS[name === 'landed' ? 'onLanded' : 'onDone']; if (typeof cb === 'function') cb(detail);
+  var msg = JSON.stringify({ type:'creditlimit:' + name, detail:detail });
+  try { if (window.ReactNativeWebView) window.ReactNativeWebView.postMessage(msg); } catch (e) {}
+  try { if (window.webkit && webkit.messageHandlers && webkit.messageHandlers.creditLimit) webkit.messageHandlers.creditLimit.postMessage(msg); } catch (e) {}
+  try { if (window.CreditLimitBridge && CreditLimitBridge.onEvent) CreditLimitBridge.onEvent(msg); } catch (e) {}
+  try { if (window.parent !== window) window.parent.postMessage({ type:'creditlimit:' + name, detail:detail }, '*'); } catch (e) {}
+}
+/* ============================================================================ */
 var SPEED = parseFloat(Q.get('speed')) || 1;
 var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches && !Q.has('motion');
 var NS = 'http://www.w3.org/2000/svg';
@@ -117,12 +168,37 @@ var M = Matter;
 function fit(){ document.documentElement.style.setProperty('--u', (Math.min(innerWidth, 480) / 360).toFixed(4)); }
 function el(tag, attrs, parent){ var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
 function money(v){ return CONFIG.currency + Math.round(v).toLocaleString('en-US'); }
-function dateText(iso){ var d = new Date(iso + 'T00:00:00'); return isNaN(d) ? iso : 'Valid until ' + d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }); }
-$('label').textContent = CONFIG.label;
-$('up').textContent = '+' + money(CONFIG.to - CONFIG.from);
-$('was').textContent = money(CONFIG.from);
-$('expText').textContent = dateText(CONFIG.expires);
-amountEl.textContent = money(CONFIG.from);
+function dateText(s){
+  if (!s) return '';
+  var d = /^\d{4}-\d{2}-\d{2}$/.test(s) ? new Date(s + 'T00:00:00') : new Date(s);
+  return isNaN(d) ? String(s) : 'Valid until ' + d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+}
+/* write the data into the page */
+function applyData(){
+  $('label').textContent = CONFIG.label;
+  $('up').textContent = (CONFIG.increase >= 0 ? '+' : '−') + money(Math.abs(CONFIG.increase));
+  $('was').textContent = money(CONFIG.from);
+  var showDelta = CONFIG.increase !== 0 && CONFIG.from !== CONFIG.to;
+  $('delta').style.visibility = showDelta ? '' : 'hidden';
+  var et = CONFIG.expiresText || dateText(CONFIG.expiresAt);
+  $('expText').textContent = et; $('exp').style.display = et ? '' : 'none';
+  amountEl.textContent = money(CONFIG.from);
+  fitAmount();
+}
+/* longer amounts (₱1,250,000) shrink to fit the width instead of overflowing; short ones keep the design size */
+function fitAmount(){
+  amountEl.style.fontSize = '';
+  var probe = amountEl.cloneNode(false); probe.removeAttribute('id');
+  probe.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;font-size:' + getComputedStyle(amountEl).fontSize;
+  probe.className = ''; probe.style.fontFamily = getComputedStyle(amountEl).fontFamily; probe.style.fontWeight = getComputedStyle(amountEl).fontWeight;
+  probe.style.letterSpacing = getComputedStyle(amountEl).letterSpacing; probe.style.fontVariantNumeric = 'tabular-nums';
+  document.body.appendChild(probe);
+  var w = 0; [CONFIG.from, CONFIG.to].forEach(function(v){ probe.textContent = money(v); w = Math.max(w, probe.getBoundingClientRect().width); });
+  probe.remove();
+  var box = $('hero').parentNode, cs = getComputedStyle(box);
+  var avail = box.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - 4;   /* content width of the page column */
+  if (w > avail) amountEl.style.fontSize = (parseFloat(getComputedStyle(amountEl).fontSize) * avail / w).toFixed(2) + 'px';
+}
 
 /* ---------- coins, colours sampled from the reference ---------- */
 var H = 14, RX = 80, RY = 21;
@@ -344,7 +420,7 @@ function twinkle(){
 }
 
 /* ---------- timeline ---------- */
-var tl, NUM = { v:CONFIG.from };
+var tl, NUM = { v:0 };
 function frame(){ simTo(tl.time()); render(); }
 function build(){
   if (tl) tl.kill();
@@ -387,7 +463,8 @@ function build(){
   tl.add(twinkle, .8);
 
   var END = F + 1.1;   /* long enough for the kicked coins to land */
-  tl.add(function(){ replay.classList.add('on'); }, END - .2);
+  tl.add(function(){ emit('landed'); }, F);
+  tl.add(function(){ replay.classList.add('on'); emit('done'); }, END - .2);
   tl.to({}, { duration:.01 }, END);
   gsap.set(['#up', '#was', '#exp'], { opacity:0 });
   frame();
@@ -399,13 +476,30 @@ function start(){
   if (reduce) { tl.progress(1); return; }
   tl.play(0);
 }
+var booted = false, pending = null;
 function boot(){
-  fit(); addEventListener('resize', fit);
+  booted = true;
+  fit(); applyData();
+  addEventListener('resize', function(){ fit(); fitAmount(); });
   replay.addEventListener('click', start);
   var T = parseFloat(Q.get('t'));
   if (!isNaN(T)) { build(); tl.seek(T, false); window.__seek = function(x){ tl.seek(x, false); return tl.duration(); }; return; }
-  setTimeout(start, 250);
+  if (pending) { var p = pending; pending = null; window.PeraCreditLimit.play(p); return; }
+  if (window.CREDIT_LIMIT_AUTOPLAY !== false) setTimeout(start, 250);
 }
+/* public API for the host page / app */
+window.PeraCreditLimit = {
+  /* play (or replay) with backend data; options.onLanded / options.onDone are optional callbacks */
+  play:function(data, options){
+    if (!booted) { pending = data; HOOKS = options || HOOKS; return; }
+    if (options) HOOKS = options;
+    CONFIG = normalize(data || CONFIG);
+    applyData(); start();
+  },
+  replay:function(){ if (booted) start(); },
+  duration:3.4,
+  getData:function(){ return Object.assign({}, CONFIG); }
+};
 window.__tl = function(){ return tl; };
 (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(boot);
 })();
