@@ -9,7 +9,7 @@ The numbers come from the backend and change per user. **The timing never change
 | File | Coins | Use when |
 | --- | --- | --- |
 | `index.html` (Standard) | simulated live in the browser with Matter.js; at the landing the coins jump and fall where they fall | you want every play to be computed on the device |
-| `baked-heap.html` (Baked heap) | a fixed recording made offline (no physics engine shipped), drawn on canvas; every coin casts its own shadow onto the coins below and behind it; at the landing the tops of the stacks tumble off into a loose pile | you want the exact same, polished motion on every phone |
+| `baked-heap.html` (Baked heap) | a fixed recording made offline (no physics engine shipped), drawn on canvas; every coin casts its own shadow onto the coins below and behind it; at the landing the coins are knocked up and the physics engine decides where they end up | you want the exact same, polished motion on every phone |
 
 Everything below (data fields, the three ways to pass data, events, timing) is identical for both files.
 
@@ -158,15 +158,13 @@ The count-up interpolates between whatever the two amounts are, so a ₱3,000 ra
 - **Standard**: coins are inline SVG, moved by a Matter.js simulation stepped on the GSAP timeline's clock, so every playback looks identical.
 - **Baked heap**: coin positions come from `bake/baked.json`, recorded at 60 fps offline. No physics runs on the phone, so the simulation settings cost nothing at runtime.
   - **Drawing**: the two rows of coins are drawn on two canvases, with the twinkling stars in an SVG layer between them. There are no SVG nodes or clip paths per coin. A row is redrawn only on frames where one of its coins moved, and a shadow is recomputed only when its caster or the coin it falls on moved. On phones with 4 cores or fewer, or 4 GB of memory or less, the canvases are drawn at 2× at most.
-  - **Drops**: until the landing (2.30 s), the drops are a Matter.js simulation at 960 Hz with 20/14 iterations.
-  - **Landing**: from 2.30 s, the tops of the stacks tumble off, laid out by rules rather than simulated, because the engine squeezes coins out of 20-coin stacks when they are shaken. Each loose coin slides off its own stack, to either side but more often inwards, and lands lower down. It rests on the floor or on coins it actually touches. Lower coins land first. The coins that stay on the stacks sway against the scene shake.
-  - **Re-baking**: edit `bake/bake.js` (`PROFILE`: drops, and the landing in `tumble`), then run `npm i matter-js@0.19.0 && node bake/bake.js bake bake/baked.json 960 20 14` and paste the JSON into `baked-heap.html` (the `var BAKED = …;` line).
-  - **Checks**: the bake tries drop variations until `validate()` passes. It throws away any run where:
-    - a coin rests tilted more than about 17°;
-    - a coin floats, or its centre is not over the coins it touches;
-    - two coins in a row step outwards (one small outward step may remain);
-    - a coin rises more than 4 coin heights at the landing, ends higher than it started, or travels more than about a coin width sideways;
-    - anything is still moving at 3.4 s.
+  - **Simulation**: the whole motion, drops and landing, is a Matter.js simulation at 960 Hz with 20/14 iterations. When the amount lands (2.30 s), every coin is knocked up and sideways, more the higher it sits. Where they end up is entirely the engine's result. Nothing is aimed at a shape.
+  - **Re-baking**: edit `bake/bake.js` (`PROFILE`, mode `engine`), then run `npm i matter-js@0.19.0 && node bake/bake.js bake bake/baked.json 960 20 14` and paste the JSON into `baked-heap.html` (the `var BAKED = …;` line).
+  - **Checks**: the bake tries drop and kick variations and keeps the first run that passes two checks. A run is thrown away if:
+    - a coin comes to rest tilted more than 30°;
+    - anything is still visibly moving at 3.4 s, where the recording stops.
+  - **Engine fixes**: sleeping is off, because at 960 Hz the engine put slow coins to sleep in mid-air. Speeds above 1,500 units/s (900 sideways) are capped, because those only come from solver errors. The last 0.35 s adds a little air friction so the coins settle by the end.
+  - **Other landings**: the earlier landing modes (`heap`, `tumble`, …) are still in the script for reference, but are not used.
   - **Screen edge**: it is not a wall, so coins may spill partly off screen.
   - `node bake/bake.js sweep` prints the accuracy and cost table used to pick 960 Hz with 20/14 iterations. Below that the coins visibly sink into each other; above it the gains flatten while the cost keeps doubling.
 

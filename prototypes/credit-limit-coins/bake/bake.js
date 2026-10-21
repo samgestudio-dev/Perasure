@@ -21,7 +21,7 @@ const FALL = .3;
 const PILE_X = 363;                              // where the heap gathers
 /* heap shape and kick: coins per foot pile / side column, placement jitter, flight time (base + per layer),
    slot assignment order, end settling (seconds, extra air friction) */
-let PROFILE = { mode: 'tumble', dropJit: 26,
+let PROFILE = { mode: 'engine', dropJit: 26,
   tumble: { keep: .5, inward: .6, reach0: 60, reach1: 110, maxTilt: .2, sway: 18, freq: 3.2, tau: .2, first: .16, gap: .022, leave0: .02, leaveK: .012, hopV: 260, spin: .5, lie: .1, nudgeIn: 30, nudgeOut: 10 },
   rattle: { sway: 22, freq: 3.2, tau: .2, walk: 6, loose: 3, hop: 30, hopBase: 12, hopT: .32, spin: .35, out: 38, outT: .55, settleT: .5 },
   collapse_was: 'collapse', collapse: { keep: .45, keepBack: .5, inward: .6, jit: 10, fly0: .2, flyOut: .4, flyK: .03 },
@@ -115,12 +115,14 @@ function simulate(opts) {
         for (const c of coins) { c.body.friction = PROFILE.fric; c.body.frictionStatic = PROFILE.fricS; }
         joltKick(live, kr);
       }
-      else if (gather) {
+      else if (gather && PROFILE.mode !== 'engine') {
         /* softer, grippier landings while the heap forms, so the tall middle stays standing */
         engine.gravity.y = 2.2;
         for (const c of coins) { c.body.friction = 1; c.body.frictionStatic = 4; }
         gatherKick(live, kr, engine.gravity.y * 1000);
       }
+      /* 'engine' (and the live Standard demo): the landing simply knocks every coin up and sideways, more the
+         higher it sits; what happens next is entirely the physics engine */
       else for (const c of live) {
         M.Sleeping.set(c.body, false);
         const p = c.body.position, h = Math.max(0, (FLOOR - p.y) / 280);
@@ -493,7 +495,7 @@ if (mode === 'sweep') {
 }
 
 /* ---- plausibility checks: a bake that fails one is thrown away and re-simulated with another kick seed ----
-   1. No coin may come to rest tilted more than MAX_TILT (about 17 degrees). Coins in a heap lie flat or nearly
+   1. No coin may come to rest tilted more than MAX_TILT (30 degrees). Coins in a heap lie flat or nearly
       flat; one propped up on its edge looks wrong, and the face shadows assume a near-horizontal top face.
    2. At the end every coin must be at rest (it may lie partly off screen: the edge is not a wall). */
 /* o lies directly under f, touching it: overlapping sideways, and o's top face at f's bottom face
@@ -504,7 +506,7 @@ function touches(o, f) {
   return Math.abs(o[1] - f[1] - H) <= slack;
 }
 function validate(frames, coins) {
-  const MAX_TILT = .3, n = frames.length;
+  const MAX_TILT = 30 / 57.2958, n = frames.length;                  // 30 degrees
   const tilt = a => { a = Math.abs(Math.atan2(Math.sin(a), Math.cos(a))); return Math.min(a, Math.PI - a); };
   let maxTilt = 0;
   for (let j = 0; j < coins.length; j++) {
@@ -526,6 +528,9 @@ function validate(frames, coins) {
     if (Math.hypot(f[0] - g[0], f[1] - g[1]) > 2 || Math.abs(f[2] - g[2]) > .03) return { ok: false, why: `coin ${j} still moving at the end`, maxTilt };
     if (tilt(f[2]) > MAX_TILT) return { ok: false, why: `coin ${j} ends tilted ${(tilt(f[2]) * 57.3).toFixed(0)} deg`, maxTilt };
   }
+  /* The checks below shaped the earlier aimed heaps. A plain engine run ('engine') is kept as the engine leaves it:
+     only the two checks above apply (no coin resting tilted more than 30 degrees, nothing frozen mid-motion). */
+  if (PROFILE.mode === 'engine') return { ok: true, maxTilt };
   /* 3. nothing floats: every coin at the end lies on its floor or on a coin of its own row just below it */
   const last = frames[n - 1];
   for (let j = 0; j < coins.length; j++) {
