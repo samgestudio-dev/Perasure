@@ -25,8 +25,8 @@
 <script src="../vendor/motion@14.4.0/motion-react.js"></script>
 <script src="../vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
 <script src="../vendor/lottie-web@5.12.2/lottie_svg.min.js"></script>
-<script src="../assets/playground-ui.js?v=202610210210"></script>
-<script src="animations.js?v=202610210210"></script>
+<script src="../assets/playground-ui.js?v=202610210220"></script>
+<script src="animations.js?v=202610210220"></script>
 <script>
 /* ---- Animation player ------------------------------------------------------------------
    One animation at a time. Each animation exists twice, pixel-matched: the Lottie JSON played
@@ -626,6 +626,7 @@
      loop restarts. Drag (or ←/→ when focused) scrubs. The intro / loop pill above it uses a
      shared Motion indicator that follows the region the frame is in. */
   var SEG_PILL = 70;
+  var RAIL = { type: 'spring', visualDuration: 0.24, bounce: 0.05 };   // quick, no wobble
   function Timeline(p){
     var st = p.st, entry = p.entry;
     var bar = R.useRef(null), thumb = R.useRef(null), num = R.useRef(null), drag = R.useRef(null);
@@ -722,8 +723,14 @@
         style: { position: 'relative', height: 36, marginTop: 4, touchAction: 'none', cursor: 'pointer', outline: 'none',
           WebkitUserSelect: 'none', userSelect: 'none' }
       },
-        h('div', { style: { position: 'absolute', left: 0, right: 0, top: 15, height: 6, borderRadius: 3, background: rail } }),
-        cut ? h('div', { style: { position: 'absolute', left: cut, top: 13, width: 2, height: 10, marginLeft: -1, borderRadius: 1, background: '#fff' } }) : null,
+        /* Rail: the intro / loop proportions spring quickly to the new animation's values (the thumb
+           below is still painted per frame, never animated). */
+        h(m.div, { initial: false, animate: { backgroundColor: hasRegions ? C.blue : C.blue100 }, transition: T.fade,
+          style: { position: 'absolute', left: 0, right: 0, top: 15, height: 6, borderRadius: 3, overflow: 'hidden' } },
+          h(m.div, { initial: false, animate: { width: hasRegions ? cut : '0%' }, transition: RAIL,
+            style: { position: 'absolute', left: 0, top: 0, bottom: 0, background: C.blue200 } })),
+        h(m.div, { initial: false, animate: { left: hasRegions ? cut : '0%', opacity: hasRegions ? 1 : 0 }, transition: { left: RAIL, opacity: T.fade },
+          style: { position: 'absolute', top: 13, width: 2, height: 10, marginLeft: -1, borderRadius: 1, background: '#fff' } }),
         h('div', { ref: thumb, style: { position: 'absolute', top: 7, left: '0%', width: 22, height: 22, marginLeft: -11, borderRadius: 11,
           background: '#fff', boxShadow: '0 0 0 1.5px ' + C.blue + ', 0 2px 6px rgba(0,1,40,0.18)', pointerEvents: 'none' } }))),
       /* Legend: fades in with a small rise and its two items arrive in turn; on exit it lifts out of
@@ -763,23 +770,95 @@
       h(Swap, { k: p.k, dy: p.dy }, p.icon ? h(p.icon, { sx: { fontSize: 20, display: 'block' } }) : null, p.text));
   }
 
+  /* Liquid Replay ↔ Play/Pause. The two button backgrounds are blobs in one layer with an SVG
+     "goo" filter (blur, then a hard alpha threshold) so shapes that come close fuse like liquid:
+     on merge the Replay blob stretches across both slots and turns blue while the Play blob slides in
+     and is absorbed; on split the Play droplet pulls back out and Replay shrinks and turns white.
+     Labels sit above, unfiltered and sharp. The outline of the white Replay is drawn outside the
+     filter (a blurred hairline would disappear). */
+  var GOO_GAP = 8, GOO_H = 52;
+  function GooDefs(){
+    return h('svg', { width: 0, height: 0, 'aria-hidden': 'true', style: { position: 'absolute', width: 0, height: 0 } },
+      h('defs', null,
+        h('filter', { id: 'ps-goo', x: '-20%', y: '-40%', width: '140%', height: '180%', colorInterpolationFilters: 'sRGB' },
+          h('feGaussianBlur', { in: 'SourceGraphic', stdDeviation: 5, result: 'blur' }),
+          // threshold at alpha 0.5: two shapes 8px apart stay separate at rest (0.21 + 0.21 < 0.5), and fuse once closer
+          h('feColorMatrix', { in: 'blur', mode: 'matrix', values: '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10', result: 'goo' }))));
+  }
+  function LiquidPair(p){
+    var ended = p.ended, box = R.useRef(null);
+    var sz = R.useState(0), S = sz[0], setS = sz[1];
+    R.useLayoutEffect(function(){
+      var el = box.current; if (!el) return;
+      function measure(){ setS(el.getBoundingClientRect().width); }
+      measure();
+      var ro = typeof ResizeObserver === 'function' ? new ResizeObserver(measure) : null;
+      if (ro) ro.observe(el);
+      return function(){ if (ro) ro.disconnect(); };
+    }, []);
+    var w1 = (S - GOO_GAP) / 2.4, w2 = (S - GOO_GAP) * 1.4 / 2.4;
+    // merge: A grows first-ish, B follows into it (slower) → a liquid neck; split: B leads out, A trails.
+    var aT = ended ? { type: 'spring', visualDuration: 0.42, bounce: 0.14 } : { type: 'spring', visualDuration: 0.5, bounce: 0.1, delay: 0.05 };
+    var bT = ended ? { type: 'spring', visualDuration: 0.5, bounce: 0.06, delay: 0.04 } : { type: 'spring', visualDuration: 0.42, bounce: 0.16 };
+    var colT = ended ? { type: 'tween', duration: 0.22, ease: [0.2, 0, 0, 1] } : { type: 'tween', duration: 0.24, delay: 0.16, ease: [0.2, 0, 0, 1] };
+    var blob = { position: 'absolute', top: 0, left: 0, height: GOO_H, borderRadius: 16 };
+    return h('div', { ref: box, 'aria-hidden': 'true', style: { gridColumn: '1 / span 2', gridRow: 1, position: 'relative', height: GOO_H, pointerEvents: 'none' } },
+      S ? h('div', { style: { position: 'absolute', inset: 0, filter: 'url(#ps-goo) drop-shadow(0 2px 6px rgba(16,24,40,0.12))' } },
+        h(m.div, { initial: false, animate: { x: 0, width: ended ? S : w1, backgroundColor: ended ? C.blue : '#ffffff' },
+          transition: { x: aT, width: aT, backgroundColor: colT }, style: blob }),
+        h(m.div, { initial: false,
+          animate: ended ? { x: S / 2 - 26, y: 6, width: 52, height: 40, borderRadius: 20 } : { x: w1 + GOO_GAP, y: 0, width: w2, height: GOO_H, borderRadius: 16 },
+          transition: { default: bT }, style: Object.assign({}, blob, { background: C.blue }) })) : null,
+      // hairline outline of the white Replay (outside the filter)
+      S ? h(m.div, { initial: false, animate: { width: ended ? S : w1, opacity: ended ? 0 : 1 },
+        transition: { width: aT, opacity: ended ? T.out : colT },
+        style: { position: 'absolute', top: 0, left: 0, height: GOO_H, borderRadius: 16, boxShadow: 'inset 0 0 0 1px rgba(20,30,36,0.10)' } }) : null);
+  }
+
+  /* Label + hit area on top of the liquid layer. */
+  function PairLabel(p){
+    return h(m.button, { type: 'button', layout: true, 'aria-label': p.label, onClick: p.onClick, whileTap: TAP,
+        initial: p.initial || false, animate: { opacity: 1, scale: 1, color: p.light ? '#ffffff' : C.ink }, exit: p.exit,
+        transition: { default: T.snap, layout: { type: 'spring', visualDuration: 0.42, bounce: 0.14 }, color: T.fade },
+        style: Object.assign({ gridRow: 1, position: 'relative', zIndex: 1, height: GOO_H, minWidth: 0, border: 0, padding: '0 4px', borderRadius: 16,
+          background: 'transparent', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          font: '600 15px/20px ' + FONT, cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }, p.style) },
+      h(Swap, { k: p.k, gap: 6 }, h(p.icon, { sx: { fontSize: 20, display: 'block' } }), p.text));
+  }
+
+  /* Large control button (Motion): colours fade between outlined and filled, label/icon swap. */
+  function CtlButton(p){
+    var primary = !!p.primary;
+    return h(m.button, { type: 'button', layout: true, onClick: p.onClick, 'aria-label': p.label, whileTap: TAP,
+        initial: false, animate: { backgroundColor: primary ? C.blue : '#ffffff', color: primary ? '#ffffff' : C.ink,
+          boxShadow: primary ? '0 0 0 1px rgba(44,116,190,1), 0 2px 8px rgba(44,116,190,0.28)' : '0 0 0 1px rgba(20,30,36,0.10), 0 0px 0px rgba(44,116,190,0)' },
+        transition: { default: T.snap, layout: T.layout, backgroundColor: T.fade, color: T.fade, boxShadow: T.fade },
+        style: Object.assign({ height: GOO_H, minWidth: 0, width: '100%', border: 0, padding: '0 12px', borderRadius: 16,
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
+          font: '600 15px/20px ' + FONT, cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }, p.style || {}) },
+      h(Swap, { k: p.k, dy: p.dy }, p.icon ? h(p.icon, { sx: { fontSize: 20, display: 'block' } }) : null, p.text));
+  }
+
   function PlaybackCard(p){
     var st = p.st, entry = p.entry;
     // A one-shot (or the coin's success) that has finished: Play would only restart it, so Play and
-    // Replay merge into one wide primary Replay until it plays again.
-    var ended = st.paused && !st.loading && (st.phase === 'once' || st.phase === 'success') && st.total && ctl.getFrame() >= st.total - 1.01;
+    // Replay merge (liquid) into one wide primary Replay until it plays again.
+    var ended = !!(st.paused && !st.loading && (st.phase === 'once' || st.phase === 'success') && st.total && ctl.getFrame() >= st.total - 1.01);
     return h(SectionCard, { style: { marginTop: 16 } },
       h(Timeline, { st: st, entry: entry }),
-      // Fixed proportions (grid): Replay and speed equal, Play / Pause widest; when merged, Replay spans both.
-      h(Slot, { style: { display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1.4fr) minmax(0,1fr)', gap: 8, marginTop: 16 } },
-        h(CtlButton, { key: 'replay', k: 'replay', label: 'Replay', primary: ended, onClick: ctl.replay, icon: Icon.replay,
-          text: 'Replay', style: { gridColumn: ended ? '1 / span 2' : '1' } }),
+      // Fixed proportions (grid): Replay and speed equal, Play / Pause widest; merged Replay spans both.
+      h(Slot, { style: { position: 'relative', display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1.4fr) minmax(0,1fr)', gap: GOO_GAP, marginTop: 16 } },
+        h(GooDefs, null),
+        h(LiquidPair, { ended: ended }),
+        h(PairLabel, { key: 'replay', k: 'replay', label: 'Replay', light: ended, onClick: ctl.replay, icon: Icon.replay, text: 'Replay',
+          style: { gridColumn: ended ? '1 / span 2' : '1' } }),
         h(AP, { mode: 'popLayout', initial: false },
-          ended ? null : h(CtlButton, { key: 'play', k: st.paused ? 'play' : 'pause', label: st.paused ? 'Play' : 'Pause', primary: true,
+          ended ? null : h(PairLabel, { key: 'play', k: st.paused ? 'play' : 'pause', label: st.paused ? 'Play' : 'Pause', light: true,
             onClick: ctl.togglePlay, icon: st.paused ? Icon.play : Icon.pause, text: st.paused ? 'Play' : 'Pause',
-            initial: { opacity: 0, scale: 0.8 }, exit: { opacity: 0, scale: 0.8, transition: T.out }, style: { gridColumn: '2' } })),
+            initial: { opacity: 0, scale: 0.85 }, exit: { opacity: 0, scale: 0.7, transition: T.out },
+            style: { gridColumn: '2' } })),
         h(CtlButton, { key: 'speed', k: 's' + st.speedIx, dy: 10, label: 'Playback speed', onClick: ctl.cycleSpeed, icon: Icon.speed,
-          text: SPEEDS[st.speedIx] + '×', style: { gridColumn: '3', fontVariantNumeric: 'tabular-nums' } })));
+          text: SPEEDS[st.speedIx] + '×', style: { gridColumn: '3', gridRow: 1, fontVariantNumeric: 'tabular-nums' } })));
   }
 
   function DetailsCard(p){
