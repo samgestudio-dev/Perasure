@@ -20,8 +20,8 @@
 <script src="vendor/react-dom@18.3.1/react-dom.production.min.js"></script>
 <script src="vendor/motion@14.4.0/motion-react.js"></script>
 <script src="vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
-<script src="assets/playground-ui.js?v=202610201756"></script>
-<script src="animations/animations.js?v=202610201756"></script>
+<script src="assets/playground-ui.js?v=202610210210"></script>
+<script src="animations/animations.js?v=202610210210"></script>
 <script>
 /* ---- Prototype registry (the "Prototypes" tab) -----------------------------------------
    To add a prototype: put its files in prototypes/<slug>/ and add one entry below.
@@ -100,13 +100,15 @@ var DEMOS = [
         return h(m.button, { key: t[1], type: 'button', role: 'tab', 'aria-selected': on ? 'true' : 'false',
             onClick: function(){ p.onChange(i); }, whileTap: { scale: 0.97 }, transition: T.snap,
             style: { position: 'relative', height: 40, border: 0, padding: 0, borderRadius: 12, background: 'transparent', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
               font: '600 14px/20px ' + FONT, touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' } },
           on ? h(m.span, { layoutId: 'tab-pill', transition: T.ui, style: { position: 'absolute', inset: 0, borderRadius: 12, background: '#fff', boxShadow: SH2 } }) : null,
           h(m.span, { animate: { color: on ? C.ink : C.sub }, transition: T.fade,
-              style: { position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 } },
-            h(t[0], { sx: { fontSize: 18 } }), t[1],
+              style: { position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, height: 20 } },
+            h(t[0], { sx: { fontSize: 18, display: 'block', flex: 'none' } }),
+            h('span', { style: { display: 'block', lineHeight: '20px' } }, t[1]),
             h(m.span, { animate: { backgroundColor: on ? C.blue50 : 'rgba(20,30,36,0.06)', color: on ? C.blue : C.sub }, transition: T.fade,
-              style: { font: '700 11px/16px ' + FONT, padding: '0 6px', borderRadius: 99 } }, t[2])));
+              style: { display: 'block', font: '700 11px/16px ' + FONT, padding: '0 6px', borderRadius: 99 } }, t[2])));
       }));
   }
 

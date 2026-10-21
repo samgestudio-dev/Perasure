@@ -25,8 +25,8 @@
 <script src="../vendor/motion@14.4.0/motion-react.js"></script>
 <script src="../vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
 <script src="../vendor/lottie-web@5.12.2/lottie_svg.min.js"></script>
-<script src="../assets/playground-ui.js?v=202610201756"></script>
-<script src="animations.js?v=202610201756"></script>
+<script src="../assets/playground-ui.js?v=202610210210"></script>
+<script src="animations.js?v=202610210210"></script>
 <script>
 /* ---- Animation player ------------------------------------------------------------------
    One animation at a time. Each animation exists twice, pixel-matched: the Lottie JSON played
@@ -212,7 +212,8 @@
         else { enterLoop(); return; }
       }
       else {
-        if (f >= end - 0.5) f = 0;
+        // At / past the last visible frame (a one-shot holds total - 1) → play again from the start.
+        if (f >= end - 1.01) f = 0;
         phase = 'once'; A.play(f, end, function(){ paused = true; sync(); });
       }
       sync();
@@ -229,7 +230,7 @@
         else { coinLoop(); return; }
       } else {
         phase = 'success';
-        if (f >= B.total - 0.5) f = 0;
+        if (f >= B.total - 1.01) f = 0;
         B.play(f, B.total, function(){ paused = true; sync(); });
       }
       sync();
@@ -725,35 +726,60 @@
         cut ? h('div', { style: { position: 'absolute', left: cut, top: 13, width: 2, height: 10, marginLeft: -1, borderRadius: 1, background: '#fff' } }) : null,
         h('div', { ref: thumb, style: { position: 'absolute', top: 7, left: '0%', width: 22, height: 22, marginLeft: -11, borderRadius: 11,
           background: '#fff', boxShadow: '0 0 0 1.5px ' + C.blue + ', 0 2px 6px rgba(0,1,40,0.18)', pointerEvents: 'none' } }))),
-      h(AP, { initial: false }, hasRegions
-        ? h(m.div, { key: 'legend', layout: 'position', initial: { opacity: 0, height: 0 }, animate: { opacity: 1, height: 'auto' },
-              exit: { opacity: 0, height: 0, transition: { opacity: T.out, height: T.layout } },
-              transition: { opacity: T.fade, height: T.layout, layout: T.layout }, style: { overflow: 'hidden' } },
-            h(M.Stack, { direction: 'row', spacing: 2, sx: { mt: 0.25 } },
-              [['Intro · plays once', C.blue200], ['Loop', C.blue]].map(function(x){
-                return h(M.Stack, { key: x[0], direction: 'row', spacing: 0.75, alignItems: 'center' },
-                  h(M.Box, { sx: { width: 14, height: 6, borderRadius: 3, bgcolor: x[1] } }),
-                  h(M.Typography, { variant: 'caption', color: 'text.secondary' }, x[0]));
-              })))
+      /* Legend: fades in with a small rise and its two items arrive in turn; on exit it lifts out of
+         the layout (popLayout) and fades while the content below glides into place. */
+      h(AP, { initial: false, mode: 'popLayout' }, hasRegions
+        ? h(m.div, { key: 'legend', layout: 'position',
+              initial: 'hide', animate: 'show', exit: 'gone',
+              variants: {
+                hide: { opacity: 0, y: -6 },
+                show: { opacity: 1, y: 0, transition: Object.assign({}, T.ui, { staggerChildren: 0.06, delayChildren: 0.04 }) },
+                gone: { opacity: 0, y: -4, scale: 0.98, transition: T.out }
+              },
+              transition: { layout: T.layout },
+              style: { display: 'flex', gap: 16, marginTop: 2, transformOrigin: 'left center' } },
+            [['Intro · plays once', C.blue200, 14], ['Loop', C.blue, 14]].map(function(x){
+              return h(m.div, { key: x[0], variants: { hide: { opacity: 0, x: -6 }, show: { opacity: 1, x: 0, transition: T.ui } },
+                  style: { display: 'flex', alignItems: 'center', gap: 6 } },
+                h(m.span, { variants: { hide: { scaleX: 0 }, show: { scaleX: 1, transition: T.pop } },
+                  style: { display: 'block', width: x[2], height: 6, borderRadius: 3, background: x[1], transformOrigin: 'left center' } }),
+                h(M.Typography, { variant: 'caption', color: 'text.secondary' }, x[0]));
+            }))
         : null));
+  }
+
+  /* Large control button (Motion): colours fade between outlined and filled, size changes ride a
+     layout spring, label/icon swap with Swap. */
+  function CtlButton(p){
+    var primary = !!p.primary;
+    return h(m.button, { type: 'button', layout: true, onClick: p.onClick, 'aria-label': p.label, whileTap: TAP,
+        initial: p.initial || false, animate: Object.assign({ opacity: 1, scale: 1,
+          backgroundColor: primary ? C.blue : '#ffffff', color: primary ? '#ffffff' : C.ink,
+          boxShadow: primary ? '0 0 0 1px rgba(44,116,190,1), 0 2px 8px rgba(44,116,190,0.28)' : '0 0 0 1px rgba(20,30,36,0.10), 0 0px 0px rgba(44,116,190,0)' }, p.animate || {}),
+        exit: p.exit, transition: { default: T.snap, layout: T.layout, backgroundColor: T.fade, color: T.fade, boxShadow: T.fade },
+        style: Object.assign({ height: 52, minWidth: 0, width: '100%', border: 0, padding: '0 12px', borderRadius: 16,
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
+          font: '600 15px/20px ' + FONT, cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }, p.style || {}) },
+      h(Swap, { k: p.k, dy: p.dy }, p.icon ? h(p.icon, { sx: { fontSize: 20, display: 'block' } }) : null, p.text));
   }
 
   function PlaybackCard(p){
     var st = p.st, entry = p.entry;
+    // A one-shot (or the coin's success) that has finished: Play would only restart it, so Play and
+    // Replay merge into one wide primary Replay until it plays again.
+    var ended = st.paused && !st.loading && (st.phase === 'once' || st.phase === 'success') && st.total && ctl.getFrame() >= st.total - 1.01;
     return h(SectionCard, { style: { marginTop: 16 } },
       h(Timeline, { st: st, entry: entry }),
-      // Fixed proportions (grid, not content-sized flex): Replay and speed equal, Play / Pause widest,
-      // so a label change never nudges the widths.
+      // Fixed proportions (grid): Replay and speed equal, Play / Pause widest; when merged, Replay spans both.
       h(Slot, { style: { display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1.4fr) minmax(0,1fr)', gap: 8, marginTop: 16 } },
-        h(Press, { style: {} },
-          h(M.Button, { fullWidth: true, variant: 'outlined', size: 'large', onClick: ctl.replay, startIcon: h(Icon.replay, null) }, 'Replay')),
-        h(Press, { style: {} },
-          h(M.Button, { fullWidth: true, variant: 'contained', size: 'large', onClick: ctl.togglePlay, 'aria-label': st.paused ? 'Play' : 'Pause' },
-            h(Swap, { k: st.paused ? 'play' : 'pause' }, h(st.paused ? Icon.play : Icon.pause, { sx: { fontSize: 20 } }), st.paused ? 'Play' : 'Pause'))),
-        h(Press, { style: {} },
-          h(M.Button, { fullWidth: true, variant: 'outlined', size: 'large', onClick: ctl.cycleSpeed, 'aria-label': 'Playback speed',
-              startIcon: h(Icon.speed, null), sx: { fontVariantNumeric: 'tabular-nums' } },
-            h(Swap, { k: 's' + st.speedIx, dy: 10 }, SPEEDS[st.speedIx] + '×')))));
+        h(CtlButton, { key: 'replay', k: 'replay', label: 'Replay', primary: ended, onClick: ctl.replay, icon: Icon.replay,
+          text: 'Replay', style: { gridColumn: ended ? '1 / span 2' : '1' } }),
+        h(AP, { mode: 'popLayout', initial: false },
+          ended ? null : h(CtlButton, { key: 'play', k: st.paused ? 'play' : 'pause', label: st.paused ? 'Play' : 'Pause', primary: true,
+            onClick: ctl.togglePlay, icon: st.paused ? Icon.play : Icon.pause, text: st.paused ? 'Play' : 'Pause',
+            initial: { opacity: 0, scale: 0.8 }, exit: { opacity: 0, scale: 0.8, transition: T.out }, style: { gridColumn: '2' } })),
+        h(CtlButton, { key: 'speed', k: 's' + st.speedIx, dy: 10, label: 'Playback speed', onClick: ctl.cycleSpeed, icon: Icon.speed,
+          text: SPEEDS[st.speedIx] + '×', style: { gridColumn: '3', fontVariantNumeric: 'tabular-nums' } })));
   }
 
   function DetailsCard(p){
