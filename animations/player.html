@@ -25,8 +25,8 @@
 <script src="../vendor/motion@14.4.0/motion-react.js"></script>
 <script src="../vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
 <script src="../vendor/lottie-web@5.12.2/lottie_svg.min.js"></script>
-<script src="../assets/playground-ui.js?v=202610210635"></script>
-<script src="animations.js?v=202610210635"></script>
+<script src="../assets/playground-ui.js?v=202610210702"></script>
+<script src="animations.js?v=202610210702"></script>
 <script>
 /* ---- Animation player ------------------------------------------------------------------
    One animation at a time. Each animation exists twice, pixel-matched: the Lottie JSON played
@@ -602,6 +602,7 @@
   }
 
   /* ---------- stage ---------- */
+  var ART = 0.86;
   function Stage(p){
     var st = p.st, entry = p.entry;
     var refA = R.useRef(null), refB = R.useRef(null), sw = R.useRef(null), content = R.useRef(null), first = R.useRef(true);
@@ -619,7 +620,8 @@
       var dx = (st.dir || 0) * 36;
       Mo.animate(content.current, { opacity: [0, 1], x: [dx, 0], scale: [0.97, 1] }, T.ui);
     }, [st.nav]);
-    var scale = entry.scale || 1, size = 'calc(100% * ' + scale + ')', b = BG[st.bg] || BG.white;
+    // the art sits a little inside the stage (ART), so it breathes around the overlaid controls
+    var scale = (entry.scale || 1) * ART, size = 'calc(100% * ' + scale + ')', b = BG[st.bg] || BG.white;
     return h(m.div, {
         'aria-label': 'Animation (swipe for the next one)',
         onPointerDown: function(e){ sw.current = { id: e.pointerId, x: e.clientX, y: e.clientY, t: Date.now() }; },
@@ -885,7 +887,10 @@
     return h(m.nav, { ref: ref, 'aria-label': 'Playback', initial: false, animate: { y: -p.lift }, transition: T.ui,
         style: { position: 'fixed', left: 8, right: 8, bottom: 0, zIndex: 20, padding: 8,
           borderRadius: 30, background: '#ffffff',
-          boxShadow: '0 0 0 0.5px rgba(16,24,40,0.08), 0 10px 30px rgba(16,24,40,0.14), 0 2px 6px rgba(16,24,40,0.05)' } },
+          // layered shadow: hairline, tight contact shadow, wide soft lift. Plain box-shadow (no filter /
+          // backdrop) draws the same in iOS Safari; the bar never touches the screen edges, so Safari 26
+          // does not tint its toolbar from it.
+          boxShadow: '0 0 0 1px rgba(16,24,40,0.06), 0 2px 4px rgba(16,24,40,0.08), 0 8px 18px rgba(16,24,40,0.12), 0 22px 48px rgba(16,24,40,0.20)' } },
       h('div', { style: { padding: '4px 8px 0' } }, h(Timeline, { st: st, entry: entry })),
       // Fixed proportions (grid): Replay and speed equal, Play / Pause widest; merged Replay spans both.
       h('div', { style: { position: 'relative', display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1.4fr) minmax(0,1fr)', gap: PAIR_GAP, marginTop: 4 } },
@@ -930,7 +935,8 @@
         h(M.Typography, { variant: 'body2', component: 'div', sx: { fontWeight: 500, textAlign: 'right' } }, h(Swap, { k: k + ':' + v, dy: 6, gap: 0 }, v)));
     }
     var playback = e.success ? 'Loading loops → success once' : e.intro ? 'Intro ' + e.intro[0] + '–' + e.intro[1] + ' → loop ' + e.loop[0] + '–' + e.loop[1] : 'Plays once, holds the last frame';
-    return h(SectionCard, { title: 'Details' },
+    // plain section on the page (no card): title + rows only
+    return h(SectionCard, { title: 'Details', style: { marginTop: 24, padding: '0 4px', background: 'transparent', boxShadow: 'none', borderRadius: 0 } },
       h(Slot, { style: {} }, h(M.Box, { sx: { '& > * + *': { borderTop: '1px solid ' + C.line } } },
         row('Canvas', mt ? mt.w + ' × ' + mt.h : '—'),
         row('Frame rate', mt ? (Math.round(mt.fps * 100) / 100) + ' fps' : '—'),
