@@ -41,6 +41,22 @@ main{box-sizing:border-box;width:100%;max-width:480px;flex:1;display:flex;flex-d
   font:600 calc(14px * var(--u))/1.43 "PS Hanken",system-ui,sans-serif;opacity:0;pointer-events:none;cursor:pointer;touch-action:manipulation}
 #replay.on{opacity:1;pointer-events:auto}
 #replay:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+/* ==== TUNING PANEL (prototype only: delete this block, the #tune markup and the TUNING PANEL script for production) ==== */
+#tuneBtn{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:12px;z-index:5;border:0;border-radius:999px;padding:7px 12px;
+  background:var(--chip);color:var(--text);font:600 13px/1.2 "PS Hanken",system-ui,sans-serif;touch-action:manipulation}
+#tune{position:fixed;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);z-index:6;max-height:62vh;overflow:auto;
+  -webkit-overflow-scrolling:touch;background:#16212C;border:1px solid #26333F;border-radius:16px;padding:12px 14px 14px;color:var(--text);
+  font:500 13px/1.3 "PS Hanken",system-ui,sans-serif;display:none;box-shadow:0 10px 40px rgba(0,0,0,.45)}
+#tune.on{display:block}
+#tune .hd{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+#tune .hd b{flex:1;font-weight:700;font-size:14px}
+#tune button{border:0;border-radius:999px;padding:6px 11px;background:#26333F;color:var(--text);font-family:inherit;font-weight:600;font-size:12px;line-height:1.2;touch-action:manipulation}
+#tune .row{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;margin:9px 0}
+#tune .row span{color:var(--muted)}
+#tune .row output{font-variant-numeric:tabular-nums;color:var(--text)}
+#tune .row input[type=range]{grid-column:1 / span 2;width:100%;margin:2px 0 0;accent-color:var(--accent);touch-action:pan-y}
+#tune .note{color:var(--muted);font-size:12px;margin-top:6px}
+/* ==== END TUNING PANEL ==== */
 </style>
 </head>
 <body>
@@ -74,6 +90,14 @@ main{box-sizing:border-box;width:100%;max-width:480px;flex:1;display:flex;flex-d
   </svg>
   <button id="replay" type="button">Replay</button>
 </main>
+<!-- ==== TUNING PANEL (prototype only: delete for production) ==== -->
+<button id="tuneBtn" type="button">Tune</button>
+<div id="tune" role="dialog" aria-label="Physics model">
+  <div class="hd"><b>Physics model</b><button id="tuneReset" type="button">Reset</button><button id="tuneCopy" type="button">Copy</button><button id="tuneClose" type="button">Close</button></div>
+  <div id="tuneRows"></div>
+  <div class="note">Releasing a slider replays with the new values. The values are kept on this phone.</div>
+</div>
+<!-- ==== END TUNING PANEL ==== -->
 
 <script>/*!
  * GSAP 3.15.0
@@ -282,7 +306,10 @@ var DROPS = (function(){
 var FALL = .3;
 
 /* ---------- physics: nothing is pinned; later coins can knock earlier ones ---------- */
-var DT = 1 / 240, world, simT = 0, coins = [];
+/* the model's adjustable values; the tuning panel (prototype only) changes them, production keeps these defaults */
+var MODEL = { hz:240, gravity:3.4, friction:.7, frictionStatic:1.6, restitution:.04, floorFriction:.9, kickUp:1, kickSide:1, kickSpin:1, walls:1 };
+var TUNE = Object.assign({}, MODEL);
+var DT = 1 / TUNE.hz, world, simT = 0, coins = [];
 var BODY = { friction:.7, frictionStatic:1.6, frictionAir:.003, restitution:.04, density:.006, slop:.01, chamfer:{ radius:2 } };
 function makeCoin(kind, x, y){
   var lane = STACK[kind].lane;
@@ -296,12 +323,16 @@ function makeCoin(kind, x, y){
 }
 function reset(){
   ['coinsFront','coinsBack','shadowOnBack','clipBackCoins'].forEach(function(id){ $(id).innerHTML = ''; });
+  DT = 1 / TUNE.hz;
+  BODY.friction = TUNE.friction; BODY.frictionStatic = TUNE.frictionStatic; BODY.restitution = TUNE.restitution;
   var engine = M.Engine.create({ positionIterations:20, velocityIterations:14, enableSleeping:true });
-  engine.gravity.y = 3.4;
-  var fl = { isStatic:true, friction:.9 };
+  engine.gravity.y = TUNE.gravity;
+  var fl = { isStatic:true, friction:TUNE.floorFriction };
   M.Composite.add(engine.world, [
     M.Bodies.rectangle(363, FLOOR + 50, 3000, 100, Object.assign({ collisionFilter:{ category:CAT.floor, mask:CAT.front } }, fl)),
-    M.Bodies.rectangle(363, FLOOR - Z_BACK + 50, 3000, 100, Object.assign({ collisionFilter:{ category:CAT.floor, mask:CAT.back } }, fl)),
+    M.Bodies.rectangle(363, FLOOR - Z_BACK + 50, 3000, 100, Object.assign({ collisionFilter:{ category:CAT.floor, mask:CAT.back } }, fl))
+  ]);
+  if (TUNE.walls) M.Composite.add(engine.world, [
     M.Bodies.rectangle(-70, 300, 100, 1600, Object.assign({ collisionFilter:{ category:CAT.floor, mask:0xFFFF } }, fl)),
     M.Bodies.rectangle(796, 300, 100, 1600, Object.assign({ collisionFilter:{ category:CAT.floor, mask:0xFFFF } }, fl))
   ]);
@@ -334,7 +365,7 @@ function simTo(t){
         c.live = true;
         M.Body.setPosition(c.body, { x:c.sx, y:c.sy }); M.Body.setAngle(c.body, c.ang);
         M.Composite.add(world.world, c.body);
-        M.Body.setVelocity(c.body, { x:c.vx * DT, y:0 }); M.Body.setAngularVelocity(c.body, c.av * DT);
+        M.Body.setVelocity(c.body, { x:c.vx / 240, y:0 }); M.Body.setAngularVelocity(c.body, c.av / 240);   /* as tuned at 240 Hz */
       }
     }
     /* the landing moment: every coin gets a little kick and jumps */
@@ -346,8 +377,8 @@ function simTo(t){
         M.Sleeping.set(c.body, false);
         /* Matter velocities are per 1/60 s */
         var h = Math.max(0, (FLOOR - c.body.position.y) / 280);          /* 0 at the floor, ~1 at the top of a tall stack */
-        M.Body.setVelocity(c.body, { x:(kr() - .5) * (60 + 420 * h * h) / 60, y:-(420 + kr() * 260) / 60 });
-        M.Body.setAngularVelocity(c.body, (kr() - .5) * (2 + 9 * h) / 60);
+        M.Body.setVelocity(c.body, { x:(kr() - .5) * (60 + 420 * h * h) * TUNE.kickSide / 60, y:-(420 + kr() * 260) * TUNE.kickUp / 60 });
+        M.Body.setAngularVelocity(c.body, (kr() - .5) * (2 + 9 * h) * TUNE.kickSpin / 60);
       });
     }
     M.Engine.update(world, DT * 1000);
@@ -489,6 +520,63 @@ function boot(){
   if (pending) { var p = pending; pending = null; window.PeraCreditLimit.play(p); return; }
   if (window.CREDIT_LIMIT_AUTOPLAY !== false) setTimeout(start, 250);
 }
+/* ==== TUNING PANEL (prototype only: delete this block for production) ====
+   Sliders for the physics model. Releasing a slider replays with the new values. While the panel is in the page,
+   the coins also keep falling after the timeline ends (up to 3 s), so a harder knock can be judged to the end. */
+(function(){
+  var KEY = 'perasure.creditLimit.tune';
+  var ROWS = [
+    ['hz', 'Steps per second', [120, 240, 480, 960], null, function(v){ return v + ' Hz'; }],
+    ['gravity', 'Gravity', 1.5, 6, .1],
+    ['friction', 'Coin friction', 0, 1.5, .05],
+    ['frictionStatic', 'Coin static friction', 0, 3, .05],
+    ['restitution', 'Bounce', 0, .6, .01],
+    ['floorFriction', 'Floor friction', 0, 2, .05],
+    ['kickUp', 'Knock: up', 0, 3, .05, function(v){ return '×' + v; }],
+    ['kickSide', 'Knock: sideways', 0, 4, .05, function(v){ return '×' + v; }],
+    ['kickSpin', 'Knock: spin', 0, 4, .05, function(v){ return '×' + v; }],
+    ['walls', 'Walls at the screen edges', [0, 1], null, function(v){ return v ? 'on' : 'off'; }]
+  ];
+  try { var saved = JSON.parse(localStorage.getItem(KEY) || 'null'); if (saved) Object.keys(MODEL).forEach(function(k){ if (typeof saved[k] === 'number') TUNE[k] = saved[k]; }); } catch (e) {}
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(TUNE)); } catch (e) {} }
+  var panel = $('tune'), rowsEl = $('tuneRows'), inputs = {};
+  function fmt(r, v){ var f = typeof r[4] === 'function' ? r[4] : r[5]; return f ? f(v) : (+v).toFixed(r[4] < .1 ? 2 : 1); }
+  ROWS.forEach(function(r){
+    var row = document.createElement('label'); row.className = 'row';
+    var name = document.createElement('span'); name.textContent = r[1];
+    var out = document.createElement('output');
+    var inp = document.createElement('input'); inp.type = 'range';
+    var list = Array.isArray(r[2]) ? r[2] : null;
+    if (list) { inp.min = 0; inp.max = list.length - 1; inp.step = 1; inp.value = Math.max(0, list.indexOf(TUNE[r[0]])); }
+    else { inp.min = r[2]; inp.max = r[3]; inp.step = r[4]; inp.value = TUNE[r[0]]; }
+    var val = function(){ return list ? list[+inp.value] : +inp.value; };
+    var show = function(){ out.textContent = fmt(r, val()) + (val() === MODEL[r[0]] ? '' : ' •'); };
+    inp.addEventListener('input', show);
+    inp.addEventListener('change', function(){ TUNE[r[0]] = val(); show(); save(); start(); });
+    row.appendChild(name); row.appendChild(out); row.appendChild(inp); rowsEl.appendChild(row);
+    inputs[r[0]] = { inp:inp, list:list, show:show }; show();
+  });
+  $('tuneBtn').addEventListener('click', function(){ panel.classList.add('on'); });
+  $('tuneClose').addEventListener('click', function(){ panel.classList.remove('on'); });
+  $('tuneReset').addEventListener('click', function(){
+    TUNE = Object.assign({}, MODEL); save();
+    Object.keys(inputs).forEach(function(k){ var o = inputs[k]; o.inp.value = o.list ? o.list.indexOf(TUNE[k]) : TUNE[k]; o.show(); });
+    start();
+  });
+  $('tuneCopy').addEventListener('click', function(){
+    var text = JSON.stringify(TUNE), b = this;
+    var done = function(){ b.textContent = 'Copied'; setTimeout(function(){ b.textContent = 'Copy'; }, 1200); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function(){ prompt('Physics values', text); });
+    else prompt('Physics values', text);
+  });
+  /* keep the coins falling after the timeline ends, so a strong knock plays out */
+  gsap.ticker.add(function(){
+    if (!tl || !world || tl.progress() < 1 || simT > tl.duration() + 3) return;
+    simTo(simT + 1 / 60); render();
+  });
+})();
+/* ==== END TUNING PANEL ==== */
+
 /* public API for the host page / app */
 window.PeraCreditLimit = {
   /* play (or replay) with backend data; options.onLanded / options.onDone are optional callbacks */

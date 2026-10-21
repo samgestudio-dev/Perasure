@@ -27,7 +27,8 @@ README.md                  human-facing summary + demo / animation tables
 
 ## Adding a demo
 
-1. Put the demo's file(s) in `prototypes/<slug>/`. The recommended variant is `index.html`;
+1. Put the demo's file(s) in `prototypes/<slug>/`. The recommended variant is `index.html` (exception: in
+   `credit-limit-coins` the owner made `baked-heap.html` the recommended one; `index.html` there is Standard, kept under its name so links keep working);
    name other variants by what differs (`with-blur.html`, `snappy-spring.html`).
 2. Register it in the `DEMOS` array in the root `index.html` (inside the `<script>`):
 

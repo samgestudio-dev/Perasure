@@ -1,6 +1,6 @@
 # Credit limit increase animation: integration guide
 
-`index.html` in this folder is a single self-contained page (GSAP, Matter.js and the fonts are inlined, so there are no network requests). It plays a 3.4-second animation: the credit limit counts up from the old amount to the new one while gold coins drop onto three stacks, then the new amount lands with a burst. After that the `+increase` pill, the old amount (struck through) and the expiry pill appear.
+`baked-heap.html` and `index.html` in this folder are single self-contained pages (GSAP, the fonts and, for `index.html`, Matter.js are inlined, so there are no network requests). It plays a 3.4-second animation: the credit limit counts up from the old amount to the new one while gold coins drop onto three stacks, then the new amount lands with a burst. After that the `+increase` pill, the old amount (struck through) and the expiry pill appear.
 
 The numbers come from the backend and change per user. **The timing never changes**: whatever the amounts, the count-up, the coins and the landing always take the same time.
 
@@ -8,8 +8,16 @@ The numbers come from the backend and change per user. **The timing never change
 
 | File | Coins | Use when |
 | --- | --- | --- |
-| `index.html` (Standard) | simulated live in the browser with Matter.js; at the landing the coins jump and fall where they fall | you want every play to be computed on the device |
-| `baked-heap.html` (Baked heap) | a fixed recording made offline (no physics engine shipped), drawn on canvas; every coin casts its own shadow onto the coins below and behind it; at the landing the coins are knocked up and the physics engine decides where they end up | you want the exact same, polished motion on every phone |
+| `baked-heap.html` (Baked heap, **recommended**) | a fixed recording made offline (no physics engine shipped), drawn on canvas; every coin casts its own shadow onto the coins below and behind it; at the landing the coins are knocked up and the physics engine decides where they end up | you want the exact same, polished motion on every phone, at the lowest cost |
+| `index.html` (Standard) | simulated live in the browser with Matter.js; at the landing the coins jump and fall where they fall. Has a **Tune** button (top right) with sliders for the physics model, for trying values on a phone | you want every play to be computed on the device, or you are tuning the model |
+
+> **Before shipping `index.html` (Standard), delete the tuning panel.** It is a prototype tool, marked in three places:
+> the CSS between `/* ==== TUNING PANEL` and `/* ==== END TUNING PANEL ==== */`, the markup between
+> `<!-- ==== TUNING PANEL` and `<!-- ==== END TUNING PANEL ==== -->`, and the script between `/* ==== TUNING PANEL`
+> and `/* ==== END TUNING PANEL ==== */`. With it gone, the page uses the default model in `MODEL` (and the coins
+> stop with the timeline at 3.4 s, as before). The panel also keeps its values in the phone's `localStorage`
+> (`perasure.creditLimit.tune`); nothing reads that once the panel is removed. **Copy** in the panel copies the
+> current values as JSON, so they can be written into `MODEL` (or used for a new bake of Baked heap).
 
 Everything below (data fields, the three ways to pass data, events, timing) is identical for both files.
 
@@ -155,7 +163,7 @@ The count-up interpolates between whatever the two amounts are, so a ₱3,000 ra
 - **Replay**: the button appears at the end. `PeraCreditLimit.replay()` replays from code.
 - **Start-up** (Baked heap): the page starts at once, without waiting for the fonts, and re-measures the amount when they are ready. Until it plays, it shows the first frame (nothing visible), not the sample's end state.
 - `PeraCreditLimit.getData()` returns the normalised data the page is using, which helps with debugging.
-- **Standard**: coins are inline SVG, moved by a Matter.js simulation stepped on the GSAP timeline's clock, so every playback looks identical.
+- **Standard**: coins are inline SVG, moved by a Matter.js simulation stepped on the GSAP timeline's clock, so every playback with the same model values looks identical. The model values live in `MODEL` (step rate, gravity, coin and floor friction, bounce, knock strength up / sideways / spin, edge walls); the Tune panel overrides them for testing.
 - **Baked heap**: coin positions come from `bake/baked.json`, recorded at 60 fps offline. No physics runs on the phone, so the simulation settings cost nothing at runtime.
   - **Drawing**: the two rows of coins are drawn on two canvases, with the twinkling stars in an SVG layer between them. There are no SVG nodes or clip paths per coin. A row is redrawn only on frames where one of its coins moved, and a shadow is recomputed only when its caster or the coin it falls on moved. On phones with 4 cores or fewer, or 4 GB of memory or less, the canvases are drawn at 2× at most.
   - **Simulation**: the whole motion, drops and landing, is a Matter.js simulation using the Standard version's model: 240 Hz, 20/14 iterations, the same coin material (floor friction 1.2 instead of 0.9, so coins knocked onto the floor come to rest), and the same knock at the landing (every coin is knocked up and sideways, more the higher it sits). Where the coins end up is entirely the engine's result; nothing is aimed at a shape.
