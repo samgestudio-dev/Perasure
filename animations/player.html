@@ -25,8 +25,8 @@
 <script src="../vendor/motion@14.4.0/motion-react.js"></script>
 <script src="../vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
 <script src="../vendor/lottie-web@5.12.2/lottie_svg.min.js"></script>
-<script src="../assets/playground-ui.js?v=202610210304"></script>
-<script src="animations.js?v=202610210304"></script>
+<script src="../assets/playground-ui.js?v=202610210335"></script>
+<script src="animations.js?v=202610210335"></script>
 <script>
 /* ---- Animation player ------------------------------------------------------------------
    One animation at a time. Each animation exists twice, pixel-matched: the Lottie JSON played
@@ -202,7 +202,7 @@
       // total / meta keep the previous animation's values until the new one is loaded, so the
       // interface changes once (animated) instead of blanking and refilling.
       set({ index: i, renderer: renderer, loading: true, error: '', paused: false, phase: phase,
-            success: cur.success ? 'idle' : 'none', dir: navDir, nav: (st.nav || 0) + (st.index !== i ? 1 : 0) });
+            success: cur.success ? 'idle' : 'none', switching: !resume, dir: navDir, nav: (st.nav || 0) + (st.index !== i ? 1 : 0) });
       navDir = 0;
       syncUrl();
       var my = token;
@@ -214,7 +214,7 @@
         if (my !== token) return;
         return back.then(function(){
         if (my !== token) return;
-        set({ loading: false, meta: { w: A.w, h: A.h, fps: A.fps, label: A.label } });
+        set({ loading: false, switching: false, meta: { w: A.w, h: A.h, fps: A.fps, label: A.label } });
         if (B) B.seek(0);
         var f = resume ? Math.max(0, Math.min(resume.frame, A.total - 0.01)) : 0;
         if (resume && resume.paused) { A.seek(f); paused = true; sync(); }
@@ -222,7 +222,7 @@
         });
       }, function(err){
         if (my !== token) return;
-        set({ loading: false, error: (err && err.message) || 'Couldn’t load the animation.' });
+        set({ loading: false, switching: false, error: (err && err.message) || 'Couldn’t load the animation.' });
       });
     }
 
@@ -660,11 +660,11 @@
     // Keep the last known total while the next animation loads (no blank "/ 0" flash).
     var lastTotal = R.useRef(0); if (st.total) lastTotal.current = st.total;
     var total = st.total || lastTotal.current || 0;
-    // While the next animation loads, keep the current highlight (the frame still belongs to the
-    // previous animation); decide once the new one is ready.
+    // Switching animations: the highlight goes to the first option (Intro / Loading) right away, with
+    // the time indicator, before the next one starts. Switching renderer keeps it while reloading.
     function regionOf(f){
       var s2 = ctl.getState();
-      if (s2.loading) return regionRef.current;
+      if (s2.loading) return s2.switching ? 0 : regionRef.current;
       return entry.success ? (s2.success === 'done' ? 1 : 0) : (entry.intro && f >= entry.intro[1] - 0.001 ? 1 : 0);
     }
     function paint(f){
