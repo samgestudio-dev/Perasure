@@ -44,7 +44,9 @@ README.md                  human-facing summary + demo / animation tables
    ```
 
    - Link to the file explicitly (`.../index.html`), not the folder — folder links break when the repo is opened locally.
-   - Newest demo goes at the top of the array unless the owner says otherwise.
+   - Newest demo goes at the top of the array unless the owner says otherwise. Order set by the owner (keep it, in the
+     `DEMOS` array and the README table): Credit limit increase, Withdraw fund flow, Order submit, OTP sheet morph,
+     Loading page, Landing page (website).
    - Only edit the `DEMOS` array for a normal addition; don't restyle the picker unless asked.
    - The picker and the player are React + Material UI 5 (browser builds in `vendor/`, no JSX, no build step;
      `PG.h` = `React.createElement`). Style through the theme in `assets/playground-ui.js`, not per page.

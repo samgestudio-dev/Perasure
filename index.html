@@ -20,8 +20,8 @@
 <script src="vendor/react-dom@18.3.1/react-dom.production.min.js"></script>
 <script src="vendor/motion@14.4.0/motion-react.js"></script>
 <script src="vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
-<script src="assets/playground-ui.js?v=202610211357"></script>
-<script src="animations/animations.js?v=202610211357"></script>
+<script src="assets/playground-ui.js?v=202610211434"></script>
+<script src="animations/animations.js?v=202610211434"></script>
 <script>
 /* ---- Prototype registry (the "Prototypes" tab) -----------------------------------------
    To add a prototype: put its files in prototypes/<slug>/ and add one entry below.
@@ -37,19 +37,12 @@ var DEMOS = [
     ]
   },
   {
-    title: 'Loading page',
-    tag: 'Loading',
-    desc: 'Full-screen loading state: the PeraSure coin with the animated dots.',
-    variants: [
-      { name: 'Standard', note: 'Plays on open', href: 'prototypes/loading-page/index.html' }
-    ]
-  },
-  {
-    title: 'OTP sheet morph',
+    title: 'Withdraw fund flow',
     tag: 'Loan',
-    desc: 'Loan confirmation → “Verify it’s you” sheet morphs into code entry, with the digits filling in.',
+    desc: 'Home → withdraw sheet → amount entry ⇄ order confirmation, with the amount morph, keypad and term pills.',
     variants: [
-      { name: 'Standard', note: 'Tap “Get verification code” to start', href: 'prototypes/otp-sheet-morph/index.html' }
+      { name: 'Standard', note: 'No gradient blur on the header and bottom bar', href: 'prototypes/withdraw-fund-flow/index.html' },
+      { name: 'With gradient blur', note: 'Progressive blur on the header and bottom bar', href: 'prototypes/withdraw-fund-flow/with-blur.html' }
     ]
   },
   {
@@ -61,20 +54,27 @@ var DEMOS = [
     ]
   },
   {
+    title: 'OTP sheet morph',
+    tag: 'Loan',
+    desc: 'Loan confirmation → “Verify it’s you” sheet morphs into code entry, with the digits filling in.',
+    variants: [
+      { name: 'Standard', note: 'Tap “Get verification code” to start', href: 'prototypes/otp-sheet-morph/index.html' }
+    ]
+  },
+  {
+    title: 'Loading page',
+    tag: 'Loading',
+    desc: 'Full-screen loading state: the PeraSure coin with the animated dots.',
+    variants: [
+      { name: 'Standard', note: 'Plays on open', href: 'prototypes/loading-page/index.html' }
+    ]
+  },
+  {
     title: 'Landing page',
     tag: 'Website',
     desc: 'PeraSure marketing site — hero and scroll motion. A full website, not a phone screen.',
     variants: [
       { name: 'Standard', note: 'Large file (about 15 MB), give it a moment to load', href: 'prototypes/landing-page/index.html' }
-    ]
-  },
-  {
-    title: 'Withdraw fund flow',
-    tag: 'Loan',
-    desc: 'Home → withdraw sheet → amount entry ⇄ order confirmation, with the amount morph, keypad and term pills.',
-    variants: [
-      { name: 'Standard', note: 'No gradient blur on the header and bottom bar', href: 'prototypes/withdraw-fund-flow/index.html' },
-      { name: 'With gradient blur', note: 'Progressive blur on the header and bottom bar', href: 'prototypes/withdraw-fund-flow/with-blur.html' }
     ]
   }
 ];

@@ -10,11 +10,11 @@ Phone-first motion prototypes, served with GitHub Pages.
 | Demo | Variants |
 | --- | --- |
 | Credit limit increase | [Standard](prototypes/credit-limit-coins/index.html) · [Baked heap](prototypes/credit-limit-coins/baked-heap.html) · [integration guide](prototypes/credit-limit-coins/README.md) |
-| Loading page | [Standard](prototypes/loading-page/index.html) |
-| OTP sheet morph | [Standard](prototypes/otp-sheet-morph/index.html) |
-| Order submit | [Standard](prototypes/order-submit/index.html) |
-| Landing page (website) | [Standard](prototypes/landing-page/index.html) |
 | Withdraw fund flow | [Standard](prototypes/withdraw-fund-flow/index.html) (no gradient blur) · [With gradient blur](prototypes/withdraw-fund-flow/with-blur.html) |
+| Order submit | [Standard](prototypes/order-submit/index.html) |
+| OTP sheet morph | [Standard](prototypes/otp-sheet-morph/index.html) |
+| Loading page | [Standard](prototypes/loading-page/index.html) |
+| Landing page (website) | [Standard](prototypes/landing-page/index.html) |
 
 ## Animations
 
