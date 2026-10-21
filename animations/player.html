@@ -25,8 +25,8 @@
 <script src="../vendor/motion@14.4.0/motion-react.js"></script>
 <script src="../vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
 <script src="../vendor/lottie-web@5.12.2/lottie_svg.min.js"></script>
-<script src="../assets/playground-ui.js?v=202610210720"></script>
-<script src="animations.js?v=202610210720"></script>
+<script src="../assets/playground-ui.js?v=202610210731"></script>
+<script src="animations.js?v=202610210731"></script>
 <script>
 /* ---- Animation player ------------------------------------------------------------------
    One animation at a time. Each animation exists twice, pixel-matched: the Lottie JSON played
@@ -332,13 +332,6 @@
         scrubbing = false;
         if (wasPlaying) { if (cur.success) coinPlay(f); else start(f); } else sync();
       },
-      // One frame back / forward; pauses playback (frame-by-frame inspection).
-      step: function(d){
-        if (!active || !active.total || st.loading) return;
-        if (!paused) { active.pause(); paused = true; }
-        var f = Math.max(0, Math.min(active.total - 1, Math.round(frame) + d));
-        active.seek(f); tick(f); sync();
-      },
       setBg: function(bg){ store('ps-lottie-bg', bg); set({ bg: bg }); },
       // Jump straight to a state: 'intro' (replay from frame 0), 'loop' (start of the loop),
       // 'loading' / 'success' for the coin (success starts immediately, no waiting for the turn).
@@ -591,30 +584,6 @@
           h(M.Typography, { variant: 'h5', component: 'h1' }, entry.title))));
   }
 
-  /* Small round button for the bar (frame step). */
-  function StepButton(p){
-    return h(m.button, { type: 'button', 'aria-label': p.label, onClick: p.onClick, whileTap: TAP, transition: T.snap,
-        style: { width: 32, height: 32, border: 0, padding: 0, borderRadius: 16, background: FILL, color: C.ink,
-          display: 'grid', placeItems: 'center', cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' } },
-      h(p.icon, { sx: { fontSize: 18, display: 'block' } }));
-  }
-
-  /* Prev / next, inside the stage at mid-height. Half transparent at rest; a tap brings it to full
-     opacity, and 1 s after the last tap it fades back. */
-  function StageArrow(p){
-    var dark = p.st.bg === 'dark', d = p.dir;
-    var a = R.useState(false), on = a[0], setOn = a[1], timer = R.useRef(0);
-    R.useEffect(function(){ return function(){ clearTimeout(timer.current); }; }, []);
-    function tap(){ setOn(true); clearTimeout(timer.current); timer.current = setTimeout(function(){ setOn(false); }, 1000); ctl.go(d); }
-    return h(m.button, { type: 'button', 'aria-label': d < 0 ? 'Previous animation' : 'Next animation', onClick: tap, onPointerDown: stop,
-        initial: false, animate: { opacity: on ? 1 : 0.5, backgroundColor: dark ? 'rgba(36,46,53,0.92)' : '#ffffff', color: dark ? '#ffffff' : C.ink },
-        whileTap: { scale: 0.9 }, transition: { opacity: T.fade, backgroundColor: T.fade, color: T.fade, default: T.snap },
-        style: { position: 'absolute', top: '50%', marginTop: -20, zIndex: 2, left: d < 0 ? 8 : 'auto', right: d > 0 ? 8 : 'auto',
-          width: 40, height: 40, border: 0, padding: 0, borderRadius: 20, boxShadow: SHADOW2,
-          display: 'grid', placeItems: 'center', cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' } },
-      h(d < 0 ? Icon.back : Icon.next, null));
-  }
-
   /* ---------- stage ---------- */
   var ART = 0.86;
   function Stage(p){
@@ -660,12 +629,10 @@
         h(M.Typography, { variant: 'body2', color: 'text.secondary' }, st.error)) : null,
       h(RendererSwitch, { st: st, entry: entry }),
       h(BgSwatches, { st: st }),
-      h(StageArrow, { st: st, dir: -1 }),
-      h(StageArrow, { st: st, dir: 1 }),
       h(StageAction, { st: st }));
   }
 
-  /* Pager (dots; prev / next live on the stage). Dots: every dot animates its own width and colour
+  /* Pager: prev / next with spring tap feedback. Dots: every dot animates its own width and colour
      (the old one shrinks while the new one grows), and a separate indicator stretches from the old
      position towards the new one, then its trailing edge catches up — a liquid "worm" move.
      All Motion springs; reduced motion snaps. */
@@ -687,14 +654,22 @@
     }, [idx]);
     R.useLayoutEffect(function(){ x0.set(leftOf(idx)); x1.set(leftOf(idx) + DOT_ON); }, []);
     var width = Mo.useTransform(function(){ return Math.max(DOT, x1.get() - x0.get()); });
-    return h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'center', height: 24, marginTop: 8 } },
+    function nav(label, icon, d){
+      return h(m.button, { type: 'button', 'aria-label': label, onClick: function(){ ctl.go(d); }, whileTap: { scale: 0.9 }, transition: T.snap,
+        style: { width: 40, height: 40, border: 0, padding: 0, borderRadius: 20, background: '#fff', boxShadow: SHADOW2, color: C.ink,
+          display: 'grid', placeItems: 'center', cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' } },
+        h(icon, null));
+    }
+    return h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 12 } },
+      nav('Previous animation', Icon.back, -1),
       h('div', { 'aria-hidden': 'true', style: { position: 'relative', display: 'flex', gap: DOT_GAP, alignItems: 'center', height: DOT } },
         LIST.map(function(a, i){
           var on = i === idx;
           return h(m.span, { key: a.slug, initial: false, animate: { width: on ? DOT_ON : DOT, backgroundColor: on ? 'rgba(201,209,213,0)' : 'rgba(201,209,213,1)' },
             transition: { width: T.ui, backgroundColor: T.fade }, style: { display: 'block', height: DOT, borderRadius: DOT / 2 } });
         }),
-        h(m.span, { style: { position: 'absolute', top: 0, left: 0, height: DOT, borderRadius: DOT / 2, background: C.blue, x: x0, width: width } })));
+        h(m.span, { style: { position: 'absolute', top: 0, left: 0, height: DOT, borderRadius: DOT / 2, background: C.blue, x: x0, width: width } })),
+      nav('Next animation', Icon.next, 1));
   }
 
   /* ---------- playback card ---------- */
@@ -707,7 +682,7 @@
   var RAIL = { type: 'spring', visualDuration: 0.24, bounce: 0.05 };   // quick, no wobble
   function Timeline(p){
     var st = p.st, entry = p.entry;
-    var bar = R.useRef(null), thumb = R.useRef(null), num = R.useRef(null), secs = R.useRef(null), drag = R.useRef(null);
+    var bar = R.useRef(null), thumb = R.useRef(null), num = R.useRef(null), drag = R.useRef(null);
     var segs = entry.success ? [['loading', 'Loading'], ['success', 'Success']] : entry.intro ? [['intro', 'Intro'], ['loop', 'Loop']] : null;
     var rg = R.useState(0), region = rg[0], setRegion = rg[1], regionRef = R.useRef(0);
     // Keep the last known total while the next animation loads (no blank "/ 0" flash).
@@ -724,7 +699,6 @@
       var t = st.total || 0, x = t ? Math.max(0, Math.min(1, f / t)) : 0;
       if (thumb.current) thumb.current.style.left = (x * 100) + '%';
       if (num.current) num.current.textContent = String(Math.floor(f + 0.0001));
-      if (secs.current) { var fps = (ctl.getState().meta || {}).fps; secs.current.textContent = fps ? (f / fps).toFixed(2) : '0.00'; }
       if (bar.current) bar.current.setAttribute('aria-valuenow', String(Math.round(f)));
       if (segs) { var n = regionOf(f); if (n !== regionRef.current) { regionRef.current = n; setRegion(n); } }
     }
@@ -740,7 +714,6 @@
     // Decided from the animation's settings (known immediately), not from loaded data, so the legend
     // stays put across switches and only animates when it really appears / disappears.
     var hasRegions = !!(entry.intro && entry.loop && !entry.success);
-    var totalSec = st.meta && st.meta.fps && total ? (total / st.meta.fps).toFixed(2) : '–';
     var cutTotal = entry.loop ? entry.loop[1] : total;
     var frac = hasRegions ? entry.intro[1] / cutTotal : 0;
     var f0 = ctl.getFrame();
@@ -777,9 +750,8 @@
                     background: C.soft, boxShadow: 'inset 0 0 0 1px ' + C.line, font: '600 12px/16px ' + FONT, color: C.ink } },
                 h(m.span, { animate: { backgroundColor: ph.dot }, transition: T.fade, style: { width: 8, height: 8, borderRadius: 4 } }),
                 h(Swap, { k: ph.label, dy: 6, gap: 0 }, ph.label))),
-        h('div', { role: 'group', 'aria-label': 'Step one frame', style: { display: 'flex', gap: 6 } },
-          h(StepButton, { label: 'Previous frame', icon: Icon.back, onClick: function(){ ctl.step(-1); } }),
-          h(StepButton, { label: 'Next frame', icon: Icon.next, onClick: function(){ ctl.step(1); } }))),
+        h(M.Typography, { variant: 'caption', color: 'text.secondary', component: 'div', sx: { fontVariantNumeric: 'tabular-nums', display: 'flex', alignItems: 'center', gap: '3px' } },
+          'Frame ', h('b', { ref: num, style: { color: C.ink, fontWeight: 600 } }, '0'), ' / ', h(Swap, { k: 't' + Math.round(total), dy: 6, gap: 0 }, Math.round(total)))),
       h(Slot, null, h('div', {
         ref: bar, role: 'slider', tabIndex: 0, 'aria-label': 'Scrub frames', 'aria-valuemin': 0, 'aria-valuemax': Math.round(total),
         onPointerDown: function(e){
@@ -814,13 +786,7 @@
               transition: { x: RAIL, opacity: T.fade }, style: { position: 'absolute', left: 0, right: 0, top: 0, height: 10 } },
             h('div', { style: { position: 'absolute', left: -1, top: 0, width: 2, height: 10, borderRadius: 1, background: '#fff' } }))),
         h('div', { ref: thumb, style: { position: 'absolute', top: 7, left: '0%', width: 22, height: 22, marginLeft: -11, borderRadius: 11,
-          background: '#fff', boxShadow: '0 0 0 1.5px ' + C.blue + ', 0 2px 6px rgba(0,1,40,0.18)', pointerEvents: 'none' } }))),
-      // info line under the rail: frame (left) and time (right), painted per frame like the thumb
-      h(Slot, { style: { display: 'flex', justifyContent: 'space-between', marginTop: -6 } },
-        h(M.Typography, { variant: 'caption', color: 'text.secondary', component: 'div', sx: { fontVariantNumeric: 'tabular-nums', display: 'flex', gap: '3px' } },
-          'Frame ', h('b', { ref: num, style: { color: C.ink, fontWeight: 600 } }, '0'), ' / ', h(Swap, { k: 't' + Math.round(total), dy: 6, gap: 0 }, Math.round(total))),
-        h(M.Typography, { variant: 'caption', color: 'text.secondary', component: 'div', sx: { fontVariantNumeric: 'tabular-nums', display: 'flex', gap: '3px' } },
-          h('b', { ref: secs, style: { color: C.ink, fontWeight: 600 } }, '0.00'), ' / ', h(Swap, { k: 's' + totalSec, dy: 6, gap: 0 }, totalSec + ' s'))));
+          background: '#fff', boxShadow: '0 0 0 1.5px ' + C.blue + ', 0 2px 6px rgba(0,1,40,0.18)', pointerEvents: 'none' } }))));
   }
 
   /* Replay ↔ Play/Pause merge. Two buttons, each pinned by its outer edge, revealed by Motion springs
@@ -903,7 +869,10 @@
     // page, so it stays pinned while scrolling and needs no spacer. 8px from the screen edges (-8 margin
     // against the page's 16px gutter).
     return h('nav', { 'aria-label': 'Playback',
+        // backdrop-filter: Safari 26 does not take the toolbar tint from a bar that has one (the bar is opaque
+        // white, so it is invisible here).
         style: { position: 'sticky', bottom: p.lift, zIndex: 20, margin: 'auto -8px 0', padding: 8,
+          backdropFilter: 'blur(1px)', WebkitBackdropFilter: 'blur(1px)',
           borderRadius: 30, background: '#ffffff',
           // layered shadow: hairline, tight contact shadow, wide soft lift. Plain box-shadow (no filter /
           // backdrop) draws the same in iOS Safari; the bar never touches the screen edges, so Safari 26
@@ -911,7 +880,7 @@
           boxShadow: '0 0 0 1px rgba(16,24,40,0.06), 0 2px 4px rgba(16,24,40,0.08), 0 8px 18px rgba(16,24,40,0.12), 0 22px 48px rgba(16,24,40,0.20)' } },
       h('div', { style: { padding: '4px 8px 0' } }, h(Timeline, { st: st, entry: entry })),
       // Fixed proportions (grid): Replay and speed equal, Play / Pause widest; merged Replay spans both.
-      h('div', { style: { position: 'relative', display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1.4fr) minmax(0,1fr)', gap: PAIR_GAP, marginTop: 12 } },
+      h('div', { style: { position: 'relative', display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1.4fr) minmax(0,1fr)', gap: PAIR_GAP, marginTop: 6 } },
         h(PairButtons, { ended: ended, st: st }),
         h(CtlButton, { key: 'speed', k: 's' + st.speedIx, dy: 10, label: 'Playback speed', onClick: ctl.cycleSpeed, icon: Icon.speed,
           text: SPEEDS[st.speedIx] + '×', style: { gridColumn: '3', gridRow: 1, fontVariantNumeric: 'tabular-nums' } })));
