@@ -25,8 +25,8 @@
 <script src="../vendor/motion@14.4.0/motion-react.js"></script>
 <script src="../vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
 <script src="../vendor/lottie-web@5.12.2/lottie_svg.min.js"></script>
-<script src="../assets/playground-ui.js?v=202610210731"></script>
-<script src="animations.js?v=202610210731"></script>
+<script src="../assets/playground-ui.js?v=202610210738"></script>
+<script src="animations.js?v=202610210738"></script>
 <script>
 /* ---- Animation player ------------------------------------------------------------------
    One animation at a time. Each animation exists twice, pixel-matched: the Lottie JSON played
@@ -877,7 +877,10 @@
           // layered shadow: hairline, tight contact shadow, wide soft lift. Plain box-shadow (no filter /
           // backdrop) draws the same in iOS Safari; the bar never touches the screen edges, so Safari 26
           // does not tint its toolbar from it.
-          boxShadow: '0 0 0 1px rgba(16,24,40,0.06), 0 2px 4px rgba(16,24,40,0.08), 0 8px 18px rgba(16,24,40,0.12), 0 22px 48px rgba(16,24,40,0.20)' } },
+          // Shadow rises UP and out, never more than ~6px below the bar: on iOS Safari 26 the bar sits 6px
+          // above the end of the layout viewport and Safari clips anything below that edge, so a downward
+          // shadow would be cut off in a hard line.
+          boxShadow: '0 0 0 1px rgba(16,24,40,0.07), 0 1px 3px rgba(16,24,40,0.08), 0 -6px 16px rgba(16,24,40,0.08), 0 -14px 40px rgba(16,24,40,0.14)' } },
       h('div', { style: { padding: '4px 8px 0' } }, h(Timeline, { st: st, entry: entry })),
       // Fixed proportions (grid): Replay and speed equal, Play / Pause widest; merged Replay spans both.
       h('div', { style: { position: 'relative', display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1.4fr) minmax(0,1fr)', gap: PAIR_GAP, marginTop: 6 } },
