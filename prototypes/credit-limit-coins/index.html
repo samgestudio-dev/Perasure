@@ -672,10 +672,9 @@ function build(){
   tl.addLabel('count', COUNT.start).addLabel('land', F).addLabel('end', END);
 
   /* the amount */
-  /* entrance: the label rises in out of a soft blur, then the amount follows, rising a little further and settling
-     from a slight scale; the blur is cleared afterwards (no lasting filter layer) */
-  tl.fromTo('#label', { opacity:0, y:10, filter:'blur(4px)' },
-    { opacity:1, y:0, filter:'blur(0px)', duration:.55, ease:'power3.out', clearProps:'filter' }, 0);
+  /* entrance: the label fades and rises in, then the amount follows, rising a little further and settling from a
+     slight scale and blur; the blur is cleared afterwards (no lasting filter layer) */
+  tl.fromTo('#label', { opacity:0, y:10 }, { opacity:1, y:0, duration:.55, ease:'power3.out' }, 0);
   tl.fromTo(amountEl, { opacity:0, yPercent:28, scale:.94, filter:'blur(8px)', color:'#EEF5EF' },
     { opacity:1, yPercent:0, scale:1, filter:'blur(0px)', duration:.7, ease:'expo.out', clearProps:'filter' }, .12);
   tl.fromTo(NUM, { v:CONFIG.from }, { v:CONFIG.to, duration:COUNT.dur, onUpdate:function(){ setAmount(money(NUM.v)); } }, 'count');
