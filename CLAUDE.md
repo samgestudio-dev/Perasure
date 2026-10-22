@@ -11,6 +11,8 @@ Phone-first motion prototypes for PeraSure, served by GitHub Pages from `main` /
 ```
 index.html                 picker ("Playground"): "Prototypes" tab (DEMOS array) + "Animations" tab (reads animations/animations.js)
 assets/playground-ui.js    shared Material UI theme + icons for the picker and the player (window.PG)
+assets/fonts/              the app's fonts (Hanken Grotesk, Inter, Satoshi 500/700) + fonts.css — shared by all prototypes
+prototypes/_template/index.html  starting point for a new prototype (links the shared fonts and libraries); not on the picker
 prototypes/<slug>/index.html    main / recommended variant of a demo
 prototypes/<slug>/<variant>.html  other variants of the same demo (optional)
 animations/animations.js       Lottie registry (LOTTIES array) — shared by the picker and the player
@@ -18,7 +20,7 @@ animations/player.html         player, one animation at a time: player.html?a=<s
 animations/<slug>/             <slug>.json (+ <slug>.lottie, preview.png, gsap/<module>.js)
 tools/                     flatten-lottie-masks.py, flatten-svg-masks.py (Safari mask-blur fixes), unscale-gsap-svg.py (Safari scale glitch)
 vendor/<lib>@<version>/    pinned libraries: lottie-web, gsap (+ plugins; esm/ = ES modules), react, react-dom, mui-material,
-                           motion (motion-react.js = React API, motion.js = vanilla; both set window.Motion)
+                           motion (motion-react.js = React API, motion.js = vanilla; both set window.Motion), matter-js
 README.md                  human-facing summary + demo / animation tables
 .nojekyll                  keep: Pages serves files as-is
 ```
@@ -27,7 +29,7 @@ README.md                  human-facing summary + demo / animation tables
 
 ## Adding a demo
 
-1. Put the demo's file(s) in `prototypes/<slug>/`. The recommended variant is `index.html` (exception: in
+1. Put the demo's file(s) in `prototypes/<slug>/` — for a new one, start from a copy of `prototypes/_template/index.html`. The recommended variant is `index.html` (exception: in
    `credit-limit-coins` the owner made `baked-heap.html` the recommended one; `index.html` there is Standard, kept under its name so links keep working);
    name other variants by what differs (`with-blur.html`, `snappy-spring.html`).
 2. Register it in the `DEMOS` array in the root `index.html` (inside the `<script>`):
@@ -112,9 +114,15 @@ implementation (`prototypes/withdraw-fund-flow/index.html`, see the comments in 
 - Motion: prefer Motion (formerly Framer Motion; `vendor/motion@14.4.0/motion-react.js`) with `LazyMotion` + `m` (strict), drive continuous values with motion values
   instead of React state, animate only `transform` / `opacity` where possible, and respect
   `prefers-reduced-motion`.
-- Keep a demo self-contained in one HTML file (inline or bundled assets) so Pages needs no build step.
-  Shared libraries may instead be loaded from `vendor/` with a relative path
-  (`../../vendor/gsap@3.15.0/gsap.min.js`); never from a CDN at runtime.
+- Shared environment, not bundles (owner's rule for new prototypes): the app already ships its fonts, GSAP, React and
+  Motion, so a prototype links them from the repo instead of inlining them — the page's own file then holds only
+  what the prototype adds, which is what developers would actually ship. Fonts:
+  `<link rel="stylesheet" href="../../assets/fonts/fonts.css">` and `font-family: var(--ps-font-text | --ps-font-body |
+  --ps-font-num)` (amounts use `--ps-font-num`: Satoshi digits, ₱ from Inter, as in the app). Libraries:
+  `<script src="../../vendor/…">` with a relative path. Never a CDN at runtime, no build step, no base64 fonts or
+  pasted library code in the page. Data and code specific to the prototype (a recording, an SVG) may stay inline or
+  sit next to it in its folder. Existing prototypes that were made as single files stay as they are unless the owner
+  asks. A Claude Design bundled export (below) should be unpacked into such a plain page when practical.
 - Claude Design bundled exports (`__bundler/template` + dc-runtime): the runtime loads React on its own and
   does not wait for it, so any bundled script that needs `window.React` at load time (e.g. the Framer Motion
   UMD, `window.__FM_UMD`) races it — iOS Safari loses and shows `[bundle] ReferenceError: Can't find variable:

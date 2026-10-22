@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>
+/* Designed at 360 CSS px: on a touch screen the layout viewport is 360 px wide and the browser scales it to the
+   screen. (For iOS Safari 26 toolbar insets and keyboard handling see prototypes/withdraw-fund-flow and otp-sheet-morph.) */
+if (matchMedia('(pointer: coarse)').matches)
+  document.querySelector('meta[name=viewport]').setAttribute('content', 'width=360, user-scalable=no, viewport-fit=cover');
+</script>
+<title>Prototype template</title>
+
+<!-- Shared environment: the app's fonts and libraries, loaded from the repo (nothing inlined, no CDN).
+     Keep only the lines this prototype uses. -->
+<link rel="preload" href="../../assets/fonts/hanken-grotesk-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../assets/fonts/satoshi-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../../assets/fonts/fonts.css">
+<script src="../../vendor/gsap@3.15.0/gsap.min.js"></script>
+<script src="../../vendor/react@18.3.1/react.production.min.js"></script>
+<script src="../../vendor/react-dom@18.3.1/react-dom.production.min.js"></script>
+<script src="../../vendor/motion@14.4.0/motion-react.js"></script>
+<!-- other options: ../../vendor/motion@14.4.0/motion.js (Motion without React), ../../vendor/matter-js@0.19.0/matter.min.js,
+     ../../vendor/lottie-web@5.12.2/lottie_svg.min.js, GSAP plugins in ../../vendor/gsap@3.15.0/ -->
+
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body { background: #fff; color: #0b1220; font-family: var(--ps-font-text); -webkit-font-smoothing: antialiased; }
+  button { font: inherit; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  #root { min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px;
+          padding: env(safe-area-inset-top) 16px calc(env(safe-area-inset-bottom) + 24px); }
+  .amount { font-family: var(--ps-font-num); font-weight: 700; font-size: 44px; letter-spacing: -0.02em; }
+  .btn { border: 0; border-radius: 999px; padding: 14px 28px; background: #1f4fff; color: #fff; font-weight: 600; font-size: 16px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+(function(){
+  'use strict';
+  var h = React.createElement, M = Motion, m = M.m;
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function App(){
+    var ref = React.useRef(null), st = React.useState(0), n = st[0], setN = st[1];
+    /* GSAP: count the amount up (written straight to the element, not through React state) */
+    React.useEffect(function(){
+      var o = { v: 0 }, el = ref.current;
+      var tw = gsap.to(o, { v: 50000, duration: reduce ? 0 : 1.2, ease: 'power3.out',
+        onUpdate: function(){ el.textContent = '₱' + Math.round(o.v).toLocaleString('en-US'); } });
+      return function(){ tw.kill(); };
+    }, [n]);
+    /* Motion: spring press and entrance */
+    return h(M.LazyMotion, { features: M.domAnimation, strict: true },
+      h(m.div, { key: n, className: 'amount', ref: ref, initial: reduce ? false : { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 },
+                 transition: { type: 'spring', visualDuration: .4, bounce: .2 } }, '₱0'),
+      h(m.button, { className: 'btn', whileTap: { scale: .96 }, onClick: function(){ setN(n + 1); } }, 'Replay'));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+})();
+</script>
+</body>
+</html>

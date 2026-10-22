@@ -1,0 +1,23 @@
+/* PeraSure app fonts, shared by every prototype. Link it from a demo with
+     <link rel="stylesheet" href="../../assets/fonts/fonts.css">
+   The files are the same ones the app uses (Latin, incl. ñ and the peso sign ₱ where the font has it).
+
+   Hanken Grotesk  variable 100–900   headings, labels, body
+   Inter           variable 100–900   body / fallback; also supplies ₱, which Satoshi lacks
+   Satoshi         500 and 700        numbers and amounts
+
+   For amounts write  font-family: var(--ps-font-num)  : Satoshi draws the digits and the browser takes ₱ from Inter
+   automatically, as the app does. font-display: block keeps text hidden (not swapped) for the moment the local
+   files take to load, so an animation never starts in the fallback font and jumps.
+   Licences: Hanken Grotesk and Inter — SIL Open Font License 1.1; Satoshi — Indian Type Foundry Free Font License (Fontshare). */
+
+@font-face { font-family: "Hanken Grotesk"; src: url("hanken-grotesk-var.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: block; }
+@font-face { font-family: "Inter";          src: url("inter-var.woff2")          format("woff2"); font-weight: 100 900; font-style: normal; font-display: block; }
+@font-face { font-family: "Satoshi";        src: url("satoshi-500.woff2")        format("woff2"); font-weight: 500;     font-style: normal; font-display: block; }
+@font-face { font-family: "Satoshi";        src: url("satoshi-700.woff2")        format("woff2"); font-weight: 700;     font-style: normal; font-display: block; }
+
+:root {
+  --ps-font-text: "Hanken Grotesk", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ps-font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ps-font-num:  "Satoshi", "Inter", system-ui, sans-serif;
+}

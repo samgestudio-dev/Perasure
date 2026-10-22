@@ -47,7 +47,11 @@ any) in `animations/<name>/gsap/`, and add an entry to `animations/animations.js
 
 `vendor/` holds pinned copies so demos don't depend on a CDN: lottie-web 5.12.2, GSAP 3.15.0 (core +
 all plugins, as browser scripts and as ES modules in `esm/`), React 18.3.1, ReactDOM 18.3.1 and
-Material UI 5.18.0 (used by the Playground pages; theme in `assets/playground-ui.js`).
+Material UI 5.18.0 (used by the Playground pages; theme in `assets/playground-ui.js`) and Matter.js 0.19.0.
+
+`assets/fonts/` holds the app's fonts — Hanken Grotesk and Inter (variable, 100–900) and Satoshi (500, 700) —
+with `fonts.css`, which defines them and three variables: `--ps-font-text` (Hanken Grotesk), `--ps-font-body`
+(Inter) and `--ps-font-num` (Satoshi for amounts, with ₱ taken from Inter, as in the app).
 
 Motion 14.4.0 (formerly Framer Motion) in `vendor/motion@14.4.0/`, two browser builds — load one per page,
 both define `window.Motion`:
@@ -66,9 +70,11 @@ Easiest: give the demo's HTML file to Claude and say "add this to the motion dem
 
 By hand:
 
-1. Put the file(s) in `prototypes/<name>/`, with the main version as `index.html`.
+1. Copy `prototypes/_template/` to `prototypes/<name>/` (it already links the fonts and libraries), with the main version as `index.html`.
 2. Open the root `index.html`, find the `DEMOS` list near the bottom and copy an entry:
    title, a one-line description, and one line per variant (the first one is shown as recommended).
 3. Add a row to the table above, commit to `main` and push. The live site updates in about a minute.
 
-Each demo is a single self-contained HTML file, so there is nothing to build.
+There is nothing to build. New prototypes link the shared fonts (`assets/fonts/fonts.css`) and libraries
+(`vendor/`) instead of packing them into the page, as the app already has them; the page itself then holds only
+the prototype's own code and data. Older demos are single self-contained files and keep working as they are.
