@@ -333,8 +333,9 @@ var FALL = .3;
 /* ---------- live physics (Matter.js), stepped on the GSAP timeline's clock ----------
    The model's adjustable values are in MODEL; the tuning panel (prototype only) overrides them in TUNE. */
 /* dropX / dropY: how far each coin's starting point may be off, sideways (the full spread, in artwork units; 16 =
-   ±8, the original) and in height (dropY; the start speed is adjusted so the coin still arrives on time) */
-var MODEL = { hz:240, gravity:3.4, friction:.7, frictionStatic:1.6, restitution:.04, floorFriction:.9, kickUp:1, kickSide:1, kickSpin:1, walls:1, shadows:1, dropX:16, dropY:0 };
+   ±8, the original) and in height (dropY; the start speed is adjusted so the coin still arrives on time);
+   dropAngle: the largest starting tilt, in degrees (2.3 = the original) */
+var MODEL = { hz:240, gravity:3.4, friction:.7, frictionStatic:1.6, restitution:.04, floorFriction:.9, kickUp:1, kickSide:1, kickSpin:1, walls:1, shadows:1, dropX:16, dropY:0, dropAngle:2.3 };
 var TUNE = Object.assign({}, MODEL);
 var DT = 1 / TUNE.hz, world = null, simT = 0, KICK_T = 1e9, kicked = false;
 var BODY = { friction:.7, frictionStatic:1.6, frictionAir:.003, restitution:.04, density:.006, slop:.01, chamfer:{ radius:2 } };
@@ -376,7 +377,7 @@ function reset(){
     var vx = d.miss ? (d.off > 0 ? 110 : -110) : (d.kind === 'orange' ? 50 : d.kind === 'lime' ? -25 : 0);
     var off = d.miss ? d.off : d.ux * TUNE.dropX, dY = d.uy * TUNE.dropY;
     c.sx = S.x + off - vx * FALL; c.sy = 300 - .5 * g * FALL * FALL + dY; c.vy = -dY / FALL;
-    c.vx = vx; c.ang = d.miss ? (d.off > 0 ? .25 : -.25) : d.spin * .08; c.av = d.miss ? (d.off > 0 ? 2 : -2) : d.spin * .6;
+    c.vx = vx; c.ang = d.miss ? (d.off > 0 ? .25 : -.25) : d.spin * 2 * (TUNE.dropAngle === MODEL.dropAngle ? .04 : TUNE.dropAngle / 57.2958);   /* the default is the original 0.04 rad exactly */ c.av = d.miss ? (d.off > 0 ? 2 : -2) : d.spin * .6;
     coins.push(c);
   });
   front = coins.filter(function(c){ return c.lane === 'front'; });
@@ -775,6 +776,7 @@ function boot(){
     ['kickSpin', 'Knock: spin', 0, 4, .05, function(v){ return '×' + v; }],
     ['dropX', 'Drop spread: sideways', 0, 120, 2],
     ['dropY', 'Drop spread: height', 0, 200, 5],
+    ['dropAngle', 'Drop spread: angle', 0, 45, .1, function(v){ return (+v).toFixed(1) + '°'; }],
     ['walls', 'Walls at the screen edges', [0, 1], null, function(v){ return v ? 'on' : 'off'; }],
     ['shadows', 'Shadows', [0, 1], null, function(v){ return v ? 'each coin' : 'whole stack'; }]
   ];
