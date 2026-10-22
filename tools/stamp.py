@@ -19,3 +19,14 @@ for rel in PAGES:
     s2, n = pat.subn(r'\1?v=' + stamp, s)
     open(p, 'w', encoding='utf-8').write(s2)
     print('%s: %d script tag(s) -> v=%s' % (rel, n, stamp))
+
+# prototypes that load their own files (page.js / page.css / data.json next to them) mark them ?v=<stamp> too
+own = re.compile(r'((?:href|src|data-[\w-]+)="(?!\.\./\.\./)[^"?]+\.(?:js|css|json))\?v=[\w-]+"')
+for d, _, files in os.walk(os.path.join(ROOT, 'prototypes')):
+    for f in files:
+        if not f.endswith('.html'): continue
+        p = os.path.join(d, f); s = open(p, encoding='utf-8').read()
+        s2, n = own.subn(r'\1?v=' + stamp + '"', s)
+        if n:
+            open(p, 'w', encoding='utf-8').write(s2)
+            print('%s: %d own file link(s) -> v=%s' % (os.path.relpath(p, ROOT), n, stamp))

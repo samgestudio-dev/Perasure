@@ -1,0 +1,45 @@
+/* Credit limit increase, Baked heap: page styles. Fonts come from ../../assets/fonts/fonts.css (the app's fonts). */
+/* Responsive phone page in normal flow. --u = screen width / 360 (capped at 480px wide), set from JS,
+   so type and pills scale with the phone; the coin artwork is an SVG that scales with its width. */
+:root{ --bg:#0D1620; --text:#EEF5EF; --muted:#9AA7B0; --accent:#3FA0F0; --chip:#1B2834; --ink:#0D1620; --u:1; color-scheme:dark }
+html,body{margin:0;background:var(--bg);-webkit-tap-highlight-color:transparent}
+body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;
+  font-family:var(--ps-font-text);touch-action:manipulation}
+main{box-sizing:border-box;width:100%;max-width:480px;flex:1;display:flex;flex-direction:column;align-items:center;
+  padding-top:calc(env(safe-area-inset-top,0px) + 24px);padding-bottom:calc(env(safe-area-inset-bottom,0px) + 24px);
+  padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px))}
+.space-top{flex:.5 1 0;min-height:16px}
+.space-mid{flex:1 1 0;min-height:calc(28px * var(--u))}
+#hero{position:relative;display:flex;flex-direction:column;align-items:center;color:var(--text);text-align:center}
+#burst{position:absolute;left:50%;top:calc(60px * var(--u));overflow:visible;pointer-events:none;transform:scale(var(--u))}
+#label{font-weight:500;font-size:calc(14px * var(--u));line-height:1.43;color:var(--muted)}
+#amount{margin-top:calc(6px * var(--u));font-family:"Satoshi","Hanken Grotesk",sans-serif;font-weight:700;font-size:calc(64px * var(--u));line-height:1.06;
+  letter-spacing:-.02em;font-variant-numeric:tabular-nums;white-space:nowrap;transform-origin:50% 60%}
+#delta{display:flex;gap:calc(10px * var(--u));align-items:center;margin-top:calc(12px * var(--u));min-height:calc(30px * var(--u))}
+#up{font-family:"Satoshi","Hanken Grotesk",sans-serif;padding:calc(5px * var(--u)) calc(12px * var(--u));border-radius:999px;background:var(--accent);color:var(--ink);
+  font-weight:700;font-size:calc(15px * var(--u));line-height:1.33;font-variant-numeric:tabular-nums}
+#was{font-family:"Satoshi","Hanken Grotesk",sans-serif;font-weight:500;font-size:calc(15px * var(--u));line-height:1.33;color:var(--muted);text-decoration:line-through;font-variant-numeric:tabular-nums}
+#exp{font-family:"Satoshi","Hanken Grotesk",sans-serif;display:inline-flex;align-items:center;gap:calc(7px * var(--u));margin-top:calc(14px * var(--u));
+  padding:calc(7px * var(--u)) calc(14px * var(--u)) calc(7px * var(--u)) calc(11px * var(--u));border-radius:999px;background:var(--chip);color:var(--text);
+  font-weight:500;font-size:calc(13px * var(--u));line-height:1.38}
+#exp .ic{flex:none;position:relative;overflow:hidden;width:calc(14px * var(--u));height:calc(14px * var(--u))}
+#exp .ic-glyph{position:absolute;inset:9.17% 8.5% 7.49% 8.17%}
+#exp .ic-bleed{position:absolute;inset:-4.95%}
+#exp .ic svg{display:block;width:100%;height:100%}
+#exp .ic svg path{stroke:var(--accent)}
+/* the coins: full width, but never taller than about 40% of the screen on short phones */
+#art{display:grid;width:100%}
+#art>svg{grid-area:1/1;align-self:start;display:block;width:100%;height:auto;max-height:42vh;max-height:42dvh;overflow:visible}
+/* the stars loop forever: their own compositing layer, so the coins are not repainted with them */
+#artStars{will-change:transform}
+/* the coins sit under everything else on the page (the number, the pills, Replay), and over the twinkling stars */
+#art{position:relative;z-index:0}
+#hero{z-index:1}
+#replay{position:relative;z-index:1}
+/* the coin rows are drawn on canvases sized and placed from script over the star layer's box; their margins
+   cancel their size so they never change the layout */
+#art>canvas{grid-area:1/1;align-self:start;justify-self:start;display:block;width:0;height:0;pointer-events:none}
+#replay{margin-top:calc(8px * var(--u));border:0;border-radius:999px;padding:calc(10px * var(--u)) calc(18px * var(--u));background:var(--chip);color:var(--text);
+  font:600 calc(14px * var(--u))/1.43 var(--ps-font-text);opacity:0;pointer-events:none;cursor:pointer;touch-action:manipulation}
+#replay.on{opacity:1;pointer-events:auto}
+#replay:focus-visible{outline:2px solid var(--accent);outline-offset:3px}

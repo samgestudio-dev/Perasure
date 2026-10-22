@@ -1,6 +1,19 @@
 # Credit limit increase animation: integration guide
 
-`baked-heap.html` and `index.html` in this folder are single self-contained pages (GSAP, the fonts and, for `index.html`, Matter.js are inlined, so there are no network requests). It plays a 3.4-second animation: the credit limit counts up from the old amount to the new one while gold coins drop onto three stacks, then the new amount lands with a burst. After that the `+increase` pill, the old amount (struck through) and the expiry pill appear.
+`baked-heap.html` (recommended) is split into its own files and uses the shared environment, as the app would: the app's fonts (`../../assets/fonts/fonts.css`) and GSAP (`../../vendor/gsap@3.15.0/`) come from the repo, and only the prototype's own files sit here:
+
+| File | What it is | Size (gzip / Brotli) |
+| --- | --- | --- |
+| `baked-heap.html` | markup (text, pills, star layer, two canvases) | 1.6 / 1.3 KB |
+| `baked-heap.css` | page styles | 1.6 / 1.3 KB |
+| `baked-heap.js` | the animation: data interface, count-up, burst, canvas coin drawing, timeline | 12 / 11 KB |
+| `bake/baked.json` | the coin recording, loaded by `baked-heap.js` at start-up | 49 / 37 KB |
+
+Since the recording is fetched, open the page through a web server (GitHub Pages, or `python3 -m http.server` in the repo), not straight from disk. A host that already has the recording can set `window.CREDIT_LIMIT_BAKED = <the JSON>` before `baked-heap.js` instead, or point the script elsewhere with `data-recording="…"` on its tag.
+
+`index.html` (Standard) is still a single self-contained page (GSAP, the fonts and Matter.js inlined).
+
+It plays a 3.4-second animation: the credit limit counts up from the old amount to the new one while gold coins drop onto three stacks, then the new amount lands with a burst. After that the `+increase` pill, the old amount (struck through) and the expiry pill appear.
 
 The numbers come from the backend and change per user. **The timing never changes**: whatever the amounts, the count-up, the coins and the landing always take the same time.
 
@@ -90,7 +103,7 @@ It is safe to call `play` before the page has finished loading. The call is queu
 
 ### B. Inject `window.CREDIT_LIMIT_DATA` before the page script: best for a native WebView
 
-Set it before the page's scripts run, so the page autoplays with the real data and never shows the sample.
+Set it before the page's scripts run (for Baked heap: before `baked-heap.js`), so the page autoplays with the real data and never shows the sample.
 
 - iOS (`WKWebView`): use a `WKUserScript` injected at `.atDocumentStart`.
 - Android: use `WebViewCompat.addDocumentStartJavaScript`, or put an inline `<script>` before the page scripts.
@@ -168,7 +181,7 @@ The count-up interpolates between whatever the two amounts are, so a ₱3,000 ra
   - **How it was made**: `bake/record-standard.js` runs the Standard page's own physics code (read from `index.html`, same seeds, so it matches what Standard shows with the same values) and records until every coin rests. Current values (from Tune → Copy): `{"hz":240,"gravity":4.4,"friction":1.1,"frictionStatic":2.3,"restitution":0.05,"floorFriction":1.45,"kickUp":3,"kickSide":0.75,"kickSpin":0.15,"walls":0,"shadows":0,"dropX":8,"dropY":15,"dropAngle":1.3}`. They are also stored in the JSON (`model`).
   - **Packing**: the recording is cleaned and packed as it is written (`enc: "same1"`). A resting coin that only trembles in the solver (under 0.2 world units ≈ 0.1 CSS px, `TREMBLE` in `record-standard.js`) keeps its exact previous pose, positions are rounded to 0.1 and angles to 0.001, and a pose that repeats the previous frame is stored as `1` (`0` = coin not dropped yet). The page expands it on load. Result: about half the file size (311 KB → 167 KB of JSON) and resting coins are exactly still, so they are never redrawn.
   - **Result**: like Standard, it starts with no coins, and the 44 drops build the stacks. The landing knocks 11 coins off their stacks, two of them off the screen. Everything rests by about 5.9 s; the UI is still done at 3.4 s (pills, Replay, `creditlimit:done`). Shadows are in whole-stack mode (`shadows: 0`).
-  - **Re-baking**: tune in Standard, tap Copy, then run `npm i matter-js@0.19.0 && node bake/record-standard.js '<copied values>' bake/baked.json` (put `TREMBLE=0.1 ` in front for less cleaning) and paste the JSON into `baked-heap.html` (the `var BAKED = …;` line). No checks are applied; it is exactly what Standard shows.
+  - **Re-baking**: tune in Standard, tap Copy, then run `npm i matter-js@0.19.0 && node bake/record-standard.js '<copied values>' bake/baked.json` (put `TREMBLE=0.1 ` in front for less cleaning) — the page loads `bake/baked.json`, so that is all (then run `python3 tools/stamp.py` so phones fetch the new file). No checks are applied; it is exactly what Standard shows.
   - **Drawing**: the two rows of coins are drawn on two canvases, with the twinkling stars in an SVG layer over them. There are no SVG nodes or clip paths per coin. A row is redrawn only on frames where one of its coins moved, and a shadow is recomputed only when its caster or the coin it falls on moved. On phones with 4 cores or fewer, or 4 GB of memory or less, the canvases are drawn at 2× at most. The canvases start just above the highest point any coin reaches in the recording (not at the top of the page), with their top edge on a whole screen pixel; this halves their memory.
   - `bake/bake.js` is the earlier standalone simulation (aimed heaps, rule checks, seed search); it is kept for reference and not used for the current recording.
 - **Standard's start**: Standard begins with no coins at all; the three stacks are built only by the 44 drops (`start: 0` in `STACK`).
