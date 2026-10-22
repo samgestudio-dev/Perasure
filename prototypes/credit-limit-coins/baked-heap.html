@@ -41,7 +41,6 @@ main{box-sizing:border-box;width:100%;max-width:480px;flex:1;display:flex;flex-d
 /* the stars loop forever: their own compositing layer, so the coins are not repainted with them */
 #artStars{will-change:transform}
 /* the coins sit under everything else on the page (the number, the pills, Replay), and over the twinkling stars */
-#label .w{display:inline-block}
 #art{position:relative;z-index:0}
 #hero{z-index:1}
 #replay{position:relative;z-index:1}
@@ -182,12 +181,7 @@ function dateText(s){
 }
 /* write the data into the page */
 function applyData(){
-  /* the label is split into words so they can come in one after another */
-  var lab = $('label'); lab.textContent = '';
-  String(CONFIG.label).split(/\s+/).filter(Boolean).forEach(function(w, i){
-    if (i) lab.appendChild(document.createTextNode(' '));
-    var sp = document.createElement('span'); sp.className = 'w'; sp.textContent = w; lab.appendChild(sp);
-  });
+  $('label').textContent = CONFIG.label;
   $('up').textContent = (CONFIG.increase >= 0 ? '+' : '−') + money(Math.abs(CONFIG.increase));
   $('was').textContent = money(CONFIG.from);
   var showDelta = CONFIG.increase !== 0 && CONFIG.from !== CONFIG.to;
@@ -543,11 +537,10 @@ function build(){
   tl.addLabel('count', COUNT.start).addLabel('land', F).addLabel('end', END);
 
   /* the amount */
-  /* entrance: the label's words rise in one after another out of a soft blur, then the amount follows, rising a
-     little further and settling from a slight scale; the blur is cleared afterwards (no lasting filter layer) */
-  tl.set('#label', { opacity:1 }, 0);
-  tl.fromTo('#label .w', { opacity:0, y:10, filter:'blur(4px)' },
-    { opacity:1, y:0, filter:'blur(0px)', duration:.55, ease:'power3.out', stagger:.045, clearProps:'filter' }, 0);
+  /* entrance: the label rises in out of a soft blur, then the amount follows, rising a little further and settling
+     from a slight scale; the blur is cleared afterwards (no lasting filter layer) */
+  tl.fromTo('#label', { opacity:0, y:10, filter:'blur(4px)' },
+    { opacity:1, y:0, filter:'blur(0px)', duration:.55, ease:'power3.out', clearProps:'filter' }, 0);
   tl.fromTo(amountEl, { opacity:0, yPercent:28, scale:.94, filter:'blur(8px)', color:'#EEF5EF' },
     { opacity:1, yPercent:0, scale:1, filter:'blur(0px)', duration:.7, ease:'expo.out', clearProps:'filter' }, .12);
   tl.fromTo(NUM, { v:CONFIG.from }, { v:CONFIG.to, duration:COUNT.dur, onUpdate:function(){ setAmount(money(NUM.v)); } }, 'count');
@@ -590,7 +583,7 @@ function showFinal(){
   stopTwinkles();
   $('burst').innerHTML = '';
   gsap.set(['#label', '#amount', '#up', '#was', '#exp'], { opacity:1, x:0, y:0, scale:1 });
-  gsap.set('#label .w', { opacity:1, y:0, clearProps:'filter' }); gsap.set(amountEl, { yPercent:0, clearProps:'filter' });
+  gsap.set(['#label', amountEl], { clearProps:'filter' }); gsap.set(amountEl, { yPercent:0 });
   gsap.set(amountEl, { color:'#EEF5EF' });
   gsap.set(['#hero', '#art'], { x:0, y:0 });
   gsap.set(['#cvBack', '#cvFront'], { opacity:1 });
