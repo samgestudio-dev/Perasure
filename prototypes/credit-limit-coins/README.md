@@ -6,7 +6,7 @@
 | --- | --- | --- |
 | `baked-heap.html` | markup (text, pills, star layer, two canvases) | 1.6 / 1.3 KB |
 | `baked-heap.css` | page styles | 1.6 / 1.3 KB |
-| `baked-heap.js` | the animation: data interface, count-up, burst, canvas coin drawing, timeline | 12 / 11 KB |
+| `baked-heap.js` | the animation: data interface, count-up, burst, canvas coin drawing, timeline | 13 / 11 KB |
 | `bake/baked.json` | the coin recording, loaded by `baked-heap.js` at start-up | 49 / 37 KB |
 
 Since the recording is fetched, open the page through a web server (GitHub Pages, or `python3 -m http.server` in the repo), not straight from disk. A host that already has the recording can set `window.CREDIT_LIMIT_BAKED = <the JSON>` before `baked-heap.js` instead, or point the script elsewhere with `data-recording="…"` on its tag.
