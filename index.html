@@ -18,8 +18,8 @@
 <script src="vendor/react-dom@18.3.1/react-dom.production.min.js"></script>
 <script src="vendor/motion@14.4.0/motion-react.js"></script>
 <script src="vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
-<script src="assets/playground-ui.js?v=202610220858"></script>
-<script src="animations/animations.js?v=202610220858"></script>
+<script src="assets/playground-ui.js?v=202610220923"></script>
+<script src="animations/animations.js?v=202610220923"></script>
 <script>
 /* ---- Prototype registry (the "Prototypes" tab) -----------------------------------------
    To add a prototype: put its files in prototypes/<slug>/ and add one entry below.
@@ -30,8 +30,8 @@ var DEMOS = [
     tag: 'Credit limit',
     desc: 'The limit counts up from ₱45,000 to ₱50,000 while gold coins rain onto three stacks with real physics; burst and coin jump when it lands.',
     variants: [
-      { name: 'Baked heap', note: 'A recording of Standard with tuned values: no physics on the phone; the landing knocks coins up and off the stacks', href: 'prototypes/credit-limit-coins/baked-heap.html' },
-      { name: 'Standard', note: 'Live physics, per-coin shadows; Tune panel for model values and shadow mode', href: 'prototypes/credit-limit-coins/index.html' }
+      { name: 'Baked heap', note: 'Deliverable. A recording of the Physics tuner, so no physics runs on the phone (made for low-end phones)', href: 'prototypes/credit-limit-coins/baked/baked-heap.html' },
+      { name: 'Physics tuner', note: 'Engineering file, not shipped: live physics with a Tune panel, for tuning the coin paths before baking', href: 'prototypes/credit-limit-coins/physics-tuner/physics-tuner.html' }
     ]
   },
   {

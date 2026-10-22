@@ -1,10 +1,11 @@
-/* Bake the Standard page's own live simulation (same code, same seeds) with a given set of model values.
-   node record-standard.js '<Tune panel values, from its Copy button>' out.json [sleep=1]
-   then paste out.json into baked-heap.html (the var BAKED = ...; line). */
+/* Bake the Physics tuner's own live simulation (same code, same seeds) with a given set of model values.
+   node record-tuner.js '<Tune panel values, from its Copy button>' out.json [sleep=1]
+   e.g. node physics-tuner/record-tuner.js '<values>' baked/baked.json  (from the credit-limit-coins folder) —
+   the deliverable (baked/baked-heap.html) loads baked/baked.json, so nothing needs pasting. */
 const fs = require('fs');
 const D = __dirname + '/';
-/* the physics code is read from the Standard page (index.html next to this folder) */
-const src = fs.readFileSync(D + '../index.html', 'utf8');
+/* the physics code is read from the Physics tuner (physics-tuner.html in this folder) */
+const src = fs.readFileSync(D + 'physics-tuner.html', 'utf8');
 const a = src.indexOf('var M = Matter;'), b = src.indexOf('var FACE_TILT');
 let phys = src.slice(a, b);
 const sleep = process.argv[4] !== '0';

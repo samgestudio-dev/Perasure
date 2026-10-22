@@ -1,4 +1,4 @@
-/* Credit limit increase, Baked heap: page styles. Fonts come from ../../assets/fonts/fonts.css (the app's fonts). */
+/* Credit limit increase, Baked heap: page styles. Fonts come from ../../../assets/fonts/fonts.css (the app's fonts). */
 /* Responsive phone page in normal flow. --u = screen width / 360 (capped at 480px wide), set from JS,
    so type and pills scale with the phone; the coin artwork is an SVG that scales with its width. */
 :root{ --bg:#0D1620; --text:#EEF5EF; --muted:#9AA7B0; --accent:#3FA0F0; --chip:#1B2834; --ink:#0D1620; --u:1; color-scheme:dark }

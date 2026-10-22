@@ -1,38 +1,46 @@
 # Credit limit increase animation: integration guide
 
-`baked-heap.html` (recommended) is split into its own files and uses the shared environment, as the app would: the app's fonts (`../../assets/fonts/fonts.css`) and GSAP (`../../vendor/gsap@3.15.0/`) come from the repo, and only the prototype's own files sit here:
+**Deliverable: `baked/`.** `physics-tuner/` is an engineering file, used only to tune the coin paths; it is not shipped.
 
-| File | What it is | Size (gzip / Brotli) |
-| --- | --- | --- |
-| `baked-heap.html` | markup (text, pills, star layer, two canvases) | 1.6 / 1.3 KB |
-| `baked-heap.css` | page styles | 1.6 / 1.3 KB |
-| `baked-heap.js` | the animation: data interface, count-up, burst, canvas coin drawing, timeline | 13 / 11 KB |
-| `bake/baked.json` | the coin recording, loaded by `baked-heap.js` at start-up | 49 / 37 KB |
+> **Why two:** the Physics tuner is for tuning the animation's paths (the coins are simulated live with a physics
+> engine, with a Tune panel for the model). To run smoothly on low-end phones, what ships is a baked recording of that
+> simulation, so the phone does not simulate physics collisions in real time.
+>
+> 中文备注：Physics tuner 用于调整（tuning）动画轨迹；为适配低端机，交付的是烘焙（bake）后的动画，避免在手机上实时模拟物理碰撞等。交付文件只有 `baked/` 文件夹。
 
-Since the recording is fetched, open the page through a web server (GitHub Pages, or `python3 -m http.server` in the repo), not straight from disk. A host that already has the recording can set `window.CREDIT_LIMIT_BAKED = <the JSON>` before `baked-heap.js` instead, or point the script elsewhere with `data-recording="…"` on its tag.
+```
+credit-limit-coins/
+  baked/                 DELIVERABLE
+    baked-heap.html        markup (text, pills, star layer, two canvases)
+    baked-heap.css         page styles
+    baked-heap.js          the animation: data interface, count-up, burst, canvas coin drawing, timeline
+    baked.json             the coin recording, loaded by baked-heap.js at start-up
+  physics-tuner/         ENGINEERING ONLY (not shipped)
+    physics-tuner.html     live Matter.js simulation + Tune panel, self-contained
+    record-tuner.js        bakes the tuner's simulation into baked/baked.json
+    bake.js                earlier standalone simulation, kept for reference
+  assets/icon-pending.svg  expiry icon as exported from Figma (inlined in both pages)
+  index.html, baked-heap.html   redirects for old links only
+```
 
-`index.html` (Standard) is still a single self-contained page (GSAP, the fonts and Matter.js inlined).
+| Deliverable file | Size (gzip / Brotli) |
+| --- | --- |
+| `baked/baked-heap.html` | 1.6 / 1.3 KB |
+| `baked/baked-heap.css` | 1.6 / 1.3 KB |
+| `baked/baked-heap.js` | 13 / 11 KB |
+| `baked/baked.json` | 49 / 37 KB |
+
+The deliverable uses the shared environment, as the app would: the app's fonts (`assets/fonts/fonts.css` at the repo root) and GSAP (`vendor/gsap@3.15.0/`) are not part of it. Since the recording is fetched, open the page through a web server (GitHub Pages, or `python3 -m http.server` in the repo), not straight from disk. A host that already has the recording can set `window.CREDIT_LIMIT_BAKED = <the JSON>` before `baked-heap.js` instead, or point the script elsewhere with `data-recording="…"` on its tag.
 
 It plays a 3.4-second animation: the credit limit counts up from the old amount to the new one while gold coins drop onto three stacks, then the new amount lands with a burst. After that the `+increase` pill, the old amount (struck through) and the expiry pill appear.
 
 The numbers come from the backend and change per user. **The timing never changes**: whatever the amounts, the count-up, the coins and the landing always take the same time.
 
-### Two versions, same interface
+### The Physics tuner (engineering file)
 
-| File | Coins | Use when |
-| --- | --- | --- |
-| `baked-heap.html` (Baked heap, **recommended**) | a fixed recording of the Standard page's own simulation, made offline with values tuned in Standard's Tune panel (no physics engine shipped), drawn on canvas; at the landing the coins are knocked up and the physics engine decides where they end up | you want the exact same, polished motion on every phone, at the lowest cost |
-| `index.html` (Standard) | simulated live in the browser with Matter.js; at the landing the coins jump and fall where they fall. Drawn like Baked heap (two canvases, every coin casts its own shadow). Has a **Tune** button (top right) with sliders for the physics model and a shadow switch, for trying values on a phone | you want every play to be computed on the device, or you are tuning the model |
+`physics-tuner/physics-tuner.html` simulates the coins live in the browser with Matter.js, drawn exactly like the deliverable (two canvases, the same shadows). Its **Tune** button (top right) opens sliders for the physics model and a shadow switch, for trying values on a phone; **Copy** gives the current values as JSON, which is what `record-tuner.js` bakes (see *Baked heap* in section 5). The panel keeps its values in the phone's `localStorage` (`perasure.creditLimit.tune`). The tuner has the same data interface as the deliverable, so it can be tested with the same links.
 
-> **Before shipping `index.html` (Standard), delete the tuning panel.** It is a prototype tool, marked in three places:
-> the CSS between `/* ==== TUNING PANEL` and `/* ==== END TUNING PANEL ==== */`, the markup between
-> `<!-- ==== TUNING PANEL` and `<!-- ==== END TUNING PANEL ==== -->`, and the script between `/* ==== TUNING PANEL`
-> and `/* ==== END TUNING PANEL ==== */`. With it gone, the page uses the default model in `MODEL` (and the coins
-> stop with the timeline at 3.4 s, as before). The panel also keeps its values in the phone's `localStorage`
-> (`perasure.creditLimit.tune`); nothing reads that once the panel is removed. **Copy** in the panel copies the
-> current values as JSON, so they can be written into `MODEL` (or used for a new bake of Baked heap).
-
-Everything below (data fields, the three ways to pass data, events, timing) is identical for both files.
+Everything below (data fields, the three ways to pass data, events, timing) applies to the deliverable (and works the same in the tuner).
 
 > 中文摘要：页面只需要接入下面表格里的 4 个后端字段（旧额度、新额度、提额金额、过期时间）。数字怎么变，动画时长都固定 3.4 秒。接入方式三选一：URL 参数 / 预先注入 `window.CREDIT_LIMIT_DATA` / 调用 `PeraCreditLimit.play(data)`。
 
@@ -115,7 +123,7 @@ window.CREDIT_LIMIT_DATA = { old_limit: 45000, new_limit: 50000, increase_amount
 ### C. URL query parameters: for testing, or a quick WebView link
 
 ```
-index.html?old=45000&new=50000&inc=5000&exp=2026-11-30
+baked/baked-heap.html?old=45000&new=50000&inc=5000&exp=2026-11-30
 ```
 
 `cur=` sets the currency. `from=` and `to=` are accepted as aliases of `old=` and `new=`.
@@ -176,18 +184,18 @@ The count-up interpolates between whatever the two amounts are, so a ₱3,000 ra
 - **Replay**: the button appears at the end. `PeraCreditLimit.replay()` replays from code.
 - **Start-up** (Baked heap): the page starts at once, without waiting for the fonts, and re-measures the amount when they are ready. Until it plays, it shows the first frame (nothing visible), not the sample's end state.
 - `PeraCreditLimit.getData()` returns the normalised data the page is using, which helps with debugging.
-- **Standard**: coins are moved by a Matter.js simulation stepped on the GSAP timeline's clock, so every playback with the same model values looks identical. They are drawn with the same canvas renderer as Baked heap: every coin casts its own shadow onto the coins below it and the coins behind, recomputed only for coins that moved (resting coins that only tremble in the solver by less than a hundredth of a pixel count as still). The model values live in `MODEL`: step rate, gravity, coin and floor friction, bounce, knock strength up / sideways / spin, how far each dropped coin's starting point may be off (`dropX`, the full sideways spread, 16 = ±8 by default; `dropY`, height, 0 by default, with the start speed adjusted so it still lands on time; `dropAngle`, the largest starting tilt in degrees, 2.3 by default), edge walls, and `shadows` (1 = each coin, 0 = whole stack, which draws only the front row's shadow on the stack behind, as Standard used to). The Tune panel overrides them for testing; a tap outside the panel closes it.
-- **Baked heap**: coin positions come from `bake/baked.json`, recorded at 60 fps offline. No physics runs on the phone.
-  - **How it was made**: `bake/record-standard.js` runs the Standard page's own physics code (read from `index.html`, same seeds, so it matches what Standard shows with the same values) and records until every coin rests. Current values (from Tune → Copy): `{"hz":240,"gravity":4.4,"friction":1.1,"frictionStatic":2.3,"restitution":0.05,"floorFriction":1.45,"kickUp":3,"kickSide":0.75,"kickSpin":0.15,"walls":0,"shadows":0,"dropX":8,"dropY":15,"dropAngle":1.3}`. They are also stored in the JSON (`model`).
-  - **Packing**: the recording is cleaned and packed as it is written (`enc: "same1"`). A resting coin that only trembles in the solver (under 0.2 world units ≈ 0.1 CSS px, `TREMBLE` in `record-standard.js`) keeps its exact previous pose, positions are rounded to 0.1 and angles to 0.001, and a pose that repeats the previous frame is stored as `1` (`0` = coin not dropped yet). The page expands it on load. Result: about half the file size (311 KB → 167 KB of JSON) and resting coins are exactly still, so they are never redrawn.
-  - **Result**: like Standard, it starts with no coins, and the 44 drops build the stacks. The landing knocks 11 coins off their stacks, two of them off the screen. Everything rests by about 5.9 s; the UI is still done at 3.4 s (pills, Replay, `creditlimit:done`). Shadows are in whole-stack mode (`shadows: 0`).
-  - **Re-baking**: tune in Standard, tap Copy, then run `npm i matter-js@0.19.0 && node bake/record-standard.js '<copied values>' bake/baked.json` (put `TREMBLE=0.1 ` in front for less cleaning) — the page loads `bake/baked.json`, so that is all (then run `python3 tools/stamp.py` so phones fetch the new file). No checks are applied; it is exactly what Standard shows.
+- **Physics tuner**: coins are moved by a Matter.js simulation stepped on the GSAP timeline's clock, so every playback with the same model values looks identical. They are drawn with the same canvas renderer as Baked heap: every coin casts its own shadow onto the coins below it and the coins behind, recomputed only for coins that moved (resting coins that only tremble in the solver by less than a hundredth of a pixel count as still). The model values live in `MODEL`: step rate, gravity, coin and floor friction, bounce, knock strength up / sideways / spin, how far each dropped coin's starting point may be off (`dropX`, the full sideways spread, 16 = ±8 by default; `dropY`, height, 0 by default, with the start speed adjusted so it still lands on time; `dropAngle`, the largest starting tilt in degrees, 2.3 by default), edge walls, and `shadows` (1 = each coin, 0 = whole stack, which draws only the front row's shadow on the stack behind, as the tuner used to). The Tune panel overrides them for testing; a tap outside the panel closes it.
+- **Baked heap**: coin positions come from `baked/baked.json`, recorded at 60 fps offline. No physics runs on the phone.
+  - **How it was made**: `physics-tuner/record-tuner.js` runs the Physics tuner's own physics code (read from `physics-tuner.html`, same seeds, so it matches what the tuner shows with the same values) and records until every coin rests. Current values (from Tune → Copy): `{"hz":240,"gravity":4.4,"friction":1.1,"frictionStatic":2.3,"restitution":0.05,"floorFriction":1.45,"kickUp":3,"kickSide":0.75,"kickSpin":0.15,"walls":0,"shadows":0,"dropX":8,"dropY":15,"dropAngle":1.3}`. They are also stored in the JSON (`model`).
+  - **Packing**: the recording is cleaned and packed as it is written (`enc: "same1"`). A resting coin that only trembles in the solver (under 0.2 world units ≈ 0.1 CSS px, `TREMBLE` in `record-tuner.js`) keeps its exact previous pose, positions are rounded to 0.1 and angles to 0.001, and a pose that repeats the previous frame is stored as `1` (`0` = coin not dropped yet). The page expands it on load. Result: about half the file size (311 KB → 167 KB of JSON) and resting coins are exactly still, so they are never redrawn.
+  - **Result**: like the tuner, it starts with no coins, and the 44 drops build the stacks. The landing knocks 11 coins off their stacks, two of them off the screen. Everything rests by about 5.9 s; the UI is still done at 3.4 s (pills, Replay, `creditlimit:done`). Shadows are in whole-stack mode (`shadows: 0`).
+  - **Re-baking**: tune in the Physics tuner, tap Copy, then, in this folder, run `npm i matter-js@0.19.0 && node physics-tuner/record-tuner.js '<copied values>' baked/baked.json` (put `TREMBLE=0.1 ` in front for less cleaning) — the deliverable loads `baked/baked.json`, so that is all (then run `python3 tools/stamp.py` so phones fetch the new file). No checks are applied; it is exactly what the tuner shows.
   - **Drawing**: the two rows of coins are drawn on two canvases, with the twinkling stars in an SVG layer over them. There are no SVG nodes or clip paths per coin. A row is redrawn only on frames where one of its coins moved, and a shadow is recomputed only when its caster or the coin it falls on moved. On phones with 4 cores or fewer, or 4 GB of memory or less, the canvases are drawn at 2× at most. The canvases start just above the highest point any coin reaches in the recording (not at the top of the page), with their top edge on a whole screen pixel; this halves their memory.
-  - `bake/bake.js` is the earlier standalone simulation (aimed heaps, rule checks, seed search); it is kept for reference and not used for the current recording.
-- **Standard's start**: Standard begins with no coins at all; the three stacks are built only by the 44 drops (`start: 0` in `STACK`).
-- **Layout**: the number block sits a little higher and the coins a little lower than in the first versions (Standard and Baked heap match).
+  - `physics-tuner/bake.js` is the earlier standalone simulation (aimed heaps, rule checks, seed search); it is kept for reference and not used for the current recording.
+- **Start**: both begin with no coins at all; the three stacks are built only by the 44 drops (`start: 0` in `STACK`).
+- **Layout**: the number block sits a little higher and the coins a little lower than in the first versions (the tuner and Baked heap match).
 - **Expiry icon**: the clock in the expiry pill is `Icon / Pending` from the PeraSure design system in Figma (node 3426:2872). The SVG is kept as exported in `assets/icon-pending.svg` and inlined in both pages, placed as in the Figma component; its stroke is tinted with the accent blue by CSS.
-- **Layers (all versions)**: the coins are under everything else on the page (the number, the pills, Replay) and over the small twinkling stars behind them. The coin canvases reach high enough that a coin thrown up passes under the number instead of being cut off (Standard: up to the top of the page; Baked heap: up to the highest point in its recording).
+- **Layers (all versions)**: the coins are under everything else on the page (the number, the pills, Replay) and over the small twinkling stars behind them. The coin canvases reach high enough that a coin thrown up passes under the number instead of being cut off (Physics tuner: up to the top of the page; Baked heap: up to the highest point in its recording).
 
 ---
 
@@ -197,4 +205,4 @@ The count-up interpolates between whatever the two amounts are, so a ₱3,000 ra
 2. Choose A, B or C (section 2). For a native WebView, B is the most robust because it never shows the sample numbers.
 3. Listen for `creditlimit:done` if the screen should close or move on automatically (section 3).
 4. Don't edit the timing constants (section 4).
-5. Test with a link such as `index.html?old=8000&new=15000&exp=2026-12-15`, and one with no `exp`, to confirm the pill hides.
+5. Test with a link such as `baked/baked-heap.html?old=8000&new=15000&exp=2026-12-15`, and one with no `exp`, to confirm the pill hides.

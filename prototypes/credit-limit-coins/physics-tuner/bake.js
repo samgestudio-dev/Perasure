@@ -24,7 +24,7 @@ const PILE_X = 363;                              // where the heap gathers
 /* heap shape and kick: coins per foot pile / side column, placement jitter, flight time (base + per layer),
    slot assignment order, end settling (seconds, extra air friction) */
 let PROFILE = { mode: 'engine', dropJit: 26, misses: false, kick: [1, 1, 1], tail: 1, minKnocked: 10, restFrames: 30, searchDrops: 500, searchKicks: 3, dropVar: { ang: .14, av: 1.2, vx: 15, y: 24 },
-  material: { friction: .7, frictionStatic: 1.6, restitution: .04, floor: 1.2 },   // as Standard (floor .9 there)
+  material: { friction: .7, frictionStatic: 1.6, restitution: .04, floor: 1.2 },   // as the Physics tuner (floor .9 there)
   tumble: { keep: .5, inward: .6, reach0: 60, reach1: 110, maxTilt: .2, sway: 18, freq: 3.2, tau: .2, first: .16, gap: .022, leave0: .02, leaveK: .012, hopV: 260, spin: .5, lie: .1, nudgeIn: 30, nudgeOut: 10 },
   rattle: { sway: 22, freq: 3.2, tau: .2, walk: 6, loose: 3, hop: 30, hopBase: 12, hopT: .32, spin: .35, out: 38, outT: .55, settleT: .5 },
   collapse_was: 'collapse', collapse: { keep: .45, keepBack: .5, inward: .6, jit: 10, fly0: .2, flyOut: .4, flyK: .03 },
@@ -133,12 +133,12 @@ function simulate(opts) {
         for (const c of coins) { c.body.friction = 1; c.body.frictionStatic = 4; }
         gatherKick(live, kr, engine.gravity.y * 1000);
       }
-      /* 'engine' (and the live Standard demo): the landing simply knocks every coin up and sideways, more the
+      /* 'engine' (and the live Physics tuner): the landing simply knocks every coin up and sideways, more the
          higher it sits; what happens next is entirely the physics engine */
       else for (const c of live) {
         M.Sleeping.set(c.body, false);
         const p = c.body.position, h = Math.max(0, (FLOOR - p.y) / 280);
-        /* PROFILE.kick scales how hard the landing hits: [up, sideways, spin] (1 = the live Standard demo) */
+        /* PROFILE.kick scales how hard the landing hits: [up, sideways, spin] (1 = the live Physics tuner) */
         const K = PROFILE.kick || [1, 1, 1];
         M.Body.setVelocity(c.body, { x: (kr() - .5) * (60 + 420 * h * h) * K[1] / 60, y: -(420 + kr() * 260) * K[0] / 60 });
         M.Body.setAngularVelocity(c.body, (kr() - .5) * (2 + 9 * h) * K[2] / 60);

@@ -1,5 +1,5 @@
 /* Credit limit increase, Baked heap: the animation. Needs GSAP (window.gsap) and the markup in baked-heap.html;
-   the coin recording is bake/baked.json. */
+   the coin recording is baked.json (same folder). */
 (function(){
 "use strict";
 /* ============================== DATA INTERFACE ==============================
@@ -171,11 +171,11 @@ function shadowPath(pts, Z){
 
 /* ---------- baked coin motion ----------
    No physics engine runs in the browser. The coins were simulated offline with Matter.js using the same model as
-   the Standard version (240 Hz, 20 position / 14 velocity iterations, the same knock at the landing) and recorded at
+   the Physics tuner (240 Hz, 20 position / 14 velocity iterations, the same knock at the landing) and recorded at
    60 fps; here we only play the recording back, interpolating between frames. Where the coins end up is the
    engine's result. The bake keeps a run only if no coin comes to rest tilted more than 30°, the stacks stand until
    the hit, at least 10 coins are knocked off, and everything is still by the end. */
-/* the recording: bake/baked.json, loaded at start-up (see the end of this file) */
+/* the recording: baked.json, loaded at start-up (see the end of this file) */
 var BAKED = null, TOP_Y = 0, SHADOW_EACH = true;
 function useRecording(R){
   BAKED = R;
@@ -565,7 +565,7 @@ window.PeraCreditLimit = {
 window.__tl = function(){ return tl; };
 /* start as soon as the recording is in (the page preloads it while GSAP loads); play(data) calls made before then wait.
    A page that already has the recording can set window.CREDIT_LIMIT_BAKED instead. */
-var RECORDING = document.currentScript && document.currentScript.getAttribute('data-recording') || 'bake/baked.json';
+var RECORDING = document.currentScript && document.currentScript.getAttribute('data-recording') || 'baked.json';
 (window.CREDIT_LIMIT_BAKED ? Promise.resolve(window.CREDIT_LIMIT_BAKED)
   : fetch(RECORDING).then(function(r){ if (!r.ok) throw new Error(r.status + ' ' + r.url); return r.json(); }))
   .then(function(R){ useRecording(R); boot(); })
