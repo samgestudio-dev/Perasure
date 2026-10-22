@@ -20,7 +20,7 @@ body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align
 main{box-sizing:border-box;width:100%;max-width:480px;flex:1;display:flex;flex-direction:column;align-items:center;
   padding-top:calc(env(safe-area-inset-top,0px) + 24px);padding-bottom:calc(env(safe-area-inset-bottom,0px) + 24px);
   padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px))}
-.space-top{flex:.85 1 0;min-height:16px}
+.space-top{flex:.5 1 0;min-height:16px}
 .space-mid{flex:1 1 0;min-height:calc(28px * var(--u))}
 #hero{position:relative;display:flex;flex-direction:column;align-items:center;color:var(--text);text-align:center}
 #burst{position:absolute;left:50%;top:calc(60px * var(--u));overflow:visible;pointer-events:none;transform:scale(var(--u))}
@@ -89,7 +89,7 @@ main{box-sizing:border-box;width:100%;max-width:480px;flex:1;display:flex;flex-d
   <div id="art" aria-hidden="true">
     <canvas id="cvBack"></canvas>
     <canvas id="cvFront"></canvas>
-    <svg id="artStars" viewBox="0 255 726 485" aria-hidden="true">
+    <svg id="artStars" viewBox="0 236 726 485" aria-hidden="true">
       <g class="tw" data-o="600 330" data-d="1.1"><path id="starW" d="M600 286 C603.96 318.12 611.88 326.04 644 330 611.88 333.96 603.96 341.88 600 374 596.04 341.88 588.12 333.96 556 330 588.12 326.04 596.04 318.12 600 286 Z" fill="#EEF5EF"/></g>
       <g class="tw" data-o="430 300" data-d=".8"><path id="starS1" d="M430 285 C431.35 295.95 434.05 298.65 445 300 434.05 301.35 431.35 304.05 430 315 428.65 304.05 425.95 301.35 415 300 425.95 298.65 428.65 295.95 430 285 Z" fill="#EEF5EF"/></g>
       <g class="tw" data-o="268 352" data-d=".95"><path id="starS2" d="M268 341 C268.99 349.03 270.97 351.01 279 352 270.97 352.99 268.99 354.97 268 363 267.01 354.97 265.03 352.99 257 352 265.03 351.01 267.01 349.03 268 341 Z" fill="#3FA0F0"/></g>
@@ -299,9 +299,10 @@ var M = Matter;
 /* ---------- lanes ---------- */
 var CAT = { floor:1, front:2, back:4 };
 var STACK = {
-  orange: { x:250, ground:FLOOR, start:4, lane:'front' },
-  lime:   { x:476, ground:FLOOR, start:5, lane:'front' },
-  teal:   { x:363, ground:FLOOR - Z_BACK, start:6, lane:'back' }
+  /* start: coins already standing when the animation begins (none: the stacks are built only by the drops) */
+  orange: { x:250, ground:FLOOR, start:0, lane:'front' },
+  lime:   { x:476, ground:FLOOR, start:0, lane:'front' },
+  teal:   { x:363, ground:FLOOR - Z_BACK, start:0, lane:'back' }
 };
 
 /* ---------- drops: a fixed schedule, eased out — a rush at first, then slower and slower.
@@ -414,19 +415,21 @@ function setupCoins(){
   reset();
 }
 /* the canvases cover the artwork's box and everything above it up to the top of the page (coins fall in from above and are thrown up at the landing) and the full screen width
-   (coins may spill past the edges); world units map exactly as the SVG viewBox 0 255 726 485 maps in the star layer */
+   (coins may spill past the edges); world units map exactly as the SVG viewBox (VB) maps in the star layer */
+var VB = { x:0, y:236, w:726, h:485 };   /* must match the viewBox in the markup */
+var BELOW = 30;   /* the canvases reach this far (world units) below the artwork's box: a coin's lowest edge (floor + 21) may hang into the gap above Replay */
 var VIEW = null;
 function layoutCanvas(){
   var box = $('artStars').getBoundingClientRect(), bw = box.width, bh = box.height;
   if (!bw || !bh) return;
-  var s = Math.min(bw / 726, bh / 485), ox = (bw - 726 * s) / 2, oy = (bh - 485 * s) / 2;
+  var s = Math.min(bw / VB.w, bh / VB.h), ox = (bw - VB.w * s) / 2, oy = (bh - VB.h * s) / 2;
   /* from the top of the page down to the floor: a coin thrown up passes under the number instead of being cut off */
-  var L = -box.left, T = -(box.top + (window.scrollY || 0)), W = document.documentElement.clientWidth, Hh = oy + (740 - 255) * s - T;
+  var L = -box.left, T = -(box.top + (window.scrollY || 0)), W = document.documentElement.clientWidth, Hh = oy + (VB.h + BELOW) * s - T;
   /* full sharpness on capable phones; on low-end ones (few cores or little memory) draw at 2x at most: 44% fewer
      pixels to fill every frame, and on a 3x screen the flat coins still look clean */
   var weak = (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) || (navigator.deviceMemory && navigator.deviceMemory <= 4);
   var dpr = Math.min(window.devicePixelRatio || 1, weak ? 2 : 3);
-  VIEW = { a:s * dpr, e:(ox - L) * dpr, f:(oy - 255 * s - T) * dpr, w:Math.round(W * dpr), h:Math.round(Hh * dpr) };
+  VIEW = { a:s * dpr, e:(ox - L) * dpr, f:(oy - VB.y * s - T) * dpr, w:Math.round(W * dpr), h:Math.round(Hh * dpr) };
   ['front', 'back'].forEach(function(k){
     var cv = LANES[k].cv;
     cv.style.width = W + 'px'; cv.style.height = Hh + 'px';
