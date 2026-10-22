@@ -9,6 +9,7 @@ The numbers come from the backend and change per user. **The timing never change
 | File | Coins | Use when |
 | --- | --- | --- |
 | `baked-heap.html` (Baked heap, **recommended**) | a fixed recording made offline (no physics engine shipped), drawn on canvas; every coin casts its own shadow onto the coins below and behind it; at the landing the coins are knocked up and the physics engine decides where they end up | you want the exact same, polished motion on every phone, at the lowest cost |
+| `strong-knock.html` (Strong knock) | the same player as Baked heap, playing a recording of the Standard page's own simulation with the values set in its Tune panel: 960 Hz, gravity 3.5, coin friction 1.5 / static 3, bounce 0.38, floor friction 1.5, knock ×2.6 up / ×2.7 sideways / ×1 spin, no edge walls, whole-stack shadow. The coins scatter widely and some leave the screen; they settle by about 6.1 s (the UI is still done at 3.4 s) | a much harder, bouncier landing |
 | `index.html` (Standard) | simulated live in the browser with Matter.js; at the landing the coins jump and fall where they fall. Drawn like Baked heap (two canvases, every coin casts its own shadow). Has a **Tune** button (top right) with sliders for the physics model and a shadow switch, for trying values on a phone | you want every play to be computed on the device, or you are tuning the model |
 
 > **Before shipping `index.html` (Standard), delete the tuning panel.** It is a prototype tool, marked in three places:
@@ -179,6 +180,8 @@ The count-up interpolates between whatever the two amounts are, so a ₱3,000 ra
   - **Other landings**: the earlier landing modes (`heap`, `tumble`, …) are still in the script for reference, but are not used.
   - **Where coins fall**: only onto the three stacks. All 44 drops land on them; the six that used to miss and land on the floor at the far left and right now land on their own stacks, so the count and timing are unchanged. Set `misses: true` in `PROFILE` to bring the misses back.
   - **Screen edge**: it is not a wall, so coins may spill partly off screen.
+- **Strong knock**: recorded with `bake/record-standard.js`, which runs the Standard page's own physics code (read from `index.html`, same seeds) with a set of Tune-panel values and records 60 fps until every coin rests (at most 3 s after the UI is done). Usage: `npm i matter-js@0.19.0 && node bake/record-standard.js '<values from Tune → Copy>' out.json`, then paste `out.json` into `strong-knock.html` (the `var BAKED = …;` line). The values are kept in the JSON (`model`), including `shadows` (0 = whole stack). No checks are applied: it is exactly what Standard shows with those values (one coin comes to rest tilted about 58°).
+- **Layers (all versions)**: the coins are under everything else on the page (the number, the pills, Replay). Only the small twinkling stars are drawn over the coins. The coin canvases reach up to the top of the page, so a coin thrown high passes under the number instead of being cut off.
   - `node bake/bake.js sweep` prints an accuracy / cost table for timestep and iteration settings. 960 Hz is the most accurate value worth paying for, but 240 Hz (the Standard model) is used for its looser, livelier landing.
 
 ---

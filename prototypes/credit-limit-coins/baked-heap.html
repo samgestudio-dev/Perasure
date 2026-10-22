@@ -40,6 +40,10 @@ main{box-sizing:border-box;width:100%;max-width:480px;flex:1;display:flex;flex-d
 #art>svg{grid-area:1/1;align-self:start;display:block;width:100%;height:auto;max-height:42vh;max-height:42dvh;overflow:visible}
 /* the stars loop forever: their own compositing layer, so the coins are not repainted with them */
 #artStars{will-change:transform}
+/* the coins sit under everything else on the page (the number, the pills, Replay); only the stars are drawn over them */
+#art{position:relative;z-index:0}
+#hero{z-index:1}
+#replay{position:relative;z-index:1}
 /* the coin rows are drawn on canvases sized and placed from script over the star layer's box; their margins
    cancel their size so they never change the layout */
 #art>canvas{grid-area:1/1;align-self:start;justify-self:start;display:block;width:0;height:0;pointer-events:none}
@@ -65,16 +69,16 @@ main{box-sizing:border-box;width:100%;max-width:480px;flex:1;display:flex;flex-d
 
   <div class="space-mid"></div>
   <!-- artwork in its own units; coins fall in from above the box (overflow visible).
-       Three layers stacked in one grid cell: coins behind (canvas), the twinkling stars (SVG), coins in front (canvas). -->
+       Layers stacked in one grid cell: coins behind, coins in front (canvases), then the twinkling stars (SVG) on top. -->
   <div id="art" aria-hidden="true">
     <canvas id="cvBack"></canvas>
+    <canvas id="cvFront"></canvas>
     <svg id="artStars" viewBox="0 255 726 485" aria-hidden="true">
       <g class="tw" data-o="600 330" data-d="1.1"><path id="starW" d="M600 286 C603.96 318.12 611.88 326.04 644 330 611.88 333.96 603.96 341.88 600 374 596.04 341.88 588.12 333.96 556 330 588.12 326.04 596.04 318.12 600 286 Z" fill="#EEF5EF"/></g>
       <g class="tw" data-o="430 300" data-d=".8"><path id="starS1" d="M430 285 C431.35 295.95 434.05 298.65 445 300 434.05 301.35 431.35 304.05 430 315 428.65 304.05 425.95 301.35 415 300 425.95 298.65 428.65 295.95 430 285 Z" fill="#EEF5EF"/></g>
       <g class="tw" data-o="268 352" data-d=".95"><path id="starS2" d="M268 341 C268.99 349.03 270.97 351.01 279 352 270.97 352.99 268.99 354.97 268 363 267.01 354.97 265.03 352.99 257 352 265.03 351.01 267.01 349.03 268 341 Z" fill="#3FA0F0"/></g>
       <g class="tw" data-o="118 420" data-d=".9"><path id="starC" d="M118 396 C120.16 413.52 124.48 417.84 142 420 124.48 422.16 120.16 426.48 118 444 115.84 426.48 111.52 422.16 94 420 111.52 417.84 115.84 413.52 118 396 Z" fill="#FF6B3D"/></g>
     </svg>
-    <canvas id="cvFront"></canvas>
   </div>
   <button id="replay" type="button">Replay</button>
 </main>
@@ -271,6 +275,8 @@ var BAKED = {"fps":60,"end":4.4,"done":3.4000000000000004,"kickT":2.300000000000
 var COUNT = { start:.45, dur:1.85 };
 var coins = [], front = [], back = [];
 /* a coin tilted more than this has no horizontal top face to catch shadows on (only ever true mid-flight) */
+/* shadows: each coin (default), or 'whole stack' (only the front row's shadow on the stack behind) when the bake says so */
+var SHADOW_EACH = !(BAKED.model && BAKED.model.shadows === 0);
 var FACE_TILT = Q.get('tiltguard') === '0' ? 9 : .55;
 function tilt(a){ a = Math.abs(Math.atan2(Math.sin(a), Math.cos(a))); return Math.min(a, Math.PI - a); }
 var LANES = {};
@@ -286,14 +292,15 @@ function setupCoins(){
   LANES.front = { cv:$('cvFront'), list:front }; LANES.back = { cv:$('cvBack'), list:back };
   LANES.front.ctx = LANES.front.cv.getContext('2d'); LANES.back.ctx = LANES.back.cv.getContext('2d');
 }
-/* the canvases cover the artwork's box plus room above it (coins fall in from above and are thrown up at the landing) and the full screen width
+/* the canvases cover the artwork's box and everything above it up to the top of the page (coins fall in from above and are thrown up at the landing) and the full screen width
    (coins may spill past the edges); world units map exactly as the SVG viewBox 0 255 726 485 maps in the star layer */
 var VIEW = null;
 function layoutCanvas(){
   var box = $('artStars').getBoundingClientRect(), bw = box.width, bh = box.height;
   if (!bw || !bh) return;
   var s = Math.min(bw / 726, bh / 485), ox = (bw - 726 * s) / 2, oy = (bh - 485 * s) / 2;
-  var L = -box.left, T = oy + (20 - 255) * s, W = document.documentElement.clientWidth, Hh = oy + (740 - 255) * s - T;
+  /* from the top of the page down to the floor: a coin thrown up passes under the number instead of being cut off */
+  var L = -box.left, T = -(box.top + (window.scrollY || 0)), W = document.documentElement.clientWidth, Hh = oy + (740 - 255) * s - T;
   /* full sharpness on capable phones; on low-end ones (few cores or little memory) draw at 2x at most: 44% fewer
      pixels to fill every frame, and on a 3x screen the flat coins still look clean */
   var weak = (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) || (navigator.deviceMemory && navigator.deviceMemory <= 4);
@@ -418,7 +425,7 @@ function render(t){
     list.forEach(function(c){
       if (!c.on || !touched(c, moved, castsTop, c.topFrom)) return;
       var from = [], top = [];
-      if (tilt(c.a) <= FACE_TILT) {
+      if (SHADOW_EACH && tilt(c.a) <= FACE_TILT) {
         var yP = c.y - H / 2;
         list.forEach(function(o){
           if (!castsTop(o, c) || !overlap(shadowBoxH(o.bb, yP), c.face)) return;

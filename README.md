@@ -9,7 +9,7 @@ Phone-first motion prototypes, served with GitHub Pages.
 
 | Demo | Variants |
 | --- | --- |
-| Credit limit increase | [Baked heap](prototypes/credit-limit-coins/baked-heap.html) (recommended) · [Standard](prototypes/credit-limit-coins/index.html) (with physics tuning panel) · [integration guide](prototypes/credit-limit-coins/README.md) |
+| Credit limit increase | [Baked heap](prototypes/credit-limit-coins/baked-heap.html) (recommended) · [Strong knock](prototypes/credit-limit-coins/strong-knock.html) · [Standard](prototypes/credit-limit-coins/index.html) (with physics tuning panel) · [integration guide](prototypes/credit-limit-coins/README.md) |
 | Withdraw fund flow | [Standard](prototypes/withdraw-fund-flow/index.html) (no gradient blur) · [With gradient blur](prototypes/withdraw-fund-flow/with-blur.html) |
 | Order submit | [Standard](prototypes/order-submit/index.html) |
 | OTP sheet morph | [Standard](prototypes/otp-sheet-morph/index.html) |
