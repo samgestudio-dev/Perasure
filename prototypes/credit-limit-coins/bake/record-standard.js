@@ -1,6 +1,6 @@
 /* Bake the Standard page's own live simulation (same code, same seeds) with a given set of model values.
    node record-standard.js '<Tune panel values, from its Copy button>' out.json [sleep=1]
-   then paste out.json into strong-knock.html (the var BAKED = ...; line). */
+   then paste out.json into baked-heap.html (the var BAKED = ...; line). */
 const fs = require('fs');
 const D = __dirname + '/';
 /* the physics code is read from the Standard page (index.html next to this folder) */
