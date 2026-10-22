@@ -172,6 +172,7 @@ The count-up interpolates between whatever the two amounts are, so a ₱3,000 ra
   - `bake/bake.js` is the earlier standalone simulation (aimed heaps, rule checks, seed search); it is kept for reference and not used for the current recording.
 - **Standard's start**: Standard begins with no coins at all; the three stacks are built only by the 44 drops (`start: 0` in `STACK`).
 - **Layout**: the number block sits a little higher and the coins a little lower than in the first versions (Standard and Baked heap match).
+- **Expiry icon**: the clock in the expiry pill is `Icon / Pending` from the PeraSure design system in Figma (node 3426:2872). The SVG is kept as exported in `assets/icon-pending.svg` and inlined in both pages, placed as in the Figma component; its stroke is tinted with the accent blue by CSS.
 - **Layers (all versions)**: the coins are under everything else on the page (the number, the pills, Replay) and over the small twinkling stars behind them. The coin canvases reach up to the top of the page, so a coin thrown high passes under the number instead of being cut off.
 
 ---
