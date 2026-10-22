@@ -479,6 +479,10 @@ function burst(tl, at){
   var SP = 'M0 -10 C.9 -2.7 2.7 -.9 10 0 2.7 .9 .9 2.7 0 10 -.9 2.7 -2.7 .9 -10 0 -2.7 -.9 -.9 -2.7 0 -10 Z';
   var STARS = [[-200, -26, WHITE, 1.3], [-150, 50, BLUE, .8], [-60, -70, WHITE, .7], [70, -72, BLUE, .9], [190, -30, WHITE, 1.1], [160, 52, WHITE, .75], [20, 74, BLUE, .65]];
   var sparks = STARS.map(function(p){ return el('path', { d:SP, fill:p[2] }, b); });
+  /* hidden from the moment they exist: the timeline only shows them at the landing (before it first renders,
+     a fresh ring and a sparkle would otherwise sit visible over the amount) */
+  gsap.set(rings.concat(rays), { opacity:0 });
+  gsap.set(sparks, { opacity:0, x:0, y:0, scale:0 });
 
   tl.set(rings.concat(rays), { opacity:0 }, 0);
   tl.set(sparks, { opacity:0, x:0, y:0, scale:0 }, 0);
