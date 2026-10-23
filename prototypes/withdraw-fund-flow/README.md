@@ -15,6 +15,7 @@ or `python3 -m http.server` in the repo): the page code is fetched, so opening t
 | `boot.js` | start-up: points the page at its files, loads `withdraw.js`, starts the runtime |
 | `runtime/dc-runtime.js` | the Claude Design runtime that renders the `<x-dc>` markup with the page code |
 | `assets/` | PeraSure and Maya logos; the card's glow, info icon and legend dots (from Figma) |
+| `intro.js`, `intro.css` | the Credit limit intro (below): plays the Credit limit increase deliverable first, then hands its amount to the card |
 | `tune.js`, `tune.css` | **prototype only** — the Tune panel; delete them and their two lines in `index.html` for production |
 | `with-blur.html` | old link only: forwards to `index.html?blur=1` |
 
@@ -34,9 +35,26 @@ bar, then the frosted Withdraw pill with the glow under it. The bar is the total
 
 Data: `availableAmount`, `totalBalance` (total credit), `temporaryAmount` (temporary credit left), `temporaryValidTill` in the page's `data-props`.
 
+## Credit limit intro (on by default)
+
+The page opens with the Credit limit increase animation full screen — the deliverable itself,
+`../credit-limit-coins/baked/baked-heap.html`, loaded in a frame (not a copy) by `intro.js` / `intro.css`. Its numbers come from
+the card: the amount goes up from (available − temporary) to the available amount, +temporary, valid until Nov 20 2026
+(₱30,000 → ₱40,000 by default). 3 s after it ends (`creditlimit:done`), it leaves:
+
+- the amount carries over: it leaves the Credit limit screen and flies, shrinking, into the card's "Available amount" — one
+  element the whole way (a copy of the card's amount starts at the big number's place and size and lands exactly on it; the
+  decimals fade in on the way);
+- around it the Credit limit screen recedes into a rounded card and fades, the home settles from a slight zoom, and its cards
+  rise in one after another, then the tab bar (about 0.8 s, all on the compositor);
+- a tap after the animation has ended skips the rest of the 3 s.
+
+While the intro plays, the home's runtime does not start (`boot.js` waits for it), so nothing competes with the coins; the home
+is built during the 3 s hold. Afterwards the frame is removed. Turn it off in Tune (or `?intro=0`).
+
 ## Tune (bottom left, home screen only)
 
-Gradient blur on/off (the progressive backdrop-blur bands on the header and bottom bars; before, this was a separate
+Credit limit intro on/off, gradient blur on/off (the progressive backdrop-blur bands on the header and bottom bars; before, this was a separate
 "With gradient blur" page), the card's available amount / total credit / temporary credit left, and the motion feel
 (Smooth / Snappy / Gentle). A change is saved on the phone and reloads the page with it. Links can set them too:
-`?blur=1`, `?available=45000`, `?total=50000`, `?temporary=10000`.
+`?intro=0`, `?blur=1`, `?available=45000`, `?total=50000`, `?temporary=10000`.

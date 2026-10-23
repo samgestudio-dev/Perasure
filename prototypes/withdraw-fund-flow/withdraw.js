@@ -724,7 +724,7 @@ class Component extends DCLogic {
           React.createElement('div', { key:'amt', style:{ flex:'1 1 auto', minWidth:0, display:'flex', flexDirection:'column', gap:2, whiteSpace:'nowrap' } }, [
             this.sp('Available amount', Object.assign({ fontFamily:'Inter, sans-serif', fontWeight:600, fontSize:11, lineHeight:'14px' }, dim), { key:'a' }),
             /* Satoshi Bold; ₱ falls back to Inter, as in the app */
-            React.createElement('div', { key:'b', style:{ display:'flex', flexDirection:'row', alignItems:'baseline', color:'#ffffff', fontFamily:'Satoshi, Inter, sans-serif', fontWeight:700, lineHeight:1 } }, [
+            React.createElement('div', { key:'b', 'data-wd-amount':'1', style:{ display:'flex', flexDirection:'row', alignItems:'baseline', color:'#ffffff', fontFamily:'Satoshi, Inter, sans-serif', fontWeight:700, lineHeight:1 } }, [
               this.sp(availStr[0].charAt(0), { fontSize:36, lineHeight:1, letterSpacing:'0.72px' }, { key:'p' }),
               this.sp(availStr[0].slice(1), { fontSize:36, lineHeight:1, letterSpacing:'1.08px' }, { key:'x' }),
               this.sp('.' + availStr[1], { fontSize:16, lineHeight:1, letterSpacing:'0.48px' }, { key:'y' })
