@@ -421,24 +421,28 @@ function burst(tl, at){
     duration:.5, ease:'power2.in', stagger:.025 }, at + .82);
 }
 
-/* ---------- shockwave: a ring of compressed air that bends light, like a lens / gravitational lensing ----------
-   Nothing is drawn on top: the whole screen (number, pills, stars, coins) is refracted through a travelling ring.
-   How: while the wave is on screen (under a second), <main> gets an SVG displacement filter. Its map is one small
-   image made once (a ring whose red/green channels push pixels along the radius: out on one side of the ring's crest,
-   in on the other — the slope of a glass torus); each frame only moves/resizes that image and sets the strength, so
-   nothing is regenerated. On capable phones the red, green and blue channels are bent by slightly different amounts
-   (a little colour fringing at the edges, as glass does — only the scene's own colours, nothing added).
-   Without the filter (before and after) the page renders as usual. ?shock=0 turns it off, ?shock=1.5 makes it stronger. */
+/* ---------- shockwave: an expanding bubble of compressed air that refracts the screen like a glass ball ----------
+   Nothing is drawn on top: the whole screen (number, pills, stars, coins) is seen through a bubble that grows out of
+   the number. Inside, the picture is magnified; towards the bubble's edge it is pulled in harder and harder, so near
+   the edge it is squeezed into a band that repeats what is inside (as at the rim of a glass ball), and the edge is a
+   sharp seam against the undisturbed picture outside; just outside, a thin band of compressed air pushes outwards.
+   How: while the wave is on screen (about a second), <main> gets an SVG displacement filter. Its map is one image
+   made once (red/green = where each pixel samples from, along the radius); each frame only moves/resizes that image
+   and sets the strength. On capable phones the red, green and blue channels are bent slightly differently (a glass
+   fringe from the scene's own colours; nothing is added). ?shock=0 turns it off, ?shock=1.5 makes it stronger. */
 var WAVE = { r:0, s:0 }, shock = null;
 var SHOCK_GAIN = Q.has('shock') ? Math.max(0, parseFloat(Q.get('shock')) || 0) : 1;
-var SHOCK_RING = .78, SHOCK_BAND = .15;   /* the crest's radius and the ring's width, as shares of the map's half-size */
+var SHOCK_EDGE = .82;     /* the bubble's edge, as a share of the map's half-size (the rest is the outer air band) */
 function shockMap(){
-  var N = 256, cv = document.createElement('canvas'); cv.width = cv.height = N;
-  var c = cv.getContext('2d'), img = c.createImageData(N, N), d = img.data;
+  var N = 384, cv = document.createElement('canvas'); cv.width = cv.height = N;
+  var c = cv.getContext('2d'), img = c.createImageData(N, N), d = img.data, E = .16, K = 1 / Math.sqrt(E);
   for (var y = 0; y < N; y++) for (var x = 0; x < N; x++) {
-    var dx = (x + .5) / N * 2 - 1, dy = (y + .5) / N * 2 - 1, r = Math.sqrt(dx * dx + dy * dy) || 1e-6;
-    /* slope of a glass ring: crest at SHOCK_RING, faded to nothing before the image's edge (no seam) */
-    var t = (r - SHOCK_RING) / SHOCK_BAND, f = 2.3316 * t * Math.exp(-t * t) * Math.max(0, Math.min(1, (1 - r) / .1));
+    var dx = (x + .5) / N * 2 - 1, dy = (y + .5) / N * 2 - 1, r = Math.sqrt(dx * dx + dy * dy) || 1e-6, q = r / SHOCK_EDGE, f;
+    var t = (q - 1) / .07, out = .3 * Math.exp(-t * t);                       /* compressed air just outside: push out */
+    var inn = -Math.min(q, 1) / Math.sqrt(1 - Math.min(q, 1) * Math.min(q, 1) + E) / K;   /* glass ball: pull towards the centre, harder near the edge */
+    var w = Math.max(0, Math.min(1, (q - .985) / .03));                       /* the seam, over a few pixels (no jagged edge) */
+    f = inn * (1 - w) + out * w;
+    f *= Math.max(0, Math.min(1, (1 - r) / .05));                             /* nothing at the image's own edge */
     var i = (y * N + x) * 4;
     d[i] = Math.round(128 + 127 * f * dx / r); d[i + 1] = Math.round(128 + 127 * f * dy / r); d[i + 2] = 128; d[i + 3] = 255;
   }
@@ -481,21 +485,22 @@ function shockFrame(){
              u:parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--u')) || 1 };
     S.on = true; main.style.filter = 'url(#shock)';
   }
-  var R = WAVE.r * S.at.u, half = R / SHOCK_RING;
+  var R = WAVE.r * S.at.u, half = R / SHOCK_EDGE;
   S.im.setAttribute('x', (S.at.x - half).toFixed(1)); S.im.setAttribute('y', (S.at.y - half).toFixed(1));
   S.im.setAttribute('width', (2 * half).toFixed(1)); S.im.setAttribute('height', (2 * half).toFixed(1));
-  /* bend (px): up to ~50, but at most about half the ring's width — beyond that the picture folds over itself and
-     tears instead of bending like glass. A small ring therefore bends gently, a grown one strongly, while the wave fades */
-  var band = SHOCK_BAND * half, bend = Math.min(50 * S.at.u, .5 * band) * WAVE.s * SHOCK_GAIN, k = 2 * bend;
+  /* bend at the edge (px): grows with the bubble (about a third of its radius, so the inside is visibly magnified)
+     up to ~90 px, while the wave fades */
+  var bend = Math.min(.35 * R, 90 * S.at.u) * WAVE.s * SHOCK_GAIN, k = 2 * bend;
   S.maps.forEach(function(m, i){ m.setAttribute('scale', (k * S.split[i]).toFixed(2)); });
 }
 function shockwave(tl, at){
   WAVE.r = WAVE.s = 0;
   tl.set(WAVE, { r:0, s:0 }, 0);
-  /* from the number to past the screen corners; fast at first, so it reaches the coins as they are knocked up */
-  tl.fromTo(WAVE, { r:50 }, { r:820, duration:.95, ease:'power2.out', immediateRender:false }, at);
-  tl.fromTo(WAVE, { s:0 }, { s:1, duration:.06, ease:'power1.out', immediateRender:false }, at);
-  tl.to(WAVE, { s:0, duration:.85, ease:'power1.in' }, at + .1);
+  /* the bubble grows out of the number past the screen's corners: fast at first, so it reaches the coins as they are
+     knocked up, then the bend fades while it is still sweeping out */
+  tl.fromTo(WAVE, { r:20 }, { r:1000, duration:1, ease:'power2.out', immediateRender:false }, at);
+  tl.fromTo(WAVE, { s:0 }, { s:1, duration:.05, ease:'power1.out', immediateRender:false }, at);
+  tl.to(WAVE, { s:0, duration:.7, ease:'power2.in' }, at + .2);
 }
 
 /* ---------- stars behind the coins keep twinkling: breathe in scale, tilt a little, each on its own beat ----------
