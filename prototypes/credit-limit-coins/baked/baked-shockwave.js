@@ -1,6 +1,6 @@
 /* Credit limit increase, Baked heap + shockwave (variant): the animation. Needs GSAP (window.gsap) and the markup in
    baked-shockwave.html; the coin recording is baked.json (same folder). Same as baked-heap.js plus the glass-bubble
-   shockwave at strength 1.5, and with no automatic downgrades for low-end phones: every phone draws at full screen
+   shockwave, and with no automatic downgrades for low-end phones: every phone draws at full screen
    sharpness and gets the full effect (only the phone's "Reduce motion" setting still turns the animation off). */
 (function(){
 "use strict";
@@ -429,16 +429,31 @@ function burst(tl, at){
    How: while the wave is on screen (about a second), <main> gets an SVG displacement filter. Its map is one image
    made once (red/green = where each pixel samples from, along the radius); each frame only moves/resizes that image
    and sets the strength. The red, green and blue channels are bent slightly differently (a glass fringe from the
-   scene's own colours; nothing is added). Strength 1.5 by default; ?shock=<number> overrides it (?shock=0 = off). */
+   scene's own colours; nothing is added). Strength 1 by default; ?shock=<number> overrides it (?shock=0 = off). */
 var WAVE = { r:0, s:0 }, shock = null;
-var SHOCK_GAIN = Q.has('shock') ? Math.max(0, parseFloat(Q.get('shock')) || 0) : 1.5;   /* this variant: 1.5 by default */
+/* the shockwave's settings (the Tune panel changes SW; SW_DEFAULT is what ships) */
+var SW_DEFAULT = {
+  strength:1,        /* overall bend (×) */
+  sweep:1.35,        /* s: time for the bubble to grow past the screen */
+  reach:1000,        /* design units: the bubble's final radius */
+  bendShare:.35,     /* bend at the edge, as a share of the bubble's radius (how magnified the inside looks) */
+  bendMax:90,        /* design units: the most the edge may bend */
+  edge:.16,          /* edge softness: smaller = harder squeeze and sharper repeated band at the rim */
+  air:.3,            /* push of the compressed-air band just outside the edge */
+  fringe:2.5,        /* % difference in bend between red, green and blue (glass colour fringe); 0 = none */
+  hold:.27,          /* s after the landing before the bend starts to fade */
+  fade:.95,          /* s for the bend to fade out */
+  delay:0            /* s: the wave starts this long after the landing */
+};
+var SW = Object.assign({}, SW_DEFAULT);
+if (Q.has('shock')) SW.strength = Math.max(0, parseFloat(Q.get('shock')) || 0);   /* ?shock=<number>: strength (0 = off) */
 var SHOCK_EDGE = .82;     /* the bubble's edge, as a share of the map's half-size (the rest is the outer air band) */
 function shockMap(){
   var N = 384, cv = document.createElement('canvas'); cv.width = cv.height = N;
-  var c = cv.getContext('2d'), img = c.createImageData(N, N), d = img.data, E = .16, K = 1 / Math.sqrt(E);
+  var c = cv.getContext('2d'), img = c.createImageData(N, N), d = img.data, E = Math.max(.01, SW.edge), K = 1 / Math.sqrt(E);
   for (var y = 0; y < N; y++) for (var x = 0; x < N; x++) {
     var dx = (x + .5) / N * 2 - 1, dy = (y + .5) / N * 2 - 1, r = Math.sqrt(dx * dx + dy * dy) || 1e-6, q = r / SHOCK_EDGE, f;
-    var t = (q - 1) / .07, out = .3 * Math.exp(-t * t);                       /* compressed air just outside: push out */
+    var t = (q - 1) / .07, out = SW.air * Math.exp(-t * t);                       /* compressed air just outside: push out */
     var inn = -Math.min(q, 1) / Math.sqrt(1 - Math.min(q, 1) * Math.min(q, 1) + E) / K;   /* glass ball: pull towards the centre, harder near the edge */
     var w = Math.max(0, Math.min(1, (q - .985) / .03));                       /* the seam, over a few pixels (no jagged edge) */
     f = inn * (1 - w) + out * w;
@@ -451,7 +466,6 @@ function shockMap(){
 }
 function shockInit(){
   if (shock !== null) return shock;
-  if (!SHOCK_GAIN) return (shock = false);
   var svg = el('svg', { width:0, height:0, 'aria-hidden':'true', style:'position:absolute;width:0;height:0;overflow:hidden' }, document.body);
   var f = el('filter', { id:'shock', x:0, y:0, width:'100%', height:'100%', 'color-interpolation-filters':'sRGB' }, el('defs', {}, svg));
   el('feFlood', { 'flood-color':'#808080', result:'n' }, f);
@@ -461,18 +475,19 @@ function shockInit(){
   var maps = [];
   function disp(res){ var m = el('feDisplacementMap', { in:'SourceGraphic', in2:'map', scale:0, xChannelSelector:'R', yChannelSelector:'G', result:res }, f); maps.push(m); return m; }
   {
-    /* colour fringing on every phone: each channel bent a little differently (the page is opaque, so the channels add back up) */
+    /* colour fringing on every phone: each channel bent a little differently (the page is opaque, so the channels add back
+       up). Each keeps its alpha, so whatever is pulled in from beyond the page's edge stays transparent (not black). */
     disp('dr'); disp('dg'); disp('db');
-    el('feColorMatrix', { in:'dr', type:'matrix', values:'1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0 1', result:'r' }, f);
-    el('feColorMatrix', { in:'dg', type:'matrix', values:'0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 0 1', result:'g' }, f);
-    el('feColorMatrix', { in:'db', type:'matrix', values:'0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 0 1', result:'b' }, f);
+    el('feColorMatrix', { in:'dr', type:'matrix', values:'1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0', result:'r' }, f);
+    el('feColorMatrix', { in:'dg', type:'matrix', values:'0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0', result:'g' }, f);
+    el('feColorMatrix', { in:'db', type:'matrix', values:'0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0', result:'b' }, f);
     el('feComposite', { in:'r', in2:'g', operator:'arithmetic', k1:0, k2:1, k3:1, k4:0, result:'rg' }, f);
     el('feComposite', { in:'rg', in2:'b', operator:'arithmetic', k1:0, k2:1, k3:1, k4:0 }, f);
   }
-  return (shock = { im:im, maps:maps, split:[1.07, 1, .93], on:false, at:null });
+  return (shock = { im:im, maps:maps, mapKey:SW.edge + '/' + SW.air, on:false, at:null });
 }
 function shockFrame(){
-  var live = WAVE.s > .01 && WAVE.r > 0;
+  var live = WAVE.s > .01 && WAVE.r > 0 && SW.strength > 0;
   var S = shockInit(); if (!S) return;
   var main = document.querySelector('main');
   if (!live) { if (S.on) { S.on = false; main.style.filter = ''; } return; }
@@ -488,17 +503,22 @@ function shockFrame(){
   S.im.setAttribute('width', (2 * half).toFixed(1)); S.im.setAttribute('height', (2 * half).toFixed(1));
   /* bend at the edge (px): grows with the bubble (about a third of its radius, so the inside is visibly magnified)
      up to ~90 px, while the wave fades */
-  var bend = Math.min(.35 * R, 90 * S.at.u) * WAVE.s * SHOCK_GAIN, k = 2 * bend;
-  S.maps.forEach(function(m, i){ m.setAttribute('scale', (k * S.split[i]).toFixed(2)); });
+  var bend = Math.min(SW.bendShare * R, SW.bendMax * S.at.u) * WAVE.s * SW.strength, k = 2 * bend, fr = SW.fringe / 100;
+  var split = [1 + fr, 1, 1 - fr];
+  S.maps.forEach(function(m, i){ m.setAttribute('scale', (k * split[i]).toFixed(2)); });
 }
 function shockwave(tl, at){
   WAVE.r = WAVE.s = 0;
   tl.set(WAVE, { r:0, s:0 }, 0);
+  if (!SW.strength) return;
+  /* the edge shape changed in the Tune panel: make the map again */
+  if (shock && shock.mapKey !== SW.edge + '/' + SW.air) { var u = shockMap(); shock.im.setAttribute('href', u); shock.im.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', u); shock.mapKey = SW.edge + '/' + SW.air; }
+  at += SW.delay;
   /* the bubble grows out of the number past the screen's corners: fast at first, so it reaches the coins as they are
      knocked up, then the bend fades while it is still sweeping out */
-  tl.fromTo(WAVE, { r:20 }, { r:1000, duration:1, ease:'power2.out', immediateRender:false }, at);
+  tl.fromTo(WAVE, { r:20 }, { r:SW.reach, duration:SW.sweep, ease:'power2.out', immediateRender:false }, at);
   tl.fromTo(WAVE, { s:0 }, { s:1, duration:.05, ease:'power1.out', immediateRender:false }, at);
-  tl.to(WAVE, { s:0, duration:.7, ease:'power2.in' }, at + .2);
+  tl.to(WAVE, { s:0, duration:SW.fade, ease:'power2.in' }, at + SW.hold);
 }
 
 /* ---------- stars behind the coins keep twinkling: breathe in scale, tilt a little, each on its own beat ----------
@@ -646,6 +666,72 @@ window.PeraCreditLimit = {
   getData:function(){ return Object.assign({}, CONFIG); }
 };
 window.__tl = function(){ return tl; };
+
+/* ==== SHOCKWAVE TUNE PANEL (prototype only: delete this block, the #tune markup and its styles for production) ====
+   Sliders for the shockwave only. Releasing a slider replays with the new values; the values are kept on this phone;
+   Copy gives them as JSON (to write into SW_DEFAULT). ?shock=<number> in the link still sets the strength. */
+(function(){
+  var KEY = 'perasure.creditLimit.shockTune';
+  var ROWS = [
+    ['strength', 'Strength', 0, 3, .05, function(v){ return '×' + (+v).toFixed(2); }],
+    ['sweep', 'Speed: time to sweep the screen', .4, 3, .05, function(v){ return (+v).toFixed(2) + ' s'; }],
+    ['delay', 'Start after the landing', -.3, .5, .01, function(v){ return (+v).toFixed(2) + ' s'; }],
+    ['hold', 'Full strength for', 0, 1.5, .01, function(v){ return (+v).toFixed(2) + ' s'; }],
+    ['fade', 'Fade out over', .1, 2.5, .05, function(v){ return (+v).toFixed(2) + ' s'; }],
+    ['reach', 'Final size (radius)', 300, 1600, 10],
+    ['bendShare', 'Magnification inside', .05, .7, .01, function(v){ return Math.round(v * 100) + '%'; }],
+    ['bendMax', 'Max bend at the edge', 10, 250, 5],
+    ['edge', 'Edge softness', .02, .5, .01, function(v){ return (+v).toFixed(2); }],
+    ['air', 'Air band outside the edge', 0, 1, .05, function(v){ return (+v).toFixed(2); }],
+    ['fringe', 'Colour fringe', 0, 10, .5, function(v){ return (+v).toFixed(1) + '%'; }]
+  ];
+  try {
+    var saved = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (saved) Object.keys(SW_DEFAULT).forEach(function(k){ if (typeof saved[k] === 'number' && !(k === 'strength' && Q.has('shock'))) SW[k] = saved[k]; });
+  } catch (e) {}
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(SW)); } catch (e) {} }
+  /* replay; if the panel is open it steps aside until the wave has passed, so the replay can be seen, then comes back */
+  var peekTimer = 0;
+  function replayNow(){
+    if (!booted) return;
+    fresh = false; start();
+    if (!panel.classList.contains('on')) return;
+    panel.classList.add('peek'); clearTimeout(peekTimer);
+    var until = COUNT.start + COUNT.dur + Math.max(0, SW.delay) + Math.max(SW.sweep, SW.hold + SW.fade) + .3;
+    peekTimer = setTimeout(function(){ panel.classList.remove('peek'); }, until * 1000 / SPEED);
+  }
+  var panel = $('tune'), rowsEl = $('tuneRows'), catcher = $('tuneCatch'), inputs = {};
+  ROWS.forEach(function(r){
+    var row = document.createElement('label'); row.className = 'row';
+    var name = document.createElement('span'); name.textContent = r[1];
+    var out = document.createElement('output');
+    var inp = document.createElement('input'); inp.type = 'range'; inp.min = r[2]; inp.max = r[3]; inp.step = r[4]; inp.value = SW[r[0]];
+    var show = function(){ var v = +inp.value; out.textContent = (r[5] ? r[5](v) : String(v)) + (v === SW_DEFAULT[r[0]] ? '' : ' •'); };
+    inp.addEventListener('input', show);
+    inp.addEventListener('change', function(){ SW[r[0]] = +inp.value; show(); save(); replayNow(); });
+    row.appendChild(name); row.appendChild(out); row.appendChild(inp); rowsEl.appendChild(row);
+    inputs[r[0]] = { inp:inp, show:show }; show();
+  });
+  function openPanel(){ panel.classList.add('on'); catcher.classList.add('on'); }
+  function closePanel(){ panel.classList.remove('on', 'peek'); catcher.classList.remove('on'); clearTimeout(peekTimer); }
+  $('tuneBtn').addEventListener('click', openPanel);
+  $('tuneClose').addEventListener('click', closePanel);
+  catcher.addEventListener('click', closePanel);                /* a tap anywhere outside the panel closes it */
+  $('tuneReplay').addEventListener('click', function(){ replayNow(); });
+  $('tuneReset').addEventListener('click', function(){
+    SW = Object.assign({}, SW_DEFAULT); save();
+    Object.keys(inputs).forEach(function(k){ inputs[k].inp.value = SW[k]; inputs[k].show(); });
+    replayNow();
+  });
+  $('tuneCopy').addEventListener('click', function(){
+    var text = JSON.stringify(SW), b = this;
+    var done = function(){ b.textContent = 'Copied'; setTimeout(function(){ b.textContent = 'Copy'; }, 1200); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function(){ prompt('Shockwave values', text); });
+    else prompt('Shockwave values', text);
+  });
+})();
+/* ==== END SHOCKWAVE TUNE PANEL ==== */
+
 /* start as soon as the recording is in (the page preloads it while GSAP loads); play(data) calls made before then wait.
    A page that already has the recording can set window.CREDIT_LIMIT_BAKED instead. */
 var RECORDING = document.currentScript && document.currentScript.getAttribute('data-recording') || 'baked.json';

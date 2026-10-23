@@ -6,13 +6,35 @@
 <title>Credit limit coin heap + shockwave</title>
 <meta name="description" content="PeraSure motion demo, Baked heap variant with a screen-distorting shockwave: when the amount lands, a glass-like bubble of compressed air grows out of it and refracts the whole screen.">
 <!-- shared environment: the app's fonts and GSAP from the repo; this prototype's own files next to it -->
-<link rel="preload" href="baked.json?v=202610230329" as="fetch" crossorigin>
+<link rel="preload" href="baked.json?v=202610230335" as="fetch" crossorigin>
 <link rel="preload" href="../../../assets/fonts/satoshi-700.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../../../assets/fonts/hanken-grotesk-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
-<link rel="stylesheet" href="baked-heap.css?v=202610230329">
+<link rel="stylesheet" href="baked-heap.css?v=202610230335">
 <!-- the shockwave filter bends <main> as one opaque picture -->
-<style>main{background:var(--bg)}</style>
+<style>main{background:var(--bg)}
+/* ==== SHOCKWAVE TUNE PANEL (prototype only: delete these styles, the #tune markup and the panel script for production) ==== */
+#tuneBtn{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:12px;z-index:5;border:0;border-radius:999px;padding:7px 12px;
+  background:var(--chip);color:var(--text);font:600 13px/1.2 var(--ps-font-text);touch-action:manipulation}
+#tune{position:fixed;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);z-index:7;max-height:62vh;overflow:auto;
+  -webkit-overflow-scrolling:touch;background:#16212C;border:1px solid #26333F;border-radius:16px;padding:12px 14px 14px;color:var(--text);
+  font:500 13px/1.3 var(--ps-font-text);display:none;box-shadow:0 10px 40px rgba(0,0,0,.45)}
+#tune.on{display:block}
+/* while a replay plays, the panel steps aside (still open; it comes back when the wave has passed) */
+#tune.peek{visibility:hidden}
+/* tap-outside catcher: no background (iOS tints its bars from coloured fixed layers), not displayed while closed */
+#tuneCatch{position:fixed;inset:0;z-index:6;display:none}
+#tuneCatch.on{display:block}
+#tune .hd{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+#tune .hd b{flex:1;font-weight:700;font-size:14px}
+#tune button{border:0;border-radius:999px;padding:6px 11px;background:#26333F;color:var(--text);font-family:inherit;font-weight:600;font-size:12px;line-height:1.2;touch-action:manipulation}
+#tune .row{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;margin:9px 0}
+#tune .row span{color:var(--muted)}
+#tune .row output{font-variant-numeric:tabular-nums;color:var(--text)}
+#tune .row input[type=range]{grid-column:1 / span 2;width:100%;margin:2px 0 0;accent-color:var(--accent);touch-action:pan-y}
+#tune .note{color:var(--muted);font-size:12px;margin-top:6px}
+/* ==== END SHOCKWAVE TUNE PANEL ==== */
+</style>
 </head>
 <body>
 <main>
@@ -52,7 +74,17 @@
   <button id="replay" type="button">Replay</button>
 </main>
 
+<!-- ==== SHOCKWAVE TUNE PANEL (prototype only: delete for production) ==== -->
+<button id="tuneBtn" type="button">Tune</button>
+<div id="tuneCatch"></div>
+<div id="tune" role="dialog" aria-label="Shockwave">
+  <div class="hd"><b>Shockwave</b><button id="tuneReplay" type="button">Replay</button><button id="tuneReset" type="button">Reset</button><button id="tuneCopy" type="button">Copy</button><button id="tuneClose" type="button">Close</button></div>
+  <div id="tuneRows"></div>
+  <div class="note">Releasing a slider replays with the new values; the panel steps aside until the wave has passed. A dot marks a value that differs from the default. The values are kept on this phone.</div>
+</div>
+<!-- ==== END SHOCKWAVE TUNE PANEL ==== -->
+
 <script src="../../../vendor/gsap@3.15.0/gsap.min.js"></script>
-<script src="baked-shockwave.js?v=202610230329" data-recording="baked.json?v=202610230329"></script>
+<script src="baked-shockwave.js?v=202610230335" data-recording="baked.json?v=202610230335"></script>
 </body>
 </html>
