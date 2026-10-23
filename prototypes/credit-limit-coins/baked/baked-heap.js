@@ -421,88 +421,6 @@ function burst(tl, at){
     duration:.5, ease:'power2.in', stagger:.025 }, at + .82);
 }
 
-/* ---------- shockwave: an expanding bubble of compressed air that refracts the screen like a glass ball ----------
-   Nothing is drawn on top: the whole screen (number, pills, stars, coins) is seen through a bubble that grows out of
-   the number. Inside, the picture is magnified; towards the bubble's edge it is pulled in harder and harder, so near
-   the edge it is squeezed into a band that repeats what is inside (as at the rim of a glass ball), and the edge is a
-   sharp seam against the undisturbed picture outside; just outside, a thin band of compressed air pushes outwards.
-   How: while the wave is on screen (about a second), <main> gets an SVG displacement filter. Its map is one image
-   made once (red/green = where each pixel samples from, along the radius); each frame only moves/resizes that image
-   and sets the strength. On capable phones the red, green and blue channels are bent slightly differently (a glass
-   fringe from the scene's own colours; nothing is added). ?shock=0 turns it off, ?shock=1.5 makes it stronger. */
-var WAVE = { r:0, s:0 }, shock = null;
-var SHOCK_GAIN = Q.has('shock') ? Math.max(0, parseFloat(Q.get('shock')) || 0) : 1;
-var SHOCK_EDGE = .82;     /* the bubble's edge, as a share of the map's half-size (the rest is the outer air band) */
-function shockMap(){
-  var N = 384, cv = document.createElement('canvas'); cv.width = cv.height = N;
-  var c = cv.getContext('2d'), img = c.createImageData(N, N), d = img.data, E = .16, K = 1 / Math.sqrt(E);
-  for (var y = 0; y < N; y++) for (var x = 0; x < N; x++) {
-    var dx = (x + .5) / N * 2 - 1, dy = (y + .5) / N * 2 - 1, r = Math.sqrt(dx * dx + dy * dy) || 1e-6, q = r / SHOCK_EDGE, f;
-    var t = (q - 1) / .07, out = .3 * Math.exp(-t * t);                       /* compressed air just outside: push out */
-    var inn = -Math.min(q, 1) / Math.sqrt(1 - Math.min(q, 1) * Math.min(q, 1) + E) / K;   /* glass ball: pull towards the centre, harder near the edge */
-    var w = Math.max(0, Math.min(1, (q - .985) / .03));                       /* the seam, over a few pixels (no jagged edge) */
-    f = inn * (1 - w) + out * w;
-    f *= Math.max(0, Math.min(1, (1 - r) / .05));                             /* nothing at the image's own edge */
-    var i = (y * N + x) * 4;
-    d[i] = Math.round(128 + 127 * f * dx / r); d[i + 1] = Math.round(128 + 127 * f * dy / r); d[i + 2] = 128; d[i + 3] = 255;
-  }
-  c.putImageData(img, 0, 0);
-  return cv.toDataURL('image/png');
-}
-function shockInit(){
-  if (shock !== null) return shock;
-  if (!SHOCK_GAIN) return (shock = false);
-  var weak = (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) || (navigator.deviceMemory && navigator.deviceMemory <= 4);
-  var svg = el('svg', { width:0, height:0, 'aria-hidden':'true', style:'position:absolute;width:0;height:0;overflow:hidden' }, document.body);
-  var f = el('filter', { id:'shock', x:0, y:0, width:'100%', height:'100%', 'color-interpolation-filters':'sRGB' }, el('defs', {}, svg));
-  el('feFlood', { 'flood-color':'#808080', result:'n' }, f);
-  var im = el('feImage', { preserveAspectRatio:'none', x:0, y:0, width:1, height:1, result:'ring' }, f);
-  im.setAttribute('href', shockMap()); im.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', im.getAttribute('href'));
-  el('feComposite', { in:'ring', in2:'n', operator:'over', result:'map' }, f);
-  var maps = [];
-  function disp(res){ var m = el('feDisplacementMap', { in:'SourceGraphic', in2:'map', scale:0, xChannelSelector:'R', yChannelSelector:'G', result:res }, f); maps.push(m); return m; }
-  if (weak) disp('out');
-  else {
-    /* colour fringing: each channel bent a little differently (the page is opaque, so the channels add back up) */
-    disp('dr'); disp('dg'); disp('db');
-    el('feColorMatrix', { in:'dr', type:'matrix', values:'1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0 1', result:'r' }, f);
-    el('feColorMatrix', { in:'dg', type:'matrix', values:'0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 0 1', result:'g' }, f);
-    el('feColorMatrix', { in:'db', type:'matrix', values:'0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 0 1', result:'b' }, f);
-    el('feComposite', { in:'r', in2:'g', operator:'arithmetic', k1:0, k2:1, k3:1, k4:0, result:'rg' }, f);
-    el('feComposite', { in:'rg', in2:'b', operator:'arithmetic', k1:0, k2:1, k3:1, k4:0 }, f);
-  }
-  return (shock = { im:im, maps:maps, split:weak ? [1] : [1.07, 1, .93], on:false, at:null });
-}
-function shockFrame(){
-  var live = WAVE.s > .01 && WAVE.r > 0;
-  var S = shockInit(); if (!S) return;
-  var main = document.querySelector('main');
-  if (!live) { if (S.on) { S.on = false; main.style.filter = ''; } return; }
-  if (!S.on) {
-    /* the number's centre in <main>'s own coordinates; one design unit in CSS px */
-    var m = main.getBoundingClientRect(), b = $('burst').getBoundingClientRect();
-    S.at = { x:b.left + b.width / 2 - m.left, y:b.top + b.height / 2 - m.top,
-             u:parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--u')) || 1 };
-    S.on = true; main.style.filter = 'url(#shock)';
-  }
-  var R = WAVE.r * S.at.u, half = R / SHOCK_EDGE;
-  S.im.setAttribute('x', (S.at.x - half).toFixed(1)); S.im.setAttribute('y', (S.at.y - half).toFixed(1));
-  S.im.setAttribute('width', (2 * half).toFixed(1)); S.im.setAttribute('height', (2 * half).toFixed(1));
-  /* bend at the edge (px): grows with the bubble (about a third of its radius, so the inside is visibly magnified)
-     up to ~90 px, while the wave fades */
-  var bend = Math.min(.35 * R, 90 * S.at.u) * WAVE.s * SHOCK_GAIN, k = 2 * bend;
-  S.maps.forEach(function(m, i){ m.setAttribute('scale', (k * S.split[i]).toFixed(2)); });
-}
-function shockwave(tl, at){
-  WAVE.r = WAVE.s = 0;
-  tl.set(WAVE, { r:0, s:0 }, 0);
-  /* the bubble grows out of the number past the screen's corners: fast at first, so it reaches the coins as they are
-     knocked up, then the bend fades while it is still sweeping out */
-  tl.fromTo(WAVE, { r:20 }, { r:1000, duration:1, ease:'power2.out', immediateRender:false }, at);
-  tl.fromTo(WAVE, { s:0 }, { s:1, duration:.05, ease:'power1.out', immediateRender:false }, at);
-  tl.to(WAVE, { s:0, duration:.7, ease:'power2.in' }, at + .2);
-}
-
 /* ---------- stars behind the coins keep twinkling: breathe in scale, tilt a little, each on its own beat ----------
    They loop forever, so they are paused while the page is hidden and never started with reduced motion. */
 var twinkles = [];
@@ -525,7 +443,7 @@ document.addEventListener('visibilitychange', function(){
 
 /* ---------- timeline ---------- */
 var tl = null, NUM = { v:0 }, fresh = false;
-function frame(){ render(tl.time()); paint(false); shockFrame(); }   /* one draw per tick, only for rows that changed; then the shockwave lens */
+function frame(){ render(tl.time()); paint(false); }   /* one draw per tick, only for rows that changed */
 function build(){
   if (tl) tl.kill();
   stopTwinkles();
@@ -551,8 +469,6 @@ function build(){
   tl.to(amountEl, { color:'#EEF5EF', duration:.6, ease:'power1.inOut' }, 'land+=.55');
   /* burst: rings, rays and sparkles thrown out from the number */
   burst(tl, F);
-  /* shockwave: a ring of compressed air that bends everything behind it */
-  shockwave(tl, F);
   /* the whole scene takes the hit */
   tl.to(['#hero', '#art'], { keyframes:{ x:[0, -7, 6, -4, 3, -1, 0], y:[0, 4, -3, 2, -1, 0, 0] }, duration:.34, ease:'none' }, 'land');
   tl.fromTo('#up', { scale:.3, opacity:0 }, { scale:1, opacity:1, duration:.36, ease:'back.out(2.6)' }, 'land+=.05');
@@ -583,7 +499,6 @@ function showFinal(){
   if (tl) { tl.kill(); tl = null; }
   stopTwinkles();
   $('burst').innerHTML = '';
-  WAVE.s = 0; shockFrame();
   gsap.set(['#label', '#amount', '#up', '#was', '#exp'], { opacity:1, x:0, y:0, scale:1 });
   gsap.set(['#label', amountEl], { clearProps:'filter' }); gsap.set(amountEl, { yPercent:0 });
   gsap.set(amountEl, { color:'#EEF5EF' });
