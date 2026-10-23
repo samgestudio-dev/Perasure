@@ -636,15 +636,15 @@ class Component extends DCLogic {
   /* ---------------- HOME : the available-amount card (Figma: PeraSure design system, node 9867:36981) ----------------
      Available amount, a two-line legend (total credit, temporary credit) and a credit bar, then the Withdraw pill.
      The bar is the total credit: white = long-term credit still available, green (right after it) = temporary credit
-     still available, the dark rest = used. Spending uses the temporary credit first, then the long-term credit. */
+     still available, the dark rest = used. The temporary amount is the temporary credit left; it is part of the
+     available amount, the rest of which is long-term credit. */
   creditBar(){
     var T = window.WD_TUNE || {}, num = function(v, d){ v = Number(v); return isFinite(v) ? v : d; };
     var total = Math.max(1, num(T.total != null ? T.total : this.props.totalBalance, 50000));
     var avail = Math.max(0, Math.min(total, num(T.available != null ? T.available : this.props.availableAmount, 40000)));
     var temp = Math.max(0, Math.min(total, num(T.temporary != null ? T.temporary : this.props.temporaryAmount, 10000)));
-    var used = total - avail;
-    var tempLeft = Math.max(0, temp - used);                 /* temporary credit is used first */
-    var longLeft = Math.max(0, avail - tempLeft);
+    var tempLeft = Math.min(temp, avail);                    /* temporary credit left (part of the available amount) */
+    var longLeft = avail - tempLeft;
     return { total:total, avail:avail, temp:temp, white:longLeft / total, green:(longLeft + tempLeft) / total,
              till:(T.till != null ? T.till : this.props.temporaryValidTill) || 'Nov 20' };
   }

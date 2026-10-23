@@ -50,7 +50,7 @@
     seg('Blur (header and bottom bars)', 'blur', [[0, 'Off'], [1, 'On']]);
     range('Available amount', 'available', 0, 200000, 500);
     range('Total credit', 'total', 1000, 200000, 1000);
-    range('Temporary credit (used first)', 'temporary', 0, 100000, 500);
+    range('Temporary credit left', 'temporary', 0, 100000, 500);
     seg('Motion feel', 'feel', [['Smooth', 'Smooth'], ['Snappy', 'Snappy'], ['Gentle', 'Gentle']]);
     var note = document.createElement('div'); note.className = 'note';
     note.textContent = 'Card bar: white = long-term credit still available, green = temporary credit still available. Changing a setting reloads the page with it; values are kept on this phone.' +
