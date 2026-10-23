@@ -1,0 +1,30 @@
+/* Withdraw fund flow — page styles (both variants; the With-blur extras are in with-blur.html). */
+  html,body{margin:0;padding:0;background:#dfe6e5;}
+  body{font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+  a{color:#2c74be;text-decoration:none}
+  a:hover{color:#20558d;text-decoration:underline}
+  *{-webkit-tap-highlight-color:transparent}
+  .psScroll::-webkit-scrollbar{width:0;height:0}
+  @keyframes psBlink{0%,49%{opacity:1}50%,100%{opacity:0}}
+  /* phone: the screen is the page (see the head script) */
+  html.ps-phone, html.ps-phone body{height:100%;overflow:hidden;overscroll-behavior:none;background:#f0f5f4;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  html.ps-phone .ps-wrap{min-height:0!important;height:var(--vh,700px);overflow:hidden;padding:0!important;gap:0!important;background:#f0f5f4!important;justify-content:flex-start!important}
+  html.ps-phone .ps-frame{height:var(--ph,740px)!important;margin-top:-40px;border-radius:0!important;box-shadow:none!important}
+  html.ps-phone .ps-fill{height:100%!important}
+  html.ps-phone .ps-sb{visibility:hidden}
+  /* no double-tap-to-zoom wait: taps on the keypad / pencil / pills fire at once
+     (iOS ignores user-scalable=no, so without this every tap waited ~300ms
+     to see whether a second tap — a zoom — was coming) */
+  html.ps-phone *{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+  /* no progressive (gradient) blur bands: header / bottom bars are colour veils only */
+  /* iOS Safari 26+: edge to edge (see the head script). The document is as
+     tall as the whole screen and scrolled by the status-bar height in code;
+     the user cannot scroll it (all scrolling lives inside the page). */
+  html.ps-edge, html.ps-edge body{height:auto!important;min-height:0!important}
+  html.ps-edge .ps-wrap{height:var(--vh)!important}
+  html.ps-edge .ps-frame{margin-top:var(--ftop)!important;overflow:visible!important}
+  html.ps-edge .ps-home-scroll{top:calc(-1 * var(--e))!important;height:calc(100% + var(--e))!important}
+  html.ps-edge .ps-home-in{padding-top:calc(116px + var(--e))!important;padding-bottom:calc(124px + var(--sb))!important}
+  html.ps-edge .ps-home-top{top:calc(-1 * var(--e))!important;height:calc(116px + var(--e))!important}
+  html.ps-edge .ps-home-bot{height:calc(116px + var(--sb))!important}
+  html.ps-edge .ps-tabbar{bottom:calc(var(--sb) + 24px)!important}

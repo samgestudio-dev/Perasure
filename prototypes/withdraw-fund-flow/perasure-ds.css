@@ -1,0 +1,526 @@
+/* PeraSure Design System stylesheet (tokens + type roles), as exported with the Claude Design page.
+   The font files come from the shared ../../assets/fonts/fonts.css. */
+/* PeraSure Design System — global entry point.
+   Consumers link this one file. Import order: primitives → semantic → typography. */
+/* PeraSure — Primitive tokens (raw palette + scales).
+   Source of truth: Figma Variables "Primitive" collection.
+   Never reference these directly in product UI — use semantic.css aliases. */
+:root {
+  /* ---- Color · Blue (brand ramp) ---- */
+  --color-blue-50: #f3f8ff;
+  --color-blue-100: #e4f0ff;
+  --color-blue-200: #c8deff;
+  --color-blue-300: #9fc6fa;
+  --color-blue-400: #74b2f5;
+  --color-blue-500: #3fa0f0;
+  --color-blue-600: #2c74be;
+  --color-blue-700: #20558d;
+  --color-blue-800: #173d67;
+  --color-blue-900: #102950;
+  --color-blue-950: #000128;
+
+  /* ---- Color · Red (negative) ---- */
+  --color-red-50: #fff5f5;
+  --color-red-100: #ffe0e2;
+  --color-red-200: #ffbfc3;
+  --color-red-300: #ff9099;
+  --color-red-400: #ff5560;
+  --color-red-500: #ff0d19;
+  --color-red-600: #e00010;
+  --color-red-700: #b8000d;
+  --color-red-800: #8c000a;
+  --color-red-900: #5e0007;
+  --color-red-950: #330004;
+
+  /* ---- Color · Green (positive / marketing) ---- */
+  --color-green-50: #f3fcf9;
+  --color-green-100: #ddf8ee;
+  --color-green-200: #bdf1dd;
+  --color-green-300: #97e9c7;
+  --color-green-400: #73e1b1;
+  --color-green-500: #58e09a;
+  --color-green-600: #3bcb84;
+  --color-green-700: #2eae6e;
+  --color-green-800: #1f9158;
+  --color-green-900: #145f3a;
+  --color-green-950: #0a3321;
+
+  /* ---- Color · Yellow (warning) ---- */
+  --color-yellow-50: #fff7e8;
+  --color-yellow-100: #ffecc2;
+  --color-yellow-200: #ffd98a;
+  --color-yellow-300: #ffbe45;
+  --color-yellow-400: #f59e0b;
+  --color-yellow-500: #d98e0a;
+  --color-yellow-600: #c27a07;
+  --color-yellow-700: #a66205;
+
+  /* ---- Color · Neutral ---- */
+  --color-neutral-0: #ffffff;
+  --color-neutral-50: #f2f3f4;
+  --color-neutral-100: #e0e3e5;
+  --color-neutral-150: #cdd1d4;
+  --color-neutral-200: #bac0c4;
+  --color-neutral-300: #97a0a6;
+  --color-neutral-400: #7d878e;
+  --color-neutral-500: #6a757d;
+  --color-neutral-600: #55606a;
+  --color-neutral-700: #3c4850;
+  --color-neutral-800: #26323a;
+  --color-neutral-900: #141e24;
+  --color-neutral-950: #0a1219;
+
+  /* ---- Color · Pink (marketing accent) ---- */
+  --color-pink-50: #fdf2f6;
+  --color-pink-100: #fce7ef;
+  --color-pink-200: #f9c2d9;
+  --color-pink-300: #f48fb5;
+  --color-pink-400: #e8528f;
+  --color-pink-500: #d93a78;
+  --color-pink-600: #b82a61;
+  --color-pink-700: #8c1f49;
+
+  /* ---- Color · Ambient (page washes) ---- */
+  --color-ambient-50: #f7faf9;
+  --color-ambient-100: #f0f5f4;
+  --color-ambient-200: #eaf2f0;
+
+  /* ---- Color · Alpha · White ---- */
+  --color-alpha-white-0: #ffffff00;
+  --color-alpha-white-20: #ffffff33;
+  --color-alpha-white-40: #ffffff66;
+  --color-alpha-white-50: #ffffff80;
+  --color-alpha-white-60: #ffffff99;
+  --color-alpha-white-80: #ffffffcc;
+
+  /* ---- Color · Alpha · Cold Black (shadows) ---- */
+  --color-alpha-cold-black-6: #0001280f;
+  --color-alpha-cold-black-8: #00012814;
+  --color-alpha-cold-black-12: #0001281f;
+  --color-alpha-cold-black-16: #00012829;
+  --color-alpha-cold-black-20: #00012833;
+
+  /* ---- Color · Alpha · Grey ---- */
+  --color-alpha-grey-0: #e1e4e500;
+  --color-alpha-grey-20: #e1e4e533;
+  --color-alpha-grey-40: #e1e4e566;
+  --color-alpha-grey-60: #e1e4e599;
+  --color-alpha-grey-80: #e1e4e5cc;
+
+  /* ---- Color · Alpha · Green ---- */
+  --color-alpha-green-6: #0029210f;
+  --color-alpha-green-8: #00292114;
+  --color-alpha-green-12: #0029211f;
+  --color-alpha-green-16: #00292129;
+  --color-alpha-green-20: #00292133;
+  --color-alpha-green-40: #00292166;
+  --color-alpha-green-60: #00292199;
+
+  /* ---- Color · Alpha · Black ---- */
+  --color-alpha-black-6: #0000000f;
+  --color-alpha-black-8: #00000014;
+  --color-alpha-black-12: #0000001f;
+  --color-alpha-black-16: #00000029;
+  --color-alpha-black-20: #00000033;
+
+  /* ---- Color · Alpha · Blue ---- */
+  --color-alpha-blue-0: #3fa0f000;
+  --color-alpha-blue-20: #3fa0f033;
+  --color-alpha-blue-40: #3fa0f066;
+  --color-alpha-blue-50: #3fa0f080;
+  --color-alpha-blue-60: #3fa0f099;
+  --color-alpha-blue-80: #3fa0f0cc;
+
+  /* ---- Brand gradient (app icon / marketing) ---- */
+  --color-brand-gradient-from: #6ee317;
+  --color-brand-gradient-to: #53c575;
+  --gradient-brand: linear-gradient(157deg, #6ee317 0%, #53c575 100%); /* @kind color */
+
+  /* ---- Font family ---- */
+  --font-family-inter: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-family-hanken-grotesk: "Hanken Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* ---- Font size (px) ---- */
+  --font-size-11: 11px;
+  --font-size-12: 12px;
+  --font-size-14: 14px;
+  --font-size-16: 16px;
+  --font-size-18: 18px;
+  --font-size-20: 20px;
+  --font-size-24: 24px;
+  --font-size-28: 28px;
+  --font-size-32: 32px;
+  --font-size-36: 36px;
+  --font-size-40: 40px;
+  --font-size-48: 48px;
+
+  /* ---- Font weight ---- */
+  --font-weight-400: 400;
+  --font-weight-500: 500;
+  --font-weight-600: 600;
+  --font-weight-700: 700;
+  --font-weight-800: 800;
+
+  /* ---- Line height (px) ---- */
+  --line-height-14: 14px;
+  --line-height-16: 16px;
+  --line-height-20: 20px;
+  --line-height-22: 22px;
+  --line-height-24: 24px;
+  --line-height-28: 28px;
+  --line-height-32: 32px;
+  --line-height-36: 36px;
+  --line-height-40: 40px;
+  --line-height-44: 44px;
+  --line-height-48: 48px;
+  --line-height-56: 56px;
+
+  /* ---- Spacing (px) ---- */
+  --spacing-0: 0px;
+  --spacing-2: 2px;
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-28: 28px;
+  --spacing-32: 32px;
+  --spacing-36: 36px;
+  --spacing-40: 40px;
+  --spacing-44: 44px;
+  --spacing-48: 48px;
+  --spacing-56: 56px;
+  --spacing-64: 64px;
+
+  /* ---- Blur (px) ---- */
+  --blur-0: 0px;
+  --blur-2: 2px;
+  --blur-4: 4px;
+  --blur-10: 10px;
+  --blur-12: 12px;
+  --blur-24: 24px;
+  --blur-32: 32px;
+
+  /* ---- Radius (px) ---- */
+  --radius-0: 0px;
+  --radius-8: 8px;
+  --radius-12: 12px;
+  --radius-16: 16px;
+  --radius-20: 20px;
+  --radius-24: 24px;
+  --radius-32: 32px;
+  --radius-999: 999px;
+
+  /* ---- Stroke width (px) ---- */
+  --stroke-width-10: 1px;
+  --stroke-width-15: 1.5px;
+  --stroke-width-20: 2px;
+  --stroke-width-25: 2.5px;
+
+  /* ---- Layer opacity (%) ---- */
+  --layer-opacity-0: 0; /* @kind other */
+  --layer-opacity-8: 0.08; /* @kind other */
+  --layer-opacity-20: 0.2; /* @kind other */
+  --layer-opacity-40: 0.4; /* @kind other */
+  --layer-opacity-60: 0.6; /* @kind other */
+  --layer-opacity-80: 0.8; /* @kind other */
+  --layer-opacity-100: 1; /* @kind other */
+}
+
+/* PeraSure — Semantic tokens. Product UI should reference THESE, not primitives.
+   Source of truth: Figma Variables "Semantic" collection. */
+:root {
+  /* ================= COLOR · role ramps ================= */
+  --color-brand-50: var(--color-blue-50);
+  --color-brand-100: var(--color-blue-100);
+  --color-brand-200: var(--color-blue-200);
+  --color-brand-300: var(--color-blue-300);
+  --color-brand-400: var(--color-blue-400);
+  --color-brand-500: var(--color-blue-500);
+  --color-brand-600: var(--color-blue-600);
+  --color-brand-700: var(--color-blue-700);
+  --color-brand-800: var(--color-blue-800);
+  --color-brand-900: var(--color-blue-900);
+  --color-brand-950: var(--color-blue-950);
+
+  --color-negative-50: var(--color-red-50);
+  --color-negative-100: var(--color-red-100);
+  --color-negative-200: var(--color-red-200);
+  --color-negative-300: var(--color-red-300);
+  --color-negative-400: var(--color-red-400);
+  --color-negative-500: var(--color-red-500);
+  --color-negative-600: var(--color-red-600);
+  --color-negative-700: var(--color-red-700);
+
+  --color-positive-50: var(--color-green-50);
+  --color-positive-100: var(--color-green-100);
+  --color-positive-200: var(--color-green-200);
+  --color-positive-300: var(--color-green-300);
+  --color-positive-400: var(--color-green-400);
+  --color-positive-500: var(--color-green-500);
+  --color-positive-600: var(--color-green-600);
+  --color-positive-700: var(--color-green-700);
+
+  --color-warning-50: var(--color-yellow-50);
+  --color-warning-100: var(--color-yellow-100);
+  --color-warning-200: var(--color-yellow-200);
+  --color-warning-300: var(--color-yellow-300);
+  --color-warning-400: var(--color-yellow-400);
+  --color-warning-500: var(--color-yellow-500);
+  --color-warning-600: var(--color-yellow-600);
+  --color-warning-700: var(--color-yellow-700);
+
+  --color-marketing-50: var(--color-pink-50);
+  --color-marketing-100: var(--color-pink-100);
+  --color-marketing-200: var(--color-pink-200);
+  --color-marketing-300: var(--color-pink-300);
+  --color-marketing-400: var(--color-pink-400);
+  --color-marketing-500: var(--color-pink-500);
+  --color-marketing-600: var(--color-pink-600);
+  --color-marketing-700: var(--color-pink-700);
+
+  /* ================= SURFACE ================= */
+  --color-surface-page-light: var(--color-ambient-50);
+  --color-surface-page-default: var(--color-ambient-100);
+  --color-surface-page-heavy: var(--color-ambient-200);
+  --color-surface-card-default: var(--color-neutral-0);
+  --color-surface-card-muted: var(--color-neutral-100);
+  --color-surface-card-brand: var(--color-blue-600);
+  --color-surface-card-brand-subtle: var(--color-blue-50);
+  --color-surface-card-positive: var(--color-green-600);
+  --color-surface-card-positive-subtle: var(--color-green-50);
+  --color-surface-card-negative: var(--color-red-600);
+  --color-surface-card-negative-subtle: var(--color-red-50);
+  --color-surface-elevated-default: var(--color-neutral-0);
+  --color-surface-elevated-glass: var(--color-alpha-white-60);
+  --color-surface-elevated-glass-blue: var(--color-alpha-white-60);
+  --color-surface-inset-default: var(--color-ambient-100);
+  --color-surface-icon-brand-default: var(--color-blue-600);
+  --color-surface-icon-brand-disabled: var(--color-blue-300);
+  --color-surface-icon-positive-default: var(--color-green-600);
+  --color-surface-icon-positive-disabled: var(--color-green-300);
+  --color-surface-icon-negative-default: var(--color-red-600);
+  --color-surface-icon-negative-disabled: var(--color-red-300);
+  --color-surface-icon-inverse-default: var(--color-neutral-0);
+  --color-surface-icon-inverse-disabled: var(--color-neutral-100);
+  --color-surface-icon-neutral-default: var(--color-neutral-50);
+  --color-surface-icon-neutral-disabled: var(--color-neutral-300);
+
+  /* ================= TEXT ================= */
+  --color-text-primary: var(--color-neutral-900);
+  --color-text-secondary: var(--color-neutral-700);
+  --color-text-tertiary: var(--color-neutral-500);
+  --color-text-placeholder: var(--color-neutral-400);
+  --color-text-disabled: var(--color-neutral-300);
+  --color-text-inverse: var(--color-neutral-0);
+  --color-text-brand-default: var(--color-blue-600);
+  --color-text-brand-heavy: var(--color-blue-700);
+  --color-text-brand-light: var(--color-blue-500);
+  --color-text-positive-default: var(--color-green-600);
+  --color-text-positive-heavy: var(--color-green-700);
+  --color-text-positive-light: var(--color-green-500);
+  --color-text-negative-default: var(--color-red-600);
+  --color-text-negative-heavy: var(--color-red-700);
+  --color-text-negative-light: var(--color-red-500);
+  --color-text-link-default: var(--color-blue-600);
+  --color-text-link-heavy: var(--color-blue-700);
+  --color-text-link-light: var(--color-blue-500);
+
+  /* ================= ICON ================= */
+  --color-icon-primary: var(--color-neutral-900);
+  --color-icon-secondary: var(--color-neutral-700);
+  --color-icon-tertiary: var(--color-neutral-500);
+  --color-icon-placeholder: var(--color-neutral-400);
+  --color-icon-disabled: var(--color-neutral-300);
+  --color-icon-inverse: var(--color-neutral-0);
+  --color-icon-brand-default: var(--color-blue-600);
+  --color-icon-brand-heavy: var(--color-blue-700);
+  --color-icon-brand-light: var(--color-blue-500);
+  --color-icon-positive-default: var(--color-green-600);
+  --color-icon-positive-heavy: var(--color-green-700);
+  --color-icon-positive-light: var(--color-green-500);
+  --color-icon-negative-default: var(--color-red-600);
+  --color-icon-negative-heavy: var(--color-red-700);
+  --color-icon-negative-light: var(--color-red-500);
+
+  /* ================= STROKE ================= */
+  --color-stroke-default: var(--color-neutral-200);
+  --color-stroke-subtle: var(--color-neutral-100);
+  --color-stroke-strong: var(--color-neutral-300);
+  --color-stroke-divider: var(--color-neutral-100);
+  --color-stroke-brand-subtle: var(--color-blue-200);
+  --color-stroke-brand-default: var(--color-blue-500);
+  --color-stroke-brand-strong: var(--color-blue-600);
+  --color-stroke-positive-default: var(--color-green-500);
+  --color-stroke-positive-subtle: var(--color-green-200);
+  --color-stroke-positive-strong: var(--color-green-600);
+  --color-stroke-negative-default: var(--color-red-500);
+  --color-stroke-negative-subtle: var(--color-red-200);
+  --color-stroke-negative-strong: var(--color-red-600);
+
+  /* ================= ACTION (buttons) ================= */
+  --color-action-bg-primary-default: var(--color-blue-600);
+  --color-action-bg-primary-pressed: var(--color-blue-700);
+  --color-action-bg-primary-disabled: var(--color-neutral-100);
+  --color-action-bg-primary-subtle: var(--color-blue-100);
+  --color-action-bg-primary-subtle-pressed: var(--color-blue-200);
+  --color-action-bg-positive-default: var(--color-green-600);
+  --color-action-bg-positive-pressed: var(--color-green-700);
+  --color-action-bg-positive-disabled: var(--color-green-300);
+  --color-action-bg-positive-subtle: var(--color-green-100);
+  --color-action-bg-positive-subtle-pressed: var(--color-green-200);
+  --color-action-bg-inverse: var(--color-neutral-0);
+  --color-action-text-default: var(--color-neutral-0);
+  --color-action-text-disabled: var(--color-neutral-300);
+  --color-action-text-brand: var(--color-blue-600);
+  --color-action-text-positive: var(--color-green-600);
+  --color-action-text-link: var(--color-blue-500);
+  --color-action-stroke-active: var(--color-blue-500);
+  --color-action-stroke-active-subtle: var(--color-blue-300);
+  --color-action-stroke-default: var(--color-neutral-100);
+  --color-action-stroke-filled: var(--color-blue-100);
+
+  /* ================= SHADOW / GRADIENT / OVERLAY / ALPHA-BG ================= */
+  --color-shadow-default-1: var(--color-alpha-cold-black-16);
+  --color-shadow-default-2: var(--color-alpha-cold-black-8);
+  --color-shadow-focus-1: var(--color-alpha-cold-black-16);
+  --color-shadow-focus-2: var(--color-alpha-cold-black-12);
+  --color-shadow-subtle-1: var(--color-alpha-cold-black-12);
+  --color-shadow-subtle-2: var(--color-alpha-cold-black-6);
+  --color-shadow-backdrop: var(--color-alpha-cold-black-8);
+  --color-gradient-default-0: var(--color-alpha-grey-0);
+  --color-gradient-default-20: var(--color-alpha-grey-20);
+  --color-gradient-default-40: var(--color-alpha-grey-40);
+  --color-gradient-default-60: var(--color-alpha-grey-60);
+  --color-gradient-default-80: var(--color-alpha-grey-80);
+  --color-gradient-subtle-0: var(--color-alpha-white-0);
+  --color-gradient-subtle-40: var(--color-alpha-white-40);
+  --color-gradient-subtle-50: var(--color-alpha-white-50);
+  --color-gradient-subtle-60: var(--color-alpha-white-60);
+  --color-gradient-subtle-80: var(--color-alpha-white-80);
+  --color-overlay-scrim-default: var(--color-alpha-black-20);
+  --color-alpha-cold-bg-default: var(--color-alpha-cold-black-20);
+  --color-alpha-cold-bg-subtle: var(--color-alpha-cold-black-6);
+  --color-alpha-bg-minimum: var(--color-alpha-green-6);
+  --color-alpha-bg-subtle: var(--color-alpha-green-20);
+  --color-alpha-bg-default: var(--color-alpha-green-40);
+  --color-alpha-bg-emphasis: var(--color-alpha-green-60);
+
+  /* ================= ELEVATION (composed shadows) ================= */
+  --shadow-subtle: 0 1px 2px var(--color-shadow-subtle-2), 0 2px 12px var(--color-shadow-subtle-1);
+  --shadow-default: 0 2px 4px var(--color-shadow-default-2), 0 12px 24px var(--color-shadow-default-1);
+  --shadow-focus: 0 4px 8px var(--color-shadow-focus-2), 0 32px 40px var(--color-shadow-focus-1);
+
+  /* ================= TYPOGRAPHY roles ================= */
+  --font-family-body: var(--font-family-inter);
+  --font-family-label: var(--font-family-inter);
+  --font-family-title: var(--font-family-hanken-grotesk);
+  --font-family-display: var(--font-family-hanken-grotesk);
+
+  --font-size-caption-xs: var(--font-size-11);
+  --font-size-caption-sm: var(--font-size-12);
+  --font-size-label-sm: var(--font-size-12);
+  --font-size-label-md: var(--font-size-14);
+  --font-size-body-md: var(--font-size-14);
+  --font-size-body-lg: var(--font-size-16);
+  --font-size-section-title-sm: var(--font-size-14);
+  --font-size-section-title-md: var(--font-size-16);
+  --font-size-title-sm: var(--font-size-18);
+  --font-size-title-md: var(--font-size-20);
+  --font-size-title-lg: var(--font-size-24);
+  --font-size-headline-sm: var(--font-size-28);
+  --font-size-display-sm: var(--font-size-32);
+  --font-size-display-md: var(--font-size-36);
+  --font-size-display-lg: var(--font-size-40);
+  --font-size-display-xl: var(--font-size-48);
+
+  --line-height-caption-xs: var(--line-height-14);
+  --line-height-caption-sm: var(--line-height-16);
+  --line-height-label-sm: var(--line-height-16);
+  --line-height-label-md: var(--line-height-20);
+  --line-height-body-md: var(--line-height-20);
+  --line-height-body-lg: var(--line-height-24);
+  --line-height-section-title-sm: var(--line-height-20);
+  --line-height-section-title-md: var(--line-height-22);
+  --line-height-title-sm: var(--line-height-24);
+  --line-height-title-md: var(--line-height-28);
+  --line-height-title-lg: var(--line-height-32);
+  --line-height-headline-sm: var(--line-height-36);
+  --line-height-display-sm: var(--line-height-40);
+  --line-height-display-md: var(--line-height-44);
+  --line-height-display-lg: var(--line-height-48);
+  --line-height-display-xl: var(--line-height-56);
+
+  --font-weight-regular: var(--font-weight-400);
+  --font-weight-medium: var(--font-weight-500);
+  --font-weight-semibold: var(--font-weight-600);
+  --font-weight-bold: var(--font-weight-700);
+  --font-weight-black: var(--font-weight-800);
+
+  /* ================= RADIUS / SPACING / STROKE aliases ================= */
+  --radius-none: var(--radius-0);
+  --radius-xs: var(--radius-8);
+  --radius-sm: var(--radius-12);
+  --radius-md: var(--radius-16);
+  --radius-lg: var(--radius-20);
+  --radius-xl: var(--radius-24);
+  --radius-xxl: var(--radius-32);
+  --radius-full: var(--radius-999);
+
+  --spacing-gap-none: var(--spacing-0);
+  --spacing-gap-2xs: var(--spacing-2);
+  --spacing-gap-xs: var(--spacing-4);
+  --spacing-gap-sm: var(--spacing-8);
+  --spacing-gap-md: var(--spacing-12);
+  --spacing-gap-lg: var(--spacing-16);
+  --spacing-gap-xl: var(--spacing-20);
+  --spacing-gap-2xl: var(--spacing-24);
+  --spacing-gap-3xl: var(--spacing-32);
+  --spacing-padding-2xs: var(--spacing-2);
+  --spacing-padding-xs: var(--spacing-4);
+  --spacing-padding-sm: var(--spacing-8);
+  --spacing-padding-md: var(--spacing-12);
+  --spacing-padding-lg: var(--spacing-16);
+  --spacing-padding-xl: var(--spacing-20);
+  --spacing-padding-2xl: var(--spacing-24);
+  --spacing-padding-3xl: var(--spacing-32);
+  --spacing-padding-5xl: var(--spacing-48);
+  --spacing-page-x: var(--spacing-16);
+  --spacing-page-top: var(--spacing-16);
+  --spacing-page-bottom-md: var(--spacing-32);
+  --spacing-page-bottom-lg: var(--spacing-40);
+  --spacing-page-bottom-xl: var(--spacing-48);
+
+  --stroke-width-default: var(--stroke-width-10);
+  --stroke-width-medium: var(--stroke-width-15);
+  --stroke-width-strong: var(--stroke-width-20);
+  --stroke-width-heavy: var(--stroke-width-25);
+}
+
+/* PeraSure — Fonts (from ../../assets/fonts/fonts.css, the app's files) + typographic specimens.
+   Hanken Grotesk = titles & display. Inter = body, labels, UI, numerals. */
+
+/* ---- Type role classes: apply family/size/line-height/weight in one hit ---- */
+.ps-display-xl{font-family:var(--font-family-display);font-size:var(--font-size-display-xl);line-height:var(--line-height-display-xl);font-weight:var(--font-weight-bold);letter-spacing:-0.02em}
+.ps-display-lg{font-family:var(--font-family-display);font-size:var(--font-size-display-lg);line-height:var(--line-height-display-lg);font-weight:var(--font-weight-bold);letter-spacing:-0.02em}
+.ps-display-md{font-family:var(--font-family-display);font-size:var(--font-size-display-md);line-height:var(--line-height-display-md);font-weight:var(--font-weight-bold);letter-spacing:-0.01em}
+.ps-display-sm{font-family:var(--font-family-display);font-size:var(--font-size-display-sm);line-height:var(--line-height-display-sm);font-weight:var(--font-weight-bold);letter-spacing:-0.01em}
+.ps-headline-sm{font-family:var(--font-family-display);font-size:var(--font-size-headline-sm);line-height:var(--line-height-headline-sm);font-weight:var(--font-weight-bold)}
+.ps-title-lg{font-family:var(--font-family-title);font-size:var(--font-size-title-lg);line-height:var(--line-height-title-lg);font-weight:var(--font-weight-bold)}
+.ps-title-md{font-family:var(--font-family-title);font-size:var(--font-size-title-md);line-height:var(--line-height-title-md);font-weight:var(--font-weight-bold)}
+.ps-title-sm{font-family:var(--font-family-title);font-size:var(--font-size-title-sm);line-height:var(--line-height-title-sm);font-weight:var(--font-weight-bold)}
+.ps-section-title-md{font-family:var(--font-family-title);font-size:var(--font-size-section-title-md);line-height:var(--line-height-section-title-md);font-weight:var(--font-weight-semibold)}
+.ps-section-title-sm{font-family:var(--font-family-title);font-size:var(--font-size-section-title-sm);line-height:var(--line-height-section-title-sm);font-weight:var(--font-weight-semibold)}
+.ps-body-lg{font-family:var(--font-family-body);font-size:var(--font-size-body-lg);line-height:var(--line-height-body-lg);font-weight:var(--font-weight-regular)}
+.ps-body-md{font-family:var(--font-family-body);font-size:var(--font-size-body-md);line-height:var(--line-height-body-md);font-weight:var(--font-weight-regular)}
+.ps-label-md{font-family:var(--font-family-label);font-size:var(--font-size-label-md);line-height:var(--line-height-label-md);font-weight:var(--font-weight-medium)}
+.ps-label-sm{font-family:var(--font-family-label);font-size:var(--font-size-label-sm);line-height:var(--line-height-label-sm);font-weight:var(--font-weight-medium)}
+.ps-caption-sm{font-family:var(--font-family-body);font-size:var(--font-size-caption-sm);line-height:var(--line-height-caption-sm);font-weight:var(--font-weight-regular)}
+.ps-caption-xs{font-family:var(--font-family-body);font-size:var(--font-size-caption-xs);line-height:var(--line-height-caption-xs);font-weight:var(--font-weight-regular)}
+
+
+/* Sensible defaults + link colors so editor-added links aren't browser-blue. */
+:root { color-scheme: light; }
+a { color: var(--color-text-link-default); text-decoration: none; }
+a:hover { color: var(--color-text-link-heavy); text-decoration: underline; }
