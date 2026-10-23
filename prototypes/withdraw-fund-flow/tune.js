@@ -12,13 +12,13 @@
   window.WD_TUNE = T;
   if (T.blur) root.setAttribute('data-variant', 'blur');
 
-  var DEF = { intro:1, blur:0, available:40000, total:50000, temporary:10000, feel:'Smooth' };
+  var DEF = { blur:0, available:40000, total:50000, temporary:10000, feel:'Smooth' };
   var get = function(k){ return T[k] != null ? T[k] : DEF[k]; };
   function apply(patch){
     Object.keys(patch).forEach(function(k){ saved[k] = patch[k]; });
     try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {}
     /* the link's own settings would override the change: drop them */
-    var u = new URL(location.href); ['intro', 'blur', 'available', 'total', 'temporary'].forEach(function(k){ u.searchParams.delete(k); });
+    var u = new URL(location.href); ['blur', 'available', 'total', 'temporary'].forEach(function(k){ u.searchParams.delete(k); });
     location.replace(u.href);
   }
   function peso(v){ return '₱' + Math.round(v).toLocaleString('en-US'); }
@@ -47,7 +47,6 @@
       inp.addEventListener('change', function(){ var x = {}; x[key] = +inp.value; apply(x); });
       show(); p.appendChild(row);
     }
-    seg('Credit limit intro (plays first, then this page)', 'intro', [[0, 'Off'], [1, 'On']]);
     seg('Blur (header and bottom bars)', 'blur', [[0, 'Off'], [1, 'On']]);
     range('Available amount', 'available', 0, 200000, 500);
     range('Total credit', 'total', 1000, 200000, 1000);
