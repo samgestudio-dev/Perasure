@@ -6,15 +6,10 @@
 
    Smoothness: while the intro plays, this page does not start its own runtime (boot.js waits for WD_INTRO.ready), so
    nothing competes with the coins; the home is built during the 3 s hold and is fully drawn before the exit.
-   Exit — the same interaction as picking a term in "Apply a loan" (the full page closes in to the order card): one
-   progress 0→1 on the page's spring (Tune → Motion feel; Smooth = stiffness 240, damping 30) drives everything, like the
-   sheet's morph does:
-     · the Credit limit screen's edges close in to the home card's exact box, corners rounding to 24, its colour turning
-       from the dark to the card's blue; its content stays where it is and fades out as the edges come in;
-     · the amount carries over — a copy of the card's amount, started at the big number's place and size, travels and
-       shrinks onto the card's "Available amount" (the decimals fade in on the way): one element the whole way;
-     · once the closed-in screen covers the real card exactly, it fades and the card is simply there; the cards below
-       rise in one after another, then the tab bar.
+   Exit — the same interaction as picking a term in "Apply a loan" (the full page closes in to the order card). The page
+   runs it itself, in React + Motion with the sheet's spring: withdraw.js introExit() (see there); this file hands over the
+   frame, the big number's place / size / colour and a callback, and only falls back to a simple version of its own when
+   the page is not ready (or with reduced motion: a plain fade).
    A tap after the animation has ended skips the rest of the hold.
    Used by with-credit-limit.html (the variant with the intro); index.html does not load it. */
 (function(){
@@ -71,8 +66,20 @@
       box.remove();
       window.dispatchEvent(new Event('wd-intro-done'));
     }
-    var fly = null;
     root.classList.add('wd-intro-out');
+    /* the page runs the exit itself (withdraw.js introExit: React + Motion, the sheet's spring) — this file only falls back */
+    if (!reduce && window.__wdIntroExit) {
+      var srcR = null;
+      try {
+        var d0 = f && f.contentDocument, a0 = d0 && d0.getElementById('amount');
+        if (a0) { var fr0 = f.getBoundingClientRect(), ar0 = a0.getBoundingClientRect();
+          var cs0 = f.contentWindow.getComputedStyle(a0), rgb = (cs0.color.match(/\d+/g) || [255, 255, 255]).slice(0, 3);
+          srcR = { el:a0, x:fr0.left + ar0.left + ar0.width / 2, y:fr0.top + ar0.top + ar0.height / 2, size:parseFloat(cs0.fontSize),
+                   color:'#' + rgb.map(function(v){ return ('0' + (+v).toString(16)).slice(-2); }).join('') }; }
+      } catch (e) {}
+      if (window.__wdIntroExit({ box:box, iframe:f, src:srcR, done:finish })) return;
+    }
+    var fly = null;
     if (reduce || !card || card === document.body) {
       box.animate([{ opacity:1 }, { opacity:0 }], { duration:300, easing:'linear', fill:'forwards' }).finished.then(finish);
       return;

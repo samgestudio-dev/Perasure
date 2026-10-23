@@ -43,14 +43,20 @@ The same page, opening with the Credit limit increase animation full screen — 
 from `index.html`; keep the two pages' markup in step). Its numbers come from the card: the amount goes up from
 (available − temporary) to the available amount, +temporary, valid until Nov 20 2026 (₱30,000 → ₱40,000 by default), so it
 ends on the card's number. 3 s after it ends (`creditlimit:done`) it closes in to the home card — the same interaction as
-picking a term in "Apply a loan", where the full page closes in to the order card. One progress 0→1 on the page's spring
-(Tune → Motion feel; Smooth = stiffness 240, damping 30) drives all of it:
+picking a term in "Apply a loan", where the full page closes in to the order card, and built the same way in React + Motion
+(`introExit()` in `withdraw.js`; `intro.js` only hands over): one progress 0→1 in a Motion value, animated with the page's
+spring (`this.spring()`, Tune → Motion feel; Smooth = stiffness 240, damping 30) and the same rest thresholds as the sheet's
+morph; its change event writes the styles straight to the DOM, with the sheet's windows and travel distances (`MT.Y`):
 
-- the Credit limit screen's edges close in to the card's exact box, corners rounding to 24, colour turning from the dark to the
-  card's blue; its content stays put and fades as the edges come in, and when it is closing on the real card it hands over to it;
-- the amount carries over: a copy of the card's amount, started at the big number's place and size, travels and shrinks onto the
-  card's "Available amount" (the decimals fade in on the way) — one element the whole way;
-- the cards below rise in one after another, then the tab bar.
+- the Credit limit screen's edges close in to the card's exact box, corners rounding to 24, colour turning from the dark to
+  the card's blue; its content stays put and fades early;
+- the card is lifted above that screen for the length of the exit with no background of its own — the closing screen is its
+  background; at rest the card takes the blue back and the screen is removed (identical box and colour: nothing fades over);
+- the amount is the same element the whole way: the card's real amount starts at the big number's place, size, tracking and
+  colour (the big number lies inside the card's box, so nothing clips it) and settles on the progress; decimals fade in;
+- the rest of the card comes in on windows of the progress: label and info, the two legend rows, the bar (track, then its
+  fills revealed left to right), the Withdraw pill, the glow, and last the card's shadow; the cards below rise in one after
+  another, then the tab bar.
 
 A tap after the animation has ended skips the rest of the 3 s. While the intro plays the home's runtime does not start
 (`boot.js` waits), so nothing competes with the coins; the home is built during the hold. Afterwards the frame is removed.

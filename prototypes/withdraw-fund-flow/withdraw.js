@@ -74,6 +74,8 @@ class Component extends DCLogic {
     /* home header blur only while content scrolls under it (see .ps-live) — With-blur variant only */
     var hs = document.querySelector('.ps-home-scroll'), ht = document.querySelector('.ps-home-top');
     if (BLUR && hs && ht) { var live = false; hs.addEventListener('scroll', function(){ var on = hs.scrollTop > 0; if (on !== live) { live = on; ht.classList.toggle('ps-live', on); } }, { passive: true }); }
+    /* the Credit limit intro (with-credit-limit.html, intro.js) hands its exit to the page: see introExit() */
+    window.__wdIntroExit = function(o){ return self.introExit(o); };
     this._onVp = function(){ self.setState({ vp: window.__PS_PH || 740 }); };
     window.addEventListener('ps-viewport', this._onVp);
     /* Motion only loads once the document is actually painted — in a hidden
@@ -648,6 +650,114 @@ class Component extends DCLogic {
     return { total:total, avail:avail, temp:temp, white:longLeft / total, green:(longLeft + tempLeft) / total,
              till:(T.till != null ? T.till : this.props.temporaryValidTill) || 'Nov 20' };
   }
+  /* ---------------- Credit limit intro → home (with-credit-limit.html) ----------------
+     The same interaction as picking a term in "Apply a loan" (the full page closes in to the order card), built the same
+     way: ONE progress 0→1 in a Motion value, animated with this.spring() and the same rest thresholds as tweenMp(); its
+     change event writes every affected style straight to the DOM (no React renders), with the same windows (win) and
+     travel distances (MT.Y) the sheet's morph uses.
+       · the Credit limit screen (intro.js's frame, full screen, above the page) closes its edges in to this card's exact box,
+         corners rounding to 24, its colour turning from the dark to the card's blue; its content stays put and fades early;
+       · the card itself is lifted above that screen for the length of the exit, with no background of its own: the closing
+         screen IS its background; at rest the card takes the colour back and the screen is removed — nothing fades over;
+       · the card's amount is the big number: the real amount element starts at the big number's place and size (it lies
+         inside the card's box, so nothing clips it) and settles on the progress; the decimals fade in on the way;
+       · the rest of the card comes in on windows of the same progress: label and info, the two legend rows, the bar (its
+         track, then its fills revealed left to right), the Withdraw pill, the glow, and last the card's shadow;
+       · the cards below rise in one after another, then the tab bar (static markup, styled the same way).
+     Returns false (intro.js then runs its own simpler exit) if Motion or the card is not there yet. */
+  introExit(o){
+    var self = this, fm = this.state.fm, MT = this.mt(), R = this._r, card = R.hc, amt = R.hcAmt;
+    if (!fm || !fm.animate || !fm.motionValue || !card || !amt) return false;
+    var box = o.box, f = o.iframe, src = o.src;
+    /* measure everything first */
+    var B = box.getBoundingClientRect(), CR = card.getBoundingClientRect();
+    var to = { t:CR.top - B.top, r:B.right - CR.right, b:B.bottom - CR.bottom, l:CR.left - B.left };
+    var ar = amt.getBoundingClientRect(), p0 = amt.children[0].getBoundingClientRect(), p1 = amt.children[1].getBoundingClientRect();
+    var s0 = src && src.size ? src.size / 36 : 1;                        /* the card's amount is 36px */
+    var mx = (p0.left + p1.right) / 2 - ar.left, my = (p0.top + p0.bottom) / 2 - ar.top;   /* "₱40,000" without the decimals */
+    /* the big number is set tighter (−0.02em) and slightly off-white: the card's amount starts with the same tracking and
+       colour and turns into its own on the progress; its centre follows a straight line from the big number's centre to
+       its resting place, the tracking change included (letter-spacing adds after every glyph) */
+    var pS = amt.children[0], dS = amt.children[1], nD = (dS.textContent || '').length;
+    var lsP1 = parseFloat(pS.style.letterSpacing) || 0, lsD1 = parseFloat(dS.style.letterSpacing) || 0, ls0 = -0.02 * 36;
+    var from = src ? { x:src.x, y:src.y } : { x:ar.left + mx, y:ar.top + my }, toC = { x:ar.left + mx, y:ar.top + my };
+    var srcColor = (src && src.color) || '#ffffff';
+    /* every style touched is saved and put back exactly at rest (React's own inline values included) */
+    var touched = [];
+    var set = function(el, prop, val){
+      if (!el) return;
+      if (!el.__iv) { el.__iv = {}; touched.push(el); }
+      if (!(prop in el.__iv)) el.__iv[prop] = el.style[prop];
+      el.style[prop] = val;
+    };
+    var base = function(el){ var v = el && el.__iv && el.__iv.opacity; return v === undefined || v === '' ? 1 : parseFloat(v); };
+    var mixHex = function(a, b, k){
+      var h = function(c){ return [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16)]; }, x = h(a), y = h(b);
+      k = Math.max(0, Math.min(1, k));
+      return 'rgb(' + x.map(function(c, i){ return Math.round(c + (y[i] - c) * k); }).join(',') + ')';
+    };
+    var win = function(k, a, b){ var t = Math.max(0, Math.min(1, (k - a) / (b - a))); return t * t * (3 - 2 * t); };
+    var r3 = function(v){ return Math.round(v * 1000) / 1000; };
+    /* the page around the card */
+    var frame = document.querySelector('.ps-frame');
+    var items = [].slice.call(document.querySelectorAll('.ps-home-in > *')).filter(function(el){ return !el.contains(card); });
+    var logo = document.querySelector('img[alt="PeraSure"]'), head = logo && logo.parentElement && logo.parentElement.parentElement;
+    var bar = document.querySelector('.ps-tabbar');
+    var rise = items.concat(bar ? [bar] : []);
+    /* start: the card above the closing screen, see-through; the big number handed to the card's amount */
+    set(card, 'zIndex', '101'); set(card, 'backgroundColor', 'transparent'); set(card, 'boxShadow', 'none');
+    set(amt, 'transformOrigin', '0 0'); set(amt, 'willChange', 'transform');
+    set(box, 'willChange', 'clip-path');
+    if (src && src.el) src.el.style.visibility = 'hidden';
+    var SHA = [[0, 0, 2, 0, 0.16], [0, 4, 12, 0, 0.08]];               /* this.SH.card, by layer: x y blur spread alpha */
+    var apply = function(k){
+      var c = Math.max(0, Math.min(1, k));
+      /* the screen's edges close in to the card; corners round; dark → the card's blue */
+      box.style.clipPath = 'inset(' + r3(to.t * c) + 'px ' + r3(to.r * c) + 'px ' + r3(to.b * c) + 'px ' + r3(to.l * c) + 'px round ' + r3(24 * c) + 'px)';
+      box.style.backgroundColor = mixHex('#0d1620', self.C.blue, win(k, 0.15, 0.85));
+      if (f) f.style.opacity = r3(1 - win(k, 0, 0.4));
+      /* the amount settles from the big number (follows the spring exactly, like the sheet's lerp) */
+      var sc = s0 + (1 - s0) * k, lsP = ls0 + (lsP1 - ls0) * k, lsD = ls0 + (lsD1 - ls0) * k;
+      set(pS, 'letterSpacing', r3(lsP) + 'px'); set(dS, 'letterSpacing', r3(lsD) + 'px');
+      var mxk = mx + ((lsP - lsP1) + (lsD - lsD1) * nD) / 2;
+      var cx = from.x + (toC.x - from.x) * k, cy = from.y + (toC.y - from.y) * k;
+      set(amt, 'transform', 'translate(' + r3(cx - ar.left - sc * mxk) + 'px,' + r3(cy - ar.top - sc * my) + 'px) scale(' + r3(sc) + ')');
+      set(amt, 'color', mixHex(srcColor, '#ffffff', c));
+      set(R.hcDec, 'opacity', r3(win(k, 0.45, 0.9)));
+      /* the rest of the card, on windows of the same progress */
+      var e;
+      e = win(k, 0.35, 0.85); set(R.hcLabel, 'opacity', r3(base(R.hcLabel) * e)); set(R.hcLabel, 'transform', 'translateY(' + r3((1 - e) * MT.Y.text) + 'px)');
+      set(R.hcInfo, 'opacity', r3(win(k, 0.45, 0.9)));
+      e = win(k, 0.38, 0.86); set(R.hcLeg0, 'opacity', r3(e)); set(R.hcLeg0, 'transform', 'translateY(' + r3((1 - e) * MT.Y.text) + 'px)');
+      e = win(k, 0.46, 0.92); set(R.hcLeg1, 'opacity', r3(e)); set(R.hcLeg1, 'transform', 'translateY(' + r3((1 - e) * MT.Y.text) + 'px)');
+      set(R.hcBar, 'opacity', r3(win(k, 0.5, 0.9)));
+      set(R.hcFill, 'clipPath', 'inset(0px ' + r3((1 - win(k, 0.58, 1)) * 100) + '% 0px 0px)');
+      e = win(k, 0.55, 0.97); set(R.hcPill, 'opacity', r3(e)); set(R.hcPill, 'transform', 'translateY(' + r3((1 - e) * MT.Y.block) + 'px)');
+      set(R.hcGlow, 'opacity', r3(win(k, 0.6, 1)));
+      var a = win(k, 0.7, 1);
+      set(card, 'boxShadow', SHA.map(function(L){ return L[0] + 'px ' + L[1] + 'px ' + L[2] + 'px ' + L[3] + 'px rgba(0,1,40,' + r3(L[4] * a) + ')'; }).join(', '));
+      /* around it */
+      if (head) set(head, 'opacity', r3(win(k, 0.1, 0.6)));
+      rise.forEach(function(el, i){
+        var e2 = win(k, 0.22 + i * 0.08, 0.72 + i * 0.08);
+        set(el, 'opacity', r3(e2)); set(el, 'transform', 'translateY(' + r3((1 - e2) * (el === bar ? MT.Y.block : MT.Y.block * 1.6)) + 'px)');
+      });
+    };
+    apply(0);
+    var mv = fm.motionValue(0), off = mv.on('change', apply);
+    if (frame) frame.style.willChange = '';
+    fm.animate(mv, 1, Object.assign({}, this.spring(), { restDelta: 0.001, restSpeed: 0.01,
+      onComplete: function(){
+        apply(1); off();
+        /* at rest: the card takes its colour back the same frame the screen goes (identical blue, identical box) */
+        touched.forEach(function(el){ for (var p in el.__iv) el.style[p] = el.__iv[p]; delete el.__iv; });
+        box.style.clipPath = ''; box.style.willChange = '';
+        if (o.done) o.done();
+      }
+    }));
+    return true;
+  }
+
   hero(){
     var C = this.C, MT = this.mt(), open = this.state.pillOpen, avail = this.available();
     var tap = () => {
@@ -668,7 +778,7 @@ class Component extends DCLogic {
     var availStr = this.money(B.avail, 2).split('.');
     var img = (src, w, h, style) => React.createElement('img', { src:src, alt:'', width:w, height:h, draggable:false,
       style:Object.assign({ display:'block', maxWidth:'none', width:w, height:h }, style || {}) });
-    var legend = (key, dot, text) => React.createElement('div', { key:key, style:{ display:'flex', flexDirection:'row', gap:4, alignItems:'center', flex:'none' } }, [
+    var legend = (key, dot, text, ref) => React.createElement('div', { key:key, ref:this.ref(ref), style:{ display:'flex', flexDirection:'row', gap:4, alignItems:'center', flex:'none' } }, [
       React.createElement('span', { key:'d', style:{ width:6, height:6, flex:'none', display:'block' } }, img(dot, 6, 6)),
       this.sp(text, Object.assign({ flex:'1 1 auto', minWidth:0, fontFamily:'Inter, sans-serif', fontWeight:400, fontSize:12, lineHeight:'16px' }, dim), { key:'t' })
     ]);
@@ -681,6 +791,7 @@ class Component extends DCLogic {
       borderRadius:'0 999px 999px 0', backgroundColor:color, boxShadow:shadow } });
 
     var pill = this.el('div', Object.assign({
+      ref: this.ref('hcPill'),
       onClick: tap,
       whileTap: { scale: open ? 0.99 : 0.98 },
       transition: MT.PRESS
@@ -708,13 +819,13 @@ class Component extends DCLogic {
       ])
     ]);
 
-    return this.el('div', Object.assign({ key:'hero' }, this.mo({
+    return this.el('div', Object.assign({ key:'hero', ref:this.ref('hc') }, this.mo({
       position:'relative', boxSizing:'border-box', overflow:'hidden', borderRadius:24,
       backgroundColor:C.blue, boxShadow:this.SH.card, padding:12, display:'flex',
       flexDirection:'column', gap:16, justifyContent:'flex-end', flex:'none'
     }, { height: open ? 208 : 196 })), [
       /* the glow under the Withdraw pill (Figma asset), anchored to the card's bottom so it follows the pill */
-      React.createElement('div', { key:'glow', style:{ position:'absolute', left:'calc(50% - 0.5px)', bottom:-63, width:411, height:109,
+      React.createElement('div', { key:'glow', ref:this.ref('hcGlow'), style:{ position:'absolute', left:'calc(50% - 0.5px)', bottom:-63, width:411, height:109,
         transform:'translateX(-50%)', pointerEvents:'none' } },
         React.createElement('div', { style:{ position:'absolute', top:'-31.47%', bottom:'-31.47%', left:'-8.35%', right:'-8.35%' } },
           img('assets/card-glow.svg', '100%', '100%'))),
@@ -722,26 +833,28 @@ class Component extends DCLogic {
       React.createElement('div', { key:'body', style:{ position:'relative', display:'flex', flexDirection:'column', gap:8, flex:'none' } }, [
         React.createElement('div', { key:'top', style:{ display:'flex', flexDirection:'row', gap:12, alignItems:'flex-start', padding:'0 4px' } }, [
           React.createElement('div', { key:'amt', style:{ flex:'1 1 auto', minWidth:0, display:'flex', flexDirection:'column', gap:2, whiteSpace:'nowrap' } }, [
-            this.sp('Available amount', Object.assign({ fontFamily:'Inter, sans-serif', fontWeight:600, fontSize:11, lineHeight:'14px' }, dim), { key:'a' }),
+            this.sp('Available amount', Object.assign({ fontFamily:'Inter, sans-serif', fontWeight:600, fontSize:11, lineHeight:'14px' }, dim), { key:'a', ref:this.ref('hcLabel') }),
             /* Satoshi Bold; ₱ falls back to Inter, as in the app */
-            React.createElement('div', { key:'b', 'data-wd-amount':'1', style:{ display:'flex', flexDirection:'row', alignItems:'baseline', color:'#ffffff', fontFamily:'Satoshi, Inter, sans-serif', fontWeight:700, lineHeight:1 } }, [
+            React.createElement('div', { key:'b', 'data-wd-amount':'1', ref:this.ref('hcAmt'), style:{ display:'flex', flexDirection:'row', alignItems:'baseline', color:'#ffffff', fontFamily:'Satoshi, Inter, sans-serif', fontWeight:700, lineHeight:1 } }, [
               this.sp(availStr[0].charAt(0), { fontSize:36, lineHeight:1, letterSpacing:'0.72px' }, { key:'p' }),
               this.sp(availStr[0].slice(1), { fontSize:36, lineHeight:1, letterSpacing:'1.08px' }, { key:'x' }),
-              this.sp('.' + availStr[1], { fontSize:16, lineHeight:1, letterSpacing:'0.48px' }, { key:'y' })
+              this.sp('.' + availStr[1], { fontSize:16, lineHeight:1, letterSpacing:'0.48px' }, { key:'y', ref:this.ref('hcDec') })
             ])
           ]),
-          React.createElement('span', { key:'info', style:{ width:20, height:20, flex:'none', display:'block' } }, img('assets/icon-info-circle.svg', 20, 20))
+          React.createElement('span', { key:'info', ref:this.ref('hcInfo'), style:{ width:20, height:20, flex:'none', display:'block' } }, img('assets/icon-info-circle.svg', 20, 20))
         ]),
         React.createElement('div', { key:'slider', style:{ display:'flex', flexDirection:'column', gap:8 } }, [
           React.createElement('div', { key:'legend', style:{ display:'flex', flexDirection:'column', gap:2 } }, [
-            legend('total', 'assets/dot-total-credit.svg', 'Total credit: ' + this.money(B.total, 0)),
-            legend('temp', 'assets/dot-temporary.svg', 'Temporary: ' + this.money(B.temp, 0) + ' (Incl. valid till ' + B.till + ')')
+            legend('total', 'assets/dot-total-credit.svg', 'Total credit: ' + this.money(B.total, 0), 'hcLeg0'),
+            legend('temp', 'assets/dot-temporary.svg', 'Temporary: ' + this.money(B.temp, 0) + ' (Incl. valid till ' + B.till + ')', 'hcLeg1')
           ]),
-          React.createElement('div', { key:'bar', style:{ position:'relative', isolation:'isolate', display:'flex', alignItems:'center', height:8,
-            borderRadius:999, overflow:'hidden', backgroundColor:'rgba(0,1,40,0.3)' } }, [
-            wW > 0 ? seg('long', wW, 2, -OV, '#ffffff', '0px 0px 4px 0px rgba(0,1,40,0.16), 0px 8px 32px 0px rgba(0,1,40,0.12)') : null,
-            gW > 0 ? seg('temp', gW + OV, 1, 0, '#58e09a', '0px 0px 2px 0px rgba(0,1,40,0.16), 0px 4px 12px 0px rgba(0,1,40,0.08)') : null
-          ])
+          React.createElement('div', { key:'bar', ref:this.ref('hcBar'), style:{ position:'relative', isolation:'isolate', height:8,
+            borderRadius:999, overflow:'hidden', backgroundColor:'rgba(0,1,40,0.3)' } },
+            /* the two fills in their own row (the Credit limit intro reveals it left to right) */
+            React.createElement('div', { ref:this.ref('hcFill'), style:{ position:'absolute', left:0, top:0, right:0, bottom:0, display:'flex', alignItems:'center' } }, [
+              wW > 0 ? seg('long', wW, 2, -OV, '#ffffff', '0px 0px 4px 0px rgba(0,1,40,0.16), 0px 8px 32px 0px rgba(0,1,40,0.12)') : null,
+              gW > 0 ? seg('temp', gW + OV, 1, 0, '#58e09a', '0px 0px 2px 0px rgba(0,1,40,0.16), 0px 4px 12px 0px rgba(0,1,40,0.08)') : null
+            ]))
         ])
       ]),
 
