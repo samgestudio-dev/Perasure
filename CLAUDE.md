@@ -30,7 +30,8 @@ README.md                  human-facing summary + demo / animation tables
 ## Adding a demo
 
 1. Put the demo's file(s) in `prototypes/<slug>/` — for a new one, start from a copy of `prototypes/_template/index.html`. The recommended variant is `index.html` (exception:
-   `credit-limit-coins` is split into `baked/` — the deliverable, `baked/baked-heap.html` + its css/js/`baked.json` — and
+   `credit-limit-coins` is split into `baked/` — the deliverable, `baked/baked-heap.html` + its css/js/`baked.json`, plus the
+   `baked-shockwave.html` variant (same data and css, own js) — and
    `physics-tuner/` — the engineering file for tuning the coin paths and baking them, never shipped; the top-level
    `index.html` and `baked-heap.html` there only redirect old links);
    name other variants by what differs (`with-blur.html`, `snappy-spring.html`).

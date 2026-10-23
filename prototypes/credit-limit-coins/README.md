@@ -15,6 +15,7 @@ credit-limit-coins/
     baked-heap.css         page styles
     baked-heap.js          the animation: data interface, count-up, burst, canvas coin drawing, timeline
     baked.json             the coin recording, loaded by baked-heap.js at start-up
+    baked-shockwave.html   VARIANT: the same plus a shockwave (own script baked-shockwave.js; same css and data)
   physics-tuner/         ENGINEERING ONLY (not shipped)
     physics-tuner.html     live Matter.js simulation + Tune panel, self-contained
     record-tuner.js        bakes the tuner's simulation into baked/baked.json
@@ -194,6 +195,7 @@ The count-up interpolates between whatever the two amounts are, so a ₱3,000 ra
   - `physics-tuner/bake.js` is the earlier standalone simulation (aimed heaps, rule checks, seed search); it is kept for reference and not used for the current recording.
 - **Start**: both begin with no coins at all; the three stacks are built only by the 44 drops (`start: 0` in `STACK`).
 - **Layout**: the number block sits a little higher and the coins a little lower than in the first versions (the tuner and Baked heap match).
+- **Shockwave variant** (`baked/baked-shockwave.html` + `baked-shockwave.js`): Baked heap plus a screen-distorting shockwave. When the amount lands, a bubble of compressed air grows out of it and refracts the whole screen like a glass ball: magnified inside, squeezed and repeated toward its edge, a sharp seam against the picture outside, a thin band of air pushed outward just beyond it; the red, green and blue channels bend slightly differently (a glass fringe from the scene's own colours; nothing is drawn or coloured). How: for about a second `<main>` (given the page colour as background) gets an SVG displacement filter whose map is one 384×384 image made on the first play; each frame only moves/resizes it and sets the strength. Strength 1.5 by default, `?shock=<number>` overrides (`0` = off). This variant has no automatic downgrades: every phone draws the coins at full screen sharpness (up to 3×) and gets the full three-channel effect; only the phone's Reduce motion setting still skips the animation. Known limit: the browser's filter samples without smoothing, so the most squeezed part of the edge shows fine streaks.
 - **Expiry icon**: the clock in the expiry pill is `Icon / Pending` from the PeraSure design system in Figma (node 3426:2872). The SVG is kept as exported in `assets/icon-pending.svg` and inlined in both pages, placed as in the Figma component; its stroke is tinted with the accent blue by CSS.
 - **Layers (all versions)**: the coins are under everything else on the page (the number, the pills, Replay) and over the small twinkling stars behind them. The coin canvases reach high enough that a coin thrown up passes under the number instead of being cut off (Physics tuner: up to the top of the page; Baked heap: up to the highest point in its recording).
 
