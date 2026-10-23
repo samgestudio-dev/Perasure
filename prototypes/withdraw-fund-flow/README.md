@@ -49,14 +49,17 @@ spring (`this.spring()`, Tune → Motion feel; Smooth = stiffness 240, damping 3
 morph; its change event writes the styles straight to the DOM, with the sheet's windows and travel distances (`MT.Y`):
 
 - the Credit limit screen's edges close in to the card's exact box, corners rounding to 24, colour turning from the dark to
-  the card's blue; its content stays put and fades early;
+  the card's blue (its page turns see-through so that colour shows); its number block and coins stay put and fade early; its
+  four stars move up with the closing box — each to the same relative spot inside it — and then fade;
 - the card is lifted above that screen for the length of the exit with no background of its own — the closing screen is its
   background; at rest the card takes the blue back and the screen is removed (identical box and colour: nothing fades over);
 - the amount is the same element the whole way: the card's real amount starts at the big number's place, size, tracking and
   colour (the big number lies inside the card's box, so nothing clips it) and settles on the progress; decimals fade in;
+- the card's content is cut to the closing box, not to the card's final edges, so what sits on its bottom rides the box's
+  bottom edge: the Withdraw pill comes in halfway through and moves up with that edge until the end; the glow under it
+  brightens slowly from halfway, always at the bottom;
 - the rest of the card comes in on windows of the progress: label and info, the two legend rows, the bar (track, then its
-  fills revealed left to right), the Withdraw pill, the glow, and last the card's shadow; the cards below rise in one after
-  another, then the tab bar.
+  fills revealed left to right), and last the card's shadow; the cards below rise in one after another, then the tab bar.
 
 A tap after the animation has ended skips the rest of the 3 s. While the intro plays the home's runtime does not start
 (`boot.js` waits), so nothing competes with the coins; the home is built during the hold. Afterwards the frame is removed.

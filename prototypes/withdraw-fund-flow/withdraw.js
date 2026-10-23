@@ -656,13 +656,18 @@ class Component extends DCLogic {
      change event writes every affected style straight to the DOM (no React renders), with the same windows (win) and
      travel distances (MT.Y) the sheet's morph uses.
        · the Credit limit screen (intro.js's frame, full screen, above the page) closes its edges in to this card's exact box,
-         corners rounding to 24, its colour turning from the dark to the card's blue; its content stays put and fades early;
+         corners rounding to 24, its colour turning from the dark to the card's blue (the frame's own page turns see-through
+         so that colour shows); its number block and coins stay put and fade early, its four stars move up with the closing
+         box — each to the same relative spot inside it — and then fade;
        · the card itself is lifted above that screen for the length of the exit, with no background of its own: the closing
          screen IS its background; at rest the card takes the colour back and the screen is removed — nothing fades over;
        · the card's amount is the big number: the real amount element starts at the big number's place and size (it lies
          inside the card's box, so nothing clips it) and settles on the progress; the decimals fade in on the way;
+       · the card's content is cut to the closing box (not to the card's final edges), so what sits on the card's bottom rides
+         the box's bottom edge: the Withdraw pill comes in halfway through and moves up with that edge until the end, and the
+         glow under it brightens slowly from halfway, always at the bottom;
        · the rest of the card comes in on windows of the same progress: label and info, the two legend rows, the bar (its
-         track, then its fills revealed left to right), the Withdraw pill, the glow, and last the card's shadow;
+         track, then its fills revealed left to right), and last the card's shadow;
        · the cards below rise in one after another, then the tab bar (static markup, styled the same way).
      Returns false (intro.js then runs its own simpler exit) if Motion or the card is not there yet. */
   introExit(o){
@@ -704,8 +709,33 @@ class Component extends DCLogic {
     var logo = document.querySelector('img[alt="PeraSure"]'), head = logo && logo.parentElement && logo.parentElement.parentElement;
     var bar = document.querySelector('.ps-tabbar');
     var rise = items.concat(bar ? [bar] : []);
-    /* start: the card above the closing screen, see-through; the big number handed to the card's amount */
+    /* the Credit limit page inside the frame: see-through from now on (the closing box's colour is its background), its
+       number block and coins fade on their own, its four stars travel with the box. The frame is removed afterwards. */
+    var fd = null, fHero = null, fCanvases = [], stars = [];
+    try { fd = f && f.contentDocument; } catch (e) {}
+    if (fd) {
+      var st = fd.createElement('style');
+      st.textContent = ':root{color-scheme:normal!important}html,body,main{background:transparent!important}';
+      fd.head.appendChild(st); f.style.background = 'transparent';
+      fHero = fd.getElementById('hero');
+      fCanvases = [fd.getElementById('cvBack'), fd.getElementById('cvFront')].filter(Boolean);
+      var svg = fd.getElementById('artStars');
+      if (svg) {
+        var sr = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal, us = Math.min(sr.width / vb.width, sr.height / vb.height) || 1;
+        var W = B.width, H = B.height, sx = (W - to.l - to.r) / W, sy = (H - to.t - to.b) / H;
+        [].slice.call(svg.querySelectorAll('.tw')).forEach(function(g){
+          /* each star's centre goes to the same relative spot inside the closing box (in the svg's own units) */
+          var r = g.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+          var wrap = fd.createElementNS('http://www.w3.org/2000/svg', 'g');
+          g.parentNode.insertBefore(wrap, g); wrap.appendChild(g);
+          stars.push({ g:wrap, dx:(to.l + cx * sx - cx) / us, dy:(to.t + cy * sy - cy) / us });
+        });
+      }
+    }
+    /* start: the card above the closing screen, see-through and cut to the closing box (not to its own edges); the big
+       number handed to the card's amount */
     set(card, 'zIndex', '101'); set(card, 'backgroundColor', 'transparent'); set(card, 'boxShadow', 'none');
+    set(card, 'overflow', 'visible');
     set(amt, 'transformOrigin', '0 0'); set(amt, 'willChange', 'transform');
     set(box, 'willChange', 'clip-path');
     if (src && src.el) src.el.style.visibility = 'hidden';
@@ -715,7 +745,14 @@ class Component extends DCLogic {
       /* the screen's edges close in to the card; corners round; dark → the card's blue */
       box.style.clipPath = 'inset(' + r3(to.t * c) + 'px ' + r3(to.r * c) + 'px ' + r3(to.b * c) + 'px ' + r3(to.l * c) + 'px round ' + r3(24 * c) + 'px)';
       box.style.backgroundColor = mixHex('#0d1620', self.C.blue, win(k, 0.15, 0.85));
-      if (f) f.style.opacity = r3(1 - win(k, 0, 0.4));
+      /* inside the frame: the number block and coins fade early; the stars move up with the box, then fade */
+      if (fHero) fHero.style.opacity = r3(1 - win(k, 0, 0.35));
+      fCanvases.forEach(function(cv){ cv.style.opacity = r3(1 - win(k, 0, 0.4)); });
+      var so = r3(1 - win(k, 0.45, 0.85));
+      stars.forEach(function(S){ S.g.setAttribute('transform', 'translate(' + r3(S.dx * c) + ' ' + r3(S.dy * c) + ')'); S.g.style.opacity = so; });
+      /* the card's content is cut to the closing box: its edges, in the card's own coordinates */
+      var u = 1 - c;
+      set(card, 'clipPath', 'inset(' + r3(-to.t * u) + 'px ' + r3(-to.r * u) + 'px ' + r3(-to.b * u) + 'px ' + r3(-to.l * u) + 'px round ' + r3(24 * c) + 'px)');
       /* the amount settles from the big number (follows the spring exactly, like the sheet's lerp) */
       var sc = s0 + (1 - s0) * k, lsP = ls0 + (lsP1 - ls0) * k, lsD = ls0 + (lsD1 - ls0) * k;
       set(pS, 'letterSpacing', r3(lsP) + 'px'); set(dS, 'letterSpacing', r3(lsD) + 'px');
@@ -732,8 +769,10 @@ class Component extends DCLogic {
       e = win(k, 0.46, 0.92); set(R.hcLeg1, 'opacity', r3(e)); set(R.hcLeg1, 'transform', 'translateY(' + r3((1 - e) * MT.Y.text) + 'px)');
       set(R.hcBar, 'opacity', r3(win(k, 0.5, 0.9)));
       set(R.hcFill, 'clipPath', 'inset(0px ' + r3((1 - win(k, 0.58, 1)) * 100) + '% 0px 0px)');
-      e = win(k, 0.55, 0.97); set(R.hcPill, 'opacity', r3(e)); set(R.hcPill, 'transform', 'translateY(' + r3((1 - e) * MT.Y.block) + 'px)');
-      set(R.hcGlow, 'opacity', r3(win(k, 0.6, 1)));
+      /* on the box's bottom edge: the pill comes in halfway and rides that edge up; the glow brightens from halfway */
+      var down = r3(to.b * u);
+      set(R.hcPill, 'opacity', r3(win(k, 0.5, 0.66))); set(R.hcPill, 'transform', 'translateY(' + down + 'px)');
+      set(R.hcGlow, 'opacity', r3(win(k, 0.5, 1))); set(R.hcGlow, 'transform', 'translateX(-50%) translateY(' + down + 'px)');
       var a = win(k, 0.7, 1);
       set(card, 'boxShadow', SHA.map(function(L){ return L[0] + 'px ' + L[1] + 'px ' + L[2] + 'px ' + L[3] + 'px rgba(0,1,40,' + r3(L[4] * a) + ')'; }).join(', '));
       /* around it */
