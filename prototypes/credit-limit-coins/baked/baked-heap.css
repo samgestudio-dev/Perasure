@@ -13,13 +13,13 @@ main{box-sizing:border-box;width:100%;max-width:480px;flex:1;display:flex;flex-d
 #hero{position:relative;display:flex;flex-direction:column;align-items:center;color:var(--text);text-align:center}
 #burst{position:absolute;left:50%;top:calc(60px * var(--u));overflow:visible;pointer-events:none;transform:scale(var(--u))}
 #label{font-weight:500;font-size:calc(14px * var(--u));line-height:1.43;color:var(--muted)}
-#amount{margin-top:calc(6px * var(--u));font-family:"Satoshi","Hanken Grotesk",sans-serif;font-weight:700;font-size:calc(64px * var(--u));line-height:1.06;
+#amount{margin-top:calc(6px * var(--u));font-family:var(--ps-font-num);font-weight:700;font-size:calc(64px * var(--u));line-height:1.06;
   letter-spacing:-.02em;font-variant-numeric:tabular-nums;white-space:nowrap;transform-origin:50% 60%}
 #delta{display:flex;gap:calc(10px * var(--u));align-items:center;margin-top:calc(12px * var(--u));min-height:calc(30px * var(--u))}
-#up{font-family:"Satoshi","Hanken Grotesk",sans-serif;padding:calc(5px * var(--u)) calc(12px * var(--u));border-radius:999px;background:var(--accent);color:var(--ink);
+#up{font-family:var(--ps-font-num);padding:calc(5px * var(--u)) calc(12px * var(--u));border-radius:999px;background:var(--accent);color:var(--ink);
   font-weight:700;font-size:calc(15px * var(--u));line-height:1.33;font-variant-numeric:tabular-nums}
-#was{font-family:"Satoshi","Hanken Grotesk",sans-serif;font-weight:500;font-size:calc(15px * var(--u));line-height:1.33;color:var(--muted);text-decoration:line-through;font-variant-numeric:tabular-nums}
-#exp{font-family:"Satoshi","Hanken Grotesk",sans-serif;display:inline-flex;align-items:center;gap:calc(7px * var(--u));margin-top:calc(14px * var(--u));
+#was{font-family:var(--ps-font-num);font-weight:500;font-size:calc(15px * var(--u));line-height:1.33;color:var(--muted);text-decoration:line-through;font-variant-numeric:tabular-nums}
+#exp{font-family:var(--ps-font-num);display:inline-flex;align-items:center;gap:calc(7px * var(--u));margin-top:calc(14px * var(--u));
   padding:calc(7px * var(--u)) calc(14px * var(--u)) calc(7px * var(--u)) calc(11px * var(--u));border-radius:999px;background:var(--chip);color:var(--text);
   font-weight:500;font-size:calc(13px * var(--u));line-height:1.38}
 #exp .ic{flex:none;position:relative;overflow:hidden;width:calc(14px * var(--u));height:calc(14px * var(--u))}

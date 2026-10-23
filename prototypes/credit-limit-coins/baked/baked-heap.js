@@ -421,6 +421,93 @@ function burst(tl, at){
     duration:.5, ease:'power2.in', stagger:.025 }, at + .82);
 }
 
+/* ---------- shockwave: space distortion pushed out from the number when it lands ----------
+   Nothing is drawn: what is behind the wave is bent, like air compressed by a blast. While the wave travels (under a
+   second), a WebGL canvas takes the place of the two coin canvases: every frame it reads them as textures and samples
+   each pixel from a point moved along the radius from the number by a derivative-of-Gaussian profile around the wave
+   front (pushed out just ahead of it, pulled in just behind), so the coins swell and bend as it passes. A weaker echo
+   follows. Before and after, the WebGL canvas does not exist; without WebGL the page simply has no shockwave. */
+var WAVE = { r:0, a:0, r2:0, a2:0 }, warp = null, warpOn = false;
+var WARP_VS = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+var WARP_FS = '#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n' +
+  'uniform sampler2D uB,uF;uniform vec2 uSize,uC;uniform vec3 uW1,uW2;' +            /* uW = (radius, band width, strength) in canvas px */
+  'float bend(float r,vec3 w){float x=(r-w.x)/w.y;return w.z*2.3316*x*exp(-x*x);}' +
+  'void main(){vec2 p=vec2(gl_FragCoord.x,uSize.y-gl_FragCoord.y),d=p-uC;float r=max(length(d),.001);' +
+  'vec2 q=(p-d/r*(bend(r,uW1)+bend(r,uW2)))/uSize;vec4 f=texture2D(uF,q),b=texture2D(uB,q);' +
+  'gl_FragColor=f+b*(1.-f.a);}';
+function warpInit(){
+  if (warp !== null) return warp;
+  if (Q.get('shock') === '0') return (warp = false);     /* ?shock=0: without the shockwave, for comparing */
+  var cv = document.createElement('canvas'), gl = null;
+  cv.id = 'warp';
+  try { gl = cv.getContext('webgl', { alpha:true, premultipliedAlpha:true, antialias:false, depth:false, stencil:false }); } catch (e) {}
+  if (!gl) return (warp = false);
+  function sh(type, src){ var o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); return o; }
+  var pr = gl.createProgram();
+  gl.attachShader(pr, sh(gl.VERTEX_SHADER, WARP_VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, WARP_FS)); gl.linkProgram(pr);
+  if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) return (warp = false);
+  gl.useProgram(pr);
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+  var loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);      /* canvas pixels stay premultiplied: composited as they are */
+  var tex = [0, 1].map(function(i){
+    var t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + i); gl.bindTexture(gl.TEXTURE_2D, t);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    return t;
+  });
+  gl.uniform1i(gl.getUniformLocation(pr, 'uB'), 0); gl.uniform1i(gl.getUniformLocation(pr, 'uF'), 1);
+  var U = {}; ['uSize', 'uC', 'uW1', 'uW2'].forEach(function(n){ U[n] = gl.getUniformLocation(pr, n); });
+  return (warp = { cv:cv, gl:gl, tex:tex, U:U, at:null });
+}
+/* the WebGL canvas takes the coin canvases' exact place and size; they keep drawing, hidden, and feed it */
+function warpStart(){
+  var w = warpInit(); if (!w) return false;
+  var src = LANES.front.cv, cv = w.cv;
+  if (!cv.parentNode) src.parentNode.appendChild(cv);
+  cv.width = src.width; cv.height = src.height;
+  cv.style.cssText = src.style.cssText; cv.style.visibility = ''; cv.style.opacity = '';
+  w.gl.viewport(0, 0, cv.width, cv.height); w.gl.uniform2f(w.U.uSize, cv.width, cv.height);
+  /* the number's centre, in the canvases' pixels; one design unit in those pixels */
+  var r = src.getBoundingClientRect(), b = $('burst').getBoundingClientRect(), k = src.width / r.width;
+  var u = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--u')) || 1;
+  w.at = { k:u * k };
+  w.gl.uniform2f(w.U.uC, (b.left + b.width / 2 - r.left) * k, (b.top + b.height / 2 - r.top) * k);
+  LANES.back.cv.style.visibility = LANES.front.cv.style.visibility = 'hidden';
+  return true;
+}
+function warpStop(){
+  if (!warpOn) return; warpOn = false;
+  LANES.back.cv.style.visibility = LANES.front.cv.style.visibility = '';
+  if (warp && warp.cv.parentNode) { warp.cv.width = warp.cv.height = 0; warp.cv.parentNode.removeChild(warp.cv); }   /* memory back */
+}
+function warpFrame(){
+  var live = WAVE.a > .02 || WAVE.a2 > .02;
+  if (!live) { warpStop(); return; }
+  if (!warpOn) { if (!warpStart()) return; warpOn = true; }
+  var w = warp, gl = w.gl, k = w.at.k;
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, w.tex[0]); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, LANES.back.cv);
+  gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, w.tex[1]); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, LANES.front.cv);
+  /* the band widens as the wave travels; strength is in design units */
+  gl.uniform3f(w.U.uW1, WAVE.r * k, (30 + .11 * WAVE.r) * k, 21 * WAVE.a * k);
+  gl.uniform3f(w.U.uW2, WAVE.r2 * k, (22 + .09 * WAVE.r2) * k, 9 * WAVE.a2 * k);
+  gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+}
+function shockwave(tl, at){
+  WAVE.r = WAVE.a = WAVE.r2 = WAVE.a2 = 0;
+  tl.set(WAVE, { r:0, a:0, r2:0, a2:0 }, 0);
+  /* main front: from the number to past the screen corners, fast at first so it reaches the coins as they are knocked up */
+  tl.fromTo(WAVE, { r:40 }, { r:760, duration:.85, ease:'power3.out', immediateRender:false }, at);
+  tl.fromTo(WAVE, { a:0 }, { a:1, duration:.05, ease:'none', immediateRender:false }, at);
+  tl.to(WAVE, { a:0, duration:.75, ease:'power1.in' }, at + .08);
+  /* a weaker echo just behind it */
+  tl.fromTo(WAVE, { r2:30 }, { r2:520, duration:.8, ease:'power3.out', immediateRender:false }, at + .1);
+  tl.fromTo(WAVE, { a2:0 }, { a2:1, duration:.05, ease:'none', immediateRender:false }, at + .1);
+  tl.to(WAVE, { a2:0, duration:.65, ease:'power1.in' }, at + .18);
+}
+
 /* ---------- stars behind the coins keep twinkling: breathe in scale, tilt a little, each on its own beat ----------
    They loop forever, so they are paused while the page is hidden and never started with reduced motion. */
 var twinkles = [];
@@ -443,7 +530,7 @@ document.addEventListener('visibilitychange', function(){
 
 /* ---------- timeline ---------- */
 var tl = null, NUM = { v:0 }, fresh = false;
-function frame(){ render(tl.time()); paint(false); }   /* one draw per tick, only for rows that changed */
+function frame(){ render(tl.time()); paint(false); warpFrame(); }   /* one draw per tick, only for rows that changed; then the shockwave, from what was just drawn */
 function build(){
   if (tl) tl.kill();
   stopTwinkles();
@@ -469,6 +556,8 @@ function build(){
   tl.to(amountEl, { color:'#EEF5EF', duration:.6, ease:'power1.inOut' }, 'land+=.55');
   /* burst: rings, rays and sparkles thrown out from the number */
   burst(tl, F);
+  /* shockwave: space distortion pushed out from the number */
+  shockwave(tl, F);
   /* the whole scene takes the hit */
   tl.to(['#hero', '#art'], { keyframes:{ x:[0, -7, 6, -4, 3, -1, 0], y:[0, 4, -3, 2, -1, 0, 0] }, duration:.34, ease:'none' }, 'land');
   tl.fromTo('#up', { scale:.3, opacity:0 }, { scale:1, opacity:1, duration:.36, ease:'back.out(2.6)' }, 'land+=.05');
@@ -499,6 +588,7 @@ function showFinal(){
   if (tl) { tl.kill(); tl = null; }
   stopTwinkles();
   $('burst').innerHTML = '';
+  WAVE.a = WAVE.a2 = 0; warpStop();
   gsap.set(['#label', '#amount', '#up', '#was', '#exp'], { opacity:1, x:0, y:0, scale:1 });
   gsap.set(['#label', amountEl], { clearProps:'filter' }); gsap.set(amountEl, { yPercent:0 });
   gsap.set(amountEl, { color:'#EEF5EF' });
