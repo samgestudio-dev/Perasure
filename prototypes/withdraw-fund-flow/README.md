@@ -26,6 +26,8 @@ Available amount (Satoshi Bold 36, ₱ from Inter), a legend (total credit; temp
 bar, then the frosted Withdraw pill with the glow under it. The bar is the total credit:
 
 - **white** = long-term credit still available, **green** (right after it) = temporary credit still available, the dark rest = used;
+  each is as long as its share of the total credit (Figma node 9867:36993). The white bar overlaps the green by 4 px so its
+  rounded end leaves no gap; the green bar is 4 px longer to make up for it, so the green that shows is exactly its share;
 - spending uses the **temporary credit first**, then the long-term credit. So with the design's numbers (₱40,000 available of
   ₱50,000, ₱10,000 temporary) the temporary credit is used up and no green shows; with ₱45,000 available, white ends at 80 % and
   green at 90 %.

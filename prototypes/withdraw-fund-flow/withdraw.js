@@ -672,9 +672,13 @@ class Component extends DCLogic {
       React.createElement('span', { key:'d', style:{ width:6, height:6, flex:'none', display:'block' } }, img(dot, 6, 6)),
       this.sp(text, Object.assign({ flex:'1 1 auto', minWidth:0, fontFamily:'Inter, sans-serif', fontWeight:400, fontSize:12, lineHeight:'16px' }, dim), { key:'t' })
     ]);
-    var fill = (key, w, shadow) => React.createElement('div', { key:key, style:{
-      position:'absolute', left:0, top:0, height:8, width:Math.round(w * W * 100) / 100, borderRadius:'0 999px 999px 0',
-      opacity:0.8, boxShadow:shadow, backgroundColor: key === 'temp' ? '#58e09a' : '#ffffff' } });
+    /* the bar (Figma node 9867:36993): white then green side by side, each as long as its share of the total credit.
+       The white one overlaps the green by 4px (margin -4, drawn on top) so its rounded end leaves no gap; the green one
+       is 4px longer to make up for it, so the green that shows is exactly its share. */
+    var wW = B.white * W, gW = (B.green - B.white) * W, OV = wW > 0 && gW > 0 ? 4 : 0;
+    var seg = (key, w, z, mr, color, shadow) => React.createElement('div', { key:key, style:{
+      position:'relative', flex:'none', height:8, width:Math.round(w * 100) / 100, marginRight:mr, zIndex:z,
+      borderRadius:'0 999px 999px 0', backgroundColor:color, boxShadow:shadow } });
 
     var pill = this.el('div', Object.assign({
       onClick: tap,
@@ -733,9 +737,10 @@ class Component extends DCLogic {
             legend('total', 'assets/dot-total-credit.svg', 'Total credit: ' + this.money(B.total, 0)),
             legend('temp', 'assets/dot-temporary.svg', 'Temporary: ' + this.money(B.temp, 0) + ' (Incl. valid till ' + B.till + ')')
           ]),
-          React.createElement('div', { key:'bar', style:{ position:'relative', height:8, borderRadius:999, overflow:'hidden', backgroundColor:'rgba(0,1,40,0.3)' } }, [
-            fill('temp', B.green, '0px 0px 2px 0px rgba(0,1,40,0.16), 0px 4px 12px 0px rgba(0,1,40,0.08)'),
-            fill('long', B.white, '0px 0px 4px 0px rgba(0,1,40,0.16), 0px 8px 32px 0px rgba(0,1,40,0.12)')
+          React.createElement('div', { key:'bar', style:{ position:'relative', isolation:'isolate', display:'flex', alignItems:'center', height:8,
+            borderRadius:999, overflow:'hidden', backgroundColor:'rgba(0,1,40,0.3)' } }, [
+            wW > 0 ? seg('long', wW, 2, -OV, '#ffffff', '0px 0px 4px 0px rgba(0,1,40,0.16), 0px 8px 32px 0px rgba(0,1,40,0.12)') : null,
+            gW > 0 ? seg('temp', gW + OV, 1, 0, '#58e09a', '0px 0px 2px 0px rgba(0,1,40,0.16), 0px 4px 12px 0px rgba(0,1,40,0.08)') : null
           ])
         ])
       ]),
