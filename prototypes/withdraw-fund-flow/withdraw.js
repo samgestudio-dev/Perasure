@@ -153,7 +153,7 @@ class Component extends DCLogic {
      and up behind the status bar (ee); 0 elsewhere */
   sb(){ return Math.max(0, Math.round(window.__PS_SB || 0)); }
   ee(){ return Math.max(0, Math.round(window.__PS_E || 0)); }
-  spring(){ var F = this.mt().FEEL; return F[this.props.feel] || F.Smooth; }
+  spring(){ var F = this.mt().FEEL, T = window.WD_TUNE || {}; return F[T.feel || this.props.feel] || F.Smooth; }
   available(){ return true; }
 
   el(tag, props, kids){
@@ -633,6 +633,21 @@ class Component extends DCLogic {
   }
 
   /* ---------------- HOME : hero card with the morphing pill ---------------- */
+  /* ---------------- HOME : the available-amount card (Figma: PeraSure design system, node 9867:36981) ----------------
+     Available amount, a two-line legend (total credit, temporary credit) and a credit bar, then the Withdraw pill.
+     The bar is the total credit: white = long-term credit still available, green (right after it) = temporary credit
+     still available, the dark rest = used. Spending uses the temporary credit first, then the long-term credit. */
+  creditBar(){
+    var T = window.WD_TUNE || {}, num = function(v, d){ v = Number(v); return isFinite(v) ? v : d; };
+    var total = Math.max(1, num(T.total != null ? T.total : this.props.totalBalance, 50000));
+    var avail = Math.max(0, Math.min(total, num(T.available != null ? T.available : this.props.availableAmount, 40000)));
+    var temp = Math.max(0, Math.min(total, num(T.temporary != null ? T.temporary : this.props.temporaryAmount, 10000)));
+    var used = total - avail;
+    var tempLeft = Math.max(0, temp - used);                 /* temporary credit is used first */
+    var longLeft = Math.max(0, avail - tempLeft);
+    return { total:total, avail:avail, temp:temp, white:longLeft / total, green:(longLeft + tempLeft) / total,
+             till:(T.till != null ? T.till : this.props.temporaryValidTill) || 'Nov 20' };
+  }
   hero(){
     var C = this.C, MT = this.mt(), open = this.state.pillOpen, avail = this.available();
     var tap = () => {
@@ -649,31 +664,17 @@ class Component extends DCLogic {
       else this.setState({ pillOpen: !this.state.pillOpen });
     };
     var dim = { color:'#ffffff', opacity:0.6 };
-    var availAmt = Number(this.props.availableAmount);
-    if (!isFinite(availAmt)) availAmt = 40000;
-    var totalBal = Number(this.props.totalBalance);
-    if (!isFinite(totalBal) || totalBal <= 0) totalBal = 50000;
-    var pct = Math.max(0, Math.min(1, availAmt / totalBal));
-    var availStr = this.money(availAmt, 2).split('.');
-
-    /* Two rounded arcs with a gap at each junction. The white share runs
-       counter-clockwise from 12 o'clock; the 0.4 remainder opens to the
-       top-right. GAP is measured between cap centres, so the visible break
-       is GAP minus one stroke width. */
-    var RS = 5, RR = (36 - RS) / 2, GAP = 28, SPAN = 360 - GAP * 2;
-    /* the used-share segment is anchored so its left edge — cap centre pulled
-       back by half a stroke — lands on 12 o'clock */
-    var CAP = (RS / 2) / RR * 180 / Math.PI, LS = CAP - 90, WS = LS - GAP;
-    var arc = (key, deg, rot, op) => React.createElement('circle', {
-      key:key, cx:18, cy:18, r:RR, fill:'none', stroke:'#ffffff', strokeOpacity:op,
-      strokeWidth:RS, strokeLinecap:'round', pathLength:360,
-      strokeDasharray: Math.max(0.01, deg) + ' 360',
-      style:{ transform:rot, transformOrigin:'50% 50%' }
-    });
-    var ring = React.createElement('svg', { key:'ring', width:36, height:36, viewBox:'0 0 36 36', style:{ display:'block', flex:'none' } }, [
-      arc('fill', pct * SPAN, 'rotate(' + (WS - 180) + 'deg) scaleX(-1)', 1),
-      arc('rest', (1 - pct) * SPAN, 'rotate(' + LS + 'deg)', 0.4)
+    var B = this.creditBar(), W = 304;                        /* the bar's width: the card's inner width */
+    var availStr = this.money(B.avail, 2).split('.');
+    var img = (src, w, h, style) => React.createElement('img', { src:src, alt:'', width:w, height:h, draggable:false,
+      style:Object.assign({ display:'block', maxWidth:'none', width:w, height:h }, style || {}) });
+    var legend = (key, dot, text) => React.createElement('div', { key:key, style:{ display:'flex', flexDirection:'row', gap:4, alignItems:'center', flex:'none' } }, [
+      React.createElement('span', { key:'d', style:{ width:6, height:6, flex:'none', display:'block' } }, img(dot, 6, 6)),
+      this.sp(text, Object.assign({ flex:'1 1 auto', minWidth:0, fontFamily:'Inter, sans-serif', fontWeight:400, fontSize:12, lineHeight:'16px' }, dim), { key:'t' })
     ]);
+    var fill = (key, w, shadow) => React.createElement('div', { key:key, style:{
+      position:'absolute', left:0, top:0, height:8, width:Math.round(w * W * 100) / 100, borderRadius:'0 999px 999px 0',
+      opacity:0.8, boxShadow:shadow, backgroundColor: key === 'temp' ? '#58e09a' : '#ffffff' } });
 
     var pill = this.el('div', Object.assign({
       onClick: tap,
@@ -682,7 +683,7 @@ class Component extends DCLogic {
     }, this.mo({
       position:'relative', alignSelf:'stretch', flex:'none', boxSizing:'border-box',
       overflow:'hidden', cursor:'pointer', backgroundColor:'rgba(0,1,40,0.3)',
-      backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)'
+      backdropFilter:'blur(5px)', WebkitBackdropFilter:'blur(5px)'
     }, {
       height: open ? 58 : 46,
       borderRadius: open ? 16 : 999,
@@ -706,32 +707,37 @@ class Component extends DCLogic {
     return this.el('div', Object.assign({ key:'hero' }, this.mo({
       position:'relative', boxSizing:'border-box', overflow:'hidden', borderRadius:24,
       backgroundColor:C.blue, boxShadow:this.SH.card, padding:12, display:'flex',
-      flexDirection:'column', gap:12, justifyContent:'center', flex:'none'
-    }, { height: open ? 166 : 154 })), [
-      this.el('div', Object.assign({ key:'glow' }, this.mo({
-        position:'absolute', left:-42, width:411, height:111, borderRadius:'50%',
-        background:'radial-gradient(205.5px 55.5px at 50% 50%, rgb(154,232,255) 0%, rgba(154,232,255,0) 100%)',
-        pointerEvents:'none'
-      }, { top: open ? 122 : 110 })), null),
+      flexDirection:'column', gap:16, justifyContent:'flex-end', flex:'none'
+    }, { height: open ? 208 : 196 })), [
+      /* the glow under the Withdraw pill (Figma asset), anchored to the card's bottom so it follows the pill */
+      React.createElement('div', { key:'glow', style:{ position:'absolute', left:'calc(50% - 0.5px)', bottom:-63, width:411, height:109,
+        transform:'translateX(-50%)', pointerEvents:'none' } },
+        React.createElement('div', { style:{ position:'absolute', top:'-31.47%', bottom:'-31.47%', left:'-8.35%', right:'-8.35%' } },
+          img('assets/card-glow.svg', '100%', '100%'))),
 
-      React.createElement('div', { key:'top', style:{ position:'relative', height:72, padding:'0 4px', display:'flex', flexDirection:'row', gap:12, alignItems:'flex-start', flex:'none' } }, [
-        React.createElement('div', { key:'col', style:{ height:72, flex:'1 1 auto', display:'flex', flexDirection:'column', gap:8 } }, [
-          React.createElement('div', { key:'r1', style:{ height:44, display:'flex', flexDirection:'row', gap:12, alignItems:'flex-end', flex:'none' } }, [
-            ring,
-            React.createElement('div', { key:'amt', style:{ height:44, flex:'1 1 auto', display:'flex', flexDirection:'column', gap:2, justifyContent:'flex-end' } }, [
-              this.sp('Available amount', Object.assign({ fontFamily:'Inter, sans-serif', fontWeight:600, fontSize:11, lineHeight:'14px' }, dim), { key:'a' }),
-              React.createElement('div', { key:'b', style:{ height:24, display:'flex', flexDirection:'row', alignItems:'baseline', color:'#ffffff', whiteSpace:'nowrap' } }, [
-                this.sp(availStr[0], { fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:24, lineHeight:1, letterSpacing:'0.03em', color:'#ffffff' }, { key:'x' }),
-                this.sp('.' + availStr[1], { fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:14, lineHeight:1, letterSpacing:'0.03em', color:'#ffffff' }, { key:'y' })
-              ])
+      React.createElement('div', { key:'body', style:{ position:'relative', display:'flex', flexDirection:'column', gap:8, flex:'none' } }, [
+        React.createElement('div', { key:'top', style:{ display:'flex', flexDirection:'row', gap:12, alignItems:'flex-start', padding:'0 4px' } }, [
+          React.createElement('div', { key:'amt', style:{ flex:'1 1 auto', minWidth:0, display:'flex', flexDirection:'column', gap:2, whiteSpace:'nowrap' } }, [
+            this.sp('Available amount', Object.assign({ fontFamily:'Inter, sans-serif', fontWeight:600, fontSize:11, lineHeight:'14px' }, dim), { key:'a' }),
+            /* Satoshi Bold; ₱ falls back to Inter, as in the app */
+            React.createElement('div', { key:'b', style:{ display:'flex', flexDirection:'row', alignItems:'baseline', color:'#ffffff', fontFamily:'Satoshi, Inter, sans-serif', fontWeight:700, lineHeight:1 } }, [
+              this.sp(availStr[0].charAt(0), { fontSize:36, lineHeight:1, letterSpacing:'0.72px' }, { key:'p' }),
+              this.sp(availStr[0].slice(1), { fontSize:36, lineHeight:1, letterSpacing:'1.08px' }, { key:'x' }),
+              this.sp('.' + availStr[1], { fontSize:16, lineHeight:1, letterSpacing:'0.48px' }, { key:'y' })
             ])
           ]),
-          React.createElement('div', { key:'r2', style:{ height:20, display:'flex', flexDirection:'row', gap:8, alignItems:'center', flex:'none' } }, [
-            this.sp('Total balance: ', { fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:500, fontSize:14, lineHeight:'20px', color:'#ffffff', opacity:0.6, flex:'none' }, { key:'l' }),
-            this.sp(this.money(totalBal, 2), { fontFamily:'Satoshi, Inter, sans-serif', fontWeight:500, fontSize:14, lineHeight:'20px', color:'#ffffff', opacity:0.6, flex:'none' }, { key:'v' })
-          ])
+          React.createElement('span', { key:'info', style:{ width:20, height:20, flex:'none', display:'block' } }, img('assets/icon-info-circle.svg', 20, 20))
         ]),
-        React.createElement('span', { key:'info', style:{ width:20, height:20, flex:'none', display:'inline-flex', opacity:0.6, color:'#ffffff' } }, this.gs('infoFill', 20))
+        React.createElement('div', { key:'slider', style:{ display:'flex', flexDirection:'column', gap:8 } }, [
+          React.createElement('div', { key:'legend', style:{ display:'flex', flexDirection:'column', gap:2 } }, [
+            legend('total', 'assets/dot-total-credit.svg', 'Total credit: ' + this.money(B.total, 0)),
+            legend('temp', 'assets/dot-temporary.svg', 'Temporary: ' + this.money(B.temp, 0) + ' (Incl. valid till ' + B.till + ')')
+          ]),
+          React.createElement('div', { key:'bar', style:{ position:'relative', height:8, borderRadius:999, overflow:'hidden', backgroundColor:'rgba(0,1,40,0.3)' } }, [
+            fill('temp', B.green, '0px 0px 2px 0px rgba(0,1,40,0.16), 0px 4px 12px 0px rgba(0,1,40,0.08)'),
+            fill('long', B.white, '0px 0px 4px 0px rgba(0,1,40,0.16), 0px 8px 32px 0px rgba(0,1,40,0.12)')
+          ])
+        ])
       ]),
 
       pill
@@ -1125,6 +1131,8 @@ class Component extends DCLogic {
     if (window.requestIdleCallback) requestIdleCallback(go, { timeout: 1500 }); else setTimeout(go, 600);
   }
   _renderLoan(){
+    /* lets the (prototype-only) Tune button step aside while the loan sheet is open */
+    document.documentElement.classList.toggle('wd-loan', this.state.screen === 'loan');
     this._dirty.loan = false;
     if (this._warmNow && this.state.screen !== 'loan')
       return React.createElement('div', { key:'warm', 'aria-hidden': true, style:{ position:'absolute', left:0, top:0, width:360, height:0, overflow:'hidden', visibility:'hidden', pointerEvents:'none' } }, this.loanScreen());

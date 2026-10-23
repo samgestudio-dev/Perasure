@@ -18,8 +18,8 @@
 <script src="vendor/react-dom@18.3.1/react-dom.production.min.js"></script>
 <script src="vendor/motion@14.4.0/motion-react.js"></script>
 <script src="vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
-<script src="assets/playground-ui.js?v=202610230335"></script>
-<script src="animations/animations.js?v=202610230335"></script>
+<script src="assets/playground-ui.js?v=202610230357"></script>
+<script src="animations/animations.js?v=202610230357"></script>
 <script>
 /* ---- Prototype registry (the "Prototypes" tab) -----------------------------------------
    To add a prototype: put its files in prototypes/<slug>/ and add one entry below.
@@ -38,10 +38,9 @@ var DEMOS = [
   {
     title: 'Withdraw fund flow',
     tag: 'Loan',
-    desc: 'Home → withdraw sheet → amount entry ⇄ order confirmation, with the amount morph, keypad and term pills.',
+    desc: 'Home card (available amount, credit bar) → withdraw sheet → amount entry ⇄ order confirmation, with the amount morph, keypad and term pills.',
     variants: [
-      { name: 'Standard', note: 'No gradient blur on the header and bottom bar', href: 'prototypes/withdraw-fund-flow/index.html' },
-      { name: 'With gradient blur', note: 'Progressive blur on the header and bottom bar', href: 'prototypes/withdraw-fund-flow/with-blur.html' }
+      { name: 'Standard', note: 'Tune (bottom left): gradient blur on/off, the card\'s amounts, motion feel', href: 'prototypes/withdraw-fund-flow/index.html' }
     ]
   },
   {

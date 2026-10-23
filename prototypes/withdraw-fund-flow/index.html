@@ -4,11 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Withdraw fund flow</title>
-<!-- Withdraw fund flow. The page is a Claude Design component: its markup is the <x-dc> block below, its code is
+<!-- Withdraw fund flow. Blur on/off is a setting in the Tune panel (?blur=1 / ?blur=0 in the link too). The page is a Claude Design component: its markup is the <x-dc> block below, its code is
      withdraw.js (both variants), run by runtime/dc-runtime.js. Shared environment from the repo: the app's fonts,
      React 18.3.1 and Motion; this folder holds only the prototype's own files. -->
-<script src="phone-fit.js?v=202610230349"></script>
-<link rel="preload" href="withdraw.js?v=202610230349" as="fetch" crossorigin>
+<!-- prototype-only Tune panel (blur, card numbers, motion feel): delete tune.js / tune.css and these two lines for production -->
+<script src="tune.js?v=202610230357"></script>
+<link rel="stylesheet" href="tune.css?v=202610230357">
+<script src="phone-fit.js?v=202610230357"></script>
+<link rel="preload" href="withdraw.js?v=202610230357" as="fetch" crossorigin>
 <link rel="stylesheet" href="../../assets/fonts/fonts.css">
 <script src="../../vendor/react@18.3.1/react.production.min.js"></script>
 <script src="../../vendor/react-dom@18.3.1/react-dom.production.min.js"></script>
@@ -16,8 +19,8 @@
 <body>
 <x-dc>
 <helmet>
-<link rel="stylesheet" href="perasure-ds.css?v=202610230349">
-<link rel="stylesheet" href="withdraw.css?v=202610230349">
+<link rel="stylesheet" href="perasure-ds.css?v=202610230357">
+<link rel="stylesheet" href="withdraw.css?v=202610230357">
 <script type="importmap">{"imports":{
   "react":"data:text/javascript,const R=globalThis.React;export default R;export const {Children,Component,Fragment,Profiler,PureComponent,StrictMode,Suspense,cloneElement,createContext,createElement,createFactory,createRef,forwardRef,isValidElement,lazy,memo,startTransition,useCallback,useContext,useDebugValue,useDeferredValue,useEffect,useId,useImperativeHandle,useInsertionEffect,useLayoutEffect,useMemo,useReducer,useRef,useState,useSyncExternalStore,useTransition,version,__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED}=R;",
   "react/jsx-runtime":"data:text/javascript,const R=globalThis.React;export const Fragment=R.Fragment;export function jsx(t,p,k){return R.createElement(t,k==null?p:Object.assign({key:k},p));}export const jsxs=jsx;export const jsxDEV=jsx;",
@@ -81,7 +84,7 @@
       </div>
     </div>
 
-    <div class="ps-home-top" style="position:absolute;left:0;top:0;width:360px;height:116px;pointer-events:none"><div style="position:absolute;left:0;top:0;right:0;bottom:0;background:linear-gradient(180deg, rgba(247,250,249,0.5) 0%, rgba(247,250,249,0.39) 62%, rgba(247,250,249,0) 100%)"></div></div>
+    <div class="ps-home-top" style="position:absolute;left:0;top:0;width:360px;height:116px;pointer-events:none"><div style="position:absolute;left:0;top:0;right:0;bottom:0;backdrop-filter:blur(0.6px);-webkit-backdrop-filter:blur(0.6px);-webkit-mask-image:linear-gradient(to bottom, #000 0%, #000 84%, rgba(0,0,0,0) 100%);mask-image:linear-gradient(to bottom, #000 0%, #000 84%, rgba(0,0,0,0) 100%)"></div><div style="position:absolute;left:0;top:0;right:0;bottom:0;backdrop-filter:blur(1.4px);-webkit-backdrop-filter:blur(1.4px);-webkit-mask-image:linear-gradient(to bottom, #000 0%, #000 66%, rgba(0,0,0,0) 84%);mask-image:linear-gradient(to bottom, #000 0%, #000 66%, rgba(0,0,0,0) 84%)"></div><div style="position:absolute;left:0;top:0;right:0;bottom:0;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);-webkit-mask-image:linear-gradient(to bottom, #000 0%, #000 48%, rgba(0,0,0,0) 66%);mask-image:linear-gradient(to bottom, #000 0%, #000 48%, rgba(0,0,0,0) 66%)"></div><div style="position:absolute;left:0;top:0;right:0;bottom:0;backdrop-filter:blur(5.5px);-webkit-backdrop-filter:blur(5.5px);-webkit-mask-image:linear-gradient(to bottom, #000 0%, #000 28%, rgba(0,0,0,0) 48%);mask-image:linear-gradient(to bottom, #000 0%, #000 28%, rgba(0,0,0,0) 48%)"></div><div style="position:absolute;left:0;top:0;right:0;bottom:0;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);-webkit-mask-image:linear-gradient(to bottom, #000 0%, #000 10%, rgba(0,0,0,0) 28%);mask-image:linear-gradient(to bottom, #000 0%, #000 10%, rgba(0,0,0,0) 28%)"></div><div style="position:absolute;left:0;top:0;right:0;bottom:0;background:linear-gradient(180deg, rgba(247,250,249,0.5) 0%, rgba(247,250,249,0.39) 62%, rgba(247,250,249,0) 100%)"></div></div>
 
     <div class="ps-sb" style="position:absolute;left:0;top:0;width:360px;height:40px;box-sizing:border-box;display:flex;flex-direction:row;align-items:center;justify-content:space-between;padding:0 20px;color:#141e24">
       <span style="font-family:Inter,sans-serif;font-weight:600;font-size:13px;line-height:1;letter-spacing:0.01em">9:30</span>
@@ -105,7 +108,7 @@
       </div>
     </div>
 
-    <div class="ps-home-bot" style="position:absolute;left:0;bottom:0;width:360px;height:116px;pointer-events:none"><div style="position:absolute;left:0;top:0;right:0;bottom:0;background:linear-gradient(0deg, rgba(225,228,229,0.6) 0%, rgba(225,228,229,0.35) 30%, rgba(225,228,229,0) 100%)"></div></div>
+    <div class="ps-home-bot" style="position:absolute;left:0;bottom:0;width:360px;height:116px;pointer-events:none"><div style="position:absolute;left:0;top:0;right:0;bottom:0;backdrop-filter:blur(0.6px);-webkit-backdrop-filter:blur(0.6px);-webkit-mask-image:linear-gradient(to top, #000 0%, #000 84%, rgba(0,0,0,0) 100%);mask-image:linear-gradient(to top, #000 0%, #000 84%, rgba(0,0,0,0) 100%)"></div><div style="position:absolute;left:0;top:0;right:0;bottom:0;backdrop-filter:blur(1.4px);-webkit-backdrop-filter:blur(1.4px);-webkit-mask-image:linear-gradient(to top, #000 0%, #000 66%, rgba(0,0,0,0) 84%);mask-image:linear-gradient(to top, #000 0%, #000 66%, rgba(0,0,0,0) 84%)"></div><div style="position:absolute;left:0;top:0;right:0;bottom:0;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);-webkit-mask-image:linear-gradient(to top, #000 0%, #000 48%, rgba(0,0,0,0) 66%);mask-image:linear-gradient(to top, #000 0%, #000 48%, rgba(0,0,0,0) 66%)"></div><div style="position:absolute;left:0;top:0;right:0;bottom:0;backdrop-filter:blur(5.5px);-webkit-backdrop-filter:blur(5.5px);-webkit-mask-image:linear-gradient(to top, #000 0%, #000 28%, rgba(0,0,0,0) 48%);mask-image:linear-gradient(to top, #000 0%, #000 28%, rgba(0,0,0,0) 48%)"></div><div style="position:absolute;left:0;top:0;right:0;bottom:0;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);-webkit-mask-image:linear-gradient(to top, #000 0%, #000 10%, rgba(0,0,0,0) 28%);mask-image:linear-gradient(to top, #000 0%, #000 10%, rgba(0,0,0,0) 28%)"></div><div style="position:absolute;left:0;top:0;right:0;bottom:0;background:linear-gradient(0deg, rgba(225,228,229,0.6) 0%, rgba(225,228,229,0.35) 30%, rgba(225,228,229,0) 100%)"></div></div>
     <div class="ps-tabbar" style="position:absolute;left:20px;bottom:20px;width:320px;height:54px;box-sizing:border-box;padding:4px;border-radius:999px;background:rgba(255,255,255,0.6);backdrop-filter:blur(10px);box-shadow:0px 0px 24px 0px rgba(0,1,40,0.08);display:flex;flex-direction:row;align-items:center;gap:12px">
       <div style="flex:1 1 0;align-self:stretch;box-sizing:border-box;padding:4px 0;border-radius:999px;background:rgba(10,18,25,0.08);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#141e24">
         <svg width="18" height="18" sc-camel-view-box="0 0 18 18" fill="none" style="display:block" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_8966_10144)"><path d="M9.51739 0.460699C9.21365 0.21883 8.78615 0.21883 8.48241 0.460699L0.60741 6.59756C0.32053 6.81694 0.208024 7.19381 0.32616 7.53692C0.444268 7.87444 0.764899 8.10505 1.1249 8.10505H2.53115V16.8744C2.53115 17.3413 2.90802 17.7182 3.3749 17.7182H6.81177C7.27866 17.7182 7.65552 17.3413 7.65552 16.8744V14.2588C7.65552 13.5163 8.2574 12.9144 8.9999 12.9144C9.35991 12.9144 9.6974 13.0551 9.95616 13.3138C10.2037 13.5613 10.3443 13.8988 10.3443 14.2588V16.8744C10.3443 17.3413 10.7211 17.7182 11.188 17.7182H14.6249C15.0918 17.7182 15.4687 17.3413 15.4687 16.8744V8.10505H16.8749C17.2349 8.10505 17.5555 7.87444 17.6736 7.53692C17.7918 7.1938 17.6793 6.81694 17.3924 6.59756L9.51739 0.460699Z" fill="currentColor"></path></g><defs><clipPath id="clip0_8966_10144"><rect width="18" height="18" fill="white"></rect></clipPath></defs></svg>
@@ -128,9 +131,11 @@
 <script type="text/x-dc" data-dc-script="" data-props="{
   &quot;availableAmount&quot;: { &quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 40000, &quot;min&quot;: 0, &quot;max&quot;: 50000, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Scenario&quot; },
   &quot;totalBalance&quot;: { &quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 50000, &quot;min&quot;: 1000, &quot;max&quot;: 200000, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Scenario&quot; },
+  &quot;temporaryAmount&quot;: { &quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 10000, &quot;min&quot;: 0, &quot;max&quot;: 100000, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Scenario&quot; },
+  &quot;temporaryValidTill&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;Nov 20&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Scenario&quot; },
   &quot;initialAmount&quot;: { &quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 12567, &quot;min&quot;: 500, &quot;max&quot;: 50000, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Scenario&quot; },
   &quot;feel&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;Smooth&quot;, &quot;Snappy&quot;, &quot;Gentle&quot;], &quot;default&quot;: &quot;Smooth&quot;, &quot;tsType&quot;: &quot;'Smooth' | 'Snappy' | 'Gentle'&quot;, &quot;section&quot;: &quot;Motion&quot; }
 }"></script>
-<script src="boot.js?v=202610230349"></script>
+<script src="boot.js?v=202610230357"></script>
 </body>
 </html>

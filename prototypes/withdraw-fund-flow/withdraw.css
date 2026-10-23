@@ -1,4 +1,4 @@
-/* Withdraw fund flow — page styles (both variants; the With-blur extras are in with-blur.html). */
+/* Withdraw fund flow — page styles. Blur (Tune → Blur, <html data-variant="blur">) adds the progressive backdrop-blur bands. */
   html,body{margin:0;padding:0;background:#dfe6e5;}
   body{font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
   a{color:#2c74be;text-decoration:none}
@@ -28,3 +28,12 @@
   html.ps-edge .ps-home-top{top:calc(-1 * var(--e))!important;height:calc(116px + var(--e))!important}
   html.ps-edge .ps-home-bot{height:calc(116px + var(--sb))!important}
   html.ps-edge .ps-tabbar{bottom:calc(var(--sb) + 24px)!important}
+  /* blur off (the default): the home header / bottom bars are colour veils only — their blur layers are not drawn */
+  html:not([data-variant="blur"]) .ps-home-top > div:not(:last-child), html:not([data-variant="blur"]) .ps-home-bot > div:not(:last-child){display:none}
+  /* blur on — backdrop blurs are the most expensive thing on screen for the GPU (each is a
+     separate pass, ~19 of them while the sheet slides in). A blur over a flat
+     background looks exactly like no blur, so a blur band only runs while there
+     is content under it: the home header while the page is scrolled, and none of
+     the home blurs while the loan sheet fully covers the page. */
+  .ps-home-top:not(.ps-live) > div:not(:last-child){display:none}
+  .ps-covered .ps-home-top > div:not(:last-child), .ps-covered .ps-home-bot > div:not(:last-child){display:none}

@@ -100,7 +100,8 @@ README.md                  human-facing summary + demo / animation tables
 ## Requirements for a demo page
 
 Demos are full-screen phone pages, not device mockups. The withdraw demo is the reference
-implementation (`prototypes/withdraw-fund-flow/index.html`, see the comments in its head script):
+implementation (`prototypes/withdraw-fund-flow/`, see the comments in its `phone-fit.js`; its README shows how a Claude Design
+bundle was unpacked onto the shared environment):
 
 - Designed at 360 CSS px wide: set the viewport to `width=360` on touch devices so the browser
   scales it to the screen, and fill the visible height (no green backdrop / phone frame / fake status bar).
@@ -132,6 +133,11 @@ implementation (`prototypes/withdraw-fund-flow/index.html`, see the comments in 
   React`. Fix: in the template, add `<script src="<react uuid>">` and `<script src="<react-dom uuid>">` (uuids
   from `__bundler/ext_resources`) before the runtime's `<script src>`; the unpacker runs template scripts in
   order and the runtime then reuses that React.
+- Unpacking a Claude Design bundle (as done for Withdraw): decode `__bundler/manifest` (base64, gzip when `compressed`), keep
+  the `<x-dc>` markup in the HTML, move the `<script data-dc-script>` text to a `.js` file that a small boot script fetches
+  into that element before loading `runtime/dc-runtime.js`; set `window.__resources` (the page's resource ids → files,
+  e.g. `framerMotion` → `vendor/motion@14.4.0/motion-react.js`, which needs `features = domMax`); load React/ReactDOM from
+  `vendor/` before the runtime (it then never reaches the CDN); fonts from `assets/fonts/`. Verify pixel-identical frames.
 - Don't break existing prototypes: never edit another prototype's files when adding a new one.
 
 ## Checking before you push
