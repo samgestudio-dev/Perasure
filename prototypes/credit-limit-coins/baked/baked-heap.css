@@ -32,6 +32,9 @@ main{box-sizing:border-box;width:100%;max-width:480px;flex:1;display:flex;flex-d
 #art>svg{grid-area:1/1;align-self:start;display:block;width:100%;height:auto;max-height:42vh;max-height:42dvh;overflow:visible}
 /* the stars loop forever: their own compositing layer, so the coins are not repainted with them */
 #artStars{will-change:transform}
+/* will-change makes the star layer paint with the positioned layers, above plain siblings: the coin canvases are
+   positioned too, so the DOM order holds (stars at the back, coins over them) */
+#art>canvas{position:relative}
 /* the coins sit under everything else on the page (the number, the pills, Replay), and over the twinkling stars */
 #art{position:relative;z-index:0}
 #hero{z-index:1}

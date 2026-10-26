@@ -714,7 +714,9 @@ class Component extends DCLogic {
     /* what sits below the card is under the closing box until its bottom edge reaches the card: it rides that edge up
        (pushed, like the pill and the glow), so nothing below is ever cut by the box or appears behind it */
     var below = rise.map(function(el){ return el !== bar && el.getBoundingClientRect().top >= CR.bottom - 1; });
-    var ah = ar.height;                                                   /* the amount's box, for the push below it */
+    var ah = ar.height;
+    var GR = R.hcGlow ? R.hcGlow.getBoundingClientRect() : null;               /* the glow, measured untransformed-ish */
+    var gb = GR ? r3(Math.max(0, GR.bottom - CR.bottom)) : 0, gx = GR ? r3(Math.max(0, (GR.width - CR.width) / 2)) : 0;                                                   /* the amount's box, for the push below it */
     /* the Credit limit page inside the frame: see-through from now on (the closing box's colour is its background). Nothing
        of it is cut by the closing edges: its number block leaves WITH the number (same path, shrinking to the card's scale)
        and fades out softly (blur); its artwork (coins and stars) travels with the box — its centre to the same relative
@@ -765,9 +767,10 @@ class Component extends DCLogic {
       var ce = win(k, 0, 0.45);                                           /* coins: out of focus as they go (no muddy half-fade) */
       fCanvases.forEach(function(cv){ cv.style.opacity = r3(1 - ce); cv.style.filter = ce > 0 && ce < 1 ? 'blur(' + r3(ce * 6) + 'px)' : ''; });
       if (fStars) fStars.style.opacity = r3(1 - win(k, 0.35, 0.8));
-      /* the card's content is cut to the closing box: its edges, in the card's own coordinates */
+      /* the card itself is never clipped during the exit: iOS Safari drops the pill's frosted backdrop-filter inside a
+         clipped parent, so the glow showed through the pill until the clip came off at the end. Everything in the card
+         stays inside the closing box anyway, except the glow, which is cut to that box on its own (below). */
       var u = 1 - c;
-      set(card, 'clipPath', 'inset(' + r3(-to.t * u) + 'px ' + r3(-to.r * u) + 'px ' + r3(-to.b * u) + 'px ' + r3(-to.l * u) + 'px round ' + r3(24 * c) + 'px)');
       /* the amount settles from the big number (follows the spring exactly, like the sheet's lerp) */
       var lsP = ls0 + (lsP1 - ls0) * k, lsD = ls0 + (lsD1 - ls0) * k;
       set(pS, 'letterSpacing', r3(lsP) + 'px'); set(dS, 'letterSpacing', r3(lsD) + 'px');
@@ -797,6 +800,8 @@ class Component extends DCLogic {
       var down = r3(to.b * u);
       set(R.hcPill, 'opacity', r3(win(k, 0.38, 0.58))); set(R.hcPill, 'transform', 'translateY(' + down + 'px)');
       set(R.hcGlow, 'opacity', r3(win(k, 0.38, 1))); set(R.hcGlow, 'transform', 'translateX(-50%) translateY(' + down + 'px)');
+      /* the glow cut to the box's bottom and side edges (at rest the card's own overflow does it: same edges at k = 1) */
+      set(R.hcGlow, 'clipPath', 'inset(0px ' + r3(Math.max(0, gx - to.r * u)) + 'px ' + gb + 'px ' + r3(Math.max(0, gx - to.l * u)) + 'px round 0px 0px ' + r3(24 * c) + 'px ' + r3(24 * c) + 'px)');
       var a = win(k, 0.65, 1);
       set(card, 'boxShadow', SHA.map(function(L){ return L[0] + 'px ' + L[1] + 'px ' + L[2] + 'px ' + L[3] + 'px rgba(0,1,40,' + r3(L[4] * a) + ')'; }).join(', '));
       /* around it */
@@ -862,7 +867,7 @@ class Component extends DCLogic {
       whileTap: { scale: open ? 0.99 : 0.98 },
       transition: MT.PRESS
     }, this.mo({
-      position:'relative', alignSelf:'stretch', flex:'none', boxSizing:'border-box',
+      position:'relative', zIndex:1, alignSelf:'stretch', flex:'none', boxSizing:'border-box',
       overflow:'hidden', cursor:'pointer', backgroundColor:'rgba(0,1,40,0.3)',
       backdropFilter:'blur(5px)', WebkitBackdropFilter:'blur(5px)'
     }, {
@@ -890,8 +895,9 @@ class Component extends DCLogic {
       backgroundColor:C.blue, boxShadow:this.SH.card, padding:12, display:'flex',
       flexDirection:'column', gap:16, justifyContent:'flex-end', flex:'none'
     }, { height: open ? 208 : 196 })), [
-      /* the glow under the Withdraw pill (Figma asset), anchored to the card's bottom so it follows the pill */
-      React.createElement('div', { key:'glow', ref:this.ref('hcGlow'), style:{ position:'absolute', left:'calc(50% - 0.5px)', bottom:-63, width:411, height:109,
+      /* the glow under the Withdraw pill (Figma asset), anchored to the card's bottom so it follows the pill. Explicit layers
+         (glow 0, pill 1): while the intro's exit moves and fades both, iOS Safari otherwise drew the glow over the pill */
+      React.createElement('div', { key:'glow', ref:this.ref('hcGlow'), style:{ position:'absolute', zIndex:0, left:'calc(50% - 0.5px)', bottom:-63, width:411, height:109,
         transform:'translateX(-50%)', pointerEvents:'none' } },
         React.createElement('div', { style:{ position:'absolute', top:'-31.47%', bottom:'-31.47%', left:'-8.35%', right:'-8.35%' } },
           img('assets/card-glow.svg', '100%', '100%'))),
