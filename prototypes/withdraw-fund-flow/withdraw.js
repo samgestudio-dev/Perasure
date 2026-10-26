@@ -733,7 +733,8 @@ class Component extends DCLogic {
          card's box with a transform — its overflow and rounded corners are the clip — while its content gets the inverse
          transform and stays put on screen; its colour is two flat layers (dark, then the blue fading in over it);
        · the glow under the pill moves into that box for the exit (a copy, clipped by it like everything else in it);
-       · the card's shadow is a layer of its own that fades in; the bar's fills are revealed by two opposite slides;
+       · the card's shadow is a layer of its own that fades in on the box's outline; the bar's fills are revealed by two
+         opposite slides;
        · everything that moves or fades is promoted (will-change) for the length of the exit and let go at rest;
        · the Credit limit page's looping star twinkle is stopped, so its SVG is not redrawn every frame;
        · a value is written only when it changed (set), and nothing goes through React during the exit. ---- */
@@ -846,7 +847,11 @@ class Component extends DCLogic {
       segs.forEach(function(el){ put(el, { transform:'translateX(' + fw + 'px)' }); });
       /* on the box's bottom edge: the pill comes in as the edge passes halfway and rides it up (the glow, in the box, too) */
       put(R.hcPill, { opacity:r3(win(k, 0.38, 0.58)), transform:'translateY(' + down + 'px)' });
-      put(shd, { opacity:r3(win(k, 0.65, 1)) });
+      /* the shadow fades in on the closing box's outline (not the card's own, which would show as an edge inside the
+         blue while the box is still larger); its geometry is written only while it shows */
+      var sa = win(k, 0.65, 1);
+      if (sa > 0) put(shd, { opacity:r3(sa), top:r3(-to.t * u) + 'px', right:r3(-to.r * u) + 'px', bottom:r3(-to.b * u) + 'px', left:r3(-to.l * u) + 'px', borderRadius:r3(24 * c) + 'px' });
+      else put(shd, { opacity:0 });
       /* around it: the logo row rides the top edge down; the cards below ride the bottom edge up while they come in */
       if (head) put(head, { opacity:r3(win(k, 0.15, 0.6)), transform:'translateY(' + r3(-to.t * u) + 'px)' });
       rise.forEach(function(el, i){
