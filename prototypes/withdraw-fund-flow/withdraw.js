@@ -344,7 +344,7 @@ class Component extends DCLogic {
   /* residual translate for layout-moved content inside the card */
   resT(){ var c = this.cardSnap(), r3 = (v) => Math.round(v * 1000) / 1000; return 'translate(' + r3(c.rx) + 'px,' + r3(c.ry) + 'px)'; }
   ty(from, to){ var c = this.cardSnap(), r3 = (v) => Math.round(v * 1000) / 1000; return 'translate(' + r3(c.rx) + 'px,' + r3(this.lerp(from, to) - from + c.ry) + 'px)'; }
-  mpLabel(){ return { transform: this.ty(32, 0) }; }
+  mpLabel(){ return { transform: this.ty(32, 0), color: this.mix('#3c4850', this.C.sub) }; }   /* text-secondary → the card's label grey */
   mpRow(){ return { transform: this.ty(68, 24), height: this.ll(44, 40) }; }
   /* ₱ has no glyph in Satoshi — it renders from Inter, a variable font (wght
      100–900), so the weight can ride the progress continuously. Quantised to 5
@@ -375,7 +375,7 @@ class Component extends DCLogic {
      swallow this fade. */
   mpCaretFade(){ return { opacity: 1 - this.k01() }; }
   mpTail(){ return { marginLeft: this.ll(2, 0), color: this.mix('#97a0a6', this.C.blue) }; }
-  mpDec(){ return { fontSize: this.pxl(18, 32), lineHeight: this.pxl(28, 40), letterSpacing: this.pxl(0.54, -0.16), marginLeft: this.ll(4, 0), color: this.mix('#97a0a6', this.C.blue) }; }
+  mpDec(){ return { fontSize: this.pxl(18, 32), lineHeight: this.pxl(24, 40), letterSpacing: this.pxl(0.54, -0.16), marginLeft: this.ll(4, 0), color: this.mix('#97a0a6', this.C.blue) }; }
   /* glyph wrapper: inline-block box + an empty inline-block whose top sits
      exactly on the text baseline — what FLIP measures and scales around */
   static GLYPH = { display:'inline-block' };
@@ -477,14 +477,11 @@ class Component extends DCLogic {
      layer on its own clock (LAYER_IN / LAYER_OUT), see amountBlock() */
   mpEdit(){ return { width: this.ll(0, 20), marginLeft: this.ll(0, 4) }; }
   mpRange(){ return { transform: this.ty(196, 72), height: this.lerp(16, 42) }; }
-  /* "Flexible amounts…" lives in the gap between the Loan-term row (above) and
-     the term pills (below). Both neighbours move on the same spring but by
-     different distances (77px vs 101px), so the caption follows the MIDDLE of
-     the two — the gap compresses evenly instead of one neighbour running into it.
-     Same numbers the card animates with, in card coordinates: */
-  capTermBottom(){ return this.lc(0, 16) + this.lerp(259 - this.df(), 114) + this.lc(0, 32) + this.lc(0, 20); } // pad + amount + divider + term row
-  capChipsTop(){ return this.capTermBottom() + this.lc(0, 12) + this.lc(36, 0); }                     // + term margin + pill offset
-  capY(){ return (this.capTermBottom() + (this.capChipsTop() - 36)) / 2 - (259 - this.df()); }                          // 0 → −89px
+  /* "Flexible amounts…" sits 16px under the amount row (Figma 9426:18066: label 32, amount 68, caption 128) and rides
+     with it: the card's top padding (0 → 16) plus the row's own move (68 → 24, so the caption 128 → 80), and the
+     card's left padding (24 → 16) sideways. Card coordinates; base = its edit-state spot (left 24, top 128). */
+  capY(){ return this.lc(0, 16) + this.lerp(128, 80) - 128; }
+  capX(){ return this.lc(24, 16) - 24; }
   /* Gone while the Loan-term row it would overlap is still visible: full at
      k=0, nothing past k=0.5 — so on a reversal it simply runs back. */
   capO(){ var t = Math.max(0, Math.min(1, 1 - 2 * this._mp)); return t * t * (3 - 2 * t); }
@@ -511,7 +508,9 @@ class Component extends DCLogic {
   mpTerm(){ return { height: this.lc(0, 20), marginBottom: this.lc(0, 12), opacity: this.win(0.50, 0.96), transform: this.resT() }; }
   mpSlider(){ var e = this.win(0.30, 0.88); return { opacity: e, transform: 'translateY(' + Math.round((1 - e) * this.mt().Y.block * 100) / 100 + 'px)', visibility: e > 0 ? 'visible' : 'hidden' }; }
   mpBottom(){ return { height: this.lc(333 + this.ex() + this.sb(), 36) }; }
-  mpChips(){ return { top: this.lc(36, 0), height: this.lc(41, 36), transform: this.resT() }; }
+  /* the pills sit 89px above the keypad (Figma 9426:18066), so like it they follow the screen's extra height (ex);
+     the row they live in starts under the amount block (259 − df) */
+  mpChips(){ return { top: this.lc(12 + this.ex(), 0), height: this.lc(41, 36), transform: this.resT() }; }
   mpChip(){ return { height: this.lc(41, 36) }; }
   mpGrad(){ return { opacity: this.bkv() }; }
   mpBar(bk){ return { background: 'linear-gradient(180deg, rgba(225,228,229,0) 0%, rgba(225,228,229,' + (0.2*bk).toFixed(3) + ') 20.19%, rgba(225,228,229,' + (0.4*bk).toFixed(3) + ') 100%)' }; }
@@ -538,8 +537,10 @@ class Component extends DCLogic {
     this.put('grad', this.mpGrad());
     this.put('card', this.mpCard()); this.put('divider', this.mpDivider()); this.put('term', this.mpTerm());
     this.put('bottom', this.mpBottom()); this.put('chips', this.mpChips()); this.put('slider', this.mpSlider());
-    var ch = this.mpChip(); this.put('chip3', ch); this.put('chip6', ch); this.put('chip8', ch);
-    if (!this._mpMV) this.put('cap', { transform: 'translateY(' + this.capY() + 'px)', opacity: this.capO(), visibility: this.capO() > 0 ? 'visible' : 'hidden' });
+    var ch = this.mpChip(); this.put('chip4', ch); this.put('chip6', ch); this.put('chip8', ch);
+    if (!this._mpMV) this.put('cap', { transform: 'translate(' + this.capX() + 'px,' + this.capY() + 'px)', opacity: this.capO(), visibility: this.capO() > 0 ? 'visible' : 'hidden' });
+    /* "Choose a loan term to continue" (above the pills, which it rides with): an edit-state hint, gone like the caption */
+    this.put('choose', { opacity: this.capO(), visibility: this.capO() > 0 ? 'visible' : 'hidden' });
     if (this.ctaWanted() !== !!this._ctaShown) { this.setState({ ctaOn: (this.state.ctaOn || 0) + 1 }); return; }
     if (this._ctaShown) {
       var bk = this.bkv();
@@ -557,6 +558,7 @@ class Component extends DCLogic {
     if (!fm || !fm.motionValue) return false;
     if (!this._mpMV) {
       this._capY = fm.motionValue(this.capY());
+      this._capX = fm.motionValue(this.capX());
       this._capO = fm.motionValue(this.capO());
       /* fully transparent → not painted at all: opacity 0 alone still leaves a
          paint chunk that nudges the raster of the pills around it */
@@ -565,7 +567,7 @@ class Component extends DCLogic {
       this._mpMV.on('change', function(v){
         self._mp = v;
         var o = self.capO();
-        self._capY.set(self.capY()); self._capO.set(o); self._capV.set(o > 0 ? 'visible' : 'hidden');
+        self._capY.set(self.capY()); self._capX.set(self.capX()); self._capO.set(o); self._capV.set(o > 0 ? 'visible' : 'hidden');
         self.applyMp();
       });
     }
@@ -992,7 +994,9 @@ class Component extends DCLogic {
     return React.createElement('div', { key:'chips', ref:this.ref('chips'), style:Object.assign({
       position:'absolute', left:0, right:0, display:'flex', flexDirection:'row', gap:8
     }, this.mpChips()) },
-      [3,6,8].map((t) => {
+      [React.createElement('div', { key:'choose', ref:this.ref('choose'), 'aria-hidden': cf, style:{ position:'absolute', left:0, top:-24, height:16,
+        whiteSpace:'nowrap', pointerEvents:'none', fontFamily:'Inter, sans-serif', fontWeight:400, fontSize:12, lineHeight:'16px', color:C.sub,
+        opacity:this.capO(), visibility:this.capO() > 0 ? 'visible' : 'hidden' } }, 'Choose a loan term to continue')].concat([4,6,8].map((t) => {
         var on = this.state.term === t;
         /* height rides the morph progress; only the selection colours keep their
            own 150ms tween */
@@ -1001,14 +1005,25 @@ class Component extends DCLogic {
         }, this.mo(Object.assign({
           flex:'1 1 0', boxSizing:'border-box', borderRadius:16, borderStyle:'solid', borderWidth:1.5,
           display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer',
-          fontFamily:'Inter, sans-serif', fontWeight:600, fontSize:14, lineHeight:'20px'
+          fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:600, fontSize:16, lineHeight:'22px'
         }, this.mpChip()), {
           borderColor: on ? '#c8deff' : C.line,
           backgroundColor: on ? C.blue50 : 'rgba(255,255,255,0)',
           color: on ? C.blue : C.sub
-        }, { duration:0.15 })), t + ' Terms');
-      })
+        }, { duration:0.15 })), t + ' Term');
+      }))
     );
+  }
+  /* the line between the term pills and the keypad (Figma 9426:18087: 1px #E0E3E5, 24px above the keys); it comes and
+     goes with the keypad */
+  padLine(){
+    var MT = this.mt();
+    return this.el('div', {
+      key:'padLine', 'aria-hidden': true,
+      initial:{ opacity:0 }, animate:{ opacity:1, transition:{ duration:0.2 } },
+      exit:{ opacity:0, y:-MT.Y.block, transition:MT.LEAVE },
+      style:{ position:'absolute', left:'50%', width:312, marginLeft:-156, top:335 + this.ex() - this.df(), height:1, backgroundColor:this.C.line, pointerEvents:'none' }
+    });
   }
   keypad(){
     var C = this.C, MT = this.mt(), quick = !!this._padQuick && !!MT.REVEAL_ROW;
@@ -1046,7 +1061,7 @@ class Component extends DCLogic {
     var label = this.el('div', Object.assign({ key:'label', ref:this.ref('label') }, this.an(Object.assign({
       position:'absolute', left:0, right:0, height:20, top:32
     }, this.mpLabel(), {
-      fontFamily:'Inter, sans-serif', fontWeight:500, fontSize:14, lineHeight:'20px', letterSpacing:'0.02em', color:C.sub
+      fontFamily:'Inter, sans-serif', fontWeight:500, fontSize:14, lineHeight:'20px', letterSpacing:'0.02em'
     }), {})), 'Disbursement amount');
 
     var row = React.createElement('div', {
@@ -1280,11 +1295,11 @@ class Component extends DCLogic {
         var mv = this.mvs();
         return this.el('div', {
           key:'cap', ref:this.ref('cap'), 'aria-hidden': cf,
-          style: Object.assign({ position:'absolute', top:259 - this.df(), left:'50%', width:312, marginLeft:-156, height:20, pointerEvents:'none', textAlign:'center', fontFamily:'Inter, sans-serif', fontWeight:400, fontSize:14, lineHeight:'20px', letterSpacing:'0.02em', color:C.mute },
-            mv ? { y: this._capY, opacity: this._capO, visibility: this._capV } : { transform: 'translateY(' + this.capY() + 'px)', opacity: this.capO(), visibility: this.capO() > 0 ? 'visible' : 'hidden' })
+          style: Object.assign({ position:'absolute', top:128, left:24, height:20, whiteSpace:'nowrap', pointerEvents:'none', fontFamily:'Inter, sans-serif', fontWeight:400, fontSize:14, lineHeight:'20px', letterSpacing:'0.02em', color:C.mute },
+            mv ? { x: this._capX, y: this._capY, opacity: this._capO, visibility: this._capV } : { transform: 'translate(' + this.capX() + 'px,' + this.capY() + 'px)', opacity: this.capO(), visibility: this.capO() > 0 ? 'visible' : 'hidden' })
         }, 'Flexible amounts from ₱500–₱50,000');
       })(),
-      this.ap({ key:'pinned', initial:false }, cf ? null : [ this.keypad() ])
+      this.ap({ key:'pinned', initial:false }, cf ? null : [ this.padLine(), this.keypad() ])
     ]);
 
     /* Progressive blur: stacked backdrop layers, each blurrier and masked to a

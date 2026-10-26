@@ -36,6 +36,16 @@ bar, then the Withdraw pill (translucent, no blur) with the glow under it. The b
 
 Data: `availableAmount`, `totalBalance` (total credit), `temporaryAmount` (temporary credit left), `temporaryValidTill` in the page's `data-props`.
 
+## Amount entry (Figma: PeraSure design system, node 9426:18066)
+
+"Apply a loan", entering the amount: "Disbursement amount" (text-secondary #3C4850), the amount (₱ Inter 28, digits
+Satoshi 48, decimals Satoshi 18 / 24), and right under it "Flexible amounts from ₱500–₱50,000"; at the bottom, pinned
+above the keypad like it: "Choose a loan term to continue", the term pills (4 / 6 / 8 Term, Hanken Grotesk SemiBold 16),
+a 1 px #E0E3E5 line 24 px above the keypad, and the keypad. On taller screens the space between the two groups grows.
+The morph to the order details is unchanged: the caption and "Choose a loan term…" fade out on the same windows as
+before (gone by halfway), the caption riding with the amount row, the pills moving up into the card; the line leaves and
+comes back with the keypad.
+
 ## With credit limit increase (`with-credit-limit.html`)
 
 The same page, opening with the Credit limit increase animation full screen — the deliverable itself,
