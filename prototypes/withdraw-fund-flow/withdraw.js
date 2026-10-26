@@ -689,13 +689,15 @@ class Component extends DCLogic {
     var lsP1 = parseFloat(pS.style.letterSpacing) || 0, lsD1 = parseFloat(dS.style.letterSpacing) || 0, ls0 = -0.02 * 36;
     var from = src ? { x:src.x, y:src.y } : { x:ar.left + mx, y:ar.top + my }, toC = { x:ar.left + mx, y:ar.top + my };
     var srcColor = (src && src.color) || '#ffffff';
-    /* every style touched is saved and put back exactly at rest (React's own inline values included) */
-    var touched = [];
+    /* every style touched is saved and put back exactly at rest (React's own inline values included); a value equal to
+       the one already written is not written again (no style invalidation for nothing) */
+    var touched = [], made = [];
     var set = function(el, prop, val){
       if (!el) return;
-      if (!el.__iv) { el.__iv = {}; touched.push(el); }
+      if (!el.__iv) { el.__iv = {}; el.__lv = {}; touched.push(el); }
       if (!(prop in el.__iv)) el.__iv[prop] = el.style[prop];
-      el.style[prop] = val;
+      if (el.__lv[prop] === val) return;
+      el.__lv[prop] = val; el.style[prop] = val;
     };
     var base = function(el){ var v = el && el.__iv && el.__iv.opacity; return v === undefined || v === '' ? 1 : parseFloat(v); };
     var mixHex = function(a, b, k){
@@ -705,6 +707,11 @@ class Component extends DCLogic {
     };
     var win = function(k, a, b){ var t = Math.max(0, Math.min(1, (k - a) / (b - a))); return t * t * (3 - 2 * t); };
     var r3 = function(v){ return Math.round(v * 1000) / 1000; };
+    var div = function(parent, before, css){
+      var d = document.createElement('div'); d.setAttribute('aria-hidden', 'true');
+      for (var p in css) d.style[p] = css[p];
+      parent.insertBefore(d, before || null); made.push(d); return d;
+    };
     /* the page around the card */
     var frame = document.querySelector('.ps-frame');
     var items = [].slice.call(document.querySelectorAll('.ps-home-in > *')).filter(function(el){ return !el.contains(card); });
@@ -714,19 +721,27 @@ class Component extends DCLogic {
     /* what sits below the card is under the closing box until its bottom edge reaches the card: it rides that edge up
        (pushed, like the pill and the glow), so nothing below is ever cut by the box or appears behind it */
     var below = rise.map(function(el){ return el !== bar && el.getBoundingClientRect().top >= CR.bottom - 1; });
-    var ah = ar.height;
-    var GR = R.hcGlow ? R.hcGlow.getBoundingClientRect() : null;               /* the glow, measured untransformed-ish */
-    var gb = GR ? r3(Math.max(0, GR.bottom - CR.bottom)) : 0, gx = GR ? r3(Math.max(0, (GR.width - CR.width) / 2)) : 0;                                                   /* the amount's box, for the push below it */
-    /* the Credit limit page inside the frame: see-through from now on (the closing box's colour is its background). Nothing
-       of it is cut by the closing edges: its number block leaves WITH the number (same path, shrinking to the card's scale)
-       and fades out softly (blur); its artwork (coins and stars) travels with the box — its centre to the same relative
-       spot inside it — and shrinks, the coins fading first, the stars a little later. The frame is removed afterwards. */
+    var ah = ar.height;                                                   /* the amount's box, for the push below it */
+    var W = B.width, H = B.height, W0 = R.hcFill ? R.hcFill.getBoundingClientRect().width : 0;
+
+    /* ---- Performance (low-end phones, 60 fps): every per-frame change below is a transform or an opacity on its own
+       compositor layer — nothing is laid out or repainted on the way, apart from the amount's tracking in the first few
+       frames. So:
+       · the closing box is not a clip-path (a full-screen repaint every frame) but the frame's box itself, scaled to the
+         card's box with a transform — its overflow and rounded corners are the clip — while its content gets the inverse
+         transform and stays put on screen; its colour is two flat layers (dark, then the blue fading in over it);
+       · the glow under the pill moves into that box for the exit (a copy, clipped by it like everything else in it);
+       · the card's shadow is a layer of its own that fades in; the bar's fills are revealed by two opposite slides;
+       · everything that moves or fades is promoted (will-change) for the length of the exit and let go at rest;
+       · the Credit limit page's looping star twinkle is stopped, so its SVG is not redrawn every frame;
+       · a value is written only when it changed (set), and nothing goes through React during the exit. ---- */
     var fd = null, fHero = null, fArt = null, fStars = null, fCanvases = [], artM = null;
     try { fd = f && f.contentDocument; } catch (e) {}
     if (fd) {
       var st = fd.createElement('style');
       st.textContent = ':root{color-scheme:normal!important}html,body,main{background:transparent!important}';
-      fd.head.appendChild(st); f.style.background = 'transparent';
+      fd.head.appendChild(st);
+      try { var gw = f.contentWindow; if (gw && gw.gsap) gw.gsap.globalTimeline.pause(); } catch (e) {}
       var fr = f.getBoundingClientRect();
       fHero = fd.getElementById('hero'); fArt = fd.getElementById('art'); fStars = fd.getElementById('artStars');
       fCanvases = [fd.getElementById('cvBack'), fd.getElementById('cvFront')].filter(Boolean);
@@ -736,93 +751,131 @@ class Component extends DCLogic {
         fHero.style.willChange = 'transform, opacity, filter';
       } else fHero = null;
       if (fArt) {
-        var rr = fArt.getBoundingClientRect(), W = B.width, H = B.height;
+        var rr = fArt.getBoundingClientRect();
         artM = { ax:fr.left + rr.left + rr.width / 2, ay:fr.top + rr.top + rr.height / 2, sx:(W - to.l - to.r) / W, sy:(H - to.t - to.b) / H };
         fArt.style.transformOrigin = '50% 50%'; fArt.style.willChange = 'transform';
       }
+      fCanvases.forEach(function(cv){ cv.style.willChange = 'opacity, filter'; });
+      if (fStars) fStars.style.willChange = 'transform, opacity';
     }
-    /* start: the card above the closing screen, see-through and cut to the closing box (not to its own edges); the big
-       number handed to the card's amount */
-    set(card, 'zIndex', '101'); set(card, 'backgroundColor', 'transparent'); set(card, 'boxShadow', 'none');
-    set(card, 'overflow', 'visible');
+    /* the closing box: the frame's box, scaled from its top-left corner; flat colour layers inside it */
+    set(box, 'background', 'transparent'); set(box, 'transformOrigin', '0 0'); set(box, 'willChange', 'transform');
+    var flat = { position:'absolute', left:'0', top:'0', width:W + 'px', height:H + 'px', pointerEvents:'none' };
+    var bgDark = div(box, box.firstChild, Object.assign({ background:'#0d1620', willChange:'transform' }, flat));
+    var bgBlue = div(box, bgDark.nextSibling, Object.assign({ background:self.C.blue, opacity:'0', willChange:'opacity' }, flat));
+    var inner = [];                                                     /* children shown unscaled: [el, extra y] */
+    if (f) { f.style.background = 'transparent'; set(f, 'transformOrigin', '0 0'); set(f, 'willChange', 'transform'); inner.push([f, false]); }
+    /* the glow: a copy at the real one's place, inside the box (under the card, so under the pill; clipped by the box) */
+    var glow = null;
+    if (R.hcGlow) {
+      var GR = R.hcGlow.getBoundingClientRect();
+      glow = R.hcGlow.cloneNode(true); glow.removeAttribute('id'); glow.setAttribute('aria-hidden', 'true');
+      glow.style.left = r3(GR.left - B.left) + 'px'; glow.style.top = r3(GR.top - B.top) + 'px'; glow.style.bottom = 'auto';
+      glow.style.width = r3(GR.width) + 'px'; glow.style.height = r3(GR.height) + 'px'; glow.style.zIndex = '';
+      glow.style.transformOrigin = r3(B.left - GR.left) + 'px ' + r3(B.top - GR.top) + 'px';   /* the box's corner */
+      glow.style.opacity = '0'; glow.style.willChange = 'transform, opacity';
+      box.appendChild(glow); made.push(glow); inner.push([glow, true]);
+      set(R.hcGlow, 'visibility', 'hidden');
+    }
+    /* the card above the closing box, see-through (the box is its background); its shadow a layer that fades in */
+    set(card, 'zIndex', '101'); set(card, 'backgroundColor', 'transparent'); set(card, 'boxShadow', 'none'); set(card, 'overflow', 'visible');
+    var shd = div(card, card.firstChild, { position:'absolute', left:'0', top:'0', right:'0', bottom:'0', borderRadius:'24px', zIndex:'-1',
+      boxShadow:this.SH.card, opacity:'0', willChange:'opacity', pointerEvents:'none' });
     set(amt, 'transformOrigin', '0 0'); set(amt, 'willChange', 'transform');
-    set(box, 'willChange', 'clip-path');
+    [R.hcDec, R.hcPill, R.hcBar, head].concat(rise).forEach(function(el){ set(el, 'willChange', 'transform, opacity'); });
+    [R.hcLabel, R.hcInfo, R.hcLeg0, R.hcLeg1].forEach(function(el){ set(el, 'willChange', 'transform, opacity, filter'); });
+    /* the bar's fills: their row (a rectangular clip) slides in from the left while the fills slide back by the same
+       amount, so they stay put and are revealed left to right — two transforms, no clip-path */
+    var segs = R.hcFill ? [].slice.call(R.hcFill.children) : [];
+    set(R.hcFill, 'willChange', 'transform'); set(R.hcFill, 'overflow', 'hidden');
+    segs.forEach(function(el){ set(el, 'willChange', 'transform'); });
     if (src && src.el) src.el.style.visibility = 'hidden';
-    var SHA = [[0, 0, 2, 0, 0.16], [0, 4, 12, 0, 0.08]];               /* this.SH.card, by layer: x y blur spread alpha */
-    var apply = function(k){
-      var c = Math.max(0, Math.min(1, k));
-      /* the screen's edges close in to the card; corners round; dark → the card's blue */
-      box.style.clipPath = 'inset(' + r3(to.t * c) + 'px ' + r3(to.r * c) + 'px ' + r3(to.b * c) + 'px ' + r3(to.l * c) + 'px round ' + r3(24 * c) + 'px)';
-      box.style.backgroundColor = mixHex('#0d1620', self.C.blue, win(k, 0.15, 0.85));
+    /* the exit as values of ONE progress k (0 → 1): what every element shows at k */
+    var V = function(k){
+      var out = [], put = function(el, o){ if (el) out.push([el, o]); };
+      var c = Math.max(0, Math.min(1, k)), u = 1 - c;
+      /* the box closes in to the card's box: translate + scale; rounded corners (24 on screen, so 24/s in its own units) */
+      var L = to.l * c, T = to.t * c, sx = (W - (to.l + to.r) * c) / W, sy = (H - (to.t + to.b) * c) / H;
+      put(box, { transform:'translate(' + r3(L) + 'px,' + r3(T) + 'px) scale(' + r3(sx * 1e4) / 1e4 + ',' + r3(sy * 1e4) / 1e4 + ')',
+                 borderRadius:r3(24 * c / sx) + 'px / ' + r3(24 * c / sy) + 'px' });
+      var inv = 'scale(' + r3(1e4 / sx) / 1e4 + ',' + r3(1e4 / sy) / 1e4 + ') translate(' + r3(-L) + 'px,';
+      var down = r3(to.b * u);
+      if (f) put(f, { transform:inv + r3(-T) + 'px)' });
+      if (glow) put(glow, { transform:inv + r3(-T + down) + 'px)', opacity:r3(win(k, 0.38, 1)) });
+      put(bgBlue, { opacity:r3(win(k, 0.15, 0.85)) });
       /* the number's path (the card's amount and the Credit limit number block share it) */
       var sc = s0 + (1 - s0) * k, cx = from.x + (toC.x - from.x) * k, cy = from.y + (toC.y - from.y) * k;
       /* inside the frame: the number block leaves with the number, shrinking to the card's scale, fading out softly */
-      if (fHero) {
-        var fe = win(k, 0, 0.5);
-        fHero.style.transform = 'translate(' + r3(cx - from.x) + 'px,' + r3(cy - from.y) + 'px) scale(' + r3(1 + (1 / s0 - 1) * k) + ')';
-        fHero.style.opacity = r3(1 - fe); fHero.style.filter = 'blur(' + r3(fe * 4) + 'px)';
-      }
-      /* its artwork travels with the box (centre to the same relative spot) and shrinks; coins fade first, then the stars */
-      if (artM) fArt.style.transform = 'translate(' + r3((artM.ax * (artM.sx - 1) + to.l) * c) + 'px,' + r3((artM.ay * (artM.sy - 1) + to.t) * c) + 'px) scale(' + r3(1 - 0.4 * c) + ')';
-      var ce = win(k, 0, 0.45);                                           /* coins: out of focus as they go (no muddy half-fade) */
-      fCanvases.forEach(function(cv){ cv.style.opacity = r3(1 - ce); cv.style.filter = ce > 0 && ce < 1 ? 'blur(' + r3(ce * 6) + 'px)' : ''; });
-      if (fStars) fStars.style.opacity = r3(1 - win(k, 0.35, 0.8));
-      /* the card itself is never clipped during the exit: iOS Safari drops the pill's frosted backdrop-filter inside a
-         clipped parent, so the glow showed through the pill until the clip came off at the end. Everything in the card
-         stays inside the closing box anyway, except the glow, which is cut to that box on its own (below). */
-      var u = 1 - c;
-      /* the amount settles from the big number (follows the spring exactly, like the sheet's lerp) */
-      var lsP = ls0 + (lsP1 - ls0) * k, lsD = ls0 + (lsD1 - ls0) * k;
-      set(pS, 'letterSpacing', r3(lsP) + 'px'); set(dS, 'letterSpacing', r3(lsD) + 'px');
+      if (fHero) { var fe = win(k, 0, 0.5);
+        put(fHero, { transform:'translate(' + r3(cx - from.x) + 'px,' + r3(cy - from.y) + 'px) scale(' + r3(1 + (1 / s0 - 1) * k) + ')',
+                     opacity:r3(1 - fe), filter:'blur(' + r3(fe * 4) + 'px)' }); }
+      /* its artwork travels with the box (centre to the same relative spot) and shrinks; coins blur out first, then the stars */
+      if (artM) put(fArt, { transform:'translate(' + r3((artM.ax * (artM.sx - 1) + to.l) * c) + 'px,' + r3((artM.ay * (artM.sy - 1) + to.t) * c) + 'px) scale(' + r3(1 - 0.4 * c) + ')' });
+      var ce = win(k, 0, 0.45);
+      fCanvases.forEach(function(cv){ put(cv, { opacity:r3(1 - ce), filter:'blur(' + r3(ce * 4) + 'px)' }); });
+      if (fStars) put(fStars, { opacity:r3(1 - win(k, 0.35, 0.8)) });
+      /* the amount settles from the big number; its tracking and colour reach the card's own in the first half, in 24
+         steps (the only text layout / repaint of the exit: a handful of frames while the number travels fast) */
+      var q = Math.round(win(k, 0, 0.5) * 24) / 24, lsP = ls0 + (lsP1 - ls0) * q, lsD = ls0 + (lsD1 - ls0) * q;
+      put(pS, { letterSpacing:r3(lsP) + 'px' }); put(dS, { letterSpacing:r3(lsD) + 'px' });
       var mxk = mx + ((lsP - lsP1) + (lsD - lsD1) * nD) / 2;
-      set(amt, 'transform', 'translate(' + r3(cx - ar.left - sc * mxk) + 'px,' + r3(cy - ar.top - sc * my) + 'px) scale(' + r3(sc) + ')');
-      set(amt, 'color', mixHex(srcColor, '#ffffff', c));
-      set(R.hcDec, 'opacity', r3(win(k, 0.3, 0.75)));
-      /* the rest of the card, on windows of the same progress — early enough to overlap what is leaving (no empty card),
-         each rising its MT.Y distance and coming into focus (a little blur smooths the crossfade) */
+      put(amt, { transform:'translate(' + r3(cx - ar.left - sc * mxk) + 'px,' + r3(cy - ar.top - sc * my) + 'px) scale(' + r3(sc) + ')',
+                 color:mixHex(srcColor, '#ffffff', q) });
+      put(R.hcDec, { opacity:r3(win(k, 0.3, 0.75)) });
       /* while the amount is still larger than its own size it takes more room: what is under it makes way (the amount's
          bottom edge beyond its resting one), as a layout change would, so the legend never runs into the digits */
       var push = Math.max(0, (cy - sc * my + sc * ah) - (toC.y - my + ah));
+      /* the rest of the card, on windows of the same progress — early enough to overlap what is leaving (no empty card),
+         each rising its MT.Y distance and coming into focus (a little blur smooths the crossfade) */
       var inn = function(el, a, b, dy, keepBase, py){
         if (!el) return;
-        var e = win(k, a, b);
-        set(el, 'opacity', r3((keepBase ? base(el) : 1) * e));
-        if (dy || py) set(el, 'transform', 'translateY(' + r3((1 - e) * dy + (py || 0)) + 'px)');
-        set(el, 'filter', e >= 1 ? '' : 'blur(' + r3((1 - e) * 3) + 'px)');
+        var e = win(k, a, b), o = { opacity:r3((keepBase ? base(el) : 1) * e), filter:'blur(' + r3((1 - e) * 3) + 'px)' };
+        if (dy || py) o.transform = 'translateY(' + r3((1 - e) * dy + (py || 0)) + 'px)';
+        put(el, o);
       };
       inn(R.hcLabel, 0.2, 0.62, MT.Y.text, true);
       inn(R.hcInfo, 0.3, 0.7, 0);
       inn(R.hcLeg0, 0.3, 0.72, MT.Y.text, false, push);
       inn(R.hcLeg1, 0.36, 0.78, MT.Y.text, false, push);
-      set(R.hcBar, 'opacity', r3(win(k, 0.38, 0.76))); set(R.hcBar, 'transform', 'translateY(' + r3(push) + 'px)');
-      set(R.hcFill, 'clipPath', 'inset(0px ' + r3((1 - win(k, 0.42, 0.95)) * 100) + '% 0px 0px)');
-      /* on the box's bottom edge: the pill comes in as the edge passes halfway and rides it up; the glow brightens with it */
-      var down = r3(to.b * u);
-      set(R.hcPill, 'opacity', r3(win(k, 0.38, 0.58))); set(R.hcPill, 'transform', 'translateY(' + down + 'px)');
-      set(R.hcGlow, 'opacity', r3(win(k, 0.38, 1))); set(R.hcGlow, 'transform', 'translateX(-50%) translateY(' + down + 'px)');
-      /* the glow cut to the box's bottom and side edges (at rest the card's own overflow does it: same edges at k = 1) */
-      set(R.hcGlow, 'clipPath', 'inset(0px ' + r3(Math.max(0, gx - to.r * u)) + 'px ' + gb + 'px ' + r3(Math.max(0, gx - to.l * u)) + 'px round 0px 0px ' + r3(24 * c) + 'px ' + r3(24 * c) + 'px)');
-      var a = win(k, 0.65, 1);
-      set(card, 'boxShadow', SHA.map(function(L){ return L[0] + 'px ' + L[1] + 'px ' + L[2] + 'px ' + L[3] + 'px rgba(0,1,40,' + r3(L[4] * a) + ')'; }).join(', '));
-      /* around it */
-      /* the logo row rides the top edge down the same way (never cut by it) */
-      if (head) { set(head, 'opacity', r3(win(k, 0.15, 0.6))); set(head, 'transform', 'translateY(' + r3(-to.t * u) + 'px)'); }
+      put(R.hcBar, { opacity:r3(win(k, 0.38, 0.76)), transform:'translateY(' + r3(push) + 'px)' });
+      /* the fills revealed left to right (see segs) */
+      var fw = r3((1 - win(k, 0.42, 0.95)) * W0);
+      put(R.hcFill, { transform:'translateX(' + (-fw) + 'px)' });
+      segs.forEach(function(el){ put(el, { transform:'translateX(' + fw + 'px)' }); });
+      /* on the box's bottom edge: the pill comes in as the edge passes halfway and rides it up (the glow, in the box, too) */
+      put(R.hcPill, { opacity:r3(win(k, 0.38, 0.58)), transform:'translateY(' + down + 'px)' });
+      put(shd, { opacity:r3(win(k, 0.65, 1)) });
+      /* around it: the logo row rides the top edge down; the cards below ride the bottom edge up while they come in */
+      if (head) put(head, { opacity:r3(win(k, 0.15, 0.6)), transform:'translateY(' + r3(-to.t * u) + 'px)' });
       rise.forEach(function(el, i){
         /* the floating tab bar settles first, so the content riding up passes under a solid bar, not through it */
         var e2 = el === bar ? win(k, 0.3, 0.6) : win(k, 0.25 + i * 0.07, 0.7 + i * 0.07);
-        set(el, 'opacity', r3(e2));
-        set(el, 'transform', 'translateY(' + r3((1 - e2) * (el === bar ? MT.Y.block : MT.Y.block * 1.6) + (below[i] ? to.b * u : 0)) + 'px)');
+        put(el, { opacity:r3(e2), transform:'translateY(' + r3((1 - e2) * (el === bar ? MT.Y.block : MT.Y.block * 1.6) + (below[i] ? to.b * u : 0)) + 'px)' });
       });
+      return out;
     };
+    /* one frame: every value at k written straight to the DOM (unchanged ones skipped by set) */
+    var apply = function(k){ V(k).forEach(function(p){ var el = p[0], o = p[1]; for (var q in o) set(el, q, String(o[q])); }); };
     apply(0);
-    var mv = fm.motionValue(0), off = mv.on('change', apply);
     if (frame) frame.style.willChange = '';
-    fm.animate(mv, 1, Object.assign({}, this.spring(), { restDelta: 0.001, restSpeed: 0.01,
+
+    /* Same speed as picking a term in "Apply a loan", not the same time: that morph closes the full page in to the order
+       card, its bottom edge travelling (624 + ex − df + sb) − 246 px on this.spring(). This exit's longest edge travels
+       further (or less far on short screens), so its spring is the same one stretched in time by the distance ratio s
+       (stiffness / s², damping / s: same damping ratio): the edges move at the same speed and accelerate and settle on
+       the same curve, just for longer. */
+    var Dl = (624 + this.ex() - this.df() + this.sb()) - 246, De = Math.max(to.t, to.r, to.b, to.l);
+    var S = this.spring(), ts = Dl > 0 && De > 0 ? Math.min(2.5, Math.max(0.6, De / Dl)) : 1;
+    window.__wdExitScale = ts;
+    /* driven like the sheet's morph (tweenMp): ONE Motion value animated by Motion, its change event writing the frame */
+    var mv = fm.motionValue(0), off = mv.on('change', apply);
+    fm.animate(mv, 1, Object.assign({}, S, { stiffness: S.stiffness / (ts * ts), damping: S.damping / ts, restDelta: 0.001, restSpeed: 0.01 / ts,
       onComplete: function(){
         apply(1); off();
-        /* at rest: the card takes its colour back the same frame the screen goes (identical blue, identical box) */
-        touched.forEach(function(el){ for (var p in el.__iv) el.style[p] = el.__iv[p]; delete el.__iv; });
-        box.style.clipPath = ''; box.style.willChange = '';
+        /* at rest: the card takes its colour, shadow and glow back the same frame the screen goes (identical box, blue,
+           shadow and glow: nothing changes on screen); every inline style is what it was before the exit */
+        touched.forEach(function(el){ for (var p in el.__iv) el.style[p] = el.__iv[p]; delete el.__iv; delete el.__lv; });
+        made.forEach(function(d){ if (d.parentNode) d.parentNode.removeChild(d); });
         if (o.done) o.done();
       }
     }));
@@ -867,9 +920,8 @@ class Component extends DCLogic {
       whileTap: { scale: open ? 0.99 : 0.98 },
       transition: MT.PRESS
     }, this.mo({
-      position:'relative', zIndex:1, alignSelf:'stretch', flex:'none', boxSizing:'border-box',
-      overflow:'hidden', cursor:'pointer', backgroundColor:'rgba(0,1,40,0.3)',
-      backdropFilter:'blur(5px)', WebkitBackdropFilter:'blur(5px)'
+      position:'relative', alignSelf:'stretch', flex:'none', boxSizing:'border-box',
+      overflow:'hidden', cursor:'pointer', backgroundColor:'rgba(0,1,40,0.3)'
     }, {
       height: open ? 58 : 46,
       borderRadius: open ? 16 : 999,
@@ -895,9 +947,9 @@ class Component extends DCLogic {
       backgroundColor:C.blue, boxShadow:this.SH.card, padding:12, display:'flex',
       flexDirection:'column', gap:16, justifyContent:'flex-end', flex:'none'
     }, { height: open ? 208 : 196 })), [
-      /* the glow under the Withdraw pill (Figma asset), anchored to the card's bottom so it follows the pill. Explicit layers
-         (glow 0, pill 1): while the intro's exit moves and fades both, iOS Safari otherwise drew the glow over the pill */
-      React.createElement('div', { key:'glow', ref:this.ref('hcGlow'), style:{ position:'absolute', zIndex:0, left:'calc(50% - 0.5px)', bottom:-63, width:411, height:109,
+      /* the glow under the Withdraw pill (Figma asset), anchored to the card's bottom so it follows the pill (under it by
+         document order; no z-index here, or the pill would float over the Apply a loan sheet as it slides in) */
+      React.createElement('div', { key:'glow', ref:this.ref('hcGlow'), style:{ position:'absolute', left:'calc(50% - 0.5px)', bottom:-63, width:411, height:109,
         transform:'translateX(-50%)', pointerEvents:'none' } },
         React.createElement('div', { style:{ position:'absolute', top:'-31.47%', bottom:'-31.47%', left:'-8.35%', right:'-8.35%' } },
           img('assets/card-glow.svg', '100%', '100%'))),

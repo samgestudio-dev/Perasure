@@ -25,7 +25,7 @@ Shared from the repo (not part of this folder): the app's fonts (`assets/fonts/`
 ## Home card (Figma: PeraSure design system, node 9867:36981)
 
 Available amount (Satoshi Bold 36, ₱ from Inter), a legend (total credit; temporary credit and its end date) and a credit
-bar, then the frosted Withdraw pill with the glow under it. The bar is the total credit:
+bar, then the Withdraw pill (translucent, no blur) with the glow under it. The bar is the total credit:
 
 - **white** = long-term credit still available, **green** (right after it) = temporary credit left, the dark rest = used;
 - each is as long as its share of the total credit (Figma node 9867:36993). The white bar overlaps the green by 4 px so its
@@ -46,7 +46,23 @@ ends on the card's number. 3 s after it ends (`creditlimit:done`) it closes in t
 picking a term in "Apply a loan", where the full page closes in to the order card, and built the same way in React + Motion
 (`introExit()` in `withdraw.js`; `intro.js` only hands over): one progress 0→1 in a Motion value, animated with the page's
 spring (`this.spring()`, Tune → Motion feel; Smooth = stiffness 240, damping 30) and the same rest thresholds as the sheet's
-morph; its change event writes the styles straight to the DOM, with the sheet's windows and travel distances (`MT.Y`):
+morph; its change event writes the styles straight to the DOM (no React renders), with the sheet's windows and travel
+distances (`MT.Y`).
+
+Speed, not time, matches the loan morph: there the page's bottom edge travels to the order card ((624 + ex − df + sb) − 246
+px); here the longest edge travels to the home card (≈ 508 px on a 360 × 780 screen, ≈ 1.1×). The exit's spring is the same
+spring stretched in time by that ratio (stiffness ÷ s², damping ÷ s, same damping ratio), so the edges move at the same
+speed and accelerate and settle on the same curve, for a little longer.
+
+Performance (low-end phones, 60 fps): every per-frame change is a transform or an opacity on its own layer — the closing
+box is the frame's box scaled with a transform (its rounded overflow is the clip; its content gets the inverse transform),
+not a clip-path (a full-screen repaint every frame); its colour is two flat layers; the glow is a copy inside the box; the
+card's shadow is a layer that fades in; the bar's fills are revealed by two opposite slides; everything that moves is
+promoted for the exit only; a value is written only when it changes; the Credit limit page's star twinkle is stopped. The
+amount's tracking and colour (the only text layout) change in 24 steps during the fast first half. Measured with the CPU
+slowed 6× (whole exit): layout 52 → 14 ms, paint 81 → 35 ms, raster 109 → 31 ms; main-thread time per frame 20.8 → 16.4 ms.
+
+What happens:
 
 - the Credit limit screen's edges close in to the card's exact box, corners rounding to 24, colour turning from the dark to
   the card's blue (its page turns see-through so that colour shows). Nothing of it is ever cut by the closing edges: its
@@ -58,8 +74,7 @@ morph; its change event writes the styles straight to the DOM, with the sheet's 
 - the amount is the same element the whole way: the card's real amount starts at the big number's place, size, tracking and
   colour and settles on the progress; decimals fade in. While it is still larger than its own size, what is under it
   (legend rows, bar) makes way, as a layout change would, so nothing runs into the digits;
-- the card's content is cut to the closing box, not to the card's final edges, so what sits on its bottom rides the box's
-  bottom edge: the Withdraw pill comes in halfway through and moves up with that edge until the end; the glow under it
+- what sits on the card's bottom rides the closing box's bottom edge: the Withdraw pill comes in halfway through and moves up with that edge until the end; the glow under it
   brightens slowly from halfway, always at the bottom;
 - the rest of the card comes in early (overlapping what leaves — the card is never empty) on windows of the progress, each
   rising its `MT.Y` distance and coming into focus from a 3 px blur: label and info, the two legend rows, the bar (track,
@@ -68,7 +83,7 @@ morph; its change event writes the styles straight to the DOM, with the sheet's 
   fade in one after another, the logo row rides its top edge down, and the floating tab bar settles first so the content
   passes under a solid bar.
 
-Checked frame by frame by scrubbing the progress (0 → 1 in 0.05 steps) against the motion guidelines (Emil Kowalski's
+Checked frame by frame (slowed 20×) against the motion guidelines (Emil Kowalski's
 web-animation-design: blur to bridge crossfades, paired elements on one progress, transform / opacity only).
 
 A tap after the animation has ended skips the rest of the 3 s. While the intro plays the home's runtime does not start
