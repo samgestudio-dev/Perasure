@@ -544,9 +544,11 @@ function boot(){
   replay.addEventListener('click', start);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ fitAmount(); });
   var T = parseFloat(Q.get('t'));
-  if (!isNaN(T)) { build(); tl.seek(T, false); window.__seek = function(x){ tl.seek(x, false); return tl.duration(); }; return; }
-  if (pending) { var p = pending; pending = null; window.PeraCreditLimit.play(p); return; }
-  prepare();
+  /* the scene is shown only now, with its first frame set (see the page's first-paint style) */
+  var reveal = function(){ document.documentElement.classList.add('cl-on'); };
+  if (!isNaN(T)) { build(); tl.seek(T, false); window.__seek = function(x){ tl.seek(x, false); return tl.duration(); }; reveal(); return; }
+  if (pending) { var p = pending; pending = null; window.PeraCreditLimit.play(p); reveal(); return; }
+  prepare(); reveal();
   if (window.CREDIT_LIMIT_AUTOPLAY !== false) setTimeout(function(){ if (!started) start(); }, 250);
 }
 /* public API for the host page / app */
