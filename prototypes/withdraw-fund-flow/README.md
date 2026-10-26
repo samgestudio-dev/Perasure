@@ -49,17 +49,27 @@ spring (`this.spring()`, Tune → Motion feel; Smooth = stiffness 240, damping 3
 morph; its change event writes the styles straight to the DOM, with the sheet's windows and travel distances (`MT.Y`):
 
 - the Credit limit screen's edges close in to the card's exact box, corners rounding to 24, colour turning from the dark to
-  the card's blue (its page turns see-through so that colour shows); its number block and coins stay put and fade early; its
-  four stars move up with the closing box — each to the same relative spot inside it — and then fade;
+  the card's blue (its page turns see-through so that colour shows). Nothing of it is ever cut by the closing edges: its
+  number block leaves with the number (same path, shrinking to the card's scale) and fades out with a little blur; its
+  artwork travels with the box — centre to the same relative spot inside it — and shrinks, the coins blurring out first,
+  the four stars moving up and fading a little later;
 - the card is lifted above that screen for the length of the exit with no background of its own — the closing screen is its
   background; at rest the card takes the blue back and the screen is removed (identical box and colour: nothing fades over);
 - the amount is the same element the whole way: the card's real amount starts at the big number's place, size, tracking and
-  colour (the big number lies inside the card's box, so nothing clips it) and settles on the progress; decimals fade in;
+  colour and settles on the progress; decimals fade in. While it is still larger than its own size, what is under it
+  (legend rows, bar) makes way, as a layout change would, so nothing runs into the digits;
 - the card's content is cut to the closing box, not to the card's final edges, so what sits on its bottom rides the box's
   bottom edge: the Withdraw pill comes in halfway through and moves up with that edge until the end; the glow under it
   brightens slowly from halfway, always at the bottom;
-- the rest of the card comes in on windows of the progress: label and info, the two legend rows, the bar (track, then its
-  fills revealed left to right), and last the card's shadow; the cards below rise in one after another, then the tab bar.
+- the rest of the card comes in early (overlapping what leaves — the card is never empty) on windows of the progress, each
+  rising its `MT.Y` distance and coming into focus from a 3 px blur: label and info, the two legend rows, the bar (track,
+  then its fills revealed left to right), and last the card's shadow;
+- around it, nothing is cut by the box either: the cards below ride its bottom edge up (pushed, like the pill) while they
+  fade in one after another, the logo row rides its top edge down, and the floating tab bar settles first so the content
+  passes under a solid bar.
+
+Checked frame by frame by scrubbing the progress (0 → 1 in 0.05 steps) against the motion guidelines (Emil Kowalski's
+web-animation-design: blur to bridge crossfades, paired elements on one progress, transform / opacity only).
 
 A tap after the animation has ended skips the rest of the 3 s. While the intro plays the home's runtime does not start
 (`boot.js` waits), so nothing competes with the coins; the home is built during the hold. Afterwards the frame is removed.

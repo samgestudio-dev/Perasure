@@ -657,8 +657,9 @@ class Component extends DCLogic {
      travel distances (MT.Y) the sheet's morph uses.
        · the Credit limit screen (intro.js's frame, full screen, above the page) closes its edges in to this card's exact box,
          corners rounding to 24, its colour turning from the dark to the card's blue (the frame's own page turns see-through
-         so that colour shows); its number block and coins stay put and fade early, its four stars move up with the closing
-         box — each to the same relative spot inside it — and then fade;
+         so that colour shows); nothing of it is cut by the closing edges: its number block leaves with the number (same
+         path, shrinking to the card's scale) and fades out softly, its artwork travels with the box — the four stars and
+         the coins move up to the same relative spot inside it and shrink — the coins fading first, then the stars;
        · the card itself is lifted above that screen for the length of the exit, with no background of its own: the closing
          screen IS its background; at rest the card takes the colour back and the screen is removed — nothing fades over;
        · the card's amount is the big number: the real amount element starts at the big number's place and size (it lies
@@ -666,8 +667,9 @@ class Component extends DCLogic {
        · the card's content is cut to the closing box (not to the card's final edges), so what sits on the card's bottom rides
          the box's bottom edge: the Withdraw pill comes in halfway through and moves up with that edge until the end, and the
          glow under it brightens slowly from halfway, always at the bottom;
-       · the rest of the card comes in on windows of the same progress: label and info, the two legend rows, the bar (its
-         track, then its fills revealed left to right), and last the card's shadow;
+       · the rest of the card comes in on windows of the same progress, early enough to overlap what is leaving (the card is
+         never empty), each rising its MT.Y distance and coming into focus from a slight blur: label and info, the two legend
+         rows, the bar (its track, then its fills revealed left to right), and last the card's shadow;
        · the cards below rise in one after another, then the tab bar (static markup, styled the same way).
      Returns false (intro.js then runs its own simpler exit) if Motion or the card is not there yet. */
   introExit(o){
@@ -709,27 +711,32 @@ class Component extends DCLogic {
     var logo = document.querySelector('img[alt="PeraSure"]'), head = logo && logo.parentElement && logo.parentElement.parentElement;
     var bar = document.querySelector('.ps-tabbar');
     var rise = items.concat(bar ? [bar] : []);
-    /* the Credit limit page inside the frame: see-through from now on (the closing box's colour is its background), its
-       number block and coins fade on their own, its four stars travel with the box. The frame is removed afterwards. */
-    var fd = null, fHero = null, fCanvases = [], stars = [];
+    /* what sits below the card is under the closing box until its bottom edge reaches the card: it rides that edge up
+       (pushed, like the pill and the glow), so nothing below is ever cut by the box or appears behind it */
+    var below = rise.map(function(el){ return el !== bar && el.getBoundingClientRect().top >= CR.bottom - 1; });
+    var ah = ar.height;                                                   /* the amount's box, for the push below it */
+    /* the Credit limit page inside the frame: see-through from now on (the closing box's colour is its background). Nothing
+       of it is cut by the closing edges: its number block leaves WITH the number (same path, shrinking to the card's scale)
+       and fades out softly (blur); its artwork (coins and stars) travels with the box — its centre to the same relative
+       spot inside it — and shrinks, the coins fading first, the stars a little later. The frame is removed afterwards. */
+    var fd = null, fHero = null, fArt = null, fStars = null, fCanvases = [], artM = null;
     try { fd = f && f.contentDocument; } catch (e) {}
     if (fd) {
       var st = fd.createElement('style');
       st.textContent = ':root{color-scheme:normal!important}html,body,main{background:transparent!important}';
       fd.head.appendChild(st); f.style.background = 'transparent';
-      fHero = fd.getElementById('hero');
+      var fr = f.getBoundingClientRect();
+      fHero = fd.getElementById('hero'); fArt = fd.getElementById('art'); fStars = fd.getElementById('artStars');
       fCanvases = [fd.getElementById('cvBack'), fd.getElementById('cvFront')].filter(Boolean);
-      var svg = fd.getElementById('artStars');
-      if (svg) {
-        var sr = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal, us = Math.min(sr.width / vb.width, sr.height / vb.height) || 1;
-        var W = B.width, H = B.height, sx = (W - to.l - to.r) / W, sy = (H - to.t - to.b) / H;
-        [].slice.call(svg.querySelectorAll('.tw')).forEach(function(g){
-          /* each star's centre goes to the same relative spot inside the closing box (in the svg's own units) */
-          var r = g.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-          var wrap = fd.createElementNS('http://www.w3.org/2000/svg', 'g');
-          g.parentNode.insertBefore(wrap, g); wrap.appendChild(g);
-          stars.push({ g:wrap, dx:(to.l + cx * sx - cx) / us, dy:(to.t + cy * sy - cy) / us });
-        });
+      if (fHero && src) {
+        var hr = fHero.getBoundingClientRect();
+        fHero.style.transformOrigin = r3(from.x - fr.left - hr.left) + 'px ' + r3(from.y - fr.top - hr.top) + 'px';   /* the number's centre */
+        fHero.style.willChange = 'transform, opacity, filter';
+      } else fHero = null;
+      if (fArt) {
+        var rr = fArt.getBoundingClientRect(), W = B.width, H = B.height;
+        artM = { ax:fr.left + rr.left + rr.width / 2, ay:fr.top + rr.top + rr.height / 2, sx:(W - to.l - to.r) / W, sy:(H - to.t - to.b) / H };
+        fArt.style.transformOrigin = '50% 50%'; fArt.style.willChange = 'transform';
       }
     }
     /* start: the card above the closing screen, see-through and cut to the closing box (not to its own edges); the big
@@ -745,41 +752,61 @@ class Component extends DCLogic {
       /* the screen's edges close in to the card; corners round; dark → the card's blue */
       box.style.clipPath = 'inset(' + r3(to.t * c) + 'px ' + r3(to.r * c) + 'px ' + r3(to.b * c) + 'px ' + r3(to.l * c) + 'px round ' + r3(24 * c) + 'px)';
       box.style.backgroundColor = mixHex('#0d1620', self.C.blue, win(k, 0.15, 0.85));
-      /* inside the frame: the number block and coins fade early; the stars move up with the box, then fade */
-      if (fHero) fHero.style.opacity = r3(1 - win(k, 0, 0.35));
-      fCanvases.forEach(function(cv){ cv.style.opacity = r3(1 - win(k, 0, 0.4)); });
-      var so = r3(1 - win(k, 0.45, 0.85));
-      stars.forEach(function(S){ S.g.setAttribute('transform', 'translate(' + r3(S.dx * c) + ' ' + r3(S.dy * c) + ')'); S.g.style.opacity = so; });
+      /* the number's path (the card's amount and the Credit limit number block share it) */
+      var sc = s0 + (1 - s0) * k, cx = from.x + (toC.x - from.x) * k, cy = from.y + (toC.y - from.y) * k;
+      /* inside the frame: the number block leaves with the number, shrinking to the card's scale, fading out softly */
+      if (fHero) {
+        var fe = win(k, 0, 0.5);
+        fHero.style.transform = 'translate(' + r3(cx - from.x) + 'px,' + r3(cy - from.y) + 'px) scale(' + r3(1 + (1 / s0 - 1) * k) + ')';
+        fHero.style.opacity = r3(1 - fe); fHero.style.filter = 'blur(' + r3(fe * 4) + 'px)';
+      }
+      /* its artwork travels with the box (centre to the same relative spot) and shrinks; coins fade first, then the stars */
+      if (artM) fArt.style.transform = 'translate(' + r3((artM.ax * (artM.sx - 1) + to.l) * c) + 'px,' + r3((artM.ay * (artM.sy - 1) + to.t) * c) + 'px) scale(' + r3(1 - 0.4 * c) + ')';
+      var ce = win(k, 0, 0.45);                                           /* coins: out of focus as they go (no muddy half-fade) */
+      fCanvases.forEach(function(cv){ cv.style.opacity = r3(1 - ce); cv.style.filter = ce > 0 && ce < 1 ? 'blur(' + r3(ce * 6) + 'px)' : ''; });
+      if (fStars) fStars.style.opacity = r3(1 - win(k, 0.35, 0.8));
       /* the card's content is cut to the closing box: its edges, in the card's own coordinates */
       var u = 1 - c;
       set(card, 'clipPath', 'inset(' + r3(-to.t * u) + 'px ' + r3(-to.r * u) + 'px ' + r3(-to.b * u) + 'px ' + r3(-to.l * u) + 'px round ' + r3(24 * c) + 'px)');
       /* the amount settles from the big number (follows the spring exactly, like the sheet's lerp) */
-      var sc = s0 + (1 - s0) * k, lsP = ls0 + (lsP1 - ls0) * k, lsD = ls0 + (lsD1 - ls0) * k;
+      var lsP = ls0 + (lsP1 - ls0) * k, lsD = ls0 + (lsD1 - ls0) * k;
       set(pS, 'letterSpacing', r3(lsP) + 'px'); set(dS, 'letterSpacing', r3(lsD) + 'px');
       var mxk = mx + ((lsP - lsP1) + (lsD - lsD1) * nD) / 2;
-      var cx = from.x + (toC.x - from.x) * k, cy = from.y + (toC.y - from.y) * k;
       set(amt, 'transform', 'translate(' + r3(cx - ar.left - sc * mxk) + 'px,' + r3(cy - ar.top - sc * my) + 'px) scale(' + r3(sc) + ')');
       set(amt, 'color', mixHex(srcColor, '#ffffff', c));
-      set(R.hcDec, 'opacity', r3(win(k, 0.45, 0.9)));
-      /* the rest of the card, on windows of the same progress */
-      var e;
-      e = win(k, 0.35, 0.85); set(R.hcLabel, 'opacity', r3(base(R.hcLabel) * e)); set(R.hcLabel, 'transform', 'translateY(' + r3((1 - e) * MT.Y.text) + 'px)');
-      set(R.hcInfo, 'opacity', r3(win(k, 0.45, 0.9)));
-      e = win(k, 0.38, 0.86); set(R.hcLeg0, 'opacity', r3(e)); set(R.hcLeg0, 'transform', 'translateY(' + r3((1 - e) * MT.Y.text) + 'px)');
-      e = win(k, 0.46, 0.92); set(R.hcLeg1, 'opacity', r3(e)); set(R.hcLeg1, 'transform', 'translateY(' + r3((1 - e) * MT.Y.text) + 'px)');
-      set(R.hcBar, 'opacity', r3(win(k, 0.5, 0.9)));
-      set(R.hcFill, 'clipPath', 'inset(0px ' + r3((1 - win(k, 0.58, 1)) * 100) + '% 0px 0px)');
-      /* on the box's bottom edge: the pill comes in halfway and rides that edge up; the glow brightens from halfway */
+      set(R.hcDec, 'opacity', r3(win(k, 0.3, 0.75)));
+      /* the rest of the card, on windows of the same progress — early enough to overlap what is leaving (no empty card),
+         each rising its MT.Y distance and coming into focus (a little blur smooths the crossfade) */
+      /* while the amount is still larger than its own size it takes more room: what is under it makes way (the amount's
+         bottom edge beyond its resting one), as a layout change would, so the legend never runs into the digits */
+      var push = Math.max(0, (cy - sc * my + sc * ah) - (toC.y - my + ah));
+      var inn = function(el, a, b, dy, keepBase, py){
+        if (!el) return;
+        var e = win(k, a, b);
+        set(el, 'opacity', r3((keepBase ? base(el) : 1) * e));
+        if (dy || py) set(el, 'transform', 'translateY(' + r3((1 - e) * dy + (py || 0)) + 'px)');
+        set(el, 'filter', e >= 1 ? '' : 'blur(' + r3((1 - e) * 3) + 'px)');
+      };
+      inn(R.hcLabel, 0.2, 0.62, MT.Y.text, true);
+      inn(R.hcInfo, 0.3, 0.7, 0);
+      inn(R.hcLeg0, 0.3, 0.72, MT.Y.text, false, push);
+      inn(R.hcLeg1, 0.36, 0.78, MT.Y.text, false, push);
+      set(R.hcBar, 'opacity', r3(win(k, 0.38, 0.76))); set(R.hcBar, 'transform', 'translateY(' + r3(push) + 'px)');
+      set(R.hcFill, 'clipPath', 'inset(0px ' + r3((1 - win(k, 0.42, 0.95)) * 100) + '% 0px 0px)');
+      /* on the box's bottom edge: the pill comes in as the edge passes halfway and rides it up; the glow brightens with it */
       var down = r3(to.b * u);
-      set(R.hcPill, 'opacity', r3(win(k, 0.5, 0.66))); set(R.hcPill, 'transform', 'translateY(' + down + 'px)');
-      set(R.hcGlow, 'opacity', r3(win(k, 0.5, 1))); set(R.hcGlow, 'transform', 'translateX(-50%) translateY(' + down + 'px)');
-      var a = win(k, 0.7, 1);
+      set(R.hcPill, 'opacity', r3(win(k, 0.38, 0.58))); set(R.hcPill, 'transform', 'translateY(' + down + 'px)');
+      set(R.hcGlow, 'opacity', r3(win(k, 0.38, 1))); set(R.hcGlow, 'transform', 'translateX(-50%) translateY(' + down + 'px)');
+      var a = win(k, 0.65, 1);
       set(card, 'boxShadow', SHA.map(function(L){ return L[0] + 'px ' + L[1] + 'px ' + L[2] + 'px ' + L[3] + 'px rgba(0,1,40,' + r3(L[4] * a) + ')'; }).join(', '));
       /* around it */
-      if (head) set(head, 'opacity', r3(win(k, 0.1, 0.6)));
+      /* the logo row rides the top edge down the same way (never cut by it) */
+      if (head) { set(head, 'opacity', r3(win(k, 0.15, 0.6))); set(head, 'transform', 'translateY(' + r3(-to.t * u) + 'px)'); }
       rise.forEach(function(el, i){
-        var e2 = win(k, 0.22 + i * 0.08, 0.72 + i * 0.08);
-        set(el, 'opacity', r3(e2)); set(el, 'transform', 'translateY(' + r3((1 - e2) * (el === bar ? MT.Y.block : MT.Y.block * 1.6)) + 'px)');
+        /* the floating tab bar settles first, so the content riding up passes under a solid bar, not through it */
+        var e2 = el === bar ? win(k, 0.3, 0.6) : win(k, 0.25 + i * 0.07, 0.7 + i * 0.07);
+        set(el, 'opacity', r3(e2));
+        set(el, 'transform', 'translateY(' + r3((1 - e2) * (el === bar ? MT.Y.block : MT.Y.block * 1.6) + (below[i] ? to.b * u : 0)) + 'px)');
       });
     };
     apply(0);
