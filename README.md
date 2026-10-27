@@ -43,6 +43,12 @@ To add one: put the `.json` (plus `.lottie` and a `preview.png`) in `animations/
 any) in `animations/<name>/gsap/`, and add an entry to `animations/animations.js`. Rendered with
 [lottie-web](https://github.com/airbnb/lottie-web) (SVG renderer) and GSAP 3.15.
 
+## Design tokens
+
+`tokens/` holds the PeraSure design system's tokens from Figma — `tokens.css` (CSS variables, shadow / gradient
+variables, `.ps-text-*` type classes) and `tokens.json` (W3C Design Tokens format) — for prototypes and hand-off to
+reference. They are not shown on the picker. See [tokens/README.md](tokens/README.md).
+
 ## Shared libraries
 
 `vendor/` holds pinned copies so demos don't depend on a CDN: lottie-web 5.12.2, GSAP 3.15.0 (core +

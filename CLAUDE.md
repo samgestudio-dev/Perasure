@@ -19,6 +19,8 @@ animations/animations.js       Lottie registry (LOTTIES array) — shared by the
 animations/player.html         player, one animation at a time: player.html?a=<slug>[&r=gsap] (Lottie / GSAP tabs)
 animations/<slug>/             <slug>.json (+ <slug>.lottie, preview.png, gsap/<module>.js)
 tools/                     flatten-lottie-masks.py, flatten-svg-masks.py (Safari mask-blur fixes), unscale-gsap-svg.py (Safari scale glitch)
+tokens/                    design tokens from the Figma design system (tokens.css, tokens.json, figma-export.json; see tokens/README.md)
+                           — reference only, not shown on the picker; rebuild with `python3 tools/build-tokens.py`
 vendor/<lib>@<version>/    pinned libraries: lottie-web, gsap (+ plugins; esm/ = ES modules), react, react-dom, mui-material,
                            motion (motion-react.js = React API, motion.js = vanilla; both set window.Motion), matter-js
 README.md                  human-facing summary + demo / animation tables
