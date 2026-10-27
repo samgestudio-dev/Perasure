@@ -1,0 +1,49 @@
+{
+ "version": "2026.10.27",
+ "labels": {
+  "collections": "Collections",
+  "s:text": "Text styles",
+  "s:effect": "Effect styles",
+  "s:paint": "Paint styles",
+  "v:VariableCollectionId:1450:11892": "Primitive variables",
+  "v:VariableCollectionId:1020:5688": "Semantic variables",
+  "v:VariableCollectionId:198:8252": "Component variables"
+ },
+ "digest": {
+  "collections": {
+   "n": 3,
+   "h": "e4ade24a",
+   "b": ",,,,,,,,,,,,,,,,,d4c35a,,,,,69a9d4,c80948,,,,,,,,"
+  },
+  "v:VariableCollectionId:1450:11892": {
+   "n": 157,
+   "h": "039cba43",
+   "b": "7e443b,29459a,079fe9,142706,bb377c,de388b,af8bd2,6ca0b1,b25a96,d610e8,2e299d,2a1e8c,06961b,ae4260,bf5a5a,e62231,131bd8,eb33ac,8d82e3,9d32f5,b71155,0c9670,d65070,1f22f8,61c3b2,3bb57c,b6566f,b3c127,7044a6,7ee770,f9565e,461394"
+  },
+  "v:VariableCollectionId:1020:5688": {
+   "n": 271,
+   "h": "554ce04c",
+   "b": "9476b3,fd22a0,4c5507,e93d5a,7aaa23,e26e5b,2c4a42,d031b2,166e8d,1100a6,282a77,0d3ca5,26ca71,cfba5f,ff9d9a,2bb5d0,f2b1e4,c9cb91,8349af,ec0035,d60276,6e9d01,dff23b,ce3458,6b2f9d,97a59d,5f4aac,7c98c5,42da41,ab51a5,107bfb,141d33"
+  },
+  "v:VariableCollectionId:198:8252": {
+   "n": 18,
+   "h": "9efee367",
+   "b": "65fa10,733c4c,,,,,,,0023e0,a5e7b7,444f5b,c24e0d,59eb88,,f61f19,,,,,e01632,,,ac989b,8923c0,e04113,,,d79016,,945e75,,"
+  },
+  "s:text": {
+   "n": 25,
+   "h": "5cc2acb5",
+   "b": "280c9e,6f5999,ea99d6,089737,745e8e,,affa6f,,,,,,bd4bac,1ca021,263c26,12d381,,,,,309931,6ea7e0,4e2fb1,,d2cbe2,ed88b3,,a78205,b37143,660d54,,e1f5ff"
+  },
+  "s:effect": {
+   "n": 8,
+   "h": "b97df290",
+   "b": ",a4edff,,,bf57c2,,,,fc3527,,,93f772,,,,,,,,7ae651,,,,da92e7,9874a9,,,,,,f87e49,"
+  },
+  "s:paint": {
+   "n": 3,
+   "h": "2077d9a6",
+   "b": ",,,,,,7e0bcf,,,,,,,,,,79f5ba,,,eb1e72,,,,,,,,,,,,"
+  }
+ }
+}

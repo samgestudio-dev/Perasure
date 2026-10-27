@@ -1,0 +1,76 @@
+<style>
+  :root { color-scheme: light dark; }
+  body { margin: 0; padding: 16px; font: 12px/1.5 Inter, system-ui, sans-serif; color: var(--figma-color-text, #1e1e1e); background: var(--figma-color-bg, #fff); }
+  h1 { font-size: 13px; margin: 0 0 4px; }
+  .muted { color: var(--figma-color-text-secondary, #6b6b6b); }
+  .box { border: 1px solid var(--figma-color-border, #e6e6e6); border-radius: 8px; padding: 10px 12px; margin: 12px 0; }
+  .ok { color: var(--figma-color-text-success, #14ae5c); }
+  .warn { color: var(--figma-color-text-warning, #b86200); }
+  ul { margin: 4px 0 0; padding-left: 18px; }
+  button { width: 100%; margin-top: 8px; padding: 8px; border-radius: 6px; border: 1px solid var(--figma-color-border, #e6e6e6);
+           background: var(--figma-color-bg, #fff); color: inherit; font: inherit; cursor: pointer; }
+  button.primary { background: var(--figma-color-bg-brand, #0d99ff); color: var(--figma-color-text-onbrand, #fff); border: 0; }
+  button:disabled { opacity: .5; cursor: default; }
+  ol { margin: 0; padding-left: 18px; }
+</style>
+<h1>PeraSure Tokens Export</h1>
+<div class="muted" id="file">Reading variables and styles…</div>
+<div class="box" id="counts" hidden></div>
+<div class="box" id="diff" hidden></div>
+<button class="primary" id="dl" disabled>Download export (.json)</button>
+<button id="copy" disabled>Copy JSON</button>
+<button id="gh">Open GitHub upload (tokens/inbox)</button>
+<div class="box muted">
+  <ol>
+    <li>Download the export.</li>
+    <li>Upload it into <b>tokens/inbox</b> on GitHub and commit.</li>
+    <li>GitHub builds the tokens, writes the changelog and tags the version (about a minute).</li>
+  </ol>
+  Or attach the file in a chat with Claude and say “update tokens”.
+</div>
+<script>
+const REPO = 'samgestudio-dev/Perasure';
+const $ = id => document.getElementById(id);
+let data = null, text = '';
+const LABEL = { collections: 'Collections', 's:text': 'Text styles', 's:effect': 'Effect styles', 's:paint': 'Paint styles' };
+
+onmessage = async e => {
+  const m = e.data.pluginMessage;
+  if (m.type === 'error') { $('file').innerHTML = '<span class="warn">Export failed: ' + m.message + '</span>'; return; }
+  data = m.data; text = JSON.stringify(data, null, 1);
+  const labels = Object.assign({}, LABEL);
+  data.collections.forEach(c => labels['v:' + c.id] = c.name + ' variables');
+  $('file').textContent = data.source.figmaFile + (data.source.exportedBy ? ' · ' + data.source.exportedBy : '');
+  const s = data.styles;
+  $('counts').hidden = false;
+  $('counts').innerHTML = data.collections.map(c => c.name + ' ' + c.variables.length).join(' · ') +
+    '<br>Styles: text ' + s.text.length + ' · effect ' + s.effect.length + ' · paint ' + s.paint.length;
+  $('dl').disabled = $('copy').disabled = false;
+  $('diff').hidden = false; $('diff').textContent = 'Comparing with the repo…';
+  try {
+    const r = await fetch('https://raw.githubusercontent.com/' + REPO + '/main/tokens/digest.json?t=' + Date.now(), { cache: 'no-store' });
+    const repo = await r.json();
+    Object.assign(labels, repo.labels || {});
+    const keys = [...new Set(Object.keys(data.digest).concat(Object.keys(repo.digest)))];
+    const changed = keys.filter(k => !repo.digest[k] || !data.digest[k] || repo.digest[k].h !== data.digest[k].h);
+    $('diff').innerHTML = changed.length
+      ? '<b class="warn">Changed since v' + repo.version + ':</b><ul>' + changed.map(k => '<li>' + (labels[k] || k) + '</li>').join('') + '</ul>'
+      : '<b class="ok">Same as v' + repo.version + ' in the repo — nothing to upload.</b>';
+  } catch (err) {
+    $('diff').innerHTML = '<span class="muted">Could not reach the repo to compare (' + err.message + ').</span>';
+  }
+};
+
+$('dl').onclick = () => {
+  const d = new Date(), p = n => String(n).padStart(2, '0');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+  a.download = 'perasure-tokens-' + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes()) + '.json';
+  document.body.appendChild(a); a.click(); a.remove();
+};
+$('copy').onclick = () => {
+  const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select();
+  document.execCommand('copy'); t.remove(); $('copy').textContent = 'Copied';
+};
+$('gh').onclick = () => parent.postMessage({ pluginMessage: { type: 'open', url: 'https://github.com/' + REPO + '/upload/main/tokens/inbox' } }, '*');
+</script>

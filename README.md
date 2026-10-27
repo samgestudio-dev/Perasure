@@ -45,9 +45,11 @@ any) in `animations/<name>/gsap/`, and add an entry to `animations/animations.js
 
 ## Design tokens
 
-`tokens/` holds the PeraSure design system's tokens from Figma — `tokens.css` (CSS variables, shadow / gradient
-variables, `.ps-text-*` type classes) and `tokens.json` (W3C Design Tokens format) — for prototypes and hand-off to
-reference. They are not shown on the picker. See [tokens/README.md](tokens/README.md).
+`tokens/` holds the PeraSure design system's tokens from Figma, versioned: `tokens.css` (CSS variables, shadow /
+gradient variables, `.ps-text-*` type classes), `tokens.json` (W3C Design Tokens format) and `CHANGELOG.md` (what
+changed in each version, dated, with the impact on code). Each version is tagged `tokens-v<version>`. To update:
+export with the Figma plugin and upload into `tokens/inbox`, or ask Claude. Not shown on the picker. See
+[tokens/README.md](tokens/README.md).
 
 ## Shared libraries
 

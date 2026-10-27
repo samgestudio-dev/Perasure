@@ -1,0 +1,52 @@
+# Design tokens: Figma export -> version + changelog + generated files + git tag.
+# Drop an export from the "PeraSure Tokens Export" Figma plugin into tokens/inbox/ (GitHub web: Add file → Upload files)
+# and this workflow applies it. Every push touching tokens/ is also checked: generated files must match the snapshot.
+name: Tokens
+
+on:
+  push:
+    branches: [main]
+    paths: ['tokens/**', 'tools/build-tokens.py', 'tools/sync-tokens.py', 'tools/tokenlib.py', 'tools/figma-tokens/**']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tokens
+  cancel-in-progress: false
+
+jobs:
+  tokens:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply exports from tokens/inbox
+        run: |
+          shopt -s nullglob
+          files=(tokens/inbox/*.json)
+          [ ${#files[@]} -eq 0 ] && { echo "Inbox empty."; exit 0; }
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          msg=""
+          for f in "${files[@]}"; do
+            python3 tools/sync-tokens.py "$f" --message-out /tmp/msg.txt | tee /tmp/out.txt
+            if grep -q '^Tag: ' /tmp/out.txt; then msg=$(cat /tmp/msg.txt); fi
+            git rm -q "$f"
+          done
+          git add -A tokens tools/figma-tokens
+          if [ -n "$msg" ]; then
+            git commit -q -m "$msg"
+            tag="tokens-v$(python3 -c "import json;print(json.load(open('tokens/version.json'))['version'])")"
+            git tag "$tag"
+            git push origin HEAD:main "$tag"
+            echo "### $msg" >> "$GITHUB_STEP_SUMMARY"
+          else
+            git commit -q -m "Tokens: inbox export had no changes"
+            git push origin HEAD:main
+            echo "No token changes." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Check generated files
+        run: python3 tools/sync-tokens.py --check

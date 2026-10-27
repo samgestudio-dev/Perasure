@@ -1,0 +1,15 @@
+{
+  "name": "PeraSure Tokens Export",
+  "id": "perasure-tokens-export",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma"],
+  "documentAccess": "dynamic-page",
+  "enablePrivatePluginApi": true,
+  "permissions": ["currentuser"],
+  "networkAccess": {
+    "allowedDomains": ["https://raw.githubusercontent.com"],
+    "reasoning": "Reads tokens/digest.json from the PeraSure repo to show what changed since the last token version."
+  }
+}
