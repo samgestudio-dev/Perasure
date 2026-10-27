@@ -368,7 +368,7 @@ def sync(paths, message_out=None):
         print('Changelog: %d variable rows, %d style rows -> tokens/CHANGELOG.md' % stats)
     if new_info['multiMode']:
         print('Note: %s has more than one mode; CSS uses the default mode only.' % ', '.join(new_info['multiMode']))
-    print('Tag: tokens-v%s' % version['version'])
+    print('Tag: tokens-v%s (added by the Tokens workflow on push)' % version['version'])
     if message_out:
         wr(message_out, msg + '\n\nFigma export %s by %s (%s). See tokens/CHANGELOG.md.\n' % (
             version['exportedAt'], version.get('exportedBy') or 'unknown', version.get('via')))

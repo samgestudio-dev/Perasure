@@ -1,6 +1,7 @@
 # Design tokens: Figma export -> version + changelog + generated files + git tag.
 # Drop an export from the "PeraSure Tokens Export" Figma plugin into tokens/inbox/ (GitHub web: Add file → Upload files)
-# and this workflow applies it. Every push touching tokens/ is also checked: generated files must match the snapshot.
+# and this workflow applies it. Every push touching tokens/ is also checked (generated files must match the snapshot),
+# and the current version gets its git tag tokens-v<version> if it has none yet.
 name: Tokens
 
 on:
@@ -38,15 +39,22 @@ jobs:
           git add -A tokens tools/figma-tokens
           if [ -n "$msg" ]; then
             git commit -q -m "$msg"
-            tag="tokens-v$(python3 -c "import json;print(json.load(open('tokens/version.json'))['version'])")"
-            git tag "$tag"
-            git push origin HEAD:main "$tag"
             echo "### $msg" >> "$GITHUB_STEP_SUMMARY"
           else
             git commit -q -m "Tokens: inbox export had no changes"
-            git push origin HEAD:main
             echo "No token changes." >> "$GITHUB_STEP_SUMMARY"
           fi
+          git push origin HEAD:main
 
       - name: Check generated files
         run: python3 tools/sync-tokens.py --check
+
+      - name: Tag the version
+        run: |
+          tag="tokens-v$(python3 -c "import json;print(json.load(open('tokens/version.json'))['version'])")"
+          if git ls-remote --exit-code --tags origin "refs/tags/$tag" > /dev/null; then
+            echo "$tag already tagged."
+          else
+            git tag "$tag" && git push origin "$tag"
+            echo "Tagged $tag" >> "$GITHUB_STEP_SUMMARY"
+          fi

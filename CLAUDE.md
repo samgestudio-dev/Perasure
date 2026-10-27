@@ -160,8 +160,8 @@ bundle was unpacked onto the shared environment):
   3. `{"unchanged":true}` → tell the owner nothing changed; stop. Otherwise save the result verbatim to a scratch
      file; if it says `"parts": N` with N > 1, run step 2 again with part 1 … N−1 and save each.
   4. `python3 tools/sync-tokens.py part0.json [part1.json …] --message-out /tmp/msg.txt`.
-- Then commit `tokens/` with `/tmp/msg.txt` as the message, `git tag tokens-v<version>` (printed as `Tag:`), and
-  push the branch and the tag. `stamp.py` is not needed for token-only changes.
+- Then commit `tokens/` with `/tmp/msg.txt` as the message and push to `main`. Don't tag: the *Tokens* workflow
+  tags `tokens-v<version>` on push. `stamp.py` is not needed for token-only changes.
 - Report the summary line and any removed / renamed CSS names (the *Developer impact* of the new
   `CHANGELOG.md` entry — read just that entry), plus the tag.
 - Changing the export or hashing: edit `tools/figma-tokens/core.js` and `tools/tokenlib.py` together, run
