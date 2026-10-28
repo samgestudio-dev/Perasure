@@ -473,9 +473,13 @@ class Component extends DCLogic {
     if (this._r.peso) this._r.peso.style.width = '';
     this._flip = null;
   }
-  /* the pencil's slot opens with the morph; the glyph itself is a secondary
-     layer on its own clock (LAYER_IN / LAYER_OUT), see amountBlock() */
+  /* the pencil's slot opens with the morph, and the glyph rides the same progress (same spring as the card): it grows
+     in from the left with a small turn while the amount travels, settling with it; reversing runs the same path back.
+     Fully transparent → not painted (see the caption). */
   mpEdit(){ return { width: this.ll(0, 20), marginLeft: this.ll(0, 4) }; }
+  mpPencil(){ var e = this.win(0.30, 0.90), r = Math.round;
+    return { opacity: r(e * 1000) / 1000, visibility: e > 0 ? 'visible' : 'hidden',
+      transform: e >= 1 ? 'none' : 'translateX(' + r((1 - e) * -6 * 100) / 100 + 'px) rotate(' + r((1 - e) * -24 * 100) / 100 + 'deg) scale(' + r((0.5 + 0.5 * e) * 1000) / 1000 + ')' }; }
   mpRange(){ return { transform: this.ty(196, 72), height: this.lerp(16, 42) }; }
   /* "Flexible amounts…" sits 16px under the amount row (Figma 9426:18066: label 32, amount 68, caption 128) and rides
      with it: the card's top padding (0 → 16) plus the row's own move (68 → 24, so the caption 128 → 80), and the
@@ -538,7 +542,10 @@ class Component extends DCLogic {
     this.put('card', this.mpCard()); this.put('divider', this.mpDivider()); this.put('term', this.mpTerm());
     this.put('bottom', this.mpBottom()); this.put('chips', this.mpChips()); this.put('slider', this.mpSlider());
     var ch = this.mpChip(); this.put('chip4', ch); this.put('chip6', ch); this.put('chip8', ch);
+    this.put('edit', this.mpPencil());
     if (!this._mpMV) this.put('cap', { transform: 'translate(' + this.capX() + 'px,' + this.capY() + 'px)', opacity: this.capO(), visibility: this.capO() > 0 ? 'visible' : 'hidden' });
+    /* "Choose a loan term to continue" (above the pills, which it rides with): an edit-state hint, gone like the caption */
+    this.put('choose', { opacity: this.capO(), visibility: this.capO() > 0 ? 'visible' : 'hidden' });
     if (this.ctaWanted() !== !!this._ctaShown) { this.setState({ ctaOn: (this.state.ctaOn || 0) + 1 }); return; }
     if (this._ctaShown) {
       var bk = this.bkv();
@@ -997,7 +1004,9 @@ class Component extends DCLogic {
     return React.createElement('div', { key:'chips', ref:this.ref('chips'), style:Object.assign({
       position:'absolute', left:0, right:0, display:'flex', flexDirection:'row', gap:8
     }, this.mpChips()) },
-      [4,6,8].map((t) => {
+      [React.createElement('div', { key:'choose', ref:this.ref('choose'), 'aria-hidden': cf, style:{ position:'absolute', left:0, top:-24, height:16,
+        whiteSpace:'nowrap', pointerEvents:'none', fontFamily:'Inter, sans-serif', fontWeight:400, fontSize:12, lineHeight:'16px', color:C.sub,
+        opacity:this.capO(), visibility:this.capO() > 0 ? 'visible' : 'hidden' } }, 'Choose a loan term to continue')].concat([4,6,8].map((t) => {
         var on = this.state.term === t;
         /* height rides the morph progress; only the selection colours keep their
            own 150ms tween */
@@ -1012,7 +1021,7 @@ class Component extends DCLogic {
           backgroundColor: on ? C.blue50 : 'rgba(255,255,255,0)',
           color: on ? C.blue : C.sub
         }, { duration:0.15 })), t + ' Term');
-      })
+      }))
     );
   }
   /* the line between the term pills and the keypad (1px #E0E3E5, 16px from the pills and 16px above the keys); it comes
@@ -1119,10 +1128,9 @@ class Component extends DCLogic {
       (() => { var s = this.mpEdit(); return React.createElement('div', {
           key:'editBox', ref:this.ref('editBox'),
           style:{ width:s.width, height:28, paddingTop:8, boxSizing:'border-box', flex:'none', color:C.blue, cursor:'pointer', alignSelf:'flex-end', marginLeft:s.marginLeft }
-        }, this.el('div', {
-          key:'edit', ref:this.ref('edit'), initial:false,
-          animate: cf ? { opacity:1, x:0, scale:1, transition: MT.LAYER_IN } : { opacity:0, x:-5, scale:0.82, transition: MT.LAYER_OUT },
-          style:{ transformOrigin:'left center', opacity: this.state.fm ? undefined : (cf ? 1 : 0) }
+        }, React.createElement('div', {
+          key:'edit', ref:this.ref('edit'),
+          style:Object.assign({ transformOrigin:'30% 85%' }, this.mpPencil())
         }, this.gs('edit', 20))); })()
     ]);
 
