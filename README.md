@@ -95,5 +95,5 @@ PeraSure skills for AI assistants live in [`.claude/skills/`](.claude/skills/):
 | Skill | What it is |
 | --- | --- |
 | [perasure-tone-of-voice](.claude/skills/perasure-tone-of-voice/SKILL.md) | the tone of voice: every piece of PeraSure copy follows it |
-| [perasure-card-morph](.claude/skills/perasure-card-morph/SKILL.md) | the card morph motion of the withdraw fund flow and Change co-maker — rules, engine and a working example |
+| [perasure-card-morph](.claude/skills/perasure-card-morph/SKILL.md) | the card morph motion of the withdraw fund flow and Change co-maker — core rules, references per kind of morph (card → form, page → card, checks), engine and a working example |
 

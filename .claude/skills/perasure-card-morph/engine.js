@@ -1,6 +1,7 @@
 /* PeraSure card morph engine — window.PSMorph (plain script, no build step).
    Needs Motion's vanilla build first: <script src="…/vendor/motion@14.4.0/motion.js"></script> (window.Motion).
-   Extracted from prototypes/co-maker-change/co-maker.js; the rules behind every number are in SKILL.md.
+   Extracted from prototypes/co-maker-change/co-maker.js; the rules behind every number are in SKILL.md
+   (core) and references/ (card-to-form, page-to-card, checks).
 
    const m = PSMorph.create({
      travel: 202,                 // px — the longest distance anything travels in the morph (sets the rest thresholds)

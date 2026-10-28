@@ -17,6 +17,11 @@ PeraSure-related project (fetch from `https://raw.githubusercontent.com/samgestu
   into another state). Any new morph starts from its `example.html` + `engine.js` and keeps its rules, so the motion is
   the same everywhere. When a morph in a prototype is changed for the owner, update the skill too if the rule changed.
 
+How skills are organised (owner's rule): a different kind of task gets its own skill; branches of the same task share one
+short `SKILL.md` (when to use it, what every branch needs, which reference to read when) plus reference files read only
+when that branch comes up. Don't cut files small to save tokens — the aim is that a task reads as little unrelated
+content as possible.
+
 ## Layout
 
 ```
@@ -37,8 +42,8 @@ tools/figma-tokens/        Figma side of the token pipeline: core.js (export + d
 vendor/<lib>@<version>/    pinned libraries: lottie-web, gsap (+ plugins; esm/ = ES modules), react, react-dom, mui-material,
                            motion (motion-react.js = React API, motion.js = vanilla; both set window.Motion), matter-js
 README.md                  human-facing summary + demo / animation tables
-.claude/skills/            PeraSure skills: perasure-tone-of-voice (all copy), perasure-card-morph (morph motion: SKILL.md,
-                           engine.js, example.html) — see "PeraSure skills"
+.claude/skills/            PeraSure skills: perasure-tone-of-voice (all copy), perasure-card-morph (morph motion: short SKILL.md,
+                           references/ read per branch, engine.js, example.html) — see "PeraSure skills"
 .nojekyll                  keep: Pages serves files as-is
 ```
 
