@@ -837,6 +837,19 @@ class Component extends DCLogic {
     set(R.hcFill, 'willChange', 'transform'); set(R.hcFill, 'overflow', 'hidden');
     segs.forEach(function(el){ set(el, 'willChange', 'transform'); });
     if (src && src.el) src.el.style.visibility = 'hidden';
+    /* the card's details (label + info, the two legend rows, the bar's track) are secondary content: as in the card-morph
+       skill (.claude/skills/perasure-card-morph), each plays the SAME clocked entrance — 0.34 s on the ENTER curve, rising
+       its MT.Y distance into focus from a 3 px blur — started when the progress reaches the point its window used to open.
+       On the progress alone they rose while the box was still closing fast and the rise was over before it could be seen.
+       Their push (making way for the larger amount) stays on the progress: it is geometry. */
+    var CLK = [
+      { el:R.hcLabel, at:0.2, dy:MT.Y.text, keep:true },
+      { el:R.hcInfo, at:0.3, dy:0 },
+      { el:R.hcLeg0, at:0.3, dy:MT.Y.text, push:true },
+      { el:R.hcLeg1, at:0.36, dy:MT.Y.text, push:true },
+      { el:R.hcBar, at:0.38, dy:0, push:true, sharp:true }
+    ].filter(function(c){ return c.el; });
+    CLK.forEach(function(c){ c.r = 0; c.on = false; c.anim = null; });
     /* the exit as values of ONE progress k (0 → 1): what every element shows at k */
     var V = function(k){
       var out = [], put = function(el, o){ if (el) out.push([el, o]); };
@@ -874,17 +887,12 @@ class Component extends DCLogic {
       var push = Math.max(0, (cy - sc * my + sc * ah) - (toC.y - my + ah));
       /* the rest of the card, on windows of the same progress — early enough to overlap what is leaving (no empty card),
          each rising its MT.Y distance and coming into focus (a little blur smooths the crossfade) */
-      var inn = function(el, a, b, dy, keepBase, py){
-        if (!el) return;
-        var e = win(k, a, b), o = { opacity:r3((keepBase ? base(el) : 1) * e), filter:'blur(' + r3((1 - e) * 3) + 'px)' };
-        if (dy || py) o.transform = 'translateY(' + r3((1 - e) * dy + (py || 0)) + 'px)';
-        put(el, o);
-      };
-      inn(R.hcLabel, 0.2, 0.62, MT.Y.text, true);
-      inn(R.hcInfo, 0.3, 0.7, 0);
-      inn(R.hcLeg0, 0.3, 0.72, MT.Y.text, false, push);
-      inn(R.hcLeg1, 0.36, 0.78, MT.Y.text, false, push);
-      put(R.hcBar, { opacity:r3(win(k, 0.38, 0.76)), transform:'translateY(' + r3(push) + 'px)' });
+      CLK.forEach(function(c){
+        var e = c.r, o = { opacity:r3((c.keep ? base(c.el) : 1) * e) };
+        if (!c.sharp) o.filter = 'blur(' + r3((1 - e) * 3) + 'px)';
+        if (c.dy || c.push) o.transform = 'translateY(' + r3((1 - e) * c.dy + (c.push ? push : 0)) + 'px)';
+        put(c.el, o);
+      });
       /* the fills revealed left to right (see segs) */
       var fw = r3((1 - win(k, 0.42, 0.95)) * W0);
       put(R.hcFill, { transform:'translateX(' + (-fw) + 'px)' });
@@ -906,33 +914,44 @@ class Component extends DCLogic {
       return out;
     };
     /* one frame: every value at k written straight to the DOM (unchanged ones skipped by set) */
-    var apply = function(k){ V(k).forEach(function(p){ var el = p[0], o = p[1]; for (var q in o) set(el, q, String(o[q])); }); };
+    var lastK = 0, EASE_IN = [0.22, 0.61, 0.36, 1], springDone = false;
+    var apply = function(k){
+      lastK = k;
+      CLK.forEach(function(c){ if (!c.on && k >= c.at) { c.on = true;
+        c.anim = fm.animate(0, 1, { duration:0.34, ease:EASE_IN,
+          onUpdate: function(v){ c.r = v; apply(lastK); },
+          onComplete: function(){ c.anim = null; c.r = 1; apply(lastK); end(); } }); } });
+      V(k).forEach(function(p){ var el = p[0], o = p[1]; for (var q in o) set(el, q, String(o[q])); });
+    };
     apply(0);
     if (frame) frame.style.willChange = '';
 
-    /* Same speed as picking a term in "Apply a loan", not the same time: that morph closes the full page in to the order
-       card, its bottom edge travelling (624 + ex − df + sb) − 246 px on this.spring(). This exit's longest edge travels
-       further (or less far on short screens), so its spring is the same one stretched in time by the distance ratio s
-       (stiffness / s², damping / s: same damping ratio): the edges move at the same speed and accelerate and settle on
-       the same curve, just for longer. */
-    var Dl = (624 + this.ex() - this.df() + this.sb()) - 246, De = Math.max(to.t, to.r, to.b, to.l);
-    var S = this.spring(), ts = Dl > 0 && De > 0 ? Math.min(2.5, Math.max(0.6, De / Dl)) : 1;
+    /* Timing, as the card-morph skill: the page's spring (this.spring(), the loan morph's), never sped up for a shorter
+       travel; a travel longer than the loan morph's 378 px (design size) is the same spring stretched in time by
+       s = travel / 378 (≤ 2.5; stiffness / s², damping / s: same curve, same speed), and it ends at withdraw's own pixel
+       threshold (0.378 px, 3.78 px/s) over that travel. Before, s was the ratio to the loan morph on the current screen
+       and could go down to 0.6 — quicker than the loan morph on shorter phones. */
+    var De = Math.max(to.t, to.r, to.b, to.l, 1);
+    var S = this.spring(), ts = Math.min(2.5, Math.max(1, De / 378));
     window.__wdExitScale = ts;
+    /* at rest once the spring and every clocked entrance are done */
+    var off = null, ended = false, end = function(){
+      if (ended || !springDone || CLK.some(function(c){ return c.r < 1; })) return;
+      ended = true;
+      apply(1); if (off) off();
+      /* at rest: the card takes its colour, shadow and glow back the same frame the screen goes (identical box, blue,
+         shadow and glow: nothing changes on screen); every inline style is what it was before the exit */
+      touched.forEach(function(el){ for (var p in el.__iv) el.style[p] = el.__iv[p]; delete el.__iv; delete el.__lv; });
+      made.forEach(function(d){ if (d.parentNode) d.parentNode.removeChild(d); });
+      if (o.done) o.done();
+    };
     /* driven like the sheet's morph (tweenMp): ONE Motion value animated by Motion, its change event writing the frame */
-    var mv = fm.motionValue(0), off = mv.on('change', apply);
-    fm.animate(mv, 1, Object.assign({}, S, { stiffness: S.stiffness / (ts * ts), damping: S.damping / ts, restDelta: 0.001, restSpeed: 0.01 / ts,
-      onComplete: function(){
-        apply(1); off();
-        /* at rest: the card takes its colour, shadow and glow back the same frame the screen goes (identical box, blue,
-           shadow and glow: nothing changes on screen); every inline style is what it was before the exit */
-        touched.forEach(function(el){ for (var p in el.__iv) el.style[p] = el.__iv[p]; delete el.__iv; delete el.__lv; });
-        made.forEach(function(d){ if (d.parentNode) d.parentNode.removeChild(d); });
-        if (o.done) o.done();
-      }
+    var mv = fm.motionValue(0); off = mv.on('change', apply);
+    fm.animate(mv, 1, Object.assign({}, S, { stiffness: S.stiffness / (ts * ts), damping: S.damping / ts, restDelta: 0.378 / De, restSpeed: 3.78 / De / ts,
+      onComplete: function(){ springDone = true; apply(1); end(); }
     }));
     return true;
   }
-
   hero(){
     var C = this.C, MT = this.mt(), open = this.state.pillOpen, avail = this.available();
     var tap = () => {

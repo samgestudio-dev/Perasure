@@ -25,7 +25,7 @@ page's spring, windows); the React page only computes the frame in its own metho
   - cards below ride the box's bottom edge up while fading in one after another;
   - the logo row rides its top edge down;
   - the tab bar settles first, so content passes under a solid bar.
-- The rest of the card comes in early, on windows, each rising its distance from a 3 px blur: label `0.2–0.62`, legend rows `0.3–0.72` / `0.36–0.78`, bar `0.38–0.76`, last the shadow.
+- The rest of the card comes in early, overlapping what leaves. Its details (label + info, legend rows, the bar's track) are secondary content: each plays the same clocked entrance (0.34 s, ENTER curve, rise from a 3 px blur), started at k 0.2 / 0.3 / 0.3 / 0.36 / 0.38. The bar's fill reveal and, last, the shadow stay on the progress (they are the card itself). The rest state is restored only when the spring and every clocked entrance are done.
 - **Bar fills** are revealed left to right by two opposite slides: the row slides in, the fills slide back by the same amount. Still no clip-path.
 
 ## The travelling amount
@@ -43,7 +43,7 @@ Blink rounds an element's layout offset to whole pixels before applying its tran
 - The sub-pixel remainder rides the transforms of the content (`resT()`).
 
 ## Timing for long travels
-The loan morph's edge travels 378 px (design size). A longer travel (the Credit-limit screen → card, ≈ 508 px) uses the same spring stretched by `s = travel / 378`: stiffness ÷ s², damping ÷ s, rest speed ÷ s. The edges then move at the same speed and settle on the same curve, for a little longer.
+The loan morph's edge travels 378 px (design size). A longer travel (the Credit-limit screen → card, ≈ 508 px) uses the same spring stretched by `s = travel / 378` (here ≈ 1.34, settling ≈ 0.85 s): stiffness ÷ s², damping ÷ s, rest speed ÷ s, rest at 0.378 px over that travel. The edges then move at the same speed and settle on the same curve, for a little longer.
 
 Never compress below s = 1 for shorter travels: see `SKILL.md`.
 

@@ -59,10 +59,12 @@ spring (`this.spring()`, Tune → Motion feel; Smooth = stiffness 240, damping 3
 morph; its change event writes the styles straight to the DOM (no React renders), with the sheet's windows and travel
 distances (`MT.Y`).
 
-Speed, not time, matches the loan morph: there the page's bottom edge travels to the order card ((624 + ex − df + sb) − 246
-px); here the longest edge travels to the home card (≈ 508 px on a 360 × 780 screen, ≈ 1.1×). The exit's spring is the same
-spring stretched in time by that ratio (stiffness ÷ s², damping ÷ s, same damping ratio), so the edges move at the same
-speed and accelerate and settle on the same curve, for a little longer.
+Timing follows the card-morph skill (`.claude/skills/perasure-card-morph`): the page's spring, never sped up for a shorter
+travel. This exit's longest edge travels ≈ 508 px to the home card, longer than the loan morph's 378 px (design size), so it
+is the same spring stretched in time by s = 508 / 378 ≈ 1.34 (stiffness ÷ s², damping ÷ s, same damping ratio; s is at least
+1 and at most 2.5): the edges move at the same speed and settle on the same curve, for a little longer (≈ 0.85 s). It ends
+at withdraw's own pixel threshold (0.378 px, 3.78 px/s) over that travel. (Before, s was the ratio to the loan morph on the
+current screen and could drop to 0.6, so on shorter phones the exit ran quicker than the loan morph.)
 
 Performance (low-end phones, 60 fps): every per-frame change is a transform or an opacity on its own layer — the closing
 box is the frame's box scaled with a transform (its rounded overflow is the clip; its content gets the inverse transform),
@@ -86,9 +88,11 @@ What happens:
   (legend rows, bar) makes way, as a layout change would, so nothing runs into the digits;
 - what sits on the card's bottom rides the closing box's bottom edge: the Withdraw pill comes in halfway through and moves up with that edge until the end; the glow under it
   brightens slowly from halfway, always at the bottom;
-- the rest of the card comes in early (overlapping what leaves — the card is never empty) on windows of the progress, each
-  rising its `MT.Y` distance and coming into focus from a 3 px blur: label and info, the two legend rows, the bar (track,
-  then its fills revealed left to right), and last the card's shadow;
+- the rest of the card comes in early (overlapping what leaves — the card is never empty). Its details — label and info,
+  the two legend rows, the bar's track — are secondary content, so as in the card-morph skill each plays the same clocked
+  entrance (0.34 s, ENTER curve, rising its `MT.Y` distance into focus from a 3 px blur), started when the progress reaches
+  0.2 / 0.3 / 0.3 / 0.36 / 0.38; on the progress alone their rise was over while the box was still closing fast. The bar's
+  fills (revealed left to right) and last the card's shadow stay on the progress: they are the card itself;
 - around it, nothing is cut by the box either: the cards below ride its bottom edge up (pushed, like the pill) while they
   fade in one after another, the logo row rides its top edge down, and the floating tab bar settles first so the content
   passes under a solid bar.
