@@ -544,8 +544,6 @@ class Component extends DCLogic {
     var ch = this.mpChip(); this.put('chip4', ch); this.put('chip6', ch); this.put('chip8', ch);
     this.put('edit', this.mpPencil());
     if (!this._mpMV) this.put('cap', { transform: 'translate(' + this.capX() + 'px,' + this.capY() + 'px)', opacity: this.capO(), visibility: this.capO() > 0 ? 'visible' : 'hidden' });
-    /* "Choose a loan term to continue" (above the pills, which it rides with): an edit-state hint, gone like the caption */
-    this.put('choose', { opacity: this.capO(), visibility: this.capO() > 0 ? 'visible' : 'hidden' });
     if (this.ctaWanted() !== !!this._ctaShown) { this.setState({ ctaOn: (this.state.ctaOn || 0) + 1 }); return; }
     if (this._ctaShown) {
       var bk = this.bkv();
@@ -1004,9 +1002,7 @@ class Component extends DCLogic {
     return React.createElement('div', { key:'chips', ref:this.ref('chips'), style:Object.assign({
       position:'absolute', left:0, right:0, display:'flex', flexDirection:'row', gap:8
     }, this.mpChips()) },
-      [React.createElement('div', { key:'choose', ref:this.ref('choose'), 'aria-hidden': cf, style:{ position:'absolute', left:0, top:-24, height:16,
-        whiteSpace:'nowrap', pointerEvents:'none', fontFamily:'Inter, sans-serif', fontWeight:400, fontSize:12, lineHeight:'16px', color:C.sub,
-        opacity:this.capO(), visibility:this.capO() > 0 ? 'visible' : 'hidden' } }, 'Choose a loan term to continue')].concat([4,6,8].map((t) => {
+      [4,6,8].map((t) => {
         var on = this.state.term === t;
         /* height rides the morph progress; only the selection colours keep their
            own 150ms tween */
@@ -1021,7 +1017,7 @@ class Component extends DCLogic {
           backgroundColor: on ? C.blue50 : 'rgba(255,255,255,0)',
           color: on ? C.blue : C.sub
         }, { duration:0.15 })), t + ' Term');
-      }))
+      })
     );
   }
   /* the line between the term pills and the keypad (1px #E0E3E5, 16px from the pills and 16px above the keys); it comes
