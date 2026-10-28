@@ -6,7 +6,10 @@
   window.__resources = {
     framerMotion: abs('../../vendor/motion@14.4.0/motion-react.js'),   /* Motion (React API), shared */
     motionTokens: abs('motion-tokens.js' + q),                          /* this page's animation constants */
-    mayaLogo: abs('assets/maya-logo.png')
+    mayaLogo: abs('assets/maya-logo.png'),
+    /* Borrower protection illustration (Figma 9398:35311): the shield and the heart, as files so their masks keep their ids */
+    bpShield: abs('assets/borrower-protection-shield.svg' + q),
+    bpHeart: abs('assets/borrower-protection-heart.svg' + q)
   };
   /* with the Credit limit intro on (intro.js), the runtime starts only once the intro has played (WD_INTRO.ready), so it
      does not compete with the coins; the page code is fetched straight away */
