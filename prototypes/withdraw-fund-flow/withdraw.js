@@ -1298,9 +1298,10 @@ class Component extends DCLogic {
       }, [
         BLUR ? this.pblur('pb', { left:0, top:0, right:0, bottom:0, zIndex:-1 }, 10 * bk, 'bottom', 'pbc') : null,
         /* the bar's colour veil — PeraSure standard (CLAUDE.md "Header and bottom bars"): the token nav gradient over the
-           blur layers, or the token gradient alone without blur */
+           blur layers; without blur the standard's stops (0 → 60 % → 80 %) in #EBF0EF — the colour for secondary pages
+           (二级页面, CLAUDE.md), which the order details are; no token holds it, so it is written here */
         React.createElement('div', { key:'veil', ref:this.ref('barVeil'), style:Object.assign({ position:'absolute', left:0, top:0, right:0, bottom:0, zIndex:-1, pointerEvents:'none',
-          background: BLUR ? 'var(--gradient-bottom-nav-filled)' : 'linear-gradient(180deg, var(--color-gradient-default-0) 0%, var(--color-gradient-default-60) 40%, var(--color-gradient-default-80) 100%)' }, this.mpBar(bk)) }, null),
+          background: BLUR ? 'var(--gradient-bottom-nav-filled)' : 'linear-gradient(180deg, rgba(235,240,239,0) 0%, rgba(235,240,239,0.6) 40%, rgba(235,240,239,0.8) 100%)' }, this.mpBar(bk)) }, null),
         /* slide + fade on a plain wrapper; the press scale stays on the m.div inside.
            On one node, whileTap's scale value took over `transform` and the slide
            was dropped for good after the first press. */

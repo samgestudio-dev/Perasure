@@ -120,7 +120,7 @@ Home and the loan screen ("Apply a loan" and the order details) use the PeraSure
   `--gradient-bottom-nav-filled`; the header's bands only while content is scrolled under it.
 - **Off**: the token gradients only — header subtle-80 → 40 → 0, bottom default-0 → 60 → 80 — and the bottom one fades
   out over the last stretch of scroll (as tall as the bar), gone at the very bottom (home: `homeScroll`; order details:
-  `updEnd`). On the order details the Confirm bar's veil is its own layer (the bar itself never fades: it hosts the blur
+  `updEnd`). The order details are a secondary page (二级页面): their bottom gradient is #EBF0EF instead (same stops; no token holds that colour). On the order details the Confirm bar's veil is its own layer (the bar itself never fades: it hosts the blur
   bands), in with the confirm chrome and out at the end of the scroll.
 
 ## Tune (bottom left on home; top right on the loan screen)

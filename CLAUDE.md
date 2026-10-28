@@ -125,6 +125,9 @@ bundle was unpacked onto the shared environment):
   - **Without progressive blur** — colour gradients only, from the tokens:
     - header: `background: linear-gradient(180deg, var(--color-gradient-subtle-80) 0%, var(--color-gradient-subtle-40) 70%, var(--color-gradient-subtle-0) 100%);`
     - bottom: `background: linear-gradient(180deg, var(--color-gradient-default-0) 0%, var(--color-gradient-default-60) 40%, var(--color-gradient-default-80) 100%);`
+    - **secondary pages (二级页面)** — e.g. the withdraw order details — bottom in #EBF0EF instead (no token holds it, so
+      written directly), same stops: `linear-gradient(180deg, rgba(235,240,239,0) 0%, rgba(235,240,239,0.6) 40%, rgba(235,240,239,0.8) 100%)`.
+      Whenever the owner calls a page a secondary page, use this.
     - on a scrolling page the bottom gradient fades out over the last stretch of scroll (as tall as the bar, opacity tied
       to the distance left to scroll), so at the very bottom — nothing left under the bar — it is gone; a page that does
       not scroll shows none.
