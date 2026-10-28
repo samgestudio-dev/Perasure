@@ -32,13 +32,16 @@ Built like the withdraw fund flow's morphs (`withdraw.js`: `tweenMp`, `introExit
   distance; that made it ≈ 40 % quicker (95 % at 175 ms) and felt rushed.
 - **The card box** grows 182 → 296 (its rounded edge is the clip); the card below rides its bottom edge (a transform; the
   page's layout is committed once, at rest).
-- **Shared elements stay one element**: the avatar tile (40 → 48 px, icon 24 → 32); the **Change pill travels to Save's
+- **Shared elements stay one element**: the avatar tile (40 → 48 px, icon 24 → 32); the **header next to it** — its two
+  lines travel with the tile (always centred on it) and **change their words on the way**: "Sam Ge" → "Change your
+  co-maker", the number → "Shares responsibility for your loan" (same type styles in both states, so only the words swap:
+  old words rise out, new ones rise in, a 3 px blur bridging them, line 2 a beat after line 1); the **Change pill travels to Save's
   place and becomes Save** (light fill → primary, "Change" leaves as "Save" arrives, overlapping so it is never blank).
   Its path is front-loaded (1 − (1 − k)²) so it is past the Mobile row before that row comes in.
 - **The form opens empty** — Name, Relationship and Mobile all show their placeholders — so the current co-maker's name
   and number leave with the rest of state A; nothing is carried into the form.
-- **What leaves** (caption, name, number, link box, note) rises its MT.Y distance and blurs out early (gone by k ≈ 0.4); **what
-  comes in** rises into place from a 3 px blur, top-down: title, Name, Relationship, then — once Save and Cancel (which ride
+- **What leaves** (caption, link box, note) rises its MT.Y distance and blurs out early (gone by k ≈ 0.4); **what
+  comes in** rises into place from a 3 px blur, top-down: Name, Relationship, then — once Save and Cancel (which ride
   the card's bottom edge) are past its spot — the Mobile row. Cancel comes in last.
 - "Check verification status" turns disabled while the form is open (a disabled layer fades over it).
 - On a short screen the page scrolls with the morph (same spring) so Cancel / Save come to rest just above the bottom bar.

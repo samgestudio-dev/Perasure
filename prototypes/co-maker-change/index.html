@@ -10,7 +10,7 @@
      One page: "Change" turns the co-maker card into the "Change your co-maker" form, the same kind of morph as the
      withdraw fund flow (one progress, one spring, windows on the progress). Page code: co-maker.js.
      Shared environment from the repo: the PeraSure tokens, the app's fonts and Motion. -->
-<script src="phone-fit.js?v=202610280710"></script>
+<script src="phone-fit.js?v=202610280712"></script>
 <link rel="stylesheet" href="../../tokens/tokens.css">
 <link rel="stylesheet" href="../../assets/fonts/fonts.css">
 <link rel="preload" href="../../assets/fonts/hanken-grotesk-var.woff2" as="font" type="font/woff2" crossorigin>
@@ -70,8 +70,13 @@
 
   /* state A: Your co-maker */
   .a-cap { left: 16px; top: 16px; }
-  .a-name { left: 64px; top: 40px; width: 156px; }
-  .a-phone { left: 64px; top: 66px; width: 156px; }
+  /* header next to the avatar: one block in both states, its lines travel with the tile while their words change
+     (A: name / number at 64,40 and 64,66 — B: title / subtitle at 80,20 and 80,44; same type styles) */
+  .hdr { left: 64px; width: 232px; pointer-events: none; }
+  .hdr-1 { top: 40px; height: 22px; }  .hdr-2 { top: 66px; height: 16px; }
+  .hdr > p { position: absolute; left: 0; top: 0; }
+  .hdr-a { max-width: 156px; }            /* A: leaves room for the Change pill */
+  .hdr-b { width: 232px; }
   .a-link { left: 16px; top: 98px; width: 296px; height: 46px; display: flex; align-items: center; gap: var(--spacing-gap-sm);
             padding: var(--spacing-gap-xs); border: var(--stroke-width-default) dashed var(--color-stroke-default);
             border-radius: var(--radius-sm); background: var(--color-surface-inset-default); }
@@ -96,7 +101,6 @@
   .pill-save { opacity: 0; visibility: hidden; }
 
   /* state B: Change your co-maker */
-  .b-title { left: 80px; top: 20px; width: 232px; display: flex; flex-direction: column; gap: var(--spacing-gap-2xs); }
   .row { left: 16px; width: 296px; height: 20px; display: flex; align-items: center; }
   .row .k { width: 100px; flex: none; }
   .row-1 { top: 88px; }  .row-2 { top: 140px; }  .row-3 { top: 192px; }
@@ -164,8 +168,15 @@
 
             <!-- state A -->
             <p class="abs a-cap ps-text-caption-sm t-tertiary nowrap" id="aCap">Your co-maker</p>
-            <p class="abs a-name ps-text-section-title-md t-primary nowrap" id="aName">Sam Ge</p>
-            <p class="abs a-phone ps-text-caption-sm t-placeholder nowrap" id="aPhone">+63 912 345 6789</p>
+            <!-- shared: the header lines (A text ⇄ B text) -->
+            <div class="abs hdr hdr-1" id="hdr1">
+              <p class="hdr-a ps-text-section-title-md t-primary nowrap" id="aName">Sam Ge</p>
+              <p class="hdr-b ps-text-section-title-md t-primary nowrap b" id="bHead">Change your co-maker</p>
+            </div>
+            <div class="abs hdr hdr-2" id="hdr2">
+              <p class="hdr-a ps-text-caption-sm t-placeholder nowrap" id="aPhone">+63 912 345 6789</p>
+              <p class="hdr-b ps-text-caption-sm t-placeholder nowrap b" id="bSub">Shares responsibility for your loan</p>
+            </div>
             <div class="abs a-link" id="aLink">
               <div class="url"><p class="ps-text-link t-brand nowrap" id="url">perasure.ph/g/7KQ2-JD9A</p></div>
               <button class="copy" id="copy" type="button" aria-label="Copy link">
@@ -181,10 +192,6 @@
             </div>
 
             <!-- state B -->
-            <div class="abs b-title b" id="bTitle">
-              <p class="ps-text-section-title-md t-primary">Change your co-maker</p>
-              <p class="ps-text-caption-sm t-placeholder">Shares responsibility for your loan</p>
-            </div>
             <label class="abs row row-1 b" id="bRow1" for="inName">
               <span class="k ps-text-body-md t-tertiary">Name</span>
               <span class="val"><input class="field ps-text-body-md-emphasis" id="inName" type="text" autocomplete="off" autocapitalize="words" spellcheck="false" enterkeyhint="next" placeholder="Enter full name" aria-label="Name"></span>
@@ -251,6 +258,6 @@
     </div>
   </div>
 </div>
-<script src="co-maker.js?v=202610280710"></script>
+<script src="co-maker.js?v=202610280712"></script>
 </body>
 </html>

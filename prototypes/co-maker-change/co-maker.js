@@ -17,10 +17,13 @@
    · The card box grows / shrinks (its rounded overflow is the clip). What leaves fades before the moving edge could cut
      it; what sits on the card's bottom (Cancel, and Save once it gets there) rides the bottom edge; the card below rides
      it too (a transform — the page's layout is committed once, at rest).
-   · Shared elements stay one element the whole way: the avatar tile (40 → 48, icon 24 → 32), and the Change pill, which
-     travels to Save's place and becomes it (its light fill turns primary, "Change" leaves, "Save" arrives). The form
-     opens empty (every field shows its placeholder), so the current co-maker's name and number simply leave with the
-     rest of state A — nothing of them is carried into the form.
+   · Shared elements stay one element the whole way: the avatar tile (40 → 48, icon 24 → 32); the header next to it,
+     whose two lines travel with the tile (64,40 / 64,66 → 80,20 / 80,44 — always centred on it) while their words change
+     on the way: "Sam Ge" → "Change your co-maker", the number → "Shares responsibility for your loan" (same type styles
+     in both states, so only the words swap: the old ones rise out, the new ones rise in, a 3 px blur bridging them,
+     the second line a beat after the first); and the Change pill, which travels to Save's place and becomes it (its
+     light fill turns primary, "Change" leaves, "Save" arrives). The form opens empty (every field shows its
+     placeholder): nothing of the current co-maker is carried into the form.
    · Everything that comes in rises its MT.Y distance and comes into focus from a 3 px blur, staggered top-down, early
      enough to overlap what leaves (the card is never empty); what leaves rises out and blurs a little.
    · Per frame only transform / opacity / filter, plus the card's height and the tile's / pill's size (small, absolutely
@@ -61,7 +64,7 @@
   var R = {
     slot: $('slot'), card: $('card'), steps: $('steps'), tile: $('tile'), tileIcon: $('tileIcon'),
     aCap: $('aCap'), aName: $('aName'), aPhone: $('aPhone'), aLink: $('aLink'), aNote: $('aNote'),
-    bTitle: $('bTitle'), bRow1: $('bRow1'), rule1: $('rule1'), bRow2: $('bRow2'), rule2: $('rule2'), bRow3: $('bRow3'),
+    hdr1: $('hdr1'), hdr2: $('hdr2'), bHead: $('bHead'), bSub: $('bSub'), bRow1: $('bRow1'), rule1: $('rule1'), bRow2: $('bRow2'), rule2: $('rule2'), bRow3: $('bRow3'),
     cancelWrap: $('cancelWrap'), cancel: $('cancel'),
     pill: $('pill'), pillBtn: $('pillBtn'), pillStrong: $('pillStrong'), pillChange: $('pillChange'), pillSave: $('pillSave'),
     ctaOff: $('ctaOff'), cta: $('cta'), home: $('home'), back: $('back'),
@@ -69,8 +72,8 @@
     inName: $('inName'), inRel: $('inRel'), relV: $('relV'), inMobile: $('inMobile'),
     scroll: $('scroll'), kb: $('kb')
   };
-  var A_LAYER = [R.aCap, R.aName, R.aPhone, R.aLink, R.aNote];
-  var B_LAYER = [R.bTitle, R.bRow1, R.rule1, R.bRow2, R.rule2, R.bRow3, R.cancelWrap];
+  var A_LAYER = [R.aCap, R.aLink, R.aNote];
+  var B_LAYER = [R.bRow1, R.rule1, R.bRow2, R.rule2, R.bRow3, R.cancelWrap];
 
   /* ---- data ---- */
   var D = { name: 'Sam Ge', phone: '9123456789', rel: '', code: '7KQ2-JD9A' };
@@ -115,10 +118,16 @@
     out(R.aPhone, 0.02, 0.38, MTY.text);
     out(R.aLink, 0.04, 0.42, MTY.block);
     out(R.aNote, 0, 0.36, MTY.text);
-    out(R.aName, 0.02, 0.38, MTY.text);       /* the current name leaves with the rest: the form starts empty */
+
+    /* shared: the header lines ride with the tile (x = its right edge + 8 → 16, centred on it) and change their words on
+       the way — the old words rise out, the new rise in, overlapping with a blur bridge; line 2 a beat after line 1 */
+    var hx = r3(lerp(64, 80, c) - 64);
+    put(R.hdr1, 'transform', 'translate(' + hx + 'px,' + r3(lerp(40, 20, c) - 40) + 'px)');
+    put(R.hdr2, 'transform', 'translate(' + hx + 'px,' + r3(lerp(66, 44, c) - 66) + 'px)');
+    out(R.aName, 0.04, 0.4, MTY.text);  inn(R.bHead, 0.2, 0.6, MTY.text);
+    out(R.aPhone, 0.08, 0.44, MTY.text); inn(R.bSub, 0.24, 0.64, MTY.text);
 
     /* state B comes in, top-down */
-    inn(R.bTitle, 0.2, 0.62, MTY.text);
     inn(R.bRow1, 0.26, 0.68, MTY.text);
     inn(R.rule1, 0.3, 0.72, 0);
     inn(R.bRow2, 0.33, 0.75, MTY.text);
@@ -151,9 +160,9 @@
   var DE = Math.hypot(PILL_B.l - PILL_A.l, (H1 - PILL_B.bottom) - PILL_A.t);
   var REST_PX = 0.001 * (624 - 246), REST_PXS = 0.01 * (624 - 246);
   var SPRING = { type: 'spring', stiffness: F.stiffness, damping: F.damping, mass: F.mass, restDelta: REST_PX / DE, restSpeed: REST_PXS / DE };
-  var MOVING = [R.card, R.steps, R.tile, R.pill];
+  var MOVING = [R.card, R.steps, R.tile, R.pill, R.hdr1, R.hdr2];
   /* everything that blurs: its own layer for the whole morph */
-  var BLURRED = [R.aCap, R.aName, R.aPhone, R.aLink, R.aNote, R.bTitle, R.bRow1, R.rule1, R.bRow2, R.rule2, R.bRow3, R.cancelWrap, R.pillChange, R.pillSave];
+  var BLURRED = [R.aCap, R.aName, R.aPhone, R.aLink, R.aNote, R.bHead, R.bSub, R.bRow1, R.rule1, R.bRow2, R.rule2, R.bRow3, R.cancelWrap, R.pillChange, R.pillSave];
 
   var mv = Mo && Mo.motionValue ? Mo.motionValue(0) : null, anim = null, target = 0;
   if (mv) mv.on('change', apply);
