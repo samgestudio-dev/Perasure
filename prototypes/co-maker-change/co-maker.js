@@ -6,10 +6,11 @@
    · ONE progress k (0 = A, 1 = B) in a Motion value, animated by Motion with the page's spring; its change event writes
      every style straight to the DOM (no framework renders). A tap mid-morph re-targets the same value, so the spring
      carries its velocity into the reversal and turns around smoothly from where it is.
-   · Speed, not time, matches the withdraw morph: the longest travel here (the Change pill → Save, ≈ 202 px) is compared
-     with the loan morph's (its page's bottom edge, 624 → 246 px = 378 px at the design size); the spring is the same
-     one stretched in time by that ratio (stiffness ÷ s², damping ÷ s — same damping ratio, same curve), clamped to
-     0.6–2.5 like the withdraw exit.
+   · Same spring as the withdraw morphs (Smooth: stiffness 240, damping 30) — same acceleration, same curve, so it feels
+     the same. Time is not forced: the spring's end is set in pixels like withdraw's (its loan morph stops within
+     0.001 × 378 px ≈ 0.38 px and 3.8 px/s), here for the longest travel (the Change pill → Save, ≈ 202 px), so the
+     shorter move settles a little sooner (≈ 535 ms against 572 ms; 95 % at ≈ 290 ms in both). An earlier version
+     sped the spring up in proportion to the shorter distance (same speed): that made it ≈ 40 % quicker and rushed.
    · Geometry follows k clamped to 0–1 (no box goes negative on the spring's sub-pixel overshoot); everything else rides
      windows of k (smoothstep), the same function both ways, so a reversal simply runs them back and — the spring being
      front-loaded — leaving is naturally quicker than arriving.
@@ -145,10 +146,11 @@
   }
 
   /* ---- driving it: one Motion value, one spring ---- */
-  var DL = 624 - 246;                                       /* withdraw loan morph travel at the design size */
+  /* withdraw's rest thresholds in pixels (0.001 and 0.01/s of its 378 px loan-morph travel), over this morph's longest
+     travel: the same spring ends when the pill is as close to rest as withdraw's sheet edge is */
   var DE = Math.hypot(PILL_B.l - PILL_A.l, (H1 - PILL_B.bottom) - PILL_A.t);
-  var TS = Math.min(2.5, Math.max(0.6, DE / DL));
-  var SPRING = { type: 'spring', stiffness: F.stiffness / (TS * TS), damping: F.damping / TS, mass: F.mass, restDelta: 0.001, restSpeed: 0.01 / TS };
+  var REST_PX = 0.001 * (624 - 246), REST_PXS = 0.01 * (624 - 246);
+  var SPRING = { type: 'spring', stiffness: F.stiffness, damping: F.damping, mass: F.mass, restDelta: REST_PX / DE, restSpeed: REST_PXS / DE };
   var MOVING = [R.card, R.steps, R.tile, R.pill];
   /* everything that blurs: its own layer for the whole morph */
   var BLURRED = [R.aCap, R.aName, R.aPhone, R.aLink, R.aNote, R.bTitle, R.bRow1, R.rule1, R.bRow2, R.rule2, R.bRow3, R.cancelWrap, R.pillChange, R.pillSave];
@@ -194,7 +196,7 @@
     if (need <= 0.5) return;
     var from = sc.scrollTop;
     if (reduce) { sc.scrollTop = from + need; return; }
-    scrollAnim = Mo.animate(from, from + need, Object.assign({}, SPRING, { onUpdate: function(v){ sc.scrollTop = v; }, onComplete: function(){ scrollAnim = null; } }));
+    scrollAnim = Mo.animate(from, from + need, Object.assign({}, SPRING, { restDelta: REST_PX, restSpeed: REST_PXS, onUpdate: function(v){ sc.scrollTop = v; }, onComplete: function(){ scrollAnim = null; } }));
   }
   R.scroll.addEventListener('touchstart', function(){ if (scrollAnim) { scrollAnim.stop(); scrollAnim = null; } }, { passive: true });
 
@@ -289,5 +291,5 @@
 
   apply(0);
   /* for checks: window.__cm.set(k) draws any frame */
-  window.__cm = { set: function(k){ if (anim) { anim.stop(); anim = null; } still = k === 0 || k === 1; if (mv) mv.set(k); else apply(k); }, go: go, spring: SPRING, ts: TS };
+  window.__cm = { set: function(k){ if (anim) { anim.stop(); anim = null; } still = k === 0 || k === 1; if (mv) mv.set(k); else apply(k); }, go: go, spring: SPRING };
 })();

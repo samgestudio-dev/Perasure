@@ -25,9 +25,11 @@ Built like the withdraw fund flow's morphs (`withdraw.js`: `tweenMp`, `introExit
 - **One progress** k (0 = A, 1 = B) in a Motion value, animated with the withdraw page's spring (Smooth: stiffness 240,
   damping 30). Its change event writes every style straight to the DOM. A tap mid-morph re-targets the same value, so it
   turns around smoothly from where it is.
-- **Same speed, not same time** as the withdraw loan morph: the longest travel here (the pill, ≈ 202 px) against the loan
-  morph's (378 px) gives the same spring stretched in time (stiffness ÷ s², damping ÷ s, s clamped to 0.6–2.5, as the
-  withdraw exit) — about 0.26 s here.
+- **Same spring as withdraw** (Smooth: stiffness 240, damping 30), so the acceleration and curve — the feel — are the
+  same. The time is not forced to match: the spring stops when the longest travel here (the pill, ≈ 202 px) is within
+  withdraw's own pixel threshold (≈ 0.38 px), so this shorter move settles a little sooner — ≈ 535 ms against 572 ms
+  (95 % of the way at ≈ 290 ms in both). The first version scaled the spring to the same *speed* over the shorter
+  distance; that made it ≈ 40 % quicker (95 % at 175 ms) and felt rushed.
 - **The card box** grows 182 → 296 (its rounded edge is the clip); the card below rides its bottom edge (a transform; the
   page's layout is committed once, at rest).
 - **Shared elements stay one element**: the avatar tile (40 → 48 px, icon 24 → 32); the **Change pill travels to Save's
