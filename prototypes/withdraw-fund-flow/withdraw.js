@@ -527,6 +527,30 @@ class Component extends DCLogic {
   /* the Confirm bar's colour veil (its own layer: the bar itself never fades — see ctaBar): in with the confirm chrome
      (bk), and without blur also out over the last stretch of the scroll (_endF, updEnd) */
   mpBar(bk){ return { opacity: Math.round(bk * (this._endF == null ? 1 : this._endF) * 1000) / 1000 }; }
+  /* a PeraSure token's value (tokens.css), read once — so colours can still be animated by Motion */
+  tok(name, fb){ var c = this._tok || (this._tok = {}); if (c[name] == null) { var v = getComputedStyle(document.documentElement).getPropertyValue(name).trim(); c[name] = v || fb; } return c[name]; }
+  /* Confirm while the agreement is not ticked: the page scrolls to the bottom on the page's spring (this.spring(), the
+     morphs' feel), and as the agreement row arrives it is nudged. A touch on the page stops the scroll. */
+  confirmTap(){
+    if (this.state.agree) return;
+    var self = this, fm = this.state.fm, sc = this._r.loanScroll; if (!sc) return;
+    var to = sc.scrollHeight - sc.clientHeight, from = sc.scrollTop, fired = false;
+    var fire = function(){ if (!fired) { fired = true; self.nudgeAgree(); } };
+    if (this._toAgree) { this._toAgree.stop(); this._toAgree = null; }
+    if (to - from < 24 || !fm || !fm.animate || this.reduced()) { sc.scrollTop = to; fire(); return; }
+    this._toAgree = fm.animate(from, to, Object.assign({}, this.spring(), { restDelta:0.5, restSpeed:5,
+      onUpdate: function(v){ sc.scrollTop = v; if (to - v < 24) fire(); },     /* nudge as it arrives, not after the slow tail */
+      onComplete: function(){ self._toAgree = null; fire(); } }));
+  }
+  /* the nudge, kept simple: a brand-blue ring ripples out of the empty circle twice (grows 1 → 2.4× while fading, 0.6 s on
+     the ENTER curve) — transform / opacity only, nothing else on the page changes */
+  nudgeAgree(){
+    var fm = this.state.fm, halo = this._r.agreeHalo;
+    if (!fm || !fm.animate || !halo || this.reduced()) return;
+    var ring = function(){ return fm.animate(halo, { scale:[1, 2.4], opacity:[0.6, 0] }, { duration:0.6, ease:[0.22, 0.61, 0.36, 1] }); };
+    var first = ring(); if (first && first.then) first.then(function(){ ring(); });
+  }
+  reduced(){ return !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches); }
   updEnd(){
     if (BLUR) return;
     var sc = this._r.loanScroll, b = this._r.bar; if (!sc) return;
@@ -1231,8 +1255,13 @@ class Component extends DCLogic {
           React.createElement('span', { key:'c2', style:{ color:C.mute, display:'flex' } }, this.ic('chevR', 16, C.mute, 2))
         ])
       ]),
+      /* the agreement: Confirm stays disabled until it is ticked. A tap on the disabled Confirm brings the page here and the
+         empty circle ripples (nudgeAgree) — no error state */
       React.createElement('div', { key:'agree', onClick:() => this.setState({ agree: !this.state.agree }), style:{ height:28, display:'flex', flexDirection:'row', alignItems:'center', gap:8, cursor:'pointer' } }, [
-        React.createElement('div', { key:'b', style:{ width:16, height:16, flex:'none', boxSizing:'border-box', borderRadius:'50%', border:'1.5px solid ' + (this.state.agree ? C.blue : '#bac0c4'), backgroundColor: this.state.agree ? C.blue : 'transparent', transition:'background-color .15s ease, border-color .15s ease', display:'flex', alignItems:'center', justifyContent:'center', color:'#ffffff' } }, this.state.agree ? this.ic('check', 10, '#ffffff', 3) : null),
+        React.createElement('div', { key:'bw', style:{ position:'relative', width:16, height:16, flex:'none' } }, [
+          React.createElement('span', { key:'halo', ref:this.ref('agreeHalo'), style:{ position:'absolute', left:0, top:0, width:16, height:16, boxSizing:'border-box', borderRadius:'50%', border:'2px solid ' + C.blue, opacity:0, pointerEvents:'none' } }, null),
+          React.createElement('div', { key:'b', style:{ position:'relative', width:16, height:16, boxSizing:'border-box', borderRadius:'50%', border:'1.5px solid ' + (this.state.agree ? C.blue : '#bac0c4'), backgroundColor: this.state.agree ? C.blue : 'transparent', transition:'background-color .15s ease, border-color .15s ease', display:'flex', alignItems:'center', justifyContent:'center', color:'#ffffff' } }, this.state.agree ? this.ic('check', 10, '#ffffff', 3) : null)
+        ]),
         this.sp('By typing confirm indicates you accept Loan Agreement and Loan Disclosure Statement', { flex:'1 1 auto', fontFamily:'Inter, sans-serif', fontWeight:500, fontSize:11, lineHeight:'14px', color:C.mute }, { key:'t' })
       ])
     ];
@@ -1277,12 +1306,17 @@ class Component extends DCLogic {
            was dropped for good after the first press. */
         React.createElement('div', { key:'btnWrap', ref:this.ref('btnWrap'), style:Object.assign({ position:'relative', alignSelf:'stretch', flex:'none', height:48 }, bs) },
           this.el('div', Object.assign({
-            key:'btn', ref:this.ref('btn'), whileTap:{ scale:MT.PRESS_SCALE.pill }, transition:MT.PRESS
+            key:'btn', ref:this.ref('btn'), whileTap:{ scale:MT.PRESS_SCALE.pill }, transition:MT.PRESS, onClick:() => this.confirmTap()
           }, this.mo({
+            /* Figma 10168:26475 (Bottom nav btn): 48 tall, radius full, padding 12 / 20, Label/md; disabled = action-bg-primary-
+               disabled with text-disabled, enabled = action-bg-primary-default with text-inverse (tokens, resolved so they animate) */
             position:'relative', height:48, borderRadius:999, boxSizing:'border-box',
             padding:'12px 20px', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center',
-            cursor:'pointer', fontFamily:'Inter, sans-serif', fontWeight:600, fontSize:14, lineHeight:'20px', color:'#ffffff'
-          }, { backgroundColor: this.state.agree ? C.blue : '#e0e3e5' }, { duration:0.2 })), 'Confirm'))
+            cursor:'pointer', fontFamily:'Inter, sans-serif', fontWeight:600, fontSize:14, lineHeight:'20px'
+          }, {
+            backgroundColor: this.state.agree ? this.tok('--color-action-bg-primary-default', C.blue) : this.tok('--color-action-bg-primary-disabled', '#e0e3e5'),
+            color: this.state.agree ? this.tok('--color-text-inverse', '#ffffff') : this.tok('--color-text-disabled', '#97a0a6')
+          }, { duration:0.2 })), 'Confirm'))
       ])
     ] : null);
   }
@@ -1384,7 +1418,7 @@ class Component extends DCLogic {
         var f = BLUR && document.querySelector('.ps-frame'); if (f) f.classList.toggle('ps-covered', this.state.screen === 'loan'); },
       style:{ position:'absolute', left:0, top:-EE, width:360, height:FULL, overflow:'hidden', backgroundColor: C.page }
     }, [
-      React.createElement('div', { key:'scroll', ref:this.ref('loanScroll'), className:'psScroll', onScroll: this._onSheetScroll || (this._onSheetScroll = (e) => {
+      React.createElement('div', { key:'scroll', ref:this.ref('loanScroll'), className:'psScroll', onTouchStart: () => { if (this._toAgree) { this._toAgree.stop(); this._toAgree = null; } }, onScroll: this._onSheetScroll || (this._onSheetScroll = (e) => {
           if (!BLUR) { this.updEnd(); return; }
           var on = e.currentTarget.scrollTop > 0, h = this._r.hdrBlur;
           if (h && on !== this._hdrLive) { this._hdrLive = on; h.style.display = on ? '' : 'none'; } }), style:{ position:'absolute', left:0, top:0, width:360, height:FULL, boxSizing:'border-box', paddingTop:EE, overflowY: cf ? 'auto' : 'hidden', overflowX:'hidden' } },

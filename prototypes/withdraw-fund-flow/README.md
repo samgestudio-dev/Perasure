@@ -99,6 +99,17 @@ web-animation-design: blur to bridge crossfades, paired elements on one progress
 A tap after the animation has ended skips the rest of the 3 s. While the intro plays the home's runtime does not start
 (`boot.js` waits), so nothing competes with the coins; the home is built during the hold. Afterwards the frame is removed.
 
+## Confirm (order details)
+
+The button follows Figma 10168:26475 (Bottom nav btn, button only): 48 tall, Label/md; disabled = `--color-action-bg-primary-
+disabled` with `--color-text-disabled`, enabled (agreement ticked) = `--color-action-bg-primary-default` with
+`--color-text-inverse` — token values read at runtime so the 0.2 s colour change can animate.
+
+Tapping it while disabled (`confirmTap`): the page scrolls to the bottom on the page's spring (Tune → Motion feel), and as
+it arrives the agreement's empty circle ripples — a brand-blue ring grows out of it to 2.4× while fading, 0.6 s on the
+ENTER curve, twice (`nudgeAgree`). No error state: nothing else changes. A touch on the page stops the scroll;
+reduced motion jumps and skips the ripple.
+
 ## Header and bottom bars
 
 Home and the loan screen ("Apply a loan" and the order details) use the PeraSure standard bars (repo `CLAUDE.md` →
