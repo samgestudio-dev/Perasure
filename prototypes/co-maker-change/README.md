@@ -53,8 +53,8 @@ Built like the withdraw fund flow's morphs (`withdraw.js`: `tweenMp`, `introExit
   10 px, fractions of the token `--blur-backdrop-bg`), each masked to a narrower band at the bar's outer edge, under the
   token colour veil. The header's bands run only while the page is scrolled under it. (Headless Chrome's software
   renderer draws these with stray reflections; with GPU compositing — phones — they render correctly.)
-- **Tune → Progressive blur Off**: no bands; the header and bottom bar use the withdraw home page's own gradients (its
-  exact values). The bottom one fades out over the last stretch of scroll — as tall as the bar, tied to the scroll
+- **Tune → Progressive blur Off**: no bands; the header and bottom bar use the PeraSure bar gradients without blur
+  (token gradients — see "Header and bottom bars" in the repo's `CLAUDE.md`). The bottom one fades out over the last stretch of scroll — as tall as the bar, tied to the scroll
   position — so at the very bottom, with nothing left under the bar, it is gone (a page that doesn't scroll shows none).
 - On a short screen the page scrolls with the morph (same spring) so Cancel / Save come to rest just above the bottom bar.
 - Per frame: transform / opacity / filter, plus the card's height and the tile's and pill's size (small absolute boxes);

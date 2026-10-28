@@ -11,9 +11,9 @@
      withdraw fund flow (one progress, one spring, windows on the progress). Page code: co-maker.js.
      Shared environment from the repo: the PeraSure tokens, the app's fonts and Motion. -->
 <!-- prototype-only Tune panel (progressive blur on/off, motion feel): delete tune.js / tune.css and these two lines for production -->
-<script src="tune.js?v=202610280732"></script>
-<link rel="stylesheet" href="tune.css?v=202610280732">
-<script src="phone-fit.js?v=202610280732"></script>
+<script src="tune.js?v=202610280736"></script>
+<link rel="stylesheet" href="tune.css?v=202610280736">
+<script src="phone-fit.js?v=202610280736"></script>
 <link rel="stylesheet" href="../../tokens/tokens.css">
 <link rel="stylesheet" href="../../assets/fonts/fonts.css">
 <link rel="preload" href="../../assets/fonts/hanken-grotesk-var.woff2" as="font" type="font/woff2" crossorigin>
@@ -172,11 +172,11 @@
   /* a blur over the flat page looks exactly like no blur: the header's bands only run while content scrolls under it */
   .top:not(.live) .pb > i:not(.veil) { display: none; }
   .bot > :not(.pb) { position: relative; }
-  /* blur off (Tune): no bands, and withdraw's home-page header / bottom gradients as the veils (its exact values).
+  /* blur off (Tune): no bands; the PeraSure bar gradients without blur (CLAUDE.md → "Header and bottom bars").
      The bottom one fades out over the last stretch of scroll (co-maker.js) — at the very bottom nothing is under it. */
   html[data-blur="off"] .pb > i:not(.veil) { display: none; }
-  html[data-blur="off"] .pb-top > .veil { background: linear-gradient(180deg, rgba(247,250,249,0.5) 0%, rgba(247,250,249,0.39) 62%, rgba(247,250,249,0) 100%); }
-  html[data-blur="off"] .pb-bot > .veil { background: linear-gradient(0deg, rgba(225,228,229,0.6) 0%, rgba(225,228,229,0.35) 30%, rgba(225,228,229,0) 100%); }
+  html[data-blur="off"] .pb-top > .veil { background: linear-gradient(180deg, var(--color-gradient-subtle-80) 0%, var(--color-gradient-subtle-40) 70%, var(--color-gradient-subtle-0) 100%); }
+  html[data-blur="off"] .pb-bot > .veil { background: linear-gradient(180deg, var(--color-gradient-default-0) 0%, var(--color-gradient-default-60) 40%, var(--color-gradient-default-80) 100%); }
 </style>
 </head>
 <body>
@@ -288,6 +288,6 @@
     </div>
   </div>
 </div>
-<script src="co-maker.js?v=202610280732"></script>
+<script src="co-maker.js?v=202610280736"></script>
 </body>
 </html>

@@ -119,6 +119,21 @@ bundle was unpacked onto the shared environment):
 - iOS Safari 26+ tints the status bar and toolbar from `position:fixed` layers that reach the screen edges.
   Don't leave a coloured fixed overlay (scrim, backdrop) in the page, even at `opacity:0`: use
   `display:none` when closed, and give tap-outside catchers no background.
+- **Header and bottom bars** (PeraSure standard; reference: `prototypes/co-maker-change/index.html`, `.pb`). Two looks,
+  switchable in the demo's Tune panel (`?blur=1|0`):
+  - **Without progressive blur** — colour gradients only, from the tokens:
+    - header: `background: linear-gradient(180deg, var(--color-gradient-subtle-80) 0%, var(--color-gradient-subtle-40) 70%, var(--color-gradient-subtle-0) 100%);`
+    - bottom: `background: linear-gradient(180deg, var(--color-gradient-default-0) 0%, var(--color-gradient-default-60) 40%, var(--color-gradient-default-80) 100%);`
+    - on a scrolling page the bottom gradient fades out over the last stretch of scroll (as tall as the bar, opacity tied
+      to the distance left to scroll), so at the very bottom — nothing left under the bar — it is gone; a page that does
+      not scroll shows none.
+  - **With progressive blur** — five backdrop-blur layers stacked under the veil, each stronger and masked to a narrower
+    band at the bar's outer edge: blur `--blur-backdrop-bg` × 0.06 / 0.14 / 0.3 / 0.55 / 1, each fully shown from the
+    outer edge to 84 / 66 / 48 / 28 / 10 % of the bar and fading out by 100 / 84 / 66 / 48 / 28 %; veil
+    `--gradient-top-nav-filled` / `--gradient-bottom-nav-filled`. The header's blur layers run only while content is
+    scrolled under it (a blur over the flat page looks the same as none and costs GPU time).
+  - Both extend behind the iOS status bar / search bar (see the iOS Safari 26+ notes above). Existing prototypes keep
+    their bars unless the owner asks.
 - Motion: prefer Motion (formerly Framer Motion; `vendor/motion@14.4.0/motion-react.js`) with `LazyMotion` + `m` (strict), drive continuous values with motion values
   instead of React state, animate only `transform` / `opacity` where possible, and respect
   `prefers-reduced-motion`.

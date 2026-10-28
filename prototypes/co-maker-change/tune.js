@@ -40,7 +40,7 @@
     seg('Progressive blur (header and bottom bars)', 'blur', [[1, 'On'], [0, 'Off']]);
     seg('Motion feel', 'feel', [['Smooth', 'Smooth'], ['Snappy', 'Snappy'], ['Gentle', 'Gentle']]);
     var note = document.createElement('div'); note.className = 'tn';
-    note.textContent = 'Blur off: the withdraw home page\'s header and bottom gradients; the bottom one fades out as you scroll to the end. ' +
+    note.textContent = 'Blur off: the PeraSure bar gradients (no blur); the bottom one fades out as you scroll to the end. ' +
       'Changing a setting reloads the page with it; values are kept on this phone.' + (fromLink.length ? ' Set by the link: ' + fromLink.join(', ') + '.' : '');
     p.appendChild(note);
     function open(){ p.classList.add('on'); catcher.classList.add('on'); }
