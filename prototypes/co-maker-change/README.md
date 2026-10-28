@@ -32,22 +32,26 @@ Built like the withdraw fund flow's morphs (`withdraw.js`: `tweenMp`, `introExit
   page's layout is committed once, at rest).
 - **Shared elements stay one element**: the avatar tile (40 → 48 px, icon 24 → 32); the **Change pill travels to Save's
   place and becomes Save** (light fill → primary, "Change" leaves as "Save" arrives, overlapping so it is never blank).
-  The **name** is a pair on one path — the header name and the form's Name value move and scale together, crossfading with
-  a 3 px blur. The pill's and the name's paths are front-loaded (1 − (1 − k)²) so they land with the rows they join.
-- **What leaves** (caption, number, link box, note) rises its MT.Y distance and blurs out early (gone by k ≈ 0.4); **what
+  Its path is front-loaded (1 − (1 − k)²) so it is past the Mobile row before that row comes in.
+- **The form opens empty** — Name, Relationship and Mobile all show their placeholders — so the current co-maker's name
+  and number leave with the rest of state A; nothing is carried into the form.
+- **What leaves** (caption, name, number, link box, note) rises its MT.Y distance and blurs out early (gone by k ≈ 0.4); **what
   comes in** rises into place from a 3 px blur, top-down: title, Name, Relationship, then — once Save and Cancel (which ride
   the card's bottom edge) are past its spot — the Mobile row. Cancel comes in last.
 - "Check verification status" turns disabled while the form is open (a disabled layer fades over it).
 - On a short screen the page scrolls with the morph (same spring) so Cancel / Save come to rest just above the bottom bar.
 - Per frame: transform / opacity / filter, plus the card's height and the tile's and pill's size (small absolute boxes);
   unchanged values are not rewritten. `prefers-reduced-motion` jumps.
+- **Blur on iPhone**: every element that blurs has its own GPU layer for the whole morph, and its filter stays a `blur()`
+  (0 px included) until the morph ends. Without this, iOS WebKit (Safari and Chrome on iPhone) drew a dark hairline along
+  the edges of a layer it created mid-animation for the blurred title.
 
 `?feel=Snappy` / `?feel=Gentle` use the withdraw page's other feels.
 
 ## Behaviour
 
-- Save keeps the name (or the old one if empty), takes the mobile number when it has 10 digits, and makes a new invite
-  link when the co-maker changed. Relationship is a native picker.
+- Save takes the name if one was entered and the mobile number when it has 10 digits (otherwise the current ones stay),
+  and makes a new invite link when the co-maker changed. The number is plain text (no tap-to-call link). Relationship is a native picker.
 - The focused field is kept above the on-screen keyboard (the page scrolls; it is not re-fitted while typing).
 - Copy puts `https://perasure.ph/g/<code>` on the clipboard; the label reads "Copied" for 1.8 s.
 - The back arrow goes to the Playground; "Back home" and "Check verification status" only press.

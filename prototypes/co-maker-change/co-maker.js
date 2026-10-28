@@ -17,13 +17,18 @@
      it; what sits on the card's bottom (Cancel, and Save once it gets there) rides the bottom edge; the card below rides
      it too (a transform — the page's layout is committed once, at rest).
    · Shared elements stay one element the whole way: the avatar tile (40 → 48, icon 24 → 32), and the Change pill, which
-     travels to Save's place and becomes it (its light fill turns primary, "Change" leaves, "Save" arrives). The name is
-     a pair on ONE path: the header name (Hanken 16) and the form's Name value (Inter Medium 14) move and scale together
-     from one spot to the other, crossfading with a little blur in the middle (MT.Y travel, 3 px blur — as withdraw).
+     travels to Save's place and becomes it (its light fill turns primary, "Change" leaves, "Save" arrives). The form
+     opens empty (every field shows its placeholder), so the current co-maker's name and number simply leave with the
+     rest of state A — nothing of them is carried into the form.
    · Everything that comes in rises its MT.Y distance and comes into focus from a 3 px blur, staggered top-down, early
      enough to overlap what leaves (the card is never empty); what leaves rises out and blurs a little.
    · Per frame only transform / opacity / filter, plus the card's height and the tile's / pill's size (small, absolutely
      positioned boxes — they lay out nothing else). A value equal to the last one written is not written again.
+   · Blur and phones' GPUs: every element that blurs has its own compositing layer for the whole morph (will-change),
+     and its filter stays a blur() — blur(0px) included — until the morph is over; only at rest does it go back to none.
+     Before, an element without its own layer got one improvised mid-animation (it was drawn over a moving layer) and
+     the filter switched between none and blur() at the ends of its window: iOS WebKit (Safari, Chrome on iPhone) then
+     drew a dark hairline along that layer's edges while it was blurred.
    ?feel=Snappy | Gentle picks the other withdraw feels; prefers-reduced-motion jumps. */
 (function(){
   'use strict';
@@ -49,14 +54,13 @@
 
   /* ---- geometry (card coordinates, Figma) ---- */
   var H0 = 182, H1 = 296;                                  /* card height: A, B */
-  var NAME_A = { x: 64, y: 40, s: 16 }, NAME_B = { x: 116, y: 88, s: 14 };
   var PILL_A = { l: 224, t: 41, w: 88, h: 40 }, PILL_B = { l: 170, w: 142, h: 44, bottom: 60 };   /* B: top = card height − 60 */
   var BTN_BOTTOM = 60;                                     /* Cancel / Save: 236 in a 296 card */
 
   var R = {
     slot: $('slot'), card: $('card'), steps: $('steps'), tile: $('tile'), tileIcon: $('tileIcon'),
     aCap: $('aCap'), aName: $('aName'), aPhone: $('aPhone'), aLink: $('aLink'), aNote: $('aNote'),
-    bTitle: $('bTitle'), bRow1: $('bRow1'), bName: $('bName'), rule1: $('rule1'), bRow2: $('bRow2'), rule2: $('rule2'), bRow3: $('bRow3'),
+    bTitle: $('bTitle'), bRow1: $('bRow1'), rule1: $('rule1'), bRow2: $('bRow2'), rule2: $('rule2'), bRow3: $('bRow3'),
     cancelWrap: $('cancelWrap'), cancel: $('cancel'),
     pill: $('pill'), pillBtn: $('pillBtn'), pillStrong: $('pillStrong'), pillChange: $('pillChange'), pillSave: $('pillSave'),
     ctaOff: $('ctaOff'), cta: $('cta'), home: $('home'), back: $('back'),
@@ -65,7 +69,7 @@
     scroll: $('scroll'), kb: $('kb')
   };
   var A_LAYER = [R.aCap, R.aName, R.aPhone, R.aLink, R.aNote];
-  var B_LAYER = [R.bTitle, R.bRow1, R.bName, R.rule1, R.bRow2, R.rule2, R.bRow3, R.cancelWrap];
+  var B_LAYER = [R.bTitle, R.bRow1, R.rule1, R.bRow2, R.rule2, R.bRow3, R.cancelWrap];
 
   /* ---- data ---- */
   var D = { name: 'Sam Ge', phone: '9123456789', rel: '', code: '7KQ2-JD9A' };
@@ -79,7 +83,11 @@
     m[prop] = val; el.style[prop] = val;
   }
   function show(el, o){ put(el, 'visibility', o > 0.001 ? 'visible' : 'hidden'); put(el, 'opacity', String(r3(o))); }
-  function blur(el, px){ put(el, 'filter', px > 0.01 ? 'blur(' + r3(px) + 'px)' : 'none'); }
+  /* while the morph runs a blurred element keeps a blur() filter (0 px included): no filter layer is made or dropped
+     mid-animation. At rest every filter is none (what is shown is sharp, what is not is hidden). __cm.set() — the
+     frame-by-frame check — draws the blur as a running morph would. */
+  var running = false, still = true;
+  function blur(el, px){ put(el, 'filter', running || !still ? 'blur(' + r3(Math.max(0, px)) + 'px)' : 'none'); }
 
   /* ---- one frame at progress k ---- */
   var slotH = H0;                                           /* the slot's laid-out height (committed at rest) */
@@ -106,17 +114,7 @@
     out(R.aPhone, 0.02, 0.38, MTY.text);
     out(R.aLink, 0.04, 0.42, MTY.block);
     out(R.aNote, 0, 0.36, MTY.text);
-
-    /* the name pair: one path, one scale, crossfading in the middle */
-    /* its path is front-loaded (1 − (1 − k)², still on the same progress) so it lands with the Name row it joins
-       instead of hovering above the row while the row is already in place */
-    var dx = NAME_B.x - NAME_A.x, dy = NAME_B.y - NAME_A.y, np = 1 - (1 - c) * (1 - c);
-    var sA = lerp(1, NAME_B.s / NAME_A.s, np), sB = lerp(NAME_A.s / NAME_B.s, 1, np);
-    var nA = win(0.08, 0.5), nB = win(0.22, 0.64);
-    put(R.aName, 'transform', 'translate(' + r3(dx * np) + 'px,' + r3(dy * np) + 'px) scale(' + r3(sA) + ')');
-    show(R.aName, 1 - nA); blur(R.aName, 3 * nA);
-    put(R.bName, 'transform', 'translate(' + r3(-dx * (1 - np)) + 'px,' + r3(-dy * (1 - np)) + 'px) scale(' + r3(sB) + ')');
-    show(R.bName, nB); blur(R.bName, 3 * (1 - nB));
+    out(R.aName, 0.02, 0.38, MTY.text);       /* the current name leaves with the rest: the form starts empty */
 
     /* state B comes in, top-down */
     inn(R.bTitle, 0.2, 0.62, MTY.text);
@@ -131,7 +129,8 @@
     inn(R.cancelWrap, 0.5, 0.92, MTY.block, h - BTN_BOTTOM);
 
     /* shared: the Change pill travels to Save's place (B's top rides the bottom edge) and becomes it; its path is
-       front-loaded like the name's, so it is past the Mobile row before that row comes in */
+       front-loaded (1 − (1 − k)², still on the same progress), so it is past the Mobile row before that row comes in */
+    var np = 1 - (1 - c) * (1 - c);
     var pl = lerp(PILL_A.l, PILL_B.l, np), pt = lerp(PILL_A.t, h - PILL_B.bottom, np);
     put(R.pill, 'transform', 'translate(' + r3(pl) + 'px,' + r3(pt) + 'px)');
     put(R.pill, 'width', r3(lerp(PILL_A.w, PILL_B.w, np)) + 'px');
@@ -150,7 +149,9 @@
   var DE = Math.hypot(PILL_B.l - PILL_A.l, (H1 - PILL_B.bottom) - PILL_A.t);
   var TS = Math.min(2.5, Math.max(0.6, DE / DL));
   var SPRING = { type: 'spring', stiffness: F.stiffness / (TS * TS), damping: F.damping / TS, mass: F.mass, restDelta: 0.001, restSpeed: 0.01 / TS };
-  var MOVING = [R.card, R.steps, R.tile, R.aName, R.bName, R.pill, R.aLink, R.cancelWrap];
+  var MOVING = [R.card, R.steps, R.tile, R.pill];
+  /* everything that blurs: its own layer for the whole morph */
+  var BLURRED = [R.aCap, R.aName, R.aPhone, R.aLink, R.aNote, R.bTitle, R.bRow1, R.rule1, R.bRow2, R.rule2, R.bRow3, R.cancelWrap, R.pillChange, R.pillSave];
 
   var mv = Mo && Mo.motionValue ? Mo.motionValue(0) : null, anim = null, target = 0;
   if (mv) mv.on('change', apply);
@@ -158,8 +159,10 @@
     anim = null;
     var h = target ? H1 : H0;
     slotH = h; R.slot.style.height = h + 'px';               /* commit the layout once, at rest */
+    running = false; still = true;
     apply(target);
     MOVING.forEach(function(el){ el.style.willChange = ''; });
+    BLURRED.forEach(function(el){ el.style.willChange = ''; });
   }
   function go(t){
     target = t;
@@ -174,6 +177,8 @@
     if (t && slotH !== H1) { slotH = H1; R.slot.style.height = H1 + 'px'; apply(mv ? mv.get() : 0); }
     if (!mv || reduce) { if (mv) mv.set(t); else apply(t); settle(); if (t) follow(); return; }
     MOVING.forEach(function(el){ el.style.willChange = 'transform'; });
+    BLURRED.forEach(function(el){ el.style.willChange = 'transform, opacity, filter'; });
+    running = true; apply(mv.get());
     anim = Mo.animate(mv, t, Object.assign({}, SPRING, { onComplete: settle }));
     if (t) follow();
   }
@@ -195,9 +200,10 @@
 
   /* ---- actions ---- */
   function openForm(){
-    R.inName.value = D.name;
+    /* a new co-maker: every field starts on its placeholder */
+    R.inName.value = '';
     R.inMobile.value = '';
-    R.inRel.value = D.rel; showRel();
+    R.inRel.value = ''; showRel();
     go(1);
   }
   function closeForm(save){
@@ -283,5 +289,5 @@
 
   apply(0);
   /* for checks: window.__cm.set(k) draws any frame */
-  window.__cm = { set: function(k){ if (anim) { anim.stop(); anim = null; } if (mv) mv.set(k); else apply(k); }, go: go, spring: SPRING, ts: TS };
+  window.__cm = { set: function(k){ if (anim) { anim.stop(); anim = null; } still = k === 0 || k === 1; if (mv) mv.set(k); else apply(k); }, go: go, spring: SPRING, ts: TS };
 })();
