@@ -45,7 +45,8 @@
     Snappy: { stiffness: 430, damping: 34, mass: 0.8 },
     Gentle: { stiffness: 140, damping: 24, mass: 1.15 }
   };
-  var F = FEEL[(/[?&]feel=(\w+)/.exec(qs) || [])[1]] || FEEL.Smooth;
+  /* motion feel: the Tune panel (tune.js → window.CM_TUNE, which also reads ?feel=), else ?feel=, else Smooth */
+  var F = FEEL[(window.CM_TUNE && window.CM_TUNE.feel) || (/[?&]feel=(\w+)/.exec(qs) || [])[1]] || FEEL.Smooth;
   var MTY = { text: 8, block: 10 };
   var EASE_IN = [0.22, 0.61, 0.36, 1];
   var ENTER = { duration: 0.30, delay: 0.07, ease: EASE_IN }, LEAVE = { duration: 0.15, ease: [0.4, 0, 1, 1] };
@@ -206,6 +207,7 @@
     slotH = h; R.slot.style.height = h + 'px';               /* commit the layout once, at rest */
     running = false; still = true;
     apply(target);
+    onScroll();
     MOVING.forEach(function(el){ el.style.willChange = ''; });
     BLURRED.forEach(function(el){ el.style.willChange = ''; });
   }
@@ -340,9 +342,23 @@
 
   /* header blur bands only while the page is scrolled under the header (as withdraw's .ps-live) */
   var topBar = document.getElementById('top'), live = false;
-  R.scroll.addEventListener('scroll', function(){ var on = R.scroll.scrollTop > 0; if (on !== live) { live = on; topBar.classList.toggle('live', on); } }, { passive: true });
+  /* blur off (Tune): the bottom gradient fades out over the last stretch of scroll — as tall as the bar — tied to the
+     scroll position, so at the very bottom (nothing left under the bar) it is gone; a page that does not scroll shows none */
+  var botVeil = document.querySelector('.pb-bot > .veil'), bar = document.querySelector('.bot');
+  var blurOff = document.documentElement.getAttribute('data-blur') === 'off';
+  function onScroll(){
+    var sc = R.scroll, on = sc.scrollTop > 0;
+    if (on !== live) { live = on; topBar.classList.toggle('live', on); }
+    if (blurOff && botVeil && bar) {
+      var left = sc.scrollHeight - sc.clientHeight - sc.scrollTop, o = Math.max(0, Math.min(1, left / bar.offsetHeight));
+      put(botVeil, 'opacity', String(r3(o)));
+    }
+  }
+  R.scroll.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('ps-viewport', onScroll);
+  window.addEventListener('resize', onScroll);
 
-  apply(0);
+  apply(0); onScroll();
   /* for checks: window.__cm.set(k) draws any frame */
   window.__cm = { set: function(k){ if (anim) { anim.stop(); anim = null; } still = k === 0 || k === 1; if (mv) mv.set(k); else apply(k); }, go: go, spring: SPRING };
 })();

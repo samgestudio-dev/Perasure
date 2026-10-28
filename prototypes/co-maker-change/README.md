@@ -12,6 +12,7 @@ co-maker* (frame 10168:26423).
 | --- | --- |
 | `index.html` | the page: markup and styles, all values from the PeraSure tokens (`../../tokens/tokens.css`, `.ps-text-*` type styles) |
 | `co-maker.js` | the page code: the card morph, the form (name, relationship, mobile), Copy |
+| `tune.js`, `tune.css` | **prototype only** — the Tune panel (top right): progressive blur on / off, motion feel; delete them and their two lines in `index.html` for production |
 | `phone-fit.js` | phone fitting and iOS Safari 26 edge-to-edge, copied from the withdraw demo, plus: no iOS zoom on input focus, no re-fit while typing |
 | `assets/` | the design's icons, downloaded from Figma (link, co-maker, edit, copy, shield, chevrons, divider) |
 
@@ -52,6 +53,9 @@ Built like the withdraw fund flow's morphs (`withdraw.js`: `tweenMp`, `introExit
   10 px, fractions of the token `--blur-backdrop-bg`), each masked to a narrower band at the bar's outer edge, under the
   token colour veil. The header's bands run only while the page is scrolled under it. (Headless Chrome's software
   renderer draws these with stray reflections; with GPU compositing — phones — they render correctly.)
+- **Tune → Progressive blur Off**: no bands; the header and bottom bar use the withdraw home page's own gradients (its
+  exact values). The bottom one fades out over the last stretch of scroll — as tall as the bar, tied to the scroll
+  position — so at the very bottom, with nothing left under the bar, it is gone (a page that doesn't scroll shows none).
 - On a short screen the page scrolls with the morph (same spring) so Cancel / Save come to rest just above the bottom bar.
 - Per frame: transform / opacity / filter, plus the card's height and the tile's and pill's size (small absolute boxes);
   unchanged values are not rewritten. `prefers-reduced-motion` jumps.
@@ -59,7 +63,7 @@ Built like the withdraw fund flow's morphs (`withdraw.js`: `tweenMp`, `introExit
   (0 px included) until the morph ends. Without this, iOS WebKit (Safari and Chrome on iPhone) drew a dark hairline along
   the edges of a layer it created mid-animation for the blurred title.
 
-`?feel=Snappy` / `?feel=Gentle` use the withdraw page's other feels; `?slow=10` plays everything 10× slower.
+Tune (top right) sets the blur and the motion feel (Smooth / Snappy / Gentle — withdraw's three); saved on the phone. Links can set them too: `?blur=1` / `?blur=0`, `?feel=Gentle`. `?slow=10` plays everything 10× slower.
 
 ## Behaviour
 
