@@ -508,9 +508,9 @@ class Component extends DCLogic {
   mpTerm(){ return { height: this.lc(0, 20), marginBottom: this.lc(0, 12), opacity: this.win(0.50, 0.96), transform: this.resT() }; }
   mpSlider(){ var e = this.win(0.30, 0.88); return { opacity: e, transform: 'translateY(' + Math.round((1 - e) * this.mt().Y.block * 100) / 100 + 'px)', visibility: e > 0 ? 'visible' : 'hidden' }; }
   mpBottom(){ return { height: this.lc(333 + this.ex() + this.sb(), 36) }; }
-  /* the pills sit 89px above the keypad (Figma 9426:18066), so like it they follow the screen's extra height (ex);
-     the row they live in starts under the amount block (259 − df) */
-  mpChips(){ return { top: this.lc(12 + this.ex(), 0), height: this.lc(41, 36), transform: this.resT() }; }
+  /* the pills sit 16px above the line, which sits 16px above the keypad, so like it they follow the screen's extra
+     height (ex); the row they live in starts under the amount block (259 − df) */
+  mpChips(){ return { top: this.lc(27 + this.ex(), 0), height: this.lc(41, 36), transform: this.resT() }; }
   mpChip(){ return { height: this.lc(41, 36) }; }
   mpGrad(){ return { opacity: this.bkv() }; }
   mpBar(bk){ return { background: 'linear-gradient(180deg, rgba(225,228,229,0) 0%, rgba(225,228,229,' + (0.2*bk).toFixed(3) + ') 20.19%, rgba(225,228,229,' + (0.4*bk).toFixed(3) + ') 100%)' }; }
@@ -539,8 +539,6 @@ class Component extends DCLogic {
     this.put('bottom', this.mpBottom()); this.put('chips', this.mpChips()); this.put('slider', this.mpSlider());
     var ch = this.mpChip(); this.put('chip4', ch); this.put('chip6', ch); this.put('chip8', ch);
     if (!this._mpMV) this.put('cap', { transform: 'translate(' + this.capX() + 'px,' + this.capY() + 'px)', opacity: this.capO(), visibility: this.capO() > 0 ? 'visible' : 'hidden' });
-    /* "Choose a loan term to continue" (above the pills, which it rides with): an edit-state hint, gone like the caption */
-    this.put('choose', { opacity: this.capO(), visibility: this.capO() > 0 ? 'visible' : 'hidden' });
     if (this.ctaWanted() !== !!this._ctaShown) { this.setState({ ctaOn: (this.state.ctaOn || 0) + 1 }); return; }
     if (this._ctaShown) {
       var bk = this.bkv();
@@ -999,9 +997,7 @@ class Component extends DCLogic {
     return React.createElement('div', { key:'chips', ref:this.ref('chips'), style:Object.assign({
       position:'absolute', left:0, right:0, display:'flex', flexDirection:'row', gap:8
     }, this.mpChips()) },
-      [React.createElement('div', { key:'choose', ref:this.ref('choose'), 'aria-hidden': cf, style:{ position:'absolute', left:0, top:-24, height:16,
-        whiteSpace:'nowrap', pointerEvents:'none', fontFamily:'Inter, sans-serif', fontWeight:400, fontSize:12, lineHeight:'16px', color:C.sub,
-        opacity:this.capO(), visibility:this.capO() > 0 ? 'visible' : 'hidden' } }, 'Choose a loan term to continue')].concat([4,6,8].map((t) => {
+      [4,6,8].map((t) => {
         var on = this.state.term === t;
         /* height rides the morph progress; only the selection colours keep their
            own 150ms tween */
@@ -1016,18 +1012,18 @@ class Component extends DCLogic {
           backgroundColor: on ? C.blue50 : 'rgba(255,255,255,0)',
           color: on ? C.blue : C.sub
         }, { duration:0.15 })), t + ' Term');
-      }))
+      })
     );
   }
-  /* the line between the term pills and the keypad (Figma 9426:18087: 1px #E0E3E5, 24px above the keys); it comes and
-     goes with the keypad */
+  /* the line between the term pills and the keypad (1px #E0E3E5, 16px from the pills and 16px above the keys); it comes
+     and goes with the keypad */
   padLine(){
     var MT = this.mt();
     return this.el('div', {
       key:'padLine', 'aria-hidden': true,
       initial:{ opacity:0 }, animate:{ opacity:1, transition:{ duration:0.2 } },
       exit:{ opacity:0, y:-MT.Y.block, transition:MT.LEAVE },
-      style:{ position:'absolute', left:'50%', width:312, marginLeft:-156, top:335 + this.ex() - this.df(), height:1, backgroundColor:this.C.line, pointerEvents:'none' }
+      style:{ position:'absolute', left:'50%', width:312, marginLeft:-156, top:343 + this.ex() - this.df(), height:1, backgroundColor:this.C.line, pointerEvents:'none' }
     });
   }
   keypad(){
