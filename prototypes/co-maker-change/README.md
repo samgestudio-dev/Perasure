@@ -40,10 +40,18 @@ Built like the withdraw fund flow's morphs (`withdraw.js`: `tweenMp`, `introExit
   Its path is front-loaded (1 − (1 − k)²) so it is past the Mobile row before that row comes in.
 - **The form opens empty** — Name, Relationship and Mobile all show their placeholders — so the current co-maker's name
   and number leave with the rest of state A; nothing is carried into the form.
-- **What leaves** (caption, link box, note) rises its MT.Y distance and blurs out early (gone by k ≈ 0.4); **what
-  comes in** rises into place from a 3 px blur, top-down: Name, Relationship, then — once Save and Cancel (which ride
-  the card's bottom edge) are past its spot — the Mobile row. Cancel comes in last.
+- **What leaves** (caption, link box, note) rises its MT.Y distance and blurs out early (gone by k ≈ 0.4).
+- **The form rows come in on a clock**, as withdraw brings in its secondary layers (LAYER_IN / REVEAL): each row plays
+  the same entrance — 0.34 s on withdraw's ENTER curve, rising 8 px into focus from a 3 px blur — starting once the card
+  has made room for it (the Save pill and Cancel, riding the bottom edge, are past its spot): Name at k 0.42,
+  Relationship at 0.66, Mobile at 0.84 — ≈ 95 / 145 / 210 ms in, about 60 ms apart. (On the progress alone, Name and
+  Relationship arrived while the card was still moving fast and their rise was over in 50–80 ms.) Closing, they leave
+  on the progress, bottom-up. Cancel rides the bottom edge and comes in last.
 - "Check verification status" turns disabled while the form is open (a disabled layer fades over it).
+- **Progressive blur** on the header and bottom bar, as withdraw's: five backdrop-blur layers (0.6 → 1.4 → 3 → 5.5 →
+  10 px, fractions of the token `--blur-backdrop-bg`), each masked to a narrower band at the bar's outer edge, under the
+  token colour veil. The header's bands run only while the page is scrolled under it. (Headless Chrome's software
+  renderer draws these with stray reflections; with GPU compositing — phones — they render correctly.)
 - On a short screen the page scrolls with the morph (same spring) so Cancel / Save come to rest just above the bottom bar.
 - Per frame: transform / opacity / filter, plus the card's height and the tile's and pill's size (small absolute boxes);
   unchanged values are not rewritten. `prefers-reduced-motion` jumps.
@@ -51,7 +59,7 @@ Built like the withdraw fund flow's morphs (`withdraw.js`: `tweenMp`, `introExit
   (0 px included) until the morph ends. Without this, iOS WebKit (Safari and Chrome on iPhone) drew a dark hairline along
   the edges of a layer it created mid-animation for the blurred title.
 
-`?feel=Snappy` / `?feel=Gentle` use the withdraw page's other feels.
+`?feel=Snappy` / `?feel=Gentle` use the withdraw page's other feels; `?slow=10` plays everything 10× slower.
 
 ## Behaviour
 

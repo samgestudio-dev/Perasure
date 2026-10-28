@@ -51,6 +51,8 @@
   var ENTER = { duration: 0.30, delay: 0.07, ease: EASE_IN }, LEAVE = { duration: 0.15, ease: [0.4, 0, 1, 1] };
   var PRESS = { duration: 0.06 }, PRESS_SCALE = { pill: 0.985, icon: 0.92 };
   var reduce = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  /* ?slow=10 plays everything 10× slower (for checking frames); 1 normally */
+  var SLOW = Math.max(1, +((/[?&]slow=([\d.]+)/.exec(qs) || [])[1]) || 1);
 
   var $ = function(id){ return document.getElementById(id); };
   var r3 = function(v){ return Math.round(v * 1000) / 1000; };
@@ -127,14 +129,10 @@
     out(R.aName, 0.04, 0.4, MTY.text);  inn(R.bHead, 0.2, 0.6, MTY.text);
     out(R.aPhone, 0.08, 0.44, MTY.text); inn(R.bSub, 0.24, 0.64, MTY.text);
 
-    /* state B comes in, top-down */
-    inn(R.bRow1, 0.26, 0.68, MTY.text);
-    inn(R.rule1, 0.3, 0.72, 0);
-    inn(R.bRow2, 0.33, 0.75, MTY.text);
-    /* the Mobile row and its rule come in once the bottom-edge riders (Save, Cancel) have passed their spot — before
-       that the card is too short for both and they would cross it */
-    inn(R.rule2, 0.62, 0.9, 0);
-    inn(R.bRow3, 0.8, 1, MTY.text);
+    /* the form rows: see ROWS below */
+    curK = k;
+    if (running && target === 1) ROWS.forEach(function(g){ if (!g.on && k >= g.at) { g.on = true; reveal(g); } });
+    drawRows();
     /* Cancel rides the card's bottom edge and comes in last */
     inn(R.cancelWrap, 0.5, 0.92, MTY.block, h - BTN_BOTTOM);
 
@@ -154,20 +152,56 @@
     show(R.ctaOff, win(0.1, 0.55));
   }
 
+  /* ---- the form rows: on a clock, started from the progress ----
+     The card's geometry rides the spring; the rows are secondary content, so — as withdraw brings in its secondary
+     layers (LAYER_IN, REVEAL: on a clock, not on the progress) — each plays the SAME entrance: 0.34 s on withdraw's
+     ENTER curve, rising 8 px into focus from a 3 px blur. Each starts once the card has made room for it, i.e. once the
+     Save pill and Cancel (riding the bottom edge) are past its spot: Name at k 0.42, Relationship (and its rule) at
+     0.66, Mobile (and its rule) at 0.84 — ≈ 95 / 145 / 210 ms into the morph with Smooth, so about 60 ms apart.
+     On the progress, Name and Relationship arrived while the card was still moving fast and their rise was over in
+     50–80 ms — only Mobile, arriving in the spring's slow tail, showed it.
+     Closing: each leaves on its window of the progress, bottom-up (what is shown = the smaller of the two), so a
+     reversal at any moment carries on from what is on screen. */
+  var ROWS = [
+    { at: 0.42, items: [{ el: R.bRow1, y: MTY.text, a: 0.26, b: 0.68 }] },
+    { at: 0.66, items: [{ el: R.rule1, y: 0, a: 0.3, b: 0.72 }, { el: R.bRow2, y: MTY.text, a: 0.33, b: 0.75 }] },
+    { at: 0.84, items: [{ el: R.rule2, y: 0, a: 0.62, b: 0.9 }, { el: R.bRow3, y: MTY.text, a: 0.8, b: 1 }] }
+  ];
+  ROWS.forEach(function(g){ g.r = 0; g.on = false; g.anim = null; });
+  var REVEAL_DUR = 0.34 * SLOW, curK = 0;
+  var winAt = function(k, a, b){ var t = Math.max(0, Math.min(1, (k - a) / (b - a))); return t * t * (3 - 2 * t); };
+  function rowE(g, it){ return Math.min(g.r, target ? 1 : winAt(curK, it.a, it.b)); }
+  function drawRows(){
+    ROWS.forEach(function(g){ g.items.forEach(function(it){
+      var e = rowE(g, it);
+      show(it.el, e); blur(it.el, 3 * (1 - e)); put(it.el, 'transform', 'translateY(' + r3(it.y * (1 - e)) + 'px)');
+    }); });
+  }
+  function reveal(g){
+    if (g.anim) g.anim.stop();
+    if (!Mo || reduce) { g.r = 1; return; }
+    g.anim = Mo.animate(g.r, 1, { duration: REVEAL_DUR * (1 - g.r), ease: EASE_IN,
+      onUpdate: function(v){ g.r = v; drawRows(); },
+      onComplete: function(){ g.anim = null; g.r = 1; drawRows(); finish(); } });
+  }
+
   /* ---- driving it: one Motion value, one spring ---- */
   /* withdraw's rest thresholds in pixels (0.001 and 0.01/s of its 378 px loan-morph travel), over this morph's longest
      travel: the same spring ends when the pill is as close to rest as withdraw's sheet edge is */
   var DE = Math.hypot(PILL_B.l - PILL_A.l, (H1 - PILL_B.bottom) - PILL_A.t);
   var REST_PX = 0.001 * (624 - 246), REST_PXS = 0.01 * (624 - 246);
-  var SPRING = { type: 'spring', stiffness: F.stiffness, damping: F.damping, mass: F.mass, restDelta: REST_PX / DE, restSpeed: REST_PXS / DE };
+  var SPRING = { type: 'spring', stiffness: F.stiffness / (SLOW * SLOW), damping: F.damping / SLOW, mass: F.mass, restDelta: REST_PX / DE, restSpeed: REST_PXS / DE / SLOW };
   var MOVING = [R.card, R.steps, R.tile, R.pill, R.hdr1, R.hdr2];
   /* everything that blurs: its own layer for the whole morph */
   var BLURRED = [R.aCap, R.aName, R.aPhone, R.aLink, R.aNote, R.bHead, R.bSub, R.bRow1, R.rule1, R.bRow2, R.rule2, R.bRow3, R.cancelWrap, R.pillChange, R.pillSave];
 
   var mv = Mo && Mo.motionValue ? Mo.motionValue(0) : null, anim = null, target = 0;
   if (mv) mv.on('change', apply);
+  /* at rest once the spring and every row entrance are done */
+  function finish(){ if (!anim && !ROWS.some(function(g){ return g.anim; }) && running) settle(); }
   function settle(){
     anim = null;
+    ROWS.forEach(function(g){ if (g.anim) { g.anim.stop(); g.anim = null; } g.r = target ? 1 : 0; g.on = !!target; });
     var h = target ? H1 : H0;
     slotH = h; R.slot.style.height = h + 'px';               /* commit the layout once, at rest */
     running = false; still = true;
@@ -183,6 +217,12 @@
     R.pillBtn.setAttribute('aria-label', t ? 'Save' : 'Change co-maker');
     R.cta.disabled = !!t;
     if (anim) { anim.stop(); anim = null; }
+    /* rows: opening starts each from what is on screen now (a reversal mid-close carries on from there); closing
+       freezes them where they are and lets the progress take them out */
+    ROWS.forEach(function(g){
+      if (g.anim) { g.anim.stop(); g.anim = null; }
+      if (t) { var target0 = target; target = 0; g.r = rowE(g, g.items[g.items.length - 1]); target = target0; g.on = false; }
+    });
     /* opening: the page's layout takes the open height at once (the card below is held in place by its transform,
        which now starts at −114 px), so the page can already scroll as far as the open card needs */
     if (t && slotH !== H1) { slotH = H1; R.slot.style.height = H1 + 'px'; apply(mv ? mv.get() : 0); }
@@ -190,7 +230,7 @@
     MOVING.forEach(function(el){ el.style.willChange = 'transform'; });
     BLURRED.forEach(function(el){ el.style.willChange = 'transform, opacity, filter'; });
     running = true; apply(mv.get());
-    anim = Mo.animate(mv, t, Object.assign({}, SPRING, { onComplete: settle }));
+    anim = Mo.animate(mv, t, Object.assign({}, SPRING, { onComplete: function(){ anim = null; finish(); } }));
     if (t) follow();
   }
   /* on a short screen Save / Cancel would land under the bottom bar: the page scrolls with the morph, on the same
@@ -297,6 +337,10 @@
   document.addEventListener('focusin', function(){ setTimeout(keepVisible, 320); });
   document.addEventListener('focusout', function(){ setTimeout(function(){ var a = document.activeElement; if (!a || a.tagName !== 'INPUT') R.kb.style.height = '0px'; }, 320); });
   if (vv) vv.addEventListener('resize', keepVisible);
+
+  /* header blur bands only while the page is scrolled under the header (as withdraw's .ps-live) */
+  var topBar = document.getElementById('top'), live = false;
+  R.scroll.addEventListener('scroll', function(){ var on = R.scroll.scrollTop > 0; if (on !== live) { live = on; topBar.classList.toggle('live', on); } }, { passive: true });
 
   apply(0);
   /* for checks: window.__cm.set(k) draws any frame */
