@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="format-detection" content="telephone=no">
+<script>
+/* Designed at 360 CSS px (a real prototype copies prototypes/co-maker-change/phone-fit.js instead). */
+if (matchMedia('(pointer: coarse)').matches)
+  document.querySelector('meta[name=viewport]').setAttribute('content', 'width=360, user-scalable=no, viewport-fit=cover');
+</script>
+<title>Card morph example</title>
+<!-- PeraSure card morph — the smallest complete example of the skill (SKILL.md). Open through a web server from the repo
+     root: python3 -m http.server, then /.claude/skills/perasure-card-morph/example.html  (?slow=10 to watch it slowly).
+     Same geometry and windows as prototypes/co-maker-change (the proven layout); different content. -->
+<link rel="stylesheet" href="../../../tokens/tokens.css">
+<link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+<script src="../../../vendor/motion@14.4.0/motion.js"></script>
+<script src="engine.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { background: var(--color-surface-page-default); -webkit-font-smoothing: antialiased; }
+  button, label, select, input { font: inherit; color: inherit; border: 0; background: none; touch-action: manipulation; }
+  .page { width: 360px; margin: 0 auto; padding: 24px var(--spacing-page-x-sm); display: flex; flex-direction: column; gap: var(--spacing-gap-xl); }
+  .slot { position: relative; width: 100%; height: 182px; flex: none; }                 /* the page's layout, committed at rest */
+  .card { position: absolute; left: 0; top: 0; width: 328px; height: 182px; overflow: hidden;   /* rounded overflow = the clip */
+          background: var(--color-surface-card-default); border-radius: var(--radius-xl); }
+  .abs { position: absolute; }
+  .nowrap { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .t1 { color: var(--color-text-primary); } .t2 { color: var(--color-text-secondary); } .t3 { color: var(--color-text-tertiary); }
+  .tp { color: var(--color-text-placeholder); } .tb { color: var(--color-text-brand-default); } .ti { color: var(--color-text-inverse); }
+  .tile { left: 16px; top: 41px; width: 40px; height: 40px; border-radius: var(--radius-sm); background: var(--color-surface-card-brand);
+          display: flex; align-items: center; justify-content: center; }
+  .tile svg { width: 32px; height: 32px; flex: none; transform: scale(.75); }
+  /* header lines: one block in both states, words swap on the way */
+  .hdr { left: 64px; width: 232px; pointer-events: none; } .hdr > p { position: absolute; left: 0; top: 0; }
+  .hdr-1 { top: 40px; height: 22px; } .hdr-2 { top: 66px; height: 16px; } .hdr-a { max-width: 156px; } .hdr-b { width: 232px; }
+  .a-cap { left: 16px; top: 16px; }
+  .a-box { left: 16px; top: 98px; width: 296px; height: 46px; display: flex; align-items: center; padding: 0 var(--spacing-gap-md);
+           border-radius: var(--radius-sm); background: var(--color-surface-inset-default); }
+  .a-note { left: 16px; top: 152px; width: 296px; text-align: center; }
+  .row { left: 16px; width: 296px; height: 20px; display: flex; align-items: center; } .row .k { width: 100px; flex: none; }
+  .row-1 { top: 88px; } .row-2 { top: 140px; } .row-3 { top: 192px; }
+  .rule { left: 16px; width: 296px; height: 1px; background: var(--color-stroke-subtle); } .rule-1 { top: 123px; } .rule-2 { top: 175px; }
+  .field { flex: 1 1 0; min-width: 0; height: 20px; outline: 0; color: var(--color-text-primary); }
+  .field::placeholder { color: var(--color-text-placeholder); opacity: 1; }
+  .pill { left: 0; top: 0; width: 88px; height: 40px; z-index: 2; }
+  .pill-btn { position: relative; display: block; width: 100%; height: 100%; border-radius: var(--radius-full); overflow: hidden; }
+  .pill-btn > span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+  .pill-light { background: var(--color-brand-100); } .pill-strong { background: var(--color-action-bg-primary-default); opacity: 0; }
+  .pill-save { opacity: 0; visibility: hidden; }
+  .cancel { left: 16px; top: 0; width: 142px; height: 44px; }
+  .cancel-btn { width: 100%; height: 100%; border-radius: var(--radius-full); background: var(--color-action-bg-primary-disabled); }
+  .b { opacity: 0; visibility: hidden; }
+  .below { padding: var(--spacing-gap-lg); border-radius: var(--radius-xl); background: var(--color-surface-card-default);
+           display: flex; flex-direction: column; gap: var(--spacing-gap-sm); }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="slot" id="slot">
+    <div class="card" id="card">
+      <div class="abs tile" id="tile"><svg id="tileIcon" viewBox="0 0 32 32" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13 16 6l11 7M8 14v9m16-9v9M5 26h22M13 26v-6h6v6"/></svg></div>
+      <!-- state A -->
+      <p class="abs a-cap ps-text-caption-sm t3" id="aCap">Repayment account</p>
+      <div class="abs hdr hdr-1" id="hdr1">
+        <p class="hdr-a ps-text-section-title-md t1 nowrap" id="aName">BPI Savings</p>
+        <p class="hdr-b ps-text-section-title-md t1 nowrap b" id="bHead">Change repayment account</p>
+      </div>
+      <div class="abs hdr hdr-2" id="hdr2">
+        <p class="hdr-a ps-text-caption-sm tp nowrap" id="aSub">Account ending in 4567</p>
+        <p class="hdr-b ps-text-caption-sm tp nowrap b" id="bSub">We'll take repayments from this account</p>
+      </div>
+      <div class="abs a-box ps-text-body-md t2" id="aBox">Next repayment: ₱1,250 on Nov 15</div>
+      <p class="abs a-note ps-text-caption-xs tp" id="aNote">You can change this any time before your due date.</p>
+      <!-- state B -->
+      <label class="abs row row-1 b" id="bRow1"><span class="k ps-text-body-md t3">Bank</span><input class="field ps-text-body-md-emphasis" placeholder="Enter bank name"></label>
+      <div class="abs rule rule-1 b" id="rule1"></div>
+      <label class="abs row row-2 b" id="bRow2"><span class="k ps-text-body-md t3">Name</span><input class="field ps-text-body-md-emphasis" placeholder="Name on the account"></label>
+      <div class="abs rule rule-2 b" id="rule2"></div>
+      <label class="abs row row-3 b" id="bRow3"><span class="k ps-text-body-md t3">Account</span><input class="field ps-text-body-md-emphasis" inputmode="numeric" placeholder="Account number"></label>
+      <div class="abs cancel b" id="cancelWrap"><button class="cancel-btn ps-text-label-md t3" id="cancel" type="button">Cancel</button></div>
+      <!-- shared: the Change pill becomes Save -->
+      <div class="abs pill" id="pill">
+        <button class="pill-btn" id="pillBtn" type="button">
+          <span class="pill-light"></span><span class="pill-strong" id="pillStrong"></span>
+          <span class="ps-text-label-sm tb" id="pillChange">Change</span>
+          <span class="pill-save ps-text-label-md ti" id="pillSave">Save</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="below" id="below">
+    <p class="ps-text-section-title-sm t1">How repayments work</p>
+    <p class="ps-text-body-md t2">We take the amount due on your due date. You'll get a reminder 3 days before.</p>
+  </div>
+</div>
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var H0 = 182, H1 = 296, slotH = H0;
+  var PILL_A = { l: 224, t: 41, w: 88, h: 40 }, PILL_B = { l: 170, w: 142, h: 44, bottom: 60 };
+  var travel = Math.hypot(PILL_B.l - PILL_A.l, (H1 - PILL_B.bottom) - PILL_A.t);   /* longest travel: the pill */
+  var Y = PSMorph.MT.Y;
+
+  var morph = PSMorph.create({
+    travel: travel, feel: 'Smooth',
+    promote: [$('card'), $('below'), $('tile'), $('pill'), $('hdr1'), $('hdr2')],
+    blurred: [$('aCap'), $('aName'), $('aSub'), $('aBox'), $('aNote'), $('bHead'), $('bSub'), $('cancelWrap'), $('pillChange'), $('pillSave')],
+    rows: [                                                      /* thresholds: once the pill / Cancel are past the row's spot */
+      { at: 0.42, items: [{ el: $('bRow1'), y: Y.text, a: 0.26, b: 0.68 }] },
+      { at: 0.66, items: [{ el: $('rule1'), y: 0, a: 0.3, b: 0.72 }, { el: $('bRow2'), y: Y.text, a: 0.33, b: 0.75 }] },
+      { at: 0.84, items: [{ el: $('rule2'), y: 0, a: 0.62, b: 0.9 }, { el: $('bRow3'), y: Y.text, a: 0.8, b: 1 }] }
+    ],
+    apply: function(f){
+      var c = f.c, h = f.lerp(H0, H1, c), np = f.front(c);
+      /* the box; the content below rides its bottom edge */
+      f.put($('card'), 'height', f.r3(h) + 'px');
+      f.put($('below'), 'transform', Math.abs(h - slotH) < 0.001 ? 'none' : 'translateY(' + f.r3(h - slotH) + 'px)');
+      /* shared tile 40 → 48 */
+      var ts = f.lerp(40, 48, c);
+      f.put($('tile'), 'width', f.r3(ts) + 'px'); f.put($('tile'), 'height', f.r3(ts) + 'px');
+      f.put($('tile'), 'transform', 'translateY(' + f.r3(f.lerp(41, 16, c) - 41) + 'px)');
+      f.put($('tileIcon'), 'transform', 'scale(' + f.r3(f.lerp(0.75, 1, c)) + ')');
+      /* header lines ride with the tile; words swap on the way */
+      var hx = f.r3(f.lerp(64, 80, c) - 64);
+      f.put($('hdr1'), 'transform', 'translate(' + hx + 'px,' + f.r3(f.lerp(40, 20, c) - 40) + 'px)');
+      f.put($('hdr2'), 'transform', 'translate(' + hx + 'px,' + f.r3(f.lerp(66, 44, c) - 66) + 'px)');
+      f.out($('aName'), 0.04, 0.4, Y.text); f.inn($('bHead'), 0.2, 0.6, Y.text);
+      f.out($('aSub'), 0.08, 0.44, Y.text); f.inn($('bSub'), 0.24, 0.64, Y.text);
+      /* state A leaves early */
+      f.out($('aCap'), 0, 0.32, Y.text); f.out($('aBox'), 0.04, 0.42, Y.block); f.out($('aNote'), 0, 0.36, Y.text);
+      /* Cancel rides the bottom edge, comes in last */
+      f.inn($('cancelWrap'), 0.5, 0.92, Y.block, h - PILL_B.bottom);
+      /* the pill travels (front-loaded) to Save's place and becomes it */
+      f.put($('pill'), 'transform', 'translate(' + f.r3(f.lerp(PILL_A.l, PILL_B.l, np)) + 'px,' + f.r3(f.lerp(PILL_A.t, h - PILL_B.bottom, np)) + 'px)');
+      f.put($('pill'), 'width', f.r3(f.lerp(PILL_A.w, PILL_B.w, np)) + 'px');
+      f.put($('pill'), 'height', f.r3(f.lerp(PILL_A.h, PILL_B.h, np)) + 'px');
+      f.show($('pillStrong'), f.win(0.12, 0.6));
+      var ch = f.win(0.02, 0.42); f.show($('pillChange'), 1 - ch); f.blur($('pillChange'), 3 * ch);
+      var sv = f.win(0.28, 0.72); f.show($('pillSave'), sv); f.blur($('pillSave'), 3 * (1 - sv));
+    },
+    onStart: function(t){
+      /* opening commits the open height at once (the content below is held in place by its transform) */
+      if (t && slotH !== H1) { slotH = H1; $('slot').style.height = H1 + 'px'; }
+      ['aCap', 'aBox', 'aNote'].forEach(function(id){ $(id).style.pointerEvents = t ? 'none' : ''; });
+      ['bRow1', 'bRow2', 'bRow3', 'cancelWrap'].forEach(function(id){ $(id).style.pointerEvents = t ? '' : 'none'; });
+      if (!t && document.activeElement) document.activeElement.blur();
+    },
+    onSettle: function(t){ slotH = t ? H1 : H0; $('slot').style.height = slotH + 'px'; }
+  });
+  $('pillBtn').addEventListener('click', function(){ morph.go(morph.target() ? 0 : 1); });
+  $('cancel').addEventListener('click', function(){ morph.go(0); });
+  PSMorph.pressable($('pillBtn')); PSMorph.pressable($('cancel'));
+  window.__morph = morph;                                        /* checks: __morph.set(0.5) draws any frame */
+})();
+</script>
+</body>
+</html>

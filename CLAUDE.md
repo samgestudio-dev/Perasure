@@ -6,6 +6,17 @@ Phone-first motion prototypes for PeraSure, served by GitHub Pages from `main` /
 - Each demo is opened and tested on a real phone (iOS Safari and Android Chrome).
 - The owner is a designer; reply in plain language and keep the picker page tidy.
 
+## PeraSure skills (use them on every PeraSure task)
+
+`.claude/skills/` holds the PeraSure skills; Claude Code loads them from here, and they are also meant for any other
+PeraSure-related project (fetch from `https://raw.githubusercontent.com/samgestudio-dev/Perasure/main/.claude/skills/…`).
+
+- **`perasure-tone-of-voice`** — the owner's tone of voice. All PeraSure copy (screens in prototypes included: titles,
+  buttons, placeholders, errors, notes) follows it, in this repo and in any PeraSure-related project.
+- **`perasure-card-morph`** — the card morph motion of the withdraw fund flow and Change co-maker (a card or page turning
+  into another state). Any new morph starts from its `example.html` + `engine.js` and keeps its rules, so the motion is
+  the same everywhere. When a morph in a prototype is changed for the owner, update the skill too if the rule changed.
+
 ## Layout
 
 ```
@@ -26,6 +37,8 @@ tools/figma-tokens/        Figma side of the token pipeline: core.js (export + d
 vendor/<lib>@<version>/    pinned libraries: lottie-web, gsap (+ plugins; esm/ = ES modules), react, react-dom, mui-material,
                            motion (motion-react.js = React API, motion.js = vanilla; both set window.Motion), matter-js
 README.md                  human-facing summary + demo / animation tables
+.claude/skills/            PeraSure skills: perasure-tone-of-voice (all copy), perasure-card-morph (morph motion: SKILL.md,
+                           engine.js, example.html) — see "PeraSure skills"
 .nojekyll                  keep: Pages serves files as-is
 ```
 
