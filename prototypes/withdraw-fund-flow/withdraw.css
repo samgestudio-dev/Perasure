@@ -28,7 +28,14 @@
   html.ps-edge .ps-home-top{top:calc(-1 * var(--e))!important;height:calc(116px + var(--e))!important}
   html.ps-edge .ps-home-bot{height:calc(116px + var(--sb))!important}
   html.ps-edge .ps-tabbar{bottom:calc(var(--sb) + 24px)!important}
-  /* blur off (the default): the home header / bottom bars are colour veils only — their blur layers are not drawn */
+  /* header / bottom bars — PeraSure standard (CLAUDE.md "Header and bottom bars"), home and loan screen alike:
+     blur on: the five bands under the token veils; blur off: the token gradients, the bottom one fading out at the end
+     of the scroll (withdraw.js). Tune switches them (default on). */
+  html[data-variant="blur"] .ps-home-top > .ps-veil { background: var(--gradient-top-nav-filled); }
+  html[data-variant="blur"] .ps-home-bot > .ps-veil { background: var(--gradient-bottom-nav-filled); }
+  html:not([data-variant="blur"]) .ps-home-top > .ps-veil { background: linear-gradient(180deg, var(--color-gradient-subtle-80) 0%, var(--color-gradient-subtle-40) 70%, var(--color-gradient-subtle-0) 100%); }
+  html:not([data-variant="blur"]) .ps-home-bot > .ps-veil { background: linear-gradient(180deg, var(--color-gradient-default-0) 0%, var(--color-gradient-default-60) 40%, var(--color-gradient-default-80) 100%); }
+  /* blur off: the home header / bottom bars are colour veils only — their blur layers are not drawn */
   html:not([data-variant="blur"]) .ps-home-top > div:not(:last-child), html:not([data-variant="blur"]) .ps-home-bot > div:not(:last-child){display:none}
   /* blur on — backdrop blurs are the most expensive thing on screen for the GPU (each is a
      separate pass, ~19 of them while the sheet slides in). A blur over a flat

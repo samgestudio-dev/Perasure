@@ -71,9 +71,16 @@ class Component extends DCLogic {
 
   componentDidMount(){
     var self = this;
-    /* home header blur only while content scrolls under it (see .ps-live) — With-blur variant only */
+    /* home bars (CLAUDE.md "Header and bottom bars"): with blur, the header's blur layers run only while content scrolls
+       under it (see .ps-live); without blur, the bottom gradient fades out over the last stretch of scroll (as tall as the
+       bar, tied to the scroll position) — gone at the very bottom, none on a page that does not scroll */
     var hs = document.querySelector('.ps-home-scroll'), ht = document.querySelector('.ps-home-top');
-    if (BLUR && hs && ht) { var live = false; hs.addEventListener('scroll', function(){ var on = hs.scrollTop > 0; if (on !== live) { live = on; ht.classList.toggle('ps-live', on); } }, { passive: true }); }
+    var hbar = document.querySelector('.ps-home-bot'), hveil = hbar && hbar.querySelector('.ps-veil'), live = false;
+    var homeScroll = function(){
+      if (BLUR) { var on = hs.scrollTop > 0; if (on !== live) { live = on; ht.classList.toggle('ps-live', on); } }
+      else if (hveil) { var left = hs.scrollHeight - hs.clientHeight - hs.scrollTop; hveil.style.opacity = String(Math.round(Math.max(0, Math.min(1, left / (hbar.offsetHeight || 116))) * 1000) / 1000); }
+    };
+    if (hs && ht) { hs.addEventListener('scroll', homeScroll, { passive: true }); window.addEventListener('ps-viewport', homeScroll); homeScroll(); setTimeout(homeScroll, 400); }
     /* the Credit limit intro (with-credit-limit.html, intro.js) hands its exit to the page: see introExit() */
     window.__wdIntroExit = function(o){ return self.introExit(o); };
     this._onVp = function(){ self.setState({ vp: window.__PS_PH || 740 }); };
@@ -517,7 +524,16 @@ class Component extends DCLogic {
   mpChips(){ return { top: this.lc(27 + this.ex(), 0), height: this.lc(41, 36), transform: this.resT() }; }
   mpChip(){ return { height: this.lc(41, 36) }; }
   mpGrad(){ return { opacity: this.bkv() }; }
-  mpBar(bk){ return { background: 'linear-gradient(180deg, rgba(225,228,229,0) 0%, rgba(225,228,229,' + (0.2*bk).toFixed(3) + ') 20.19%, rgba(225,228,229,' + (0.4*bk).toFixed(3) + ') 100%)' }; }
+  /* the Confirm bar's colour veil (its own layer: the bar itself never fades — see ctaBar): in with the confirm chrome
+     (bk), and without blur also out over the last stretch of the scroll (_endF, updEnd) */
+  mpBar(bk){ return { opacity: Math.round(bk * (this._endF == null ? 1 : this._endF) * 1000) / 1000 }; }
+  updEnd(){
+    if (BLUR) return;
+    var sc = this._r.loanScroll, b = this._r.bar; if (!sc) return;
+    var left = sc.scrollHeight - sc.clientHeight - sc.scrollTop;
+    this._endF = Math.max(0, Math.min(1, left / ((b && b.offsetHeight) || 108)));
+    if (this._ctaShown) this.put('barVeil', this.mpBar(this.bkv()));
+  }
   mpBtn(bk){ return { opacity: Math.min(1, bk * 1.45), transform: 'translateY(' + ((1 - bk) * this.mt().Y.block).toFixed(2) + 'px)' }; }
   ctaWanted(){ return this.state.phase === 'confirm' || this.bkv() > 0.01; }
 
@@ -547,7 +563,7 @@ class Component extends DCLogic {
     if (this.ctaWanted() !== !!this._ctaShown) { this.setState({ ctaOn: (this.state.ctaOn || 0) + 1 }); return; }
     if (this._ctaShown) {
       var bk = this.bkv();
-      this.put('bar', this.mpBar(bk)); this.put('btnWrap', this.mpBtn(bk));
+      this.put('barVeil', this.mpBar(bk)); this.put('btnWrap', this.mpBtn(bk));
       if (BLUR) for (var i = 0; i < 5; i++) { var b = this.pbBlur(10 * bk, i); this.put('pbc' + i, { backdropFilter: b, WebkitBackdropFilter: b }); }
     }
   }
@@ -601,7 +617,7 @@ class Component extends DCLogic {
       this.flipStart(this._mp, target);
       this._mpAnim = fm.animate(this._mpMV, target, Object.assign({}, this.spring(), { restDelta: 0.001, restSpeed: 0.01 }, {
         onComplete: function(){
-          self._mpAnim = null; self._mp = target; self.flipEnd(); self.applyMp();
+          self._mpAnim = null; self._mp = target; self.flipEnd(); self.applyMp(); if (target === 1) self.updEnd();
           if (self._r.cap) self._r.cap.style.willChange = '';
           self.setState({ morph:false });
         }
@@ -621,6 +637,7 @@ class Component extends DCLogic {
   }
   goPhase(p){
     var self = this;
+    if (p === 'confirm') this._endF = 1;      /* the order page opens at its top: the bottom veil is fully there */
     /* coming back to edit: the keypad returns by rows, fast (REVEAL_ROW) */
     if (p === 'enter') this._padQuick = true;
     this.setState({ morph:true });
@@ -1248,9 +1265,13 @@ class Component extends DCLogic {
         style:Object.assign({
           position:'absolute', left:0, bottom:0, width:360, height:108 + (this.sb() ? this.sb() + 4 : 0), zIndex:6, boxSizing:'border-box',
           padding:'32px 48px ' + (this.sb() ? this.sb() + 24 : 20) + 'px', display:'flex', flexDirection:'column', alignItems:'center', gap:4
-        }, this.mpBar(bk))
+        })
       }, [
         BLUR ? this.pblur('pb', { left:0, top:0, right:0, bottom:0, zIndex:-1 }, 10 * bk, 'bottom', 'pbc') : null,
+        /* the bar's colour veil — PeraSure standard (CLAUDE.md "Header and bottom bars"): the token nav gradient over the
+           blur layers, or the token gradient alone without blur */
+        React.createElement('div', { key:'veil', ref:this.ref('barVeil'), style:Object.assign({ position:'absolute', left:0, top:0, right:0, bottom:0, zIndex:-1, pointerEvents:'none',
+          background: BLUR ? 'var(--gradient-bottom-nav-filled)' : 'linear-gradient(180deg, var(--color-gradient-default-0) 0%, var(--color-gradient-default-60) 40%, var(--color-gradient-default-80) 100%)' }, this.mpBar(bk)) }, null),
         /* slide + fade on a plain wrapper; the press scale stays on the m.div inside.
            On one node, whileTap's scale value took over `transform` and the slide
            was dropped for good after the first press. */
@@ -1314,7 +1335,8 @@ class Component extends DCLogic {
          of the sheet there is only flat background behind it (blur = no-op) */
       BLUR ? React.createElement('div', { key:'pbw', ref:this.ref('hdrBlur'), style:{ position:'absolute', left:0, top:0, width:360, height:116 + EE, display:'none' } },
         this.pblur('pb', { left:0, top:0, width:360, height:116 + EE }, 10, 'top')) : null,
-      React.createElement('div', { key:'veil', style:{ position:'absolute', left:0, top:0, width:360, height:116 + EE, background:'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.33) 70%, rgba(255,255,255,0) 100%)' } }, null),
+      /* header veil — PeraSure standard (CLAUDE.md "Header and bottom bars"), as on the home screen */
+      React.createElement('div', { key:'veil', style:{ position:'absolute', left:0, top:0, width:360, height:116 + EE, background: BLUR ? 'var(--gradient-top-nav-filled)' : 'linear-gradient(180deg, var(--color-gradient-subtle-80) 0%, var(--color-gradient-subtle-40) 70%, var(--color-gradient-subtle-0) 100%)' } }, null),
       React.createElement('div', { key:'sb', className:'ps-sb', style:{ position:'absolute', left:0, top:0, width:360, height:40, boxSizing:'border-box', padding:'0 20px', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between' } }, [
         this.el('span', Object.assign({ key:'t' }, this.mo({ fontFamily:'Inter, sans-serif', fontWeight:600, fontSize:13, lineHeight:'1', letterSpacing:'0.01em' }, { color: C.ink }, { duration:0.2 })), '9:30'),
         React.createElement('div', { key:'punch', style:{ position:'absolute', left:174, top:14, width:12, height:12, borderRadius:'50%', backgroundColor:'#0a1219' } }, null),
@@ -1362,7 +1384,8 @@ class Component extends DCLogic {
         var f = BLUR && document.querySelector('.ps-frame'); if (f) f.classList.toggle('ps-covered', this.state.screen === 'loan'); },
       style:{ position:'absolute', left:0, top:-EE, width:360, height:FULL, overflow:'hidden', backgroundColor: C.page }
     }, [
-      React.createElement('div', { key:'scroll', className:'psScroll', onScroll: !BLUR ? undefined : this._onSheetScroll || (this._onSheetScroll = (e) => {
+      React.createElement('div', { key:'scroll', ref:this.ref('loanScroll'), className:'psScroll', onScroll: this._onSheetScroll || (this._onSheetScroll = (e) => {
+          if (!BLUR) { this.updEnd(); return; }
           var on = e.currentTarget.scrollTop > 0, h = this._r.hdrBlur;
           if (h && on !== this._hdrLive) { this._hdrLive = on; h.style.display = on ? '' : 'none'; } }), style:{ position:'absolute', left:0, top:0, width:360, height:FULL, boxSizing:'border-box', paddingTop:EE, overflowY: cf ? 'auto' : 'hidden', overflowX:'hidden' } },
         React.createElement('div', { style:{ position:'relative', width:360, height: cf ? Math.max(1175 + SB, PH + SB) : PH + SB } }, [

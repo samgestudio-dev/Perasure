@@ -99,9 +99,22 @@ web-animation-design: blur to bridge crossfades, paired elements on one progress
 A tap after the animation has ended skips the rest of the 3 s. While the intro plays the home's runtime does not start
 (`boot.js` waits), so nothing competes with the coins; the home is built during the hold. Afterwards the frame is removed.
 
-## Tune (bottom left, home screen only)
+## Header and bottom bars
 
-Gradient blur on/off (the progressive backdrop-blur bands on the header and bottom bars; before, this was a separate
-"With gradient blur" page), the card's available amount / total credit / temporary credit left, and the motion feel
+Home and the loan screen ("Apply a loan" and the order details) use the PeraSure standard bars (repo `CLAUDE.md` →
+"Header and bottom bars", same as the Change co-maker demo), from the tokens (`../../tokens/tokens.css`, loaded before
+`perasure-ds.css`, which keeps its own values and gains the names it lacks):
+
+- **Progressive blur on** (default): the five backdrop-blur bands under the token veils `--gradient-top-nav-filled` /
+  `--gradient-bottom-nav-filled`; the header's bands only while content is scrolled under it.
+- **Off**: the token gradients only — header subtle-80 → 40 → 0, bottom default-0 → 60 → 80 — and the bottom one fades
+  out over the last stretch of scroll (as tall as the bar), gone at the very bottom (home: `homeScroll`; order details:
+  `updEnd`). On the order details the Confirm bar's veil is its own layer (the bar itself never fades: it hosts the blur
+  bands), in with the confirm chrome and out at the end of the scroll.
+
+## Tune (bottom left on home; top right on the loan screen)
+
+Progressive blur on (default) / off — the two looks of the bars above, same as the Change co-maker demo's Tune (before,
+this was a separate "With gradient blur" page) — the card's available amount / total credit / temporary credit left, and the motion feel
 (Smooth / Snappy / Gentle). A change is saved on the phone and reloads the page with it. Links can set them too:
-`?blur=1`, `?available=45000`, `?total=50000`, `?temporary=10000`.
+`?blur=1` / `?blur=0`, `?available=45000`, `?total=50000`, `?temporary=10000`.

@@ -1,8 +1,9 @@
 /* Withdraw fund flow — Tune panel (prototype only: delete this file, tune.js and their two lines in index.html) */
 #wdTuneBtn{position:fixed;left:12px;bottom:calc(var(--sb,0px) + 84px);z-index:60;border:0;border-radius:999px;padding:6px 12px;
   background:rgba(20,30,36,.78);color:#fff;font:600 12px/1.2 Inter,system-ui,sans-serif;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-/* only on the home screen: on the loan sheet it would sit on the keypad and the order details */
-html.wd-loan #wdTuneBtn{display:none}
+/* on the loan sheet bottom-left would sit on the keypad and the order details: there it moves to the header's top
+   right, level with the back arrow (as on the Change co-maker demo) */
+html.wd-loan #wdTuneBtn{bottom:auto;left:auto;right:16px;top:calc(var(--ftop,-40px) + 64px)}
 #wdTuneCatch{position:fixed;inset:0;z-index:61;display:none}
 #wdTuneCatch.on{display:block}
 #wdTune{position:fixed;left:10px;right:10px;bottom:calc(var(--sb,0px) + 10px);z-index:62;max-height:70vh;overflow:auto;-webkit-overflow-scrolling:touch;

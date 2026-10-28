@@ -119,7 +119,8 @@ bundle was unpacked onto the shared environment):
 - iOS Safari 26+ tints the status bar and toolbar from `position:fixed` layers that reach the screen edges.
   Don't leave a coloured fixed overlay (scrim, backdrop) in the page, even at `opacity:0`: use
   `display:none` when closed, and give tap-outside catchers no background.
-- **Header and bottom bars** (PeraSure standard; reference: `prototypes/co-maker-change/index.html`, `.pb`). Two looks,
+- **Header and bottom bars** (PeraSure standard; reference: `prototypes/co-maker-change/index.html`, `.pb`; withdraw's home
+  and loan screen follow it too). Two looks,
   switchable in the demo's Tune panel (`?blur=1|0`):
   - **Without progressive blur** — colour gradients only, from the tokens:
     - header: `background: linear-gradient(180deg, var(--color-gradient-subtle-80) 0%, var(--color-gradient-subtle-40) 70%, var(--color-gradient-subtle-0) 100%);`
@@ -132,8 +133,8 @@ bundle was unpacked onto the shared environment):
     outer edge to 84 / 66 / 48 / 28 / 10 % of the bar and fading out by 100 / 84 / 66 / 48 / 28 %; veil
     `--gradient-top-nav-filled` / `--gradient-bottom-nav-filled`. The header's blur layers run only while content is
     scrolled under it (a blur over the flat page looks the same as none and costs GPU time).
-  - Both extend behind the iOS status bar / search bar (see the iOS Safari 26+ notes above). Existing prototypes keep
-    their bars unless the owner asks.
+  - Both extend behind the iOS status bar / search bar (see the iOS Safari 26+ notes above). Tune default: blur on.
+    Other existing prototypes keep their bars unless the owner asks.
 - Motion: prefer Motion (formerly Framer Motion; `vendor/motion@14.4.0/motion-react.js`) with `LazyMotion` + `m` (strict), drive continuous values with motion values
   instead of React state, animate only `transform` / `opacity` where possible, and respect
   `prefers-reduced-motion`.
