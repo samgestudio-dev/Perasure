@@ -1,0 +1,53 @@
+# Change co-maker
+
+"Invite your co-maker" page: tapping **Change** turns the co-maker card into the "Change your co-maker" form; **Cancel**
+or **Save** turns it back. One page, one card — the two Figma frames are its two states.
+
+Figma: PeraSure design system, section 10168:26588 — state A *Your co-maker* (frame 10168:26372), state B *Change your
+co-maker* (frame 10168:26423).
+
+## Files
+
+| File | What it is |
+| --- | --- |
+| `index.html` | the page: markup and styles, all values from the PeraSure tokens (`../../tokens/tokens.css`, `.ps-text-*` type styles) |
+| `co-maker.js` | the page code: the card morph, the form (name, relationship, mobile), Copy |
+| `phone-fit.js` | phone fitting and iOS Safari 26 edge-to-edge, copied from the withdraw demo, plus: no iOS zoom on input focus, no re-fit while typing |
+| `assets/` | the design's icons, downloaded from Figma (link, co-maker, edit, copy, shield, chevrons, divider) |
+
+Shared from the repo: the tokens, the app's fonts (`assets/fonts/`) and Motion 14.4.0 (`vendor/motion@14.4.0/motion.js`).
+Open it through a web server (GitHub Pages, or `python3 -m http.server` in the repo root).
+
+## The morph
+
+Built like the withdraw fund flow's morphs (`withdraw.js`: `tweenMp`, `introExit`):
+
+- **One progress** k (0 = A, 1 = B) in a Motion value, animated with the withdraw page's spring (Smooth: stiffness 240,
+  damping 30). Its change event writes every style straight to the DOM. A tap mid-morph re-targets the same value, so it
+  turns around smoothly from where it is.
+- **Same speed, not same time** as the withdraw loan morph: the longest travel here (the pill, ≈ 202 px) against the loan
+  morph's (378 px) gives the same spring stretched in time (stiffness ÷ s², damping ÷ s, s clamped to 0.6–2.5, as the
+  withdraw exit) — about 0.26 s here.
+- **The card box** grows 182 → 296 (its rounded edge is the clip); the card below rides its bottom edge (a transform; the
+  page's layout is committed once, at rest).
+- **Shared elements stay one element**: the avatar tile (40 → 48 px, icon 24 → 32); the **Change pill travels to Save's
+  place and becomes Save** (light fill → primary, "Change" leaves as "Save" arrives, overlapping so it is never blank).
+  The **name** is a pair on one path — the header name and the form's Name value move and scale together, crossfading with
+  a 3 px blur. The pill's and the name's paths are front-loaded (1 − (1 − k)²) so they land with the rows they join.
+- **What leaves** (caption, number, link box, note) rises its MT.Y distance and blurs out early (gone by k ≈ 0.4); **what
+  comes in** rises into place from a 3 px blur, top-down: title, Name, Relationship, then — once Save and Cancel (which ride
+  the card's bottom edge) are past its spot — the Mobile row. Cancel comes in last.
+- "Check verification status" turns disabled while the form is open (a disabled layer fades over it).
+- On a short screen the page scrolls with the morph (same spring) so Cancel / Save come to rest just above the bottom bar.
+- Per frame: transform / opacity / filter, plus the card's height and the tile's and pill's size (small absolute boxes);
+  unchanged values are not rewritten. `prefers-reduced-motion` jumps.
+
+`?feel=Snappy` / `?feel=Gentle` use the withdraw page's other feels.
+
+## Behaviour
+
+- Save keeps the name (or the old one if empty), takes the mobile number when it has 10 digits, and makes a new invite
+  link when the co-maker changed. Relationship is a native picker.
+- The focused field is kept above the on-screen keyboard (the page scrolls; it is not re-fitted while typing).
+- Copy puts `https://perasure.ph/g/<code>` on the clipboard; the label reads "Copied" for 1.8 s.
+- The back arrow goes to the Playground; "Back home" and "Check verification status" only press.

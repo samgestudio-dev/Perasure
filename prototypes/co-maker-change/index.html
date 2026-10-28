@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Change co-maker</title>
+<!-- Change co-maker (Figma: PeraSure design system, section 10168:26588 — frames 10168:26372 and 10168:26423).
+     One page: "Change" turns the co-maker card into the "Change your co-maker" form, the same kind of morph as the
+     withdraw fund flow (one progress, one spring, windows on the progress). Page code: co-maker.js.
+     Shared environment from the repo: the PeraSure tokens, the app's fonts and Motion. -->
+<script src="phone-fit.js?v=202610280647"></script>
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<link rel="stylesheet" href="../../assets/fonts/fonts.css">
+<link rel="preload" href="../../assets/fonts/hanken-grotesk-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../assets/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
+<script src="../../vendor/motion@14.4.0/motion.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--color-surface-page-default); -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  * { -webkit-tap-highlight-color: transparent; }
+  button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+  button, a, label, select, input { touch-action: manipulation; }
+  img { display: block; }
+
+  /* ---- phone page (phone-fit.js): the screen is the page; the 40px status-bar mock sits above the top edge ---- */
+  html.ps-phone, html.ps-phone body { height: 100%; overflow: hidden; overscroll-behavior: none; }
+  html.ps-phone body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  input { -webkit-user-select: text; user-select: text; }
+  .ps-wrap { height: var(--vh, 100vh); overflow: hidden; display: flex; flex-direction: column; align-items: center; }
+  .ps-frame { position: relative; width: 360px; height: var(--ph, 740px); margin-top: -40px; flex: none; overflow: hidden; background: var(--color-surface-page-default); }
+  html.ps-edge, html.ps-edge body { height: auto; min-height: 0; }
+  html.ps-edge .ps-frame { margin-top: var(--ftop); overflow: visible; }
+
+  /* ---- scroller + column (Frame 67: gap 20, page x 16) ---- */
+  .scroll { position: absolute; left: 0; top: 0; width: 360px; height: 100%; overflow-x: hidden; overflow-y: auto; scrollbar-width: none; }
+  .scroll::-webkit-scrollbar { width: 0; height: 0; }
+  html.ps-edge .scroll { top: calc(-1 * var(--e)); height: calc(100% + var(--e)); }
+  .col { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-xl);
+         padding: 116px var(--spacing-page-x-sm) 164px; }
+  html.ps-edge .col { padding-top: calc(116px + var(--e)); padding-bottom: calc(164px + var(--sb)); }
+  .kb { flex: none; width: 1px; height: 0; margin-top: calc(-1 * var(--spacing-gap-xl)); }
+
+  .hero-icon { width: 64px; height: 64px; flex: none; border-radius: var(--radius-full); background: var(--color-brand-200);
+               display: flex; align-items: center; justify-content: center; }
+  .hero-icon span { position: relative; width: 36px; height: 36px; }
+  .hero-icon img { position: absolute; left: 3.013px; top: 3.01px; width: 30.0097px; height: 29.9911px; }
+  .heading { width: 100%; padding: 0 var(--spacing-padding-sm); display: flex; flex-direction: column; gap: var(--spacing-gap-sm); text-align: center; }
+  .heading h1 { color: var(--color-text-primary); }
+  .heading p { color: var(--color-text-secondary); }
+
+  /* ---- the co-maker card: one box, both states (A = 182 tall, B = 296 tall). Children sit at their Figma spots in
+          card coordinates; co-maker.js moves them on the morph progress. ---- */
+  .slot { position: relative; width: 100%; height: 182px; flex: none; }
+  .card { position: absolute; left: 0; top: 0; width: 328px; height: 182px; overflow: hidden;
+          background: var(--color-surface-card-default); border-radius: var(--radius-xl); }
+  .card .abs { position: absolute; }
+  .tile { left: 16px; top: 41px; width: 40px; height: 40px; border-radius: var(--radius-sm); background: var(--color-surface-card-brand);
+          display: flex; align-items: center; justify-content: center; }
+  .tile img { width: 32px; height: 32px; flex: none; transform: scale(.75); }
+  .nowrap { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .t-primary { color: var(--color-text-primary); }
+  .t-secondary { color: var(--color-text-secondary); }
+  .t-tertiary { color: var(--color-text-tertiary); }
+  .t-placeholder { color: var(--color-text-placeholder); }
+  .t-brand { color: var(--color-text-brand-default); }
+  .t-inverse { color: var(--color-text-inverse); }
+  .t-disabled { color: var(--color-text-disabled); }
+  .origin { transform-origin: 0 0; }
+
+  /* state A: Your co-maker */
+  .a-cap { left: 16px; top: 16px; }
+  .a-name { left: 64px; top: 40px; width: 156px; }
+  .a-phone { left: 64px; top: 66px; width: 156px; }
+  .a-link { left: 16px; top: 98px; width: 296px; height: 46px; display: flex; align-items: center; gap: var(--spacing-gap-sm);
+            padding: var(--spacing-gap-xs); border: var(--stroke-width-default) dashed var(--color-stroke-default);
+            border-radius: var(--radius-sm); background: var(--color-surface-inset-default); }
+  .a-link .url { flex: 1 1 0; min-width: 0; padding: 0 var(--spacing-gap-sm); }
+  .copy { flex: none; height: 36px; display: flex; align-items: center; justify-content: center; gap: var(--spacing-gap-xs);
+          padding: var(--spacing-padding-sm) var(--spacing-padding-md); border-radius: var(--radius-xs);
+          background: var(--color-surface-card-brand); overflow: hidden; }
+  .copy img { width: 16px; height: 16px; flex: none; }
+  .copy .lbl { position: relative; display: block; white-space: nowrap; }
+  .a-note { left: 16px; top: 152px; width: 296px; height: 14px; display: flex; align-items: center; justify-content: center; gap: var(--spacing-gap-xs); }
+  .shield { position: relative; width: 12px; height: 12px; flex: none; }
+  .shield img { position: absolute; left: 1.5px; top: 1.0656px; width: 9.00008px; height: 9.8591px; }
+
+  /* the Change pill — becomes Save in state B (same element) */
+  .pill { left: 0; top: 0; width: 88px; height: 40px; z-index: 2; }
+  .pill-btn { position: relative; width: 100%; height: 100%; border-radius: var(--radius-full); overflow: hidden; display: block; }
+  .pill-btn > span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+  .pill-light { background: var(--color-brand-100); }
+  .pill-strong { background: var(--color-action-bg-primary-default); opacity: 0; }
+  .pill-change { gap: var(--spacing-gap-2xs); }
+  .pill-change img { width: 16px; height: 16px; flex: none; }
+  .pill-save { opacity: 0; visibility: hidden; }
+
+  /* state B: Change your co-maker */
+  .b-title { left: 80px; top: 20px; width: 232px; display: flex; flex-direction: column; gap: var(--spacing-gap-2xs); }
+  .row { left: 16px; width: 296px; height: 20px; display: flex; align-items: center; }
+  .row .k { width: 100px; flex: none; }
+  .row-1 { top: 88px; }  .row-2 { top: 140px; }  .row-3 { top: 192px; }
+  .rule { left: 16px; width: 296px; height: 1px; }
+  .rule-1 { top: 123px; }  .rule-2 { top: 175px; }
+  .b-name { left: 116px; top: 88px; width: 196px; height: 20px; }
+  .field { display: block; width: 100%; height: 20px; border: 0; outline: 0; background: transparent; border-radius: 0;
+           color: var(--color-text-primary); caret-color: var(--color-action-bg-primary-default); -webkit-appearance: none; appearance: none; }
+  .field::placeholder { color: var(--color-text-placeholder); opacity: 1; }
+  .rel { flex: 1 1 0; min-width: 0; display: flex; align-items: center; gap: var(--spacing-gap-sm); }
+  .rel .v { flex: 1 1 0; min-width: 0; }
+  .chev { position: relative; width: 16px; height: 16px; flex: none; }
+  .chev img { position: absolute; left: 4.738px; top: 2.516px; width: 6.42073px; height: 10.9674px; }
+  .rel select { position: absolute; left: 0; top: -12px; width: 100%; height: 44px; opacity: 0; font-size: 16px; -webkit-appearance: none; appearance: none; }
+  .mob { flex: 1 1 0; min-width: 0; display: flex; align-items: center; gap: var(--spacing-gap-sm); }
+  .mob .cc { flex: none; }
+  .cancel { left: 16px; top: 0; width: 142px; height: 44px; }
+  .cancel-btn { width: 100%; height: 100%; border-radius: var(--radius-full); background: var(--color-action-bg-primary-disabled);
+                display: flex; align-items: center; justify-content: center; }
+  .b { opacity: 0; visibility: hidden; }
+
+  /* ---- What your co-maker will do (Frame 224) ---- */
+  .steps { width: 100%; flex: none; display: flex; flex-direction: column; gap: var(--spacing-gap-lg); padding: var(--spacing-gap-lg);
+           background: var(--color-surface-card-default); border: var(--stroke-width-strong) solid var(--color-icon-inverse); border-radius: var(--radius-xl); }
+  .steps-head { display: flex; align-items: center; justify-content: space-between; white-space: nowrap; }
+  .steps ol { display: flex; flex-direction: column; gap: var(--spacing-gap-md); padding-left: 21px; color: var(--color-text-secondary); }
+
+  /* ---- header (Header Action Container) ---- */
+  .top { position: absolute; left: 0; top: 0; width: 360px; height: 116px; background: var(--gradient-top-nav-filled); pointer-events: none; z-index: 5; }
+  html.ps-edge .top { top: calc(-1 * var(--e)); height: calc(116px + var(--e)); }
+  .back { position: absolute; left: var(--spacing-padding-lg); bottom: 20px; width: 40px; height: 40px; pointer-events: auto;
+          border-radius: var(--radius-full); border: var(--stroke-width-default) solid var(--color-icon-inverse);
+          background: var(--color-surface-elevated-glass); box-shadow: var(--blur-glass-nav-effect-shadow);
+          -webkit-backdrop-filter: blur(calc(var(--blur-backdrop-bg) / 2)); backdrop-filter: blur(calc(var(--blur-backdrop-bg) / 2));
+          display: flex; align-items: center; justify-content: center; }
+  .back img { width: 18px; height: 18px; }
+
+  /* ---- bottom (Bottom Nav Action Container) ---- */
+  .bot { position: absolute; left: 0; bottom: 0; width: 360px; min-height: 108px; z-index: 5;
+         padding: var(--spacing-padding-3xl) var(--spacing-padding-5xl) var(--spacing-padding-xl);
+         background: var(--gradient-bottom-nav-filled); }   /* colour veil only, as the withdraw page's default (no blur band) */
+  html.ps-edge .bot { padding-bottom: calc(var(--sb) + var(--spacing-padding-xl)); }
+  .cta { position: relative; width: 100%; height: 48px; border-radius: var(--radius-full); overflow: hidden; display: block; }
+  .cta > span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+  .cta-on { background: var(--color-action-bg-primary-default); }
+  .cta-off { background: var(--color-action-bg-primary-disabled); opacity: 0; }
+  .home { display: flex; width: 100%; height: 48px; align-items: center; justify-content: center; }
+</style>
+</head>
+<body>
+<div class="ps-wrap">
+  <div class="ps-frame">
+    <div class="scroll" id="scroll">
+      <div class="col">
+        <div class="hero-icon"><span><img src="assets/icon-link.svg" width="30.0097" height="29.9911" alt=""></span></div>
+        <div class="heading">
+          <h1 class="ps-text-title-lg">Invite your co-maker</h1>
+          <p class="ps-text-body-md">Share this secure link with your co-maker</p>
+        </div>
+
+        <div class="slot" id="slot">
+          <div class="card" id="card">
+            <!-- shared -->
+            <div class="abs tile" id="tile"><img src="assets/icon-guarantor-32.svg" width="32" height="32" alt="" id="tileIcon"></div>
+
+            <!-- state A -->
+            <p class="abs a-cap ps-text-caption-sm t-tertiary nowrap" id="aCap">Your co-maker</p>
+            <p class="abs a-name origin ps-text-section-title-md t-primary nowrap" id="aName">Sam Ge</p>
+            <p class="abs a-phone ps-text-caption-sm t-placeholder nowrap" id="aPhone">+63 912 345 6789</p>
+            <div class="abs a-link" id="aLink">
+              <div class="url"><p class="ps-text-link t-brand nowrap" id="url">perasure.ph/g/7KQ2-JD9A</p></div>
+              <button class="copy" id="copy" type="button" aria-label="Copy link">
+                <img src="assets/icon-copy.svg" width="16" height="16" alt="">
+                <span class="lbl ps-text-section-title-sm t-inverse" id="copyLbl">Copy</span>
+              </button>
+            </div>
+            <div class="abs a-note" id="aNote">
+              <span class="shield"><img src="assets/icon-shield.svg" width="9.00008" height="9.8591" alt=""></span>
+              <span class="ps-text-caption-xs t-placeholder">Secure link</span>
+              <span class="ps-text-caption-xs t-placeholder">·</span>
+              <span class="ps-text-caption-xs t-placeholder">valid for 48 hours</span>
+            </div>
+
+            <!-- state B -->
+            <div class="abs b-title b" id="bTitle">
+              <p class="ps-text-section-title-md t-primary">Change your co-maker</p>
+              <p class="ps-text-caption-sm t-placeholder">Shares responsibility for your loan</p>
+            </div>
+            <label class="abs row row-1 b" id="bRow1" for="inName"><span class="k ps-text-body-md t-tertiary">Name</span></label>
+            <div class="abs b-name origin b" id="bName"><input class="field ps-text-body-md-emphasis" id="inName" type="text" value="Sam Ge" autocomplete="off" autocapitalize="words" spellcheck="false" enterkeyhint="next" aria-label="Name"></div>
+            <img class="abs rule rule-1 b" id="rule1" src="assets/divider.svg" width="296" height="1" alt="">
+            <div class="abs row row-2 b" id="bRow2">
+              <span class="k ps-text-body-md t-tertiary">Relationship</span>
+              <span class="rel">
+                <span class="v ps-text-body-md-emphasis t-placeholder nowrap" id="relV">Select</span>
+                <span class="chev"><img src="assets/icon-chevron-right.svg" width="6.42073" height="10.9674" alt=""></span>
+                <select id="inRel" aria-label="Relationship">
+                  <option value="" disabled selected>Select</option>
+                  <option>Parent</option><option>Spouse</option><option>Sibling</option><option>Child</option>
+                  <option>Relative</option><option>Friend</option><option>Colleague</option>
+                </select>
+              </span>
+            </div>
+            <img class="abs rule rule-2 b" id="rule2" src="assets/divider.svg" width="296" height="1" alt="">
+            <label class="abs row row-3 b" id="bRow3" for="inMobile">
+              <span class="k ps-text-body-md t-tertiary">Mobile</span>
+              <span class="mob">
+                <span class="cc ps-text-body-md-emphasis t-secondary">+63</span>
+                <input class="field ps-text-body-md-emphasis" id="inMobile" type="tel" inputmode="numeric" autocomplete="off" placeholder="Enter mobile number" enterkeyhint="done" aria-label="Mobile number">
+              </span>
+            </label>
+            <div class="abs cancel b" id="cancelWrap"><button class="cancel-btn ps-text-label-md t-tertiary" id="cancel" type="button">Cancel</button></div>
+
+            <!-- shared: Change pill → Save -->
+            <div class="abs pill" id="pill">
+              <button class="pill-btn" id="pillBtn" type="button" aria-label="Change co-maker">
+                <span class="pill-light"></span>
+                <span class="pill-strong" id="pillStrong"></span>
+                <span class="pill-change" id="pillChange"><img src="assets/icon-edit.svg" width="16" height="16" alt=""><span class="ps-text-label-sm t-brand">Change</span></span>
+                <span class="pill-save ps-text-label-md t-inverse" id="pillSave">Save</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="steps" id="steps">
+          <div class="steps-head">
+            <p class="ps-text-section-title-sm t-primary">What your co-maker will do</p>
+            <p class="ps-text-caption-sm t-tertiary">About 3 mins</p>
+          </div>
+          <ol class="ps-text-body-md">
+            <li>Open the secure link on their phone</li>
+            <li>Upload a valid government ID</li>
+            <li>Take a selfie to verify their identity</li>
+            <li>Review and accept the co-maker agreement</li>
+          </ol>
+        </div>
+        <div class="kb" id="kb"></div>
+      </div>
+    </div>
+
+    <div class="top"><a class="back" id="back" href="../../index.html" aria-label="Back"><img src="assets/icon-chevron-left.svg" width="18" height="18" alt=""></a></div>
+
+    <div class="bot">
+      <button class="cta" id="cta" type="button">
+        <span class="cta-on ps-text-label-md t-inverse">Check verification status</span>
+        <span class="cta-off ps-text-label-md t-disabled" id="ctaOff">Check verification status</span>
+      </button>
+      <button class="home ps-text-label-md t-brand" id="home" type="button">Back home</button>
+    </div>
+  </div>
+</div>
+<script src="co-maker.js?v=202610280647"></script>
+</body>
+</html>

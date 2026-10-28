@@ -16,7 +16,7 @@ from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WIDTH = 270                     # stored width (px); shown at ~64 CSS px, so this covers 3x screens
-WAIT = {'withdraw-fund-flow': 9000, 'landing-page': 6000, 'order-submit': 1400, 'otp-sheet-morph': 2500, 'credit-limit-coins': 6500}
+WAIT = {'co-maker-change': 1200, 'withdraw-fund-flow': 9000, 'landing-page': 6000, 'order-submit': 1400, 'otp-sheet-morph': 2500, 'credit-limit-coins': 6500}
 DEFAULT_WAIT = 2500
 
 

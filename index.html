@@ -18,13 +18,21 @@
 <script src="vendor/react-dom@18.3.1/react-dom.production.min.js"></script>
 <script src="vendor/motion@14.4.0/motion-react.js"></script>
 <script src="vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
-<script src="assets/playground-ui.js?v=202610260247"></script>
-<script src="animations/animations.js?v=202610260247"></script>
+<script src="assets/playground-ui.js?v=202610280647"></script>
+<script src="animations/animations.js?v=202610280647"></script>
 <script>
 /* ---- Prototype registry (the "Prototypes" tab) -----------------------------------------
    To add a prototype: put its files in prototypes/<slug>/ and add one entry below.
    The first variant is the recommended one. Animations live in animations/animations.js. */
 var DEMOS = [
+  {
+    title: 'Change co-maker',
+    tag: 'Loan',
+    desc: 'Invite your co-maker: “Change” morphs the co-maker card into the change form — the pill travels to Save and becomes it, the name glides into the Name row, the card below rides the edge.',
+    variants: [
+      { name: 'Standard', note: 'Tap Change; Cancel or Save morphs back. Same spring and windows as the withdraw flow', href: 'prototypes/co-maker-change/index.html' }
+    ]
+  },
   {
     title: 'Credit limit increase',
     tag: 'Credit limit',
