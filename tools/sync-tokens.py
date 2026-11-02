@@ -127,6 +127,38 @@ def short(v):
     return str(v)
 
 
+def style_summary(kind, s):
+    """One readable line per style, so a changelog row says what a designer would say."""
+    def col(c, b):
+        return (b or {}).get('color') or bt.hexcolor(c)
+    if kind == 'paint':
+        out = []
+        for p in s['paints']:
+            if p.get('gradientStops'):
+                out.append(', '.join('%s %s%%' % (col(g['color'], g.get('bound')), bt.num(g['position'] * 100))
+                                     for g in p['gradientStops']))
+            elif p.get('color'):
+                out.append(col(p['color'], p.get('boundVariables')))
+            else:
+                out.append(p['type'])
+        return ' | '.join(out)
+    if kind == 'text':
+        lh, ls = s['lineHeight'], s['letterSpacing']
+        lh = 'auto' if lh['unit'] == 'AUTO' else bt.num(lh['value']) + ('%' if lh['unit'] == 'PERCENT' else '')
+        ls = bt.num(ls['value']) + ('%' if ls['unit'] == 'PERCENT' else 'px')
+        return '%s %s %s/%s, %s' % (s['fontName']['family'], s['fontName']['style'], bt.num(s['fontSize']), lh, ls)
+    out = []
+    for e in s['effects']:
+        b = e.get('boundVariables') or {}
+        if e['type'] in ('DROP_SHADOW', 'INNER_SHADOW'):
+            out.append('%s %s %s blur %s %s' % ('inset' if e['type'] == 'INNER_SHADOW' else 'shadow',
+                                                bt.num(e['offset']['x']), bt.num(e['offset']['y']),
+                                                b.get('radius') or bt.num(e['radius']), b.get('color') or bt.hexcolor(e['color'])))
+        else:
+            out.append('%s %s' % (e['type'].lower(), b.get('radius') or bt.num(e.get('radius') or e.get('startRadius') or 0)))
+    return '; '.join(out)
+
+
 def diff(old, new):
     rows, srows = [], []
     ov = {v['id']: (c['name'], v) for c in old['collections'] for v in c['variables']}
@@ -168,8 +200,13 @@ def diff(old, new):
             if o['name'] != s['name']:
                 scount['renamed'] += 1
                 srows.append(('Renamed', kind, s['name'], 'was `%s`' % o['name']))
-            fo, fn = flat({k: v for k, v in o.items() if k != 'name'}), flat({k: v for k, v in s.items() if k != 'name'})
-            d = ['%s: %s → %s' % (k, short(fo.get(k, '—')), short(fn.get(k, '—'))) for k in sorted(set(fo) | set(fn)) if fo.get(k) != fn.get(k)]
+            d = []
+            so, sn = style_summary(kind, o), style_summary(kind, s)
+            if so != sn:
+                d = ['`%s` → `%s`' % (so, sn)]
+            else:
+                fo, fn = flat({k: v for k, v in o.items() if k != 'name'}), flat({k: v for k, v in s.items() if k != 'name'})
+                d = ['%s: %s → %s' % (k, short(fo.get(k, '—')), short(fn.get(k, '—'))) for k in sorted(set(fo) | set(fn)) if fo.get(k) != fn.get(k)]
             if d:
                 scount['changed'] += 1
                 srows.append(('Changed', kind, s['name'], '; '.join(d[:6]) + (' …' if len(d) > 6 else '')))

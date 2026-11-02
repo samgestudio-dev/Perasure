@@ -1,5 +1,5 @@
 {
- "version": "2026.10.27",
+ "version": "2026.11.02",
  "labels": {
   "collections": "Collections",
   "s:text": "Text styles",
@@ -22,8 +22,8 @@
   },
   "v:VariableCollectionId:1020:5688": {
    "n": 271,
-   "h": "554ce04c",
-   "b": "9476b3,fd22a0,4c5507,e93d5a,7aaa23,e26e5b,2c4a42,d031b2,166e8d,1100a6,282a77,0d3ca5,26ca71,cfba5f,ff9d9a,2bb5d0,f2b1e4,c9cb91,8349af,ec0035,d60276,6e9d01,dff23b,ce3458,6b2f9d,97a59d,5f4aac,7c98c5,42da41,ab51a5,107bfb,141d33"
+   "h": "308e8c46",
+   "b": "9476b3,fd22a0,4c5507,e93d5a,7aaa23,865ff5,c096bc,d031b2,166e8d,1100a6,282a77,47f48e,227069,cfba5f,ff9d9a,2bb5d0,f2b1e4,c9cb91,0ebdc3,ec0035,d60276,6e9d01,069ee9,ce3458,843f53,5a320c,5f4aac,7c98c5,42da41,ab51a5,a83c6e,141d33"
   },
   "v:VariableCollectionId:198:8252": {
    "n": 18,
@@ -42,8 +42,8 @@
   },
   "s:paint": {
    "n": 3,
-   "h": "2077d9a6",
-   "b": ",,,,,,7e0bcf,,,,,,,,,,79f5ba,,,eb1e72,,,,,,,,,,,,"
+   "h": "f977b295",
+   "b": ",,,,,,582ece,,,,,,,,,,a26b7b,,,eb1e72,,,,,,,,,,,,"
   }
  }
 }

@@ -3,7 +3,7 @@
  "source": {
   "figmaFile": "Document",
   "fileKey": "OBsvf42AiRapcRrasD7KNm",
-  "exportedAt": "2026-10-27T10:04:42.434Z",
+  "exportedAt": "2026-11-02T09:22:00.382Z",
   "exportedBy": null,
   "via": "mcp"
  },
@@ -2722,8 +2722,7 @@
       "collection": "Primitive"
      },
      "scopes": [
-      "FRAME_FILL",
-      "SHAPE_FILL"
+      "ALL_SCOPES"
      ],
      "codeSyntax": {
       "WEB": "var(--color-gradient-default-0)"
@@ -2738,8 +2737,7 @@
       "collection": "Primitive"
      },
      "scopes": [
-      "FRAME_FILL",
-      "SHAPE_FILL"
+      "ALL_SCOPES"
      ],
      "codeSyntax": {
       "WEB": "var(--color-gradient-default-20)"
@@ -2754,8 +2752,7 @@
       "collection": "Primitive"
      },
      "scopes": [
-      "FRAME_FILL",
-      "SHAPE_FILL"
+      "ALL_SCOPES"
      ],
      "codeSyntax": {
       "WEB": "var(--color-gradient-default-40)"
@@ -2770,8 +2767,7 @@
       "collection": "Primitive"
      },
      "scopes": [
-      "FRAME_FILL",
-      "SHAPE_FILL"
+      "ALL_SCOPES"
      ],
      "codeSyntax": {
       "WEB": "var(--color-gradient-default-60)"
@@ -2786,8 +2782,7 @@
       "collection": "Primitive"
      },
      "scopes": [
-      "FRAME_FILL",
-      "SHAPE_FILL"
+      "ALL_SCOPES"
      ],
      "codeSyntax": {
       "WEB": "var(--color-gradient-default-80)"
@@ -2802,9 +2797,7 @@
       "collection": "Primitive"
      },
      "scopes": [
-      "FRAME_FILL",
-      "SHAPE_FILL",
-      "EFFECT_COLOR"
+      "ALL_SCOPES"
      ],
      "codeSyntax": {
       "WEB": "var(--color-gradient-subtle-0)"
@@ -2819,9 +2812,7 @@
       "collection": "Primitive"
      },
      "scopes": [
-      "FRAME_FILL",
-      "SHAPE_FILL",
-      "EFFECT_COLOR"
+      "ALL_SCOPES"
      ],
      "codeSyntax": {
       "WEB": "var(--color-gradient-subtle-20)"
@@ -2836,9 +2827,7 @@
       "collection": "Primitive"
      },
      "scopes": [
-      "FRAME_FILL",
-      "SHAPE_FILL",
-      "EFFECT_COLOR"
+      "ALL_SCOPES"
      ],
      "codeSyntax": {
       "WEB": "var(--color-gradient-subtle-40)"
@@ -2853,9 +2842,7 @@
       "collection": "Primitive"
      },
      "scopes": [
-      "FRAME_FILL",
-      "SHAPE_FILL",
-      "EFFECT_COLOR"
+      "ALL_SCOPES"
      ],
      "codeSyntax": {
       "WEB": "var(--color-gradient-subtle-50)"
@@ -2870,9 +2857,7 @@
       "collection": "Primitive"
      },
      "scopes": [
-      "FRAME_FILL",
-      "SHAPE_FILL",
-      "EFFECT_COLOR"
+      "ALL_SCOPES"
      ],
      "codeSyntax": {
       "WEB": "var(--color-gradient-subtle-60)"
@@ -2887,9 +2872,7 @@
       "collection": "Primitive"
      },
      "scopes": [
-      "FRAME_FILL",
-      "SHAPE_FILL",
-      "EFFECT_COLOR"
+      "ALL_SCOPES"
      ],
      "codeSyntax": {
       "WEB": "var(--color-gradient-subtle-80)"
@@ -7564,37 +7547,37 @@
        {
         "position": 0,
         "color": {
-         "r": 0.88235,
-         "g": 0.89412,
-         "b": 0.89804,
+         "r": 1,
+         "g": 1,
+         "b": 1,
          "a": 0
         },
         "bound": {
-         "color": "Color/Gradient/Default/0"
+         "color": "Color/Gradient/Subtle/0"
         }
        },
        {
-        "position": 0.20192307233810425,
+        "position": 0.4000000059604645,
         "color": {
-         "r": 0.88235,
-         "g": 0.89412,
-         "b": 0.89804,
-         "a": 0.2
+         "r": 1,
+         "g": 1,
+         "b": 1,
+         "a": 0.6
         },
         "bound": {
-         "color": "Color/Gradient/Default/20"
+         "color": "Color/Gradient/Subtle/60"
         }
        },
        {
         "position": 1,
         "color": {
-         "r": 0.88235,
-         "g": 0.89412,
-         "b": 0.89804,
-         "a": 0.4
+         "r": 1,
+         "g": 1,
+         "b": 1,
+         "a": 0.8
         },
         "bound": {
-         "color": "Color/Gradient/Default/40"
+         "color": "Color/Gradient/Subtle/80"
         }
        }
       ],
@@ -7679,37 +7662,37 @@
        {
         "position": 0,
         "color": {
-         "r": 1,
-         "g": 1,
-         "b": 1,
-         "a": 0.6
+         "r": 0.88235,
+         "g": 0.89412,
+         "b": 0.89804,
+         "a": 0.8
         },
         "bound": {
-         "color": "Color/Gradient/Subtle/60"
+         "color": "Color/Gradient/Default/80"
         }
        },
        {
         "position": 0.699999988079071,
         "color": {
-         "r": 1,
-         "g": 1,
-         "b": 1,
+         "r": 0.88235,
+         "g": 0.89412,
+         "b": 0.89804,
          "a": 0.4
         },
         "bound": {
-         "color": "Color/Gradient/Subtle/40"
+         "color": "Color/Gradient/Default/40"
         }
        },
        {
         "position": 1,
         "color": {
-         "r": 1,
-         "g": 1,
-         "b": 1,
+         "r": 0.88235,
+         "g": 0.89412,
+         "b": 0.89804,
          "a": 0
         },
         "bound": {
-         "color": "Color/Gradient/Subtle/0"
+         "color": "Color/Gradient/Default/0"
         }
        }
       ],
