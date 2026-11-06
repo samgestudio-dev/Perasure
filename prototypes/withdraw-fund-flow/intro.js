@@ -20,11 +20,16 @@
   var avail = Number(T.available != null ? T.available : 40000), temp = Number(T.temporary != null ? T.temporary : 10000);
   if (!(temp > 0)) temp = 10000;
   var from = Math.max(0, avail - temp);
-  /* part used (with-credit-limit-used.html, WD_TUNE.intro = 'total'): the Credit limit screen shows the TOTAL credit going
-     up by the temporary amount (old = total − temporary), so its big number lands on the card's "Total credit", and its
-     increase and end date on the "Temporary" line; the available amount grows on the card itself */
-  var mode = T.intro === 'total' ? 'total' : 'available';
+  /* Which state, from the numbers (in the app: the backend's), never from the page:
+       credit unused (available = total)  → the Credit limit screen shows the limit going up (old = available − increase),
+                                            and its big number lands on the card's big number (the available amount);
+       credit partly used (available < total) → it shows the TOTAL credit going up (old = total − increase), and its big
+                                            number lands on the card's "Total credit"; the available amount counts up on
+                                            the card itself.
+     The increase is the temporary credit. withdraw.js reads the state from WD_TUNE.intro (set here, before it renders). */
   var total = Number(T.total != null ? T.total : 50000);
+  var mode = total - avail > 0.5 ? 'total' : 'available';
+  if (window.WD_TUNE) window.WD_TUNE.intro = mode;
   var clOld = mode === 'total' ? Math.max(0, total - temp) : from, clNew = mode === 'total' ? total : avail;
   var till = '2026-11-20';                                      /* the temporary credit's end date (card: "valid till Nov 20") */
   var resolveReady, ready = new Promise(function(r){ resolveReady = r; }), started = false;

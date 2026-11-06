@@ -18,8 +18,8 @@
 <script src="vendor/react-dom@18.3.1/react-dom.production.min.js"></script>
 <script src="vendor/motion@14.4.0/motion-react.js"></script>
 <script src="vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
-<script src="assets/playground-ui.js?v=202611060415"></script>
-<script src="animations/animations.js?v=202611060415"></script>
+<script src="assets/playground-ui.js?v=202611060427"></script>
+<script src="animations/animations.js?v=202611060427"></script>
 <script>
 /* ---- Prototype registry (the "Prototypes" tab) -----------------------------------------
    To add a prototype: put its files in prototypes/<slug>/ and add one entry below.
@@ -49,8 +49,8 @@ var DEMOS = [
     desc: 'Home card (available amount, credit bar) → withdraw sheet → amount entry ⇄ order confirmation, with the amount morph, keypad and term pills.',
     variants: [
       { name: 'Standard', note: 'Starts on the home card. Tune (bottom left): gradient blur, the card\'s amounts, motion feel', href: 'prototypes/withdraw-fund-flow/index.html' },
-      { name: 'Credit limit increase · credit unused', note: 'Nothing used yet: the available amount goes up ₱30,000 → ₱40,000 on the Credit limit screen, which then closes in to the home card; the big number becomes the card\'s available amount', href: 'prototypes/withdraw-fund-flow/with-credit-limit.html' },
-      { name: 'Credit limit increase · credit partly used', note: 'Part of the credit used: the total credit goes up ₱35,000 → ₱40,000; the big number lands on "Total credit", and the available amount counts up ₱30,000 → ₱35,000', href: 'prototypes/withdraw-fund-flow/with-credit-limit-used.html' }
+      { name: 'Credit limit increase · credit unused', note: 'Available = total: the Credit limit screen\'s big number lands on the card\'s big number (available amount). Sample numbers; in the app they come from the backend', href: 'prototypes/withdraw-fund-flow/with-credit-limit.html' },
+      { name: 'Credit limit increase · credit partly used', note: 'Available < total: the Credit limit screen shows the total credit going up and closes in to the card without carrying its number over; the available amount counts up. Sample numbers; in the app they come from the backend', href: 'prototypes/withdraw-fund-flow/with-credit-limit-used.html' }
     ]
   },
   {

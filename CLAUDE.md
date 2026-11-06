@@ -121,18 +121,19 @@ README.md                  human-facing summary + demo / animation tables
 
 ## Withdraw: the two credit states of the Credit limit intro
 
-The Withdraw demo opens with the Credit limit increase animation in two states. Keep them apart. Don't mix their numbers
-or what carries over into the home card.
+The Withdraw demo can open with the Credit limit increase animation. Every number in it, and on the home card it lands on,
+comes from the backend: the values in the demo pages are samples. The **state** follows from those numbers (`intro.js`),
+never from which page is open, and decides what the animation shows and whether its big number carries over:
 
-| State | Page | What the Credit limit screen shows | What carries over into the home card |
+| State | When | Credit limit screen shows | Into the home card |
 |---|---|---|---|
-| **Credit unused** (额度未使用) | `with-credit-limit.html` | the **available amount** going up, ₱30,000 → ₱40,000 (+₱10,000 temporary) | the big number becomes the card's **available amount** (the same element, FLIPped in) |
-| **Credit partly used** (额度部分已使用) | `with-credit-limit-used.html` (`window.WD_PRESET`, `intro:'total'`) | the **total credit** going up, ₱35,000 → ₱40,000 (+₱5,000 temporary, valid till Nov 20) | **only** the big number, which becomes the amount in "Total credit: ₱40,000". The increase pill, its date and "Previous limit" leave with their block, and the "Temporary" line comes in like the other details. The available amount enters at ₱30,000 and counts up to ₱35,000 while the green bar slides out. |
+| **Credit unused** (额度未使用) | available = total | the limit going up: available − increase → available | the home card's **big number** (the available amount): the same element, FLIPped in |
+| **Credit partly used** (额度部分已使用) | available < total | the **total credit** going up: total − increase → total | **nothing carries over**: the whole block (big number, increase pill, date, "Previous limit") leaves with the closing box, and every line of the card comes in like the other details. The available amount enters at available − increase and counts up to the available amount while the green bar slides out |
 
-- Both run through `introExit()` in `withdraw.js`. The partly-used branch is the `used` flag (`o.mode === 'total'`, set by
-  `intro.js` from `WD_TUNE.intro`).
-- The partly-used page brings its own numbers through `window.WD_PRESET`, and `tune.js` keeps its settings in their own
-  storage key.
+- The increase is the temporary credit (until its end date).
+- `with-credit-limit.html` and `with-credit-limit-used.html` differ only in their sample numbers (`window.WD_PRESET`, each
+  with its own Tune storage). Changing the numbers in Tune can switch the state.
+- Both states run through `introExit()` in `withdraw.js`; the partly-used branch is its `used` flag (`o.mode === 'total'`).
 - Details are in `prototypes/withdraw-fund-flow/README.md`.
 
 ## Requirements for a demo page

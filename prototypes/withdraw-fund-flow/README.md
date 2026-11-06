@@ -47,13 +47,27 @@ The morph to the order details: the caption fades out (gone by halfway), the edi
 in with the amount on the same progress, the caption riding with the amount row, the pills moving up into the card; the line leaves and
 comes back with the keypad.
 
-## With credit limit increase (`with-credit-limit.html`)
+## Credit limit increase: two states, decided by the numbers
+
+Every number in the intro and on the card comes from the backend (in the demo: the page's sample numbers, changeable in
+Tune). Which state plays follows from them (`intro.js`), never from the page:
+
+| State | When | Credit limit screen | Into the home card |
+|---|---|---|---|
+| Credit unused (额度未使用) | available = total | the limit going up: available − increase → available | the card's big number (available amount) |
+| Credit partly used (额度部分已使用) | available < total | the total credit going up: total − increase → total | nothing (the block leaves with the box); the available amount counts up from available − increase |
+
+The increase is the temporary credit, valid till its end date. The two pages differ only in their sample numbers
+(`window.WD_PRESET`): `with-credit-limit.html` total = available ₱40,000 (+₱10,000), `with-credit-limit-used.html` total
+₱40,000, available ₱35,000 (+₱5,000).
+
+## Credit unused (`with-credit-limit.html`)
 
 The same page, opening with the Credit limit increase animation full screen — the deliverable itself,
 `../credit-limit-coins/baked/baked-heap.html`, loaded in a frame (not a copy) by `intro.js` / `intro.css` (the only difference
 from `index.html`; keep the two pages' markup in step). Its numbers come from the card: the amount goes up from
-(available − temporary) to the available amount, +temporary, valid until Nov 20 2026 (₱30,000 → ₱40,000 by default), so it
-ends on the card's number. 3 s after it ends (`creditlimit:done`) it closes in to the home card — the same interaction as
+(available − temporary) to the available amount, +temporary, valid until the temporary credit's end date (sample: ₱30,000 →
+₱40,000), so it ends on the card's number. 3 s after it ends (`creditlimit:done`) it closes in to the home card — the same interaction as
 picking a term in "Apply a loan", where the full page closes in to the order card, and built the same way in React + Motion
 (`introExit()` in `withdraw.js`; `intro.js` only hands over): one progress 0→1 in a Motion value, animated with the page's
 spring (`this.spring()`, Tune → Motion feel; Smooth = stiffness 240, damping 30) and the same rest thresholds as the sheet's
@@ -128,21 +142,18 @@ Home and the loan screen ("Apply a loan" and the order details) use the PeraSure
   `updEnd`). The order details are a secondary page (二级页面): their bottom gradient is #EBF0EF instead (same stops; no token holds that colour). On the order details the Confirm bar's veil is its own layer (the bar itself never fades: it hosts the blur
   bands), in with the confirm chrome and out at the end of the scroll.
 
-## Credit limit increase, credit partly used (`with-credit-limit-used.html`)
+## Credit partly used (`with-credit-limit-used.html`)
 
-The same page and intro, with its own numbers (`window.WD_PRESET` in the page, before `tune.js`; its Tune settings are kept
-apart from the other variants'): total credit ₱40,000 (₱35,000 long-term + ₱5,000 temporary, valid till Nov 20), available
-₱35,000 (₱30,000 before the increase). The Credit limit screen shows the TOTAL credit going up, ₱35,000 → ₱40,000
-(+₱5,000, until Nov 20 2026) — `intro.js` mode `total`.
+The same page and intro; the state follows from available < total. The Credit limit screen shows the TOTAL credit going
+up (total − increase → total, + the increase until its end date) — `intro.js` mode `total`. Sample numbers
+(`window.WD_PRESET`): total ₱40,000 (₱35,000 → ₱40,000, +₱5,000 till Nov 20), available ₱35,000 (₱30,000 before).
 
-The exit is the same closing box, spring and card entrances as the other intro (`introExit()`, `used`):
-- only the big number carries over: ₱40,000 becomes the amount in "Total credit: ₱40,000", travelling centre to centre
-  on the box's progress, its size changing geometrically, the Credit limit copy fading out and blurring as the card's
-  piece comes in (that legend row is split into dot / words / amount in this variant only, so the amount can move alone);
-- the rest of that screen (label, the increase pill and its date, "Previous limit") leaves with its block, which travels
-  with the box like the coins and fades out; the "Temporary" line comes in whole, like the other details;
-- the available amount has no source: it comes in like the label once the big number has passed, at ₱30,000, then counts
-  up to ₱35,000 (0.9 s, ease-out) while the green (temporary) part of the bar slides out from under the white one.
+The exit is the same closing box, spring and card entrances as the other intro (`introExit()`, `used`), but nothing of
+the Credit limit screen carries over:
+- its whole block (big number, increase pill, date, "Previous limit") travels with the box like the coins and fades out
+  with a little blur; every line of the card ("Total credit", "Temporary", the bar…) comes in like the other details;
+- the available amount comes in like the label, at available − increase, then counts up to the available amount (0.9 s,
+  ease-out) while the green (temporary) part of the bar slides out from under the white one.
 At rest every style and text is exactly the card's own again.
 
 ## Tune (bottom left on home; top right on the loan screen)

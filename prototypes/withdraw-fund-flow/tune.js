@@ -5,8 +5,8 @@
    link win) into window.WD_TUNE for withdraw.js, and marks <html data-variant="blur"> before the page renders.
    Changing a setting saves it and reloads the page with it. */
 (function(){
-  /* a variant may bring its own numbers (window.WD_PRESET, set by its page before this file): they are its defaults,
-     its settings are kept apart from the other variants', and its intro mode travels in WD_TUNE.intro */
+  /* a variant may bring its own sample numbers (window.WD_PRESET, set by its page before this file): they are its
+     defaults and its settings are kept apart from the other variants' (the intro's state follows from the numbers) */
   var PRE = window.WD_PRESET || null;
   var KEY = 'perasure.withdraw.tune' + (PRE && PRE.key ? '.' + PRE.key : ''), T = {}, root = document.documentElement;
   try { T = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { T = {}; }
@@ -17,7 +17,7 @@
   if (PRE) ['available', 'total', 'temporary'].forEach(function(k){ if (PRE[k] != null) DEF[k] = PRE[k]; });
   var get = function(k){ return T[k] != null ? T[k] : DEF[k]; };
   T.blur = get('blur');
-  if (PRE) { ['available', 'total', 'temporary'].forEach(function(k){ T[k] = get(k); }); if (PRE.intro) T.intro = PRE.intro; }
+  if (PRE) ['available', 'total', 'temporary'].forEach(function(k){ T[k] = get(k); });
   window.WD_TUNE = T;
   if (T.blur) root.setAttribute('data-variant', 'blur');
   function apply(patch){

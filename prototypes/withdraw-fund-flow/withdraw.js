@@ -770,38 +770,14 @@ class Component extends DCLogic {
     var ah = ar.height;                                                   /* the amount's box, for the push below it */
     var W = B.width, H = B.height, W0 = R.hcFill ? R.hcFill.getBoundingClientRect().width : 0;
 
-    /* ---- Part used (with-credit-limit-used.html, o.mode 'total'): the Credit limit screen shows the TOTAL credit going up.
-       Only its big number carries over: it becomes the amount in "Total credit: ₱40,000", a pair travelling on the box's
-       progress, centre to centre, the size changing geometrically (both always the same size on screen): the Credit
-       limit number (a copy above everything, the original hidden) fading out and blurring as the card's piece fades in.
-       The rest of that screen (the increase pill, the date, "Previous limit") leaves with its block; the card's
-       "Temporary" line comes in like the other details. The card's available amount has no source: it comes in like the
-       label, at the value before the increase, then counts up to the new one while the temporary (green) part of the bar
-       slides out from under the white. ---- */
-    var used = o.mode === 'total' && !!R.hcT0a;
-    var pairs = [], cnt = null, greenSeg = null, gHide = 0;
+    /* ---- Part used (o.mode 'total', from the numbers: available < total): the Credit limit screen shows the TOTAL credit
+       going up. Nothing of it carries over: its whole block (big number, increase pill, date, "Previous limit") leaves
+       with the box, like the artwork, and every line of the card comes in like the other details. The card's available
+       amount has no source: it comes in like the label, at the value before the increase, then counts up to the new one
+       while the temporary (green) part of the bar slides out from under the white. ---- */
+    var used = o.mode === 'total';
+    var cnt = null, greenSeg = null, gHide = 0;
     if (used) {
-      var fdu = null; try { fdu = f && f.contentDocument; } catch (e) {}
-      var fru = f ? f.getBoundingClientRect() : { left:0, top:0 }, fwin = f && f.contentWindow;
-      var srcEls = [];
-      if (fdu) {
-        srcEls = [[fdu.getElementById('amount'), R.hcT0a]];
-      }
-      srcEls.forEach(function(pr){
-        var se = pr[0], te = pr[1]; if (!se || !te || !fwin) return;
-        var sr = se.getBoundingClientRect(), tr = te.getBoundingClientRect(), cs = fwin.getComputedStyle(se);
-        var cl = document.createElement('span'); cl.setAttribute('aria-hidden', 'true'); cl.textContent = se.textContent;
-        ['fontFamily', 'fontWeight', 'fontSize', 'letterSpacing', 'color', 'fontVariantNumeric'].forEach(function(k){ cl.style[k] = cs[k]; });
-        cl.style.lineHeight = r3(sr.height) + 'px';                     /* its box exactly the measured one (an inline piece's is its glyph box) */
-        Object.assign(cl.style, { position:'fixed', margin:'0', left:r3(fru.left + sr.left) + 'px', top:r3(fru.top + sr.top) + 'px', whiteSpace:'pre',
-          zIndex:'102', pointerEvents:'none', transformOrigin:'50% 50%', willChange:'transform, opacity, filter' });
-        document.body.appendChild(cl); made.push(cl);
-        se.style.visibility = 'hidden';                                  /* the same frame: the copy is now that text */
-        var tf = parseFloat(getComputedStyle(te).fontSize) || 12;
-        pairs.push({ cl:cl, te:te, sx:fru.left + sr.left + sr.width / 2, sy:fru.top + sr.top + sr.height / 2,
-                     tx:tr.left + tr.width / 2, ty:tr.top + tr.height / 2, rho:(parseFloat(cs.fontSize) || tf) / tf });
-      });
-      pairs.forEach(function(pq){ set(pq.te, 'transformOrigin', '50% 50%'); set(pq.te, 'willChange', 'transform, opacity, filter'); });
       /* the available amount: from the value before the increase up to the card's own */
       var Bc = this.creditBar(), tempLeft = Math.min(Bc.temp, Bc.avail), dTxt = amt.children[1] && amt.children[1].firstChild;
       if (dTxt && tempLeft > 0) cnt = { node:dTxt, orig:dTxt.nodeValue, from:Bc.avail - tempLeft, to:Bc.avail, r:0, on:false, anim:null, last:'' };
@@ -882,7 +858,7 @@ class Component extends DCLogic {
     var segs = R.hcFill ? [].slice.call(R.hcFill.children) : [];
     set(R.hcFill, 'willChange', 'transform'); set(R.hcFill, 'overflow', 'hidden');
     segs.forEach(function(el){ set(el, 'willChange', 'transform'); });
-    if (src && src.el) src.el.style.visibility = 'hidden';
+    if (src && src.el && !used) src.el.style.visibility = 'hidden';   /* part used: it stays in its block */
     /* the card's details (label + info, the two legend rows, the bar's track) are secondary content: as in the card-morph
        skill (.claude/skills/perasure-card-morph), each plays the SAME clocked entrance — 0.34 s on the ENTER curve, rising
        its MT.Y distance into focus from a 3 px blur — started when the progress reaches the point its window used to open.
@@ -895,12 +871,8 @@ class Component extends DCLogic {
       { el:R.hcLeg1, at:0.36, dy:MT.Y.text, push:true },
       { el:R.hcBar, at:0.38, dy:0, push:true, sharp:true }
     ];
-    /* part used: the amount comes in like the label; the "Total credit" row stays put (its amount travels in) and its dot
-       and words come in piece by piece; the "Temporary" row comes in whole, as in the other intro */
-    if (used) CLK = CLK.filter(function(c){ return c.el !== R.hcLeg0; }).concat([
-      { el:amt, at:0.5, dy:MT.Y.block, count:true },   /* once the big number has passed and shrunk */
-      { el:R.hcLeg0D, at:0.3, dy:MT.Y.text }, { el:R.hcT0p, at:0.3, dy:MT.Y.text }
-    ]);
+    /* part used: the amount comes in like the label (then counts up, see cnt) */
+    if (used) CLK.push({ el:amt, at:0.4, dy:MT.Y.block, count:true });
     CLK = CLK.filter(function(c){ return c.el; });
     CLK.forEach(function(c){ c.r = 0; c.on = false; c.anim = null; });
     /* the exit as values of ONE progress k (0 → 1): what every element shows at k */
@@ -944,15 +916,6 @@ class Component extends DCLogic {
            bottom edge beyond its resting one), as a layout change would, so the legend never runs into the digits */
         push = Math.max(0, (cy - sc * my + sc * ah) - (toC.y - my + ah));
       }
-      /* part used: the travelling pairs (see above) */
-      pairs.forEach(function(pq){
-        var px = pq.sx + (pq.tx - pq.sx) * k, py = pq.sy + (pq.ty - pq.sy) * k;
-        var fo = win(k, 0.2, 0.55), fi = win(k, 0.26, 0.62);
-        put(pq.cl, { transform:'translate(' + r3(px - pq.sx) + 'px,' + r3(py - pq.sy) + 'px) scale(' + r3(Math.pow(pq.rho, -k)) + ')',
-                     opacity:r3(1 - fo), filter:'blur(' + r3(fo * 3) + 'px)' });
-        put(pq.te, { transform:'translate(' + r3(px - pq.tx) + 'px,' + r3(py - pq.ty) + 'px) scale(' + r3(Math.pow(pq.rho, 1 - k)) + ')',
-                     opacity:r3(fi), filter:'blur(' + r3((1 - fi) * 2) + 'px)' });
-      });
       /* the rest of the card, on windows of the same progress — early enough to overlap what is leaving (no empty card),
          each rising its MT.Y distance and coming into focus (a little blur smooths the crossfade) */
       CLK.forEach(function(c){
@@ -1049,14 +1012,11 @@ class Component extends DCLogic {
     var availStr = this.money(B.avail, 2).split('.');
     var img = (src, w, h, style) => React.createElement('img', { src:src, alt:'', width:w, height:h, draggable:false,
       style:Object.assign({ display:'block', maxWidth:'none', width:w, height:h }, style || {}) });
-    /* text: a string, or (part-used intro, with-credit-limit-used.html) a list of [text, ref] pieces — the total credit
-       amount is what the Credit limit screen's big number turns into, so it is a box of its own the exit can move */
     var legend = (key, dot, text, ref) => React.createElement('div', { key:key, ref:this.ref(ref), style:{ display:'flex', flexDirection:'row', gap:4, alignItems:'center', flex:'none' } }, [
-      React.createElement('span', { key:'d', ref:this.ref(ref + 'D'), style:{ width:6, height:6, flex:'none', display:'block' } }, img(dot, 6, 6)),
-      this.sp(typeof text === 'string' ? text : text.map((p, i) => this.sp(p[0], { display:'inline-block', whiteSpace:'pre' }, { key:i, ref:this.ref(p[1]) })),
-        Object.assign({ flex:'1 1 auto', minWidth:0, fontFamily:'Inter, sans-serif', fontWeight:400, fontSize:12, lineHeight:'16px' }, dim), { key:'t' })
+      React.createElement('span', { key:'d', style:{ width:6, height:6, flex:'none', display:'block' } }, img(dot, 6, 6)),
+      this.sp(text, Object.assign({ flex:'1 1 auto', minWidth:0, fontFamily:'Inter, sans-serif', fontWeight:400, fontSize:12, lineHeight:'16px' }, dim), { key:'t' })
     ]);
-    var split = (window.WD_TUNE || {}).intro === 'total';
+
     /* the bar (Figma node 9867:36993): white then green side by side, each as long as its share of the total credit.
        The white one overlaps the green by 4px (margin -4, drawn on top) so its rounded end leaves no gap; the green one
        is 4px longer to make up for it, so the green that shows is exactly its share. */
@@ -1120,8 +1080,7 @@ class Component extends DCLogic {
         ]),
         React.createElement('div', { key:'slider', style:{ display:'flex', flexDirection:'column', gap:8 } }, [
           React.createElement('div', { key:'legend', style:{ display:'flex', flexDirection:'column', gap:2 } }, [
-            legend('total', 'assets/dot-total-credit.svg', split ? [['Total credit: ', 'hcT0p'], [this.money(B.total, 0), 'hcT0a']]
-              : 'Total credit: ' + this.money(B.total, 0), 'hcLeg0'),
+            legend('total', 'assets/dot-total-credit.svg', 'Total credit: ' + this.money(B.total, 0), 'hcLeg0'),
             legend('temp', 'assets/dot-temporary.svg', 'Temporary: ' + this.money(B.temp, 0) + ' (Incl. valid till ' + B.till + ')', 'hcLeg1')
           ]),
           React.createElement('div', { key:'bar', ref:this.ref('hcBar'), style:{ position:'relative', isolation:'isolate', height:8,
