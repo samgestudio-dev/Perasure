@@ -54,10 +54,10 @@ Everything below (data fields, the three ways to pass data, events, timing) appl
 | `oldLimit` | `old_limit` | number, or numeric string such as `"45,000"` | yes | `45000` | the starting value of the big number, and the struck-through `₱45,000` |
 | `newLimit` | `new_limit` | number, or numeric string | yes | `50000` | the big number after the count-up |
 | `increase` | `increase_amount` | number | no (defaults to `newLimit − oldLimit`) | `5000` | the blue `+₱5,000` pill |
-| `expiresAt` | `expires_at` | `"YYYY-MM-DD"` or an ISO date-time string | no | `"2026-11-30"` | the pill `Valid until Nov 30 2026`; **hidden when empty** |
-| `expiresText` | `expires_text` | string | no | `"Valid until Nov 30 2026"` | overrides the formatted `expiresAt` text when you want the backend's own wording |
+| `expiresAt` | `expires_at` | `"YYYY-MM-DD"` or an ISO date-time string | no | `"2026-11-30"` | the date segment of the increase pill, `Until Nov 30 2026`; **hidden when empty** (the increase is then a round pill of its own) |
+| `expiresText` | `expires_text` | string | no | `"Until Nov 30 2026"` | overrides the formatted `expiresAt` text when you want the backend's own wording |
 | `currency` | | string | no (default `₱`) | `"₱"` | prefix on every amount |
-| `label` | | string | no (default `Your credit limit is going up`) | | the small line above the number |
+| `label` | | string | no (default `Your new credit limit`) | | the small line above the number |
 
 Rules:
 

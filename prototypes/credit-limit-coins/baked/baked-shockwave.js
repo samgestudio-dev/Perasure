@@ -14,7 +14,7 @@
      expiresAt    | expires_at      string  optional  'YYYY-MM-DD' or ISO date-time; pill is hidden when absent
      expiresText  | expires_text    string  optional  ready-made pill text, overrides expiresAt formatting
      currency                       string  optional  default '₱'
-     label                          string  optional  default 'Your credit limit is going up'
+     label                          string  optional  default 'Your new credit limit'
 
    How data gets in (first match wins):
      1. window.PeraCreditLimit.play(data)        call any time; plays (or replays) with this data
@@ -40,7 +40,7 @@ function normalize(d){
   return {
     from:from, to:to, increase:inc,
     currency:pick(d, ['currency', 'cur']) || '₱',
-    label:pick(d, ['label']) || 'Your credit limit is going up',
+    label:pick(d, ['label']) || 'Your new credit limit',
     expiresAt:pick(d, ['expiresAt', 'expires_at', 'exp']) || '',
     expiresText:pick(d, ['expiresText', 'expires_text']) || ''
   };
@@ -83,17 +83,20 @@ function dateText(s){
   var d = /^\d{4}-\d{2}-\d{2}$/.test(s) ? new Date(s + 'T00:00:00') : new Date(s);
   if (isNaN(d)) return String(s);
   var MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return 'Valid until ' + MON[d.getMonth()] + ' ' + d.getDate() + ' ' + d.getFullYear();   /* Philippine style: Oct 16 2026 */
+  return 'Until ' + MON[d.getMonth()] + ' ' + d.getDate() + ' ' + d.getFullYear();   /* Philippine style: Oct 16 2026 */
 }
 /* write the data into the page */
 function applyData(){
   $('label').textContent = CONFIG.label;
-  $('up').textContent = (CONFIG.increase >= 0 ? '+' : '−') + money(Math.abs(CONFIG.increase));
-  $('was').textContent = money(CONFIG.from);
+  $('upAmt').textContent = money(Math.abs(CONFIG.increase));
+  $('upWord').textContent = CONFIG.increase >= 0 ? 'added' : 'less';
+  $('up').classList.toggle('down', CONFIG.increase < 0);
+  $('wasAmt').textContent = money(CONFIG.from);
   var showDelta = CONFIG.increase !== 0 && CONFIG.from !== CONFIG.to;
-  $('delta').style.visibility = showDelta ? '' : 'hidden';
+  $('delta').style.visibility = $('was').style.visibility = showDelta ? '' : 'hidden';
   var et = CONFIG.expiresText || dateText(CONFIG.expiresAt);
   $('expText').textContent = et; $('exp').style.display = et ? '' : 'none';
+  $('delta').classList.toggle('solo', !et);           /* no date: the increase is a pill of its own */
   setAmount(money(CONFIG.from));
   fitAmount();
 }
@@ -395,7 +398,7 @@ function burst(tl, at){
   }
   /* sparkles: pop in with a turn, twinkle once, then leave outwards from the amount's centre */
   var SP = 'M0 -10 C.9 -2.7 2.7 -.9 10 0 2.7 .9 .9 2.7 0 10 -.9 2.7 -2.7 .9 -10 0 -2.7 -.9 -.9 -2.7 0 -10 Z';
-  var STARS = [[-200, -26, WHITE, 1.3], [-150, 50, BLUE, .8], [-60, -70, WHITE, .7], [70, -72, BLUE, .9], [190, -30, WHITE, 1.1], [160, 52, WHITE, .75], [20, 74, BLUE, .65]];
+  var STARS = [[-200, -26, WHITE, 1.3], [-150, 50, BLUE, .8], [-60, -70, WHITE, .7], [70, -72, BLUE, .9], [190, -30, WHITE, 1.1], [160, 52, WHITE, .75], [0, -88, BLUE, .65]]   /* none below the number: the pill sits there */;
   var sparks = STARS.map(function(p){ return el('path', { d:SP, fill:p[2] }, b); });
   /* hidden from the moment they exist: the timeline only shows them at the landing (before it first renders,
      a fresh ring and a sparkle would otherwise sit visible over the amount) */
@@ -573,9 +576,22 @@ function build(){
   shockwave(tl, F);
   /* the whole scene takes the hit */
   tl.to(['#hero', '#art'], { keyframes:{ x:[0, -7, 6, -4, 3, -1, 0], y:[0, 4, -3, 2, -1, 0, 0] }, duration:.34, ease:'none' }, 'land');
+  /* the increase pops out as a pill of its own (fully round), then the date unrolls from behind its right end: the
+     pill's right corners square off as the date segment opens to the right; the previous limit rises in last */
+  var upR = Math.round($('up').offsetHeight / 2) + 'px', hasExp = $('exp').style.display !== 'none';
+  /* while it is alone the increase stays centred under the number: the pill row starts shifted by half the date
+     segment's width and slides back as the date opens, so the whole pill stays centred */
+  var half = hasExp ? $('exp').offsetWidth / 2 : 0;
+  tl.set('#up', { borderTopRightRadius:hasExp ? upR : '', borderBottomRightRadius:hasExp ? upR : '' }, 0);
+  tl.set('#delta', { x:half }, 0);
   tl.fromTo('#up', { scale:.3, opacity:0 }, { scale:1, opacity:1, duration:.36, ease:'back.out(2.6)' }, 'land+=.05');
-  tl.fromTo('#was', { x:-8, opacity:0 }, { x:0, opacity:1, duration:.26 }, 'land+=.1');
-  tl.fromTo('#exp', { y:8, opacity:0 }, { y:0, opacity:1, duration:.3, ease:'power3.out' }, 'land+=.16');
+  if (hasExp) {
+    tl.to('#delta', { x:0, duration:.32, ease:'power3.inOut' }, 'land+=.3');
+    tl.to('#up', { borderTopRightRadius:'0px', borderBottomRightRadius:'0px', duration:.32, ease:'power3.inOut' }, 'land+=.3');
+    tl.fromTo('#exp', { opacity:1, clipPath:'inset(0% 100% 0% 0%)' }, { clipPath:'inset(0% 0% 0% 0%)', duration:.32, ease:'power3.inOut', clearProps:'clipPath' }, 'land+=.3');
+    tl.fromTo('#expText', { opacity:0, x:-6 }, { opacity:1, x:0, duration:.26, ease:'power2.out' }, 'land+=.42');
+  }
+  tl.fromTo('#was', { y:8, opacity:0 }, { y:0, opacity:1, duration:.3, ease:'power3.out' }, 'land+=.4');
   tl.fromTo('#starC', { scale:0, rotation:0, svgOrigin:'118 420' }, { scale:1, rotation:90, duration:.35, ease:'back.out(3)' }, 'land+=.04');
   tl.fromTo('#starW', { scale:1, svgOrigin:'600 330' }, { scale:1.35, duration:.12, yoyo:true, repeat:1 }, 'land+=.02');
 
@@ -602,7 +618,8 @@ function showFinal(){
   stopTwinkles();
   $('burst').innerHTML = '';
   WAVE.s = 0; shockFrame();
-  gsap.set(['#label', '#amount', '#up', '#was', '#exp'], { opacity:1, x:0, y:0, scale:1 });
+  gsap.set(['#label', '#amount', '#up', '#was', '#exp', '#expText'], { opacity:1, x:0, y:0, scale:1 });
+  gsap.set('#up', { clearProps:'borderTopRightRadius,borderBottomRightRadius' }); gsap.set('#exp', { clearProps:'clipPath' }); gsap.set('#delta', { x:0 });
   gsap.set(['#label', amountEl], { clearProps:'filter' }); gsap.set(amountEl, { yPercent:0 });
   gsap.set(amountEl, { color:'#EEF5EF' });
   gsap.set(['#hero', '#art'], { x:0, y:0 });
