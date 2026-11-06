@@ -771,28 +771,21 @@ class Component extends DCLogic {
     var W = B.width, H = B.height, W0 = R.hcFill ? R.hcFill.getBoundingClientRect().width : 0;
 
     /* ---- Part used (with-credit-limit-used.html, o.mode 'total'): the Credit limit screen shows the TOTAL credit going up.
-       What it says that the card also says carries over, and only that: its big number becomes "Total credit: ₱40,000",
-       the increase in its pill becomes the "Temporary" amount and its end date ("Nov 20") the date on that line. Each is a
-       pair travelling on the box's progress, centre to centre, the size changing geometrically (both always the same
-       size on screen): the Credit limit text (a copy above everything, the original hidden) fading out and blurring as
-       the card's own piece fades in. The rest of the Credit limit screen's text has no counterpart and leaves with its
-       block. The card's available amount has no source: it comes in like the label, at the value before the increase,
-       then counts up to the new one while the temporary (green) part of the bar slides out from under the white. ---- */
-    var used = o.mode === 'total' && !!(R.hcT0a && R.hcT1a);
+       Only its big number carries over: it becomes the amount in "Total credit: ₱40,000", a pair travelling on the box's
+       progress, centre to centre, the size changing geometrically (both always the same size on screen): the Credit
+       limit number (a copy above everything, the original hidden) fading out and blurring as the card's piece fades in.
+       The rest of that screen (the increase pill, the date, "Previous limit") leaves with its block; the card's
+       "Temporary" line comes in like the other details. The card's available amount has no source: it comes in like the
+       label, at the value before the increase, then counts up to the new one while the temporary (green) part of the bar
+       slides out from under the white. ---- */
+    var used = o.mode === 'total' && !!R.hcT0a;
     var pairs = [], cnt = null, greenSeg = null, gHide = 0;
     if (used) {
       var fdu = null; try { fdu = f && f.contentDocument; } catch (e) {}
       var fru = f ? f.getBoundingClientRect() : { left:0, top:0 }, fwin = f && f.contentWindow;
       var srcEls = [];
       if (fdu) {
-        /* the date: "Until Nov 20 2026" → only "Nov 20" carries over (the card says "valid till Nov 20") */
-        var et = fdu.getElementById('expText'), dS0 = null;
-        if (et && R.hcT1d) {
-          var txt = et.textContent, want = R.hcT1d.textContent, at = txt.indexOf(want);
-          if (at >= 0) { et.textContent = ''; et.appendChild(fdu.createTextNode(txt.slice(0, at)));
-            dS0 = fdu.createElement('span'); dS0.textContent = want; et.appendChild(dS0); et.appendChild(fdu.createTextNode(txt.slice(at + want.length))); }
-        }
-        srcEls = [[fdu.getElementById('amount'), R.hcT0a], [fdu.getElementById('upAmt'), R.hcT1a], [dS0, R.hcT1d]];
+        srcEls = [[fdu.getElementById('amount'), R.hcT0a]];
       }
       srcEls.forEach(function(pr){
         var se = pr[0], te = pr[1]; if (!se || !te || !fwin) return;
@@ -902,14 +895,11 @@ class Component extends DCLogic {
       { el:R.hcLeg1, at:0.36, dy:MT.Y.text, push:true },
       { el:R.hcBar, at:0.38, dy:0, push:true, sharp:true }
     ];
-    /* part used: the amount comes in like the label; the legend rows stay put (their amounts and date travel in), and
-       what is only the card's — the dots and the words around the numbers — comes in piece by piece */
-    /* (the bar comes in later here: the amount and date travel up across its line, and pass before it shows) */
-    if (used) CLK.forEach(function(c){ if (c.el === R.hcBar) c.at = 0.6; });
-    if (used) CLK = CLK.filter(function(c){ return c.el !== R.hcLeg0 && c.el !== R.hcLeg1; }).concat([
+    /* part used: the amount comes in like the label; the "Total credit" row stays put (its amount travels in) and its dot
+       and words come in piece by piece; the "Temporary" row comes in whole, as in the other intro */
+    if (used) CLK = CLK.filter(function(c){ return c.el !== R.hcLeg0; }).concat([
       { el:amt, at:0.5, dy:MT.Y.block, count:true },   /* once the big number has passed and shrunk */
-      { el:R.hcLeg0D, at:0.3, dy:MT.Y.text }, { el:R.hcT0p, at:0.3, dy:MT.Y.text },
-      { el:R.hcLeg1D, at:0.36, dy:MT.Y.text }, { el:R.hcT1p, at:0.36, dy:MT.Y.text }, { el:R.hcT1m, at:0.36, dy:MT.Y.text }, { el:R.hcT1e, at:0.36, dy:MT.Y.text }
+      { el:R.hcLeg0D, at:0.3, dy:MT.Y.text }, { el:R.hcT0p, at:0.3, dy:MT.Y.text }
     ]);
     CLK = CLK.filter(function(c){ return c.el; });
     CLK.forEach(function(c){ c.r = 0; c.on = false; c.anim = null; });
@@ -972,7 +962,7 @@ class Component extends DCLogic {
         put(c.el, o);
       });
       /* the fills revealed left to right (see segs) */
-      var fw = r3((1 - (used ? win(k, 0.6, 1) : win(k, 0.42, 0.95))) * W0);
+      var fw = r3((1 - win(k, 0.42, 0.95)) * W0);
       put(R.hcFill, { transform:'translateX(' + (-fw) + 'px)' });
       segs.forEach(function(el){ put(el, { transform:'translateX(' + r3(fw - (el === greenSeg ? gHide * (1 - cnt.r) : 0)) + 'px)' }); });
       /* part used: the available amount counts up with the green part of the bar (text written only when it changes) */
@@ -1059,8 +1049,8 @@ class Component extends DCLogic {
     var availStr = this.money(B.avail, 2).split('.');
     var img = (src, w, h, style) => React.createElement('img', { src:src, alt:'', width:w, height:h, draggable:false,
       style:Object.assign({ display:'block', maxWidth:'none', width:w, height:h }, style || {}) });
-    /* text: a string, or (part-used intro, with-credit-limit-used.html) a list of [text, ref] pieces — the amounts and the
-       date are what the Credit limit screen's own numbers turn into, so each is a box of its own the exit can move */
+    /* text: a string, or (part-used intro, with-credit-limit-used.html) a list of [text, ref] pieces — the total credit
+       amount is what the Credit limit screen's big number turns into, so it is a box of its own the exit can move */
     var legend = (key, dot, text, ref) => React.createElement('div', { key:key, ref:this.ref(ref), style:{ display:'flex', flexDirection:'row', gap:4, alignItems:'center', flex:'none' } }, [
       React.createElement('span', { key:'d', ref:this.ref(ref + 'D'), style:{ width:6, height:6, flex:'none', display:'block' } }, img(dot, 6, 6)),
       this.sp(typeof text === 'string' ? text : text.map((p, i) => this.sp(p[0], { display:'inline-block', whiteSpace:'pre' }, { key:i, ref:this.ref(p[1]) })),
@@ -1132,8 +1122,7 @@ class Component extends DCLogic {
           React.createElement('div', { key:'legend', style:{ display:'flex', flexDirection:'column', gap:2 } }, [
             legend('total', 'assets/dot-total-credit.svg', split ? [['Total credit: ', 'hcT0p'], [this.money(B.total, 0), 'hcT0a']]
               : 'Total credit: ' + this.money(B.total, 0), 'hcLeg0'),
-            legend('temp', 'assets/dot-temporary.svg', split ? [['Temporary: ', 'hcT1p'], [this.money(B.temp, 0), 'hcT1a'], [' (Incl. valid till ', 'hcT1m'], [B.till, 'hcT1d'], [')', 'hcT1e']]
-              : 'Temporary: ' + this.money(B.temp, 0) + ' (Incl. valid till ' + B.till + ')', 'hcLeg1')
+            legend('temp', 'assets/dot-temporary.svg', 'Temporary: ' + this.money(B.temp, 0) + ' (Incl. valid till ' + B.till + ')', 'hcLeg1')
           ]),
           React.createElement('div', { key:'bar', ref:this.ref('hcBar'), style:{ position:'relative', isolation:'isolate', height:8,
             borderRadius:999, overflow:'hidden', backgroundColor:'rgba(0,1,40,0.3)' } },

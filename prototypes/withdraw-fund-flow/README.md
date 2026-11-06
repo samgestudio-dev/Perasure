@@ -15,8 +15,8 @@ or `python3 -m http.server` in the repo): the page code is fetched, so opening t
 | `boot.js` | start-up: points the page at its files, loads `withdraw.js`, starts the runtime |
 | `runtime/dc-runtime.js` | the Claude Design runtime that renders the `<x-dc>` markup with the page code |
 | `assets/` | PeraSure and Maya logos; the card's glow, info icon and legend dots (from Figma) |
-| `with-credit-limit.html` | the variant that opens with the Credit limit increase animation (below) |
-| `with-credit-limit-used.html` | the same intro when part of the credit is used (below) |
+| `with-credit-limit.html` | credit unused (额度未使用): opens with the Credit limit increase animation (below) |
+| `with-credit-limit-used.html` | credit partly used (额度部分已使用): the same intro, total credit going up (below) |
 | `intro.js`, `intro.css` | that intro: plays the Credit limit increase deliverable first, then closes it in to the home card |
 | `tune.js`, `tune.css` | **prototype only** — the Tune panel; delete them and their two lines in `index.html` for production |
 | `with-blur.html` | old link only: forwards to `index.html?blur=1` |
@@ -135,18 +135,14 @@ apart from the other variants'): total credit ₱40,000 (₱35,000 long-term + �
 ₱35,000 (₱30,000 before the increase). The Credit limit screen shows the TOTAL credit going up, ₱35,000 → ₱40,000
 (+₱5,000, until Nov 20 2026) — `intro.js` mode `total`.
 
-The exit is the same closing box, spring and card entrances as the other intro, but only what the two screens both say
-carries over (`introExit()`, `used`):
-- the big ₱40,000 becomes the amount in "Total credit: ₱40,000"; "₱5,000" in the increase pill becomes the "Temporary"
-  amount and "Nov 20" (from "Until Nov 20 2026") the date on that line. Each pair travels centre to centre on the box's
-  progress, the size changing geometrically, the Credit limit copy fading out and blurring as the card's piece comes in;
-- the rest of that screen's text (label, "added", "Until", the year, "Previous limit") has no counterpart: it leaves with
-  its block, which travels with the box like the coins and fades out;
-- the card's words around those numbers (the dots, "Total credit:", "Temporary:", "(Incl. valid till", ")") come in one by
-  one like the other details; the legend is split into those pieces only in this variant;
+The exit is the same closing box, spring and card entrances as the other intro (`introExit()`, `used`):
+- only the big number carries over: ₱40,000 becomes the amount in "Total credit: ₱40,000", travelling centre to centre
+  on the box's progress, its size changing geometrically, the Credit limit copy fading out and blurring as the card's
+  piece comes in (that legend row is split into dot / words / amount in this variant only, so the amount can move alone);
+- the rest of that screen (label, the increase pill and its date, "Previous limit") leaves with its block, which travels
+  with the box like the coins and fades out; the "Temporary" line comes in whole, like the other details;
 - the available amount has no source: it comes in like the label once the big number has passed, at ₱30,000, then counts
-  up to ₱35,000 (0.9 s, ease-out) while the green (temporary) part of the bar slides out from under the white one;
-- the bar comes in a little later than in the other intro, after the numbers travelling up have crossed its line.
+  up to ₱35,000 (0.9 s, ease-out) while the green (temporary) part of the bar slides out from under the white one.
 At rest every style and text is exactly the card's own again.
 
 ## Tune (bottom left on home; top right on the loan screen)

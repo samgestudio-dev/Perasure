@@ -119,6 +119,22 @@ README.md                  human-facing summary + demo / animation tables
 7. Renderer: lottie-web SVG (`vendor/lottie-web@5.12.2/lottie_svg.min.js`). Don't switch to the canvas
    renderer — it mis-renders the masks in Doc verify and Safe transaction.
 
+## Withdraw: the two credit states of the Credit limit intro
+
+The Withdraw demo opens with the Credit limit increase animation in two states. Keep them apart. Don't mix their numbers
+or what carries over into the home card.
+
+| State | Page | What the Credit limit screen shows | What carries over into the home card |
+|---|---|---|---|
+| **Credit unused** (额度未使用) | `with-credit-limit.html` | the **available amount** going up, ₱30,000 → ₱40,000 (+₱10,000 temporary) | the big number becomes the card's **available amount** (the same element, FLIPped in) |
+| **Credit partly used** (额度部分已使用) | `with-credit-limit-used.html` (`window.WD_PRESET`, `intro:'total'`) | the **total credit** going up, ₱35,000 → ₱40,000 (+₱5,000 temporary, valid till Nov 20) | **only** the big number, which becomes the amount in "Total credit: ₱40,000". The increase pill, its date and "Previous limit" leave with their block, and the "Temporary" line comes in like the other details. The available amount enters at ₱30,000 and counts up to ₱35,000 while the green bar slides out. |
+
+- Both run through `introExit()` in `withdraw.js`. The partly-used branch is the `used` flag (`o.mode === 'total'`, set by
+  `intro.js` from `WD_TUNE.intro`).
+- The partly-used page brings its own numbers through `window.WD_PRESET`, and `tune.js` keeps its settings in their own
+  storage key.
+- Details are in `prototypes/withdraw-fund-flow/README.md`.
+
 ## Requirements for a demo page
 
 Demos are full-screen phone pages, not device mockups. The withdraw demo is the reference
