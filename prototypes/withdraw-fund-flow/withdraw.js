@@ -951,9 +951,10 @@ class Component extends DCLogic {
     var lastK = 0, EASE_IN = [0.22, 0.61, 0.36, 1], springDone = false;
     var apply = function(k){
       lastK = k;
-      /* part used: the count starts once the amount has come in (its entrance done) */
-      if (cnt && !cnt.on && cnt.go) { cnt.on = true;
-        cnt.anim = fm.animate(0, 1, { duration:0.9, delay:0.08, ease:[0.22, 1, 0.36, 1],
+      /* part used: the count is a beat of its own — it starts once the amount has come in AND the card has settled (the
+         box has closed), so it reads as the available amount going up, not as part of the transition */
+      if (cnt && !cnt.on && cnt.go && k >= 0.97) { cnt.on = true;
+        cnt.anim = fm.animate(0, 1, { duration:1.0, delay:0.1, ease:[0.22, 1, 0.36, 1],
           onUpdate: function(v){ cnt.r = v; apply(lastK); },
           onComplete: function(){ cnt.anim = null; cnt.r = 1; apply(lastK); end(); } }); }
       CLK.forEach(function(c){ if (!c.on && k >= c.at) { c.on = true;
