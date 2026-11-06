@@ -590,7 +590,10 @@ function build(){
   if (hasExp) {
     tl.to('#delta', { x:0, duration:.32, ease:'power3.inOut' }, 'land+=.3');
     tl.to('#up', { borderTopRightRadius:'0px', borderBottomRightRadius:'0px', duration:.32, ease:'power3.inOut' }, 'land+=.3');
-    tl.fromTo('#exp', { opacity:1, clipPath:'inset(0% 100% 0% 0%)' }, { clipPath:'inset(0% 0% 0% 0%)', duration:.32, ease:'power3.inOut', clearProps:'clipPath' }, 'land+=.3');
+    /* the date segment opens to the right with its right end round the whole way (a rounded clip, in px) */
+    var ex = $('exp'), eW = ex.offsetWidth, eR = Math.round(ex.offsetHeight / 2);
+    var clip = function(r){ return 'inset(0px ' + r + 'px 0px 0px round 0px ' + eR + 'px ' + eR + 'px 0px)'; };
+    tl.fromTo('#exp', { opacity:1, clipPath:clip(eW) }, { clipPath:clip(0), duration:.32, ease:'power3.inOut', clearProps:'clipPath' }, 'land+=.3');
     tl.fromTo('#expText', { opacity:0, x:-6 }, { opacity:1, x:0, duration:.26, ease:'power2.out' }, 'land+=.42');
   }
   tl.fromTo('#was', { y:8, opacity:0 }, { y:0, opacity:1, duration:.3, ease:'power3.out' }, 'land+=.4');
