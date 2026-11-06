@@ -1,0 +1,38 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+<style>
+body{margin:0;background:#e9edf0;font-family:var(--ps-font-body);display:flex;gap:20px;padding:20px;flex-wrap:wrap}
+.ph{width:360px;height:330px;background:#0D1620;border-radius:24px;box-sizing:border-box;padding:28px 24px;display:flex;flex-direction:column;align-items:center;color:#EEF5EF;position:relative}
+.tag{position:absolute;top:-2px;left:0;right:0;text-align:center;transform:translateY(-100%);font:600 13px var(--ps-font-text);color:#3c4850;padding-bottom:6px}
+.wrap{position:relative;margin-top:26px}
+.lab{font:500 14px/20px var(--ps-font-body);color:#97a0a6;letter-spacing:.02em}
+.amt{font:700 52px/60px var(--ps-font-num);letter-spacing:-.02em;margin:6px 0 18px}
+.num{font-family:var(--ps-font-num);font-weight:700}
+.exp{margin-top:auto;font:400 13px/18px var(--ps-font-body);color:#7d878e}
+/* A */
+.pill{display:inline-flex;align-items:center;gap:6px;background:rgba(63,160,240,.16);color:#6fb8f5;border-radius:999px;padding:6px 14px;font:600 15px/20px var(--ps-font-text)}
+.pill .num{font-size:16px}
+.was{margin-top:10px;font:400 14px/20px var(--ps-font-body);color:#97a0a6}.was .num{color:#c9d0d4;font-weight:500}
+/* B */
+.cmp{display:flex;width:100%;background:rgba(255,255,255,.05);border-radius:16px;overflow:hidden}
+.cmp>div{flex:1;padding:12px 14px}.cmp>div+div{border-left:1px solid rgba(255,255,255,.08)}
+.cmp .k{font:400 12px/16px var(--ps-font-body);color:#7d878e}.cmp .v{font:700 20px/28px var(--ps-font-num);margin-top:4px;color:#c9d0d4}
+.cmp .v.up{color:#6fb8f5}
+/* C */
+.line{font:400 15px/22px var(--ps-font-body);color:#97a0a6;text-align:center}
+.line b{color:#6fb8f5;font:700 17px var(--ps-font-num)}.line i{font-style:normal;color:#c9d0d4;font:500 15px var(--ps-font-num)}
+</style></head><body>
+<div class="wrap"><div class="tag">A · 标签说清楚两个数</div><div class="ph">
+ <div class="lab">Your new credit limit</div><div class="amt">₱50,000</div>
+ <div class="pill">▲ <span class="num">₱5,000</span> added</div>
+ <div class="was">Previous limit <span class="num">₱45,000</span></div>
+ <div class="exp">Valid until Nov 30, 2026</div></div></div>
+<div class="wrap"><div class="tag">B · 前后对比卡</div><div class="ph">
+ <div class="lab">Your new credit limit</div><div class="amt">₱50,000</div>
+ <div class="cmp"><div><div class="k">Previous limit</div><div class="v">₱45,000</div></div><div><div class="k">Increase</div><div class="v up">+₱5,000</div></div></div>
+ <div class="exp">Valid until Nov 30, 2026</div></div></div>
+<div class="wrap"><div class="tag">C · 一句话</div><div class="ph">
+ <div class="lab">Your new credit limit</div><div class="amt">₱50,000</div>
+ <div class="line">Up <b>₱5,000</b> from <i>₱45,000</i></div>
+ <div class="exp">Valid until Nov 30, 2026</div></div></div>
+</body></html>
