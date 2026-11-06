@@ -582,7 +582,9 @@ function build(){
   /* while it is alone the increase stays centred under the number: the pill row starts shifted by half the date
      segment's width and slides back as the date opens, so the whole pill stays centred */
   var half = hasExp ? $('exp').offsetWidth / 2 : 0;
-  tl.set('#up', { borderTopRightRadius:hasExp ? upR : '', borderBottomRightRadius:hasExp ? upR : '' }, 0);
+  /* all four corners in px, half the height: the stylesheet's 999px left corners would make the browser scale every
+     corner down to fit (the right ones to almost 0), so the pill would pop in with square right ends */
+  tl.set('#up', { borderTopLeftRadius:upR, borderBottomLeftRadius:upR, borderTopRightRadius:upR, borderBottomRightRadius:upR }, 0);
   tl.set('#delta', { x:half }, 0);
   tl.fromTo('#up', { scale:.3, opacity:0 }, { scale:1, opacity:1, duration:.36, ease:'back.out(2.6)' }, 'land+=.05');
   if (hasExp) {
@@ -619,7 +621,7 @@ function showFinal(){
   $('burst').innerHTML = '';
   WAVE.s = 0; shockFrame();
   gsap.set(['#label', '#amount', '#up', '#was', '#exp', '#expText'], { opacity:1, x:0, y:0, scale:1 });
-  gsap.set('#up', { clearProps:'borderTopRightRadius,borderBottomRightRadius' }); gsap.set('#exp', { clearProps:'clipPath' }); gsap.set('#delta', { x:0 });
+  gsap.set('#up', { clearProps:'borderTopLeftRadius,borderBottomLeftRadius,borderTopRightRadius,borderBottomRightRadius' }); gsap.set('#exp', { clearProps:'clipPath' }); gsap.set('#delta', { x:0 });
   gsap.set(['#label', amountEl], { clearProps:'filter' }); gsap.set(amountEl, { yPercent:0 });
   gsap.set(amountEl, { color:'#EEF5EF' });
   gsap.set(['#hero', '#art'], { x:0, y:0 });
