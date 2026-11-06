@@ -153,7 +153,8 @@ the Credit limit screen carries over:
 - its whole block (big number, increase pill, date, "Previous limit") travels with the box like the coins and fades out
   with a little blur; every line of the card ("Total credit", "Temporary", the bar…) comes in like the other details;
 - the available amount comes in like the label, at available − increase, then counts up to the available amount (1 s,
-  ease-out) while the green (temporary) part of the bar slides out from under the white one. The count is a beat of its
+  ease-out) while the green (temporary) part of the bar slides out from under the white one — slower, on an ease-in-out, so
+  both end on the same frame as the last digit lands. The count is a beat of its
   own: it starts once the card has settled (the box closed) and the amount has come in.
 At rest every style and text is exactly the card's own again.
 

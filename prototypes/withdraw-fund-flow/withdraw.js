@@ -927,9 +927,13 @@ class Component extends DCLogic {
       /* the fills revealed left to right (see segs) */
       var fw = r3((1 - win(k, 0.42, 0.95)) * W0);
       put(R.hcFill, { transform:'translateX(' + (-fw) + 'px)' });
-      segs.forEach(function(el){ put(el, { transform:'translateX(' + r3(fw - (el === greenSeg ? gHide * (1 - cnt.r) : 0)) + 'px)' }); });
+      /* part used: the count's clock (cnt.r, linear) drives two curves that end on the same frame — the number on a quick
+         ease-out (most of it at once, the last digits ticking in), the green part of the bar on a slow ease-in-out, so it
+         is still growing as the last digits land */
+      var cT = cnt ? cnt.r : 1, cNum = 1 - Math.pow(1 - cT, 4), cBar = cT * cT * (3 - 2 * cT);
+      segs.forEach(function(el){ put(el, { transform:'translateX(' + r3(fw - (el === greenSeg ? gHide * (1 - cBar) : 0)) + 'px)' }); });
       /* part used: the available amount counts up with the green part of the bar (text written only when it changes) */
-      if (cnt) { var tv = self.money(Math.round(cnt.from + (cnt.to - cnt.from) * cnt.r), 0).slice(1);
+      if (cnt) { var tv = self.money(Math.round(cnt.from + (cnt.to - cnt.from) * cNum), 0).slice(1);
         if (tv !== cnt.last) { cnt.last = tv; cnt.node.nodeValue = tv; } }
       /* on the box's bottom edge: the pill comes in as the edge passes halfway and rides it up (the glow, in the box, too) */
       put(R.hcPill, { opacity:r3(win(k, 0.38, 0.58)), transform:'translateY(' + down + 'px)' });
@@ -954,7 +958,7 @@ class Component extends DCLogic {
       /* part used: the count is a beat of its own — it starts once the amount has come in AND the card has settled (the
          box has closed), so it reads as the available amount going up, not as part of the transition */
       if (cnt && !cnt.on && cnt.go && k >= 0.97) { cnt.on = true;
-        cnt.anim = fm.animate(0, 1, { duration:1.0, delay:0.1, ease:[0.22, 1, 0.36, 1],
+        cnt.anim = fm.animate(0, 1, { duration:1.0, delay:0.1, ease:'linear',   /* time; each takes its own curve (V) */
           onUpdate: function(v){ cnt.r = v; apply(lastK); },
           onComplete: function(){ cnt.anim = null; cnt.r = 1; apply(lastK); end(); } }); }
       CLK.forEach(function(c){ if (!c.on && k >= c.at) { c.on = true;
