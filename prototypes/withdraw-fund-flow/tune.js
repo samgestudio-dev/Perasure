@@ -5,14 +5,19 @@
    link win) into window.WD_TUNE for withdraw.js, and marks <html data-variant="blur"> before the page renders.
    Changing a setting saves it and reloads the page with it. */
 (function(){
-  var KEY = 'perasure.withdraw.tune', T = {}, root = document.documentElement;
+  /* a variant may bring its own numbers (window.WD_PRESET, set by its page before this file): they are its defaults,
+     its settings are kept apart from the other variants', and its intro mode travels in WD_TUNE.intro */
+  var PRE = window.WD_PRESET || null;
+  var KEY = 'perasure.withdraw.tune' + (PRE && PRE.key ? '.' + PRE.key : ''), T = {}, root = document.documentElement;
   try { T = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { T = {}; }
   var saved = JSON.parse(JSON.stringify(T)), q = new URLSearchParams(location.search), fromLink = [];
   if (q.has('blur')) { T.blur = q.get('blur') === '1' ? 1 : 0; fromLink.push('blur'); }
   ['available', 'total', 'temporary'].forEach(function(k){ if (q.has(k) && isFinite(+q.get(k))) { T[k] = +q.get(k); fromLink.push(k); } });
   var DEF = { blur:1, available:40000, total:50000, temporary:10000, feel:'Smooth' };
+  if (PRE) ['available', 'total', 'temporary'].forEach(function(k){ if (PRE[k] != null) DEF[k] = PRE[k]; });
   var get = function(k){ return T[k] != null ? T[k] : DEF[k]; };
   T.blur = get('blur');
+  if (PRE) { ['available', 'total', 'temporary'].forEach(function(k){ T[k] = get(k); }); if (PRE.intro) T.intro = PRE.intro; }
   window.WD_TUNE = T;
   if (T.blur) root.setAttribute('data-variant', 'blur');
   function apply(patch){

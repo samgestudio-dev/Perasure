@@ -11,7 +11,7 @@ Phone-first motion prototypes, served with GitHub Pages.
 | --- | --- |
 | Change co-maker | [Standard](prototypes/co-maker-change/index.html) (Change → card morphs into the form; Cancel / Save morph back) · [guide](prototypes/co-maker-change/README.md) |
 | Credit limit increase | [Baked heap](prototypes/credit-limit-coins/baked/baked-heap.html) (deliverable) · [Baked heap + shockwave](prototypes/credit-limit-coins/baked/baked-shockwave.html) (variant) · [Physics tuner](prototypes/credit-limit-coins/physics-tuner/physics-tuner.html) (engineering file for tuning, not shipped) · [integration guide](prototypes/credit-limit-coins/README.md) |
-| Withdraw fund flow | [Standard](prototypes/withdraw-fund-flow/index.html) (Tune: gradient blur, card amounts, motion feel) · [With credit limit increase](prototypes/withdraw-fund-flow/with-credit-limit.html) (the Credit limit animation first, closing in to the home card) · [guide](prototypes/withdraw-fund-flow/README.md) |
+| Withdraw fund flow | [Standard](prototypes/withdraw-fund-flow/index.html) (Tune: gradient blur, card amounts, motion feel) · [With credit limit increase](prototypes/withdraw-fund-flow/with-credit-limit.html) (the Credit limit animation first, closing in to the home card) · [Credit partly used](prototypes/withdraw-fund-flow/with-credit-limit-used.html) (the total credit goes up; its numbers carry over to the legend, the available amount counts up) · [guide](prototypes/withdraw-fund-flow/README.md) |
 | Order submit | [Standard](prototypes/order-submit/index.html) |
 | OTP sheet morph | [Standard](prototypes/otp-sheet-morph/index.html) |
 | Loading page | [Standard](prototypes/loading-page/index.html) |

@@ -770,6 +770,53 @@ class Component extends DCLogic {
     var ah = ar.height;                                                   /* the amount's box, for the push below it */
     var W = B.width, H = B.height, W0 = R.hcFill ? R.hcFill.getBoundingClientRect().width : 0;
 
+    /* ---- Part used (with-credit-limit-used.html, o.mode 'total'): the Credit limit screen shows the TOTAL credit going up.
+       What it says that the card also says carries over, and only that: its big number becomes "Total credit: ₱40,000",
+       the increase in its pill becomes the "Temporary" amount and its end date ("Nov 20") the date on that line. Each is a
+       pair travelling on the box's progress, centre to centre, the size changing geometrically (both always the same
+       size on screen): the Credit limit text (a copy above everything, the original hidden) fading out and blurring as
+       the card's own piece fades in. The rest of the Credit limit screen's text has no counterpart and leaves with its
+       block. The card's available amount has no source: it comes in like the label, at the value before the increase,
+       then counts up to the new one while the temporary (green) part of the bar slides out from under the white. ---- */
+    var used = o.mode === 'total' && !!(R.hcT0a && R.hcT1a);
+    var pairs = [], cnt = null, greenSeg = null, gHide = 0;
+    if (used) {
+      var fdu = null; try { fdu = f && f.contentDocument; } catch (e) {}
+      var fru = f ? f.getBoundingClientRect() : { left:0, top:0 }, fwin = f && f.contentWindow;
+      var srcEls = [];
+      if (fdu) {
+        /* the date: "Until Nov 20 2026" → only "Nov 20" carries over (the card says "valid till Nov 20") */
+        var et = fdu.getElementById('expText'), dS0 = null;
+        if (et && R.hcT1d) {
+          var txt = et.textContent, want = R.hcT1d.textContent, at = txt.indexOf(want);
+          if (at >= 0) { et.textContent = ''; et.appendChild(fdu.createTextNode(txt.slice(0, at)));
+            dS0 = fdu.createElement('span'); dS0.textContent = want; et.appendChild(dS0); et.appendChild(fdu.createTextNode(txt.slice(at + want.length))); }
+        }
+        srcEls = [[fdu.getElementById('amount'), R.hcT0a], [fdu.getElementById('upAmt'), R.hcT1a], [dS0, R.hcT1d]];
+      }
+      srcEls.forEach(function(pr){
+        var se = pr[0], te = pr[1]; if (!se || !te || !fwin) return;
+        var sr = se.getBoundingClientRect(), tr = te.getBoundingClientRect(), cs = fwin.getComputedStyle(se);
+        var cl = document.createElement('span'); cl.setAttribute('aria-hidden', 'true'); cl.textContent = se.textContent;
+        ['fontFamily', 'fontWeight', 'fontSize', 'letterSpacing', 'color', 'fontVariantNumeric'].forEach(function(k){ cl.style[k] = cs[k]; });
+        cl.style.lineHeight = r3(sr.height) + 'px';                     /* its box exactly the measured one (an inline piece's is its glyph box) */
+        Object.assign(cl.style, { position:'fixed', margin:'0', left:r3(fru.left + sr.left) + 'px', top:r3(fru.top + sr.top) + 'px', whiteSpace:'pre',
+          zIndex:'102', pointerEvents:'none', transformOrigin:'50% 50%', willChange:'transform, opacity, filter' });
+        document.body.appendChild(cl); made.push(cl);
+        se.style.visibility = 'hidden';                                  /* the same frame: the copy is now that text */
+        var tf = parseFloat(getComputedStyle(te).fontSize) || 12;
+        pairs.push({ cl:cl, te:te, sx:fru.left + sr.left + sr.width / 2, sy:fru.top + sr.top + sr.height / 2,
+                     tx:tr.left + tr.width / 2, ty:tr.top + tr.height / 2, rho:(parseFloat(cs.fontSize) || tf) / tf });
+      });
+      pairs.forEach(function(pq){ set(pq.te, 'transformOrigin', '50% 50%'); set(pq.te, 'willChange', 'transform, opacity, filter'); });
+      /* the available amount: from the value before the increase up to the card's own */
+      var Bc = this.creditBar(), tempLeft = Math.min(Bc.temp, Bc.avail), dTxt = amt.children[1] && amt.children[1].firstChild;
+      if (dTxt && tempLeft > 0) cnt = { node:dTxt, orig:dTxt.nodeValue, from:Bc.avail - tempLeft, to:Bc.avail, r:0, on:false, anim:null, last:'' };
+      /* the green part of the bar, hidden under the white one's rounded end until the count starts */
+      var fills = R.hcFill ? [].slice.call(R.hcFill.children) : [];
+      if (cnt && fills.length === 2) { greenSeg = fills[1]; gHide = Math.max(0, greenSeg.getBoundingClientRect().width - 4); }
+    }
+
     /* ---- Performance (low-end phones, 60 fps): every per-frame change below is a transform or an opacity on its own
        compositor layer — nothing is laid out or repainted on the way, apart from the amount's tracking in the first few
        frames. So:
@@ -792,7 +839,12 @@ class Component extends DCLogic {
       var fr = f.getBoundingClientRect();
       fHero = fd.getElementById('hero'); fArt = fd.getElementById('art'); fStars = fd.getElementById('artStars');
       fCanvases = [fd.getElementById('cvBack'), fd.getElementById('cvFront')].filter(Boolean);
-      if (fHero && src) {
+      if (fHero && used) {
+        /* part used: its block has nothing of its own to follow, so it travels with the box like the artwork */
+        var hr0 = fHero.getBoundingClientRect();
+        var heroM = { ax:fr.left + hr0.left + hr0.width / 2, ay:fr.top + hr0.top + hr0.height / 2, sx:(W - to.l - to.r) / W, sy:(H - to.t - to.b) / H };
+        fHero.style.transformOrigin = '50% 50%'; fHero.style.willChange = 'transform, opacity, filter';
+      } else if (fHero && src) {
         var hr = fHero.getBoundingClientRect();
         fHero.style.transformOrigin = r3(from.x - fr.left - hr.left) + 'px ' + r3(from.y - fr.top - hr.top) + 'px';   /* the number's centre */
         fHero.style.willChange = 'transform, opacity, filter';
@@ -828,7 +880,8 @@ class Component extends DCLogic {
     set(card, 'zIndex', '101'); set(card, 'backgroundColor', 'transparent'); set(card, 'boxShadow', 'none'); set(card, 'overflow', 'visible');
     var shd = div(card, card.firstChild, { position:'absolute', left:'0', top:'0', right:'0', bottom:'0', borderRadius:'24px', zIndex:'-1',
       boxShadow:this.SH.card, opacity:'0', willChange:'opacity', pointerEvents:'none' });
-    set(amt, 'transformOrigin', '0 0'); set(amt, 'willChange', 'transform');
+    if (!used) { set(amt, 'transformOrigin', '0 0'); set(amt, 'willChange', 'transform'); }
+    else set(amt, 'willChange', 'transform, opacity, filter');
     [R.hcDec, R.hcPill, R.hcBar, head].concat(rise).forEach(function(el){ set(el, 'willChange', 'transform, opacity'); });
     [R.hcLabel, R.hcInfo, R.hcLeg0, R.hcLeg1].forEach(function(el){ set(el, 'willChange', 'transform, opacity, filter'); });
     /* the bar's fills: their row (a rectangular clip) slides in from the left while the fills slide back by the same
@@ -848,7 +901,17 @@ class Component extends DCLogic {
       { el:R.hcLeg0, at:0.3, dy:MT.Y.text, push:true },
       { el:R.hcLeg1, at:0.36, dy:MT.Y.text, push:true },
       { el:R.hcBar, at:0.38, dy:0, push:true, sharp:true }
-    ].filter(function(c){ return c.el; });
+    ];
+    /* part used: the amount comes in like the label; the legend rows stay put (their amounts and date travel in), and
+       what is only the card's — the dots and the words around the numbers — comes in piece by piece */
+    /* (the bar comes in later here: the amount and date travel up across its line, and pass before it shows) */
+    if (used) CLK.forEach(function(c){ if (c.el === R.hcBar) c.at = 0.6; });
+    if (used) CLK = CLK.filter(function(c){ return c.el !== R.hcLeg0 && c.el !== R.hcLeg1; }).concat([
+      { el:amt, at:0.5, dy:MT.Y.block, count:true },   /* once the big number has passed and shrunk */
+      { el:R.hcLeg0D, at:0.3, dy:MT.Y.text }, { el:R.hcT0p, at:0.3, dy:MT.Y.text },
+      { el:R.hcLeg1D, at:0.36, dy:MT.Y.text }, { el:R.hcT1p, at:0.36, dy:MT.Y.text }, { el:R.hcT1m, at:0.36, dy:MT.Y.text }, { el:R.hcT1e, at:0.36, dy:MT.Y.text }
+    ]);
+    CLK = CLK.filter(function(c){ return c.el; });
     CLK.forEach(function(c){ c.r = 0; c.on = false; c.anim = null; });
     /* the exit as values of ONE progress k (0 → 1): what every element shows at k */
     var V = function(k){
@@ -866,7 +929,10 @@ class Component extends DCLogic {
       /* the number's path (the card's amount and the Credit limit number block share it) */
       var sc = s0 + (1 - s0) * k, cx = from.x + (toC.x - from.x) * k, cy = from.y + (toC.y - from.y) * k;
       /* inside the frame: the number block leaves with the number, shrinking to the card's scale, fading out softly */
-      if (fHero) { var fe = win(k, 0, 0.5);
+      if (fHero && used) { var fe0 = win(k, 0, 0.45);
+        put(fHero, { transform:'translate(' + r3((heroM.ax * (heroM.sx - 1) + to.l) * c) + 'px,' + r3((heroM.ay * (heroM.sy - 1) + to.t) * c) + 'px) scale(' + r3(1 - 0.3 * c) + ')',
+                     opacity:r3(1 - fe0), filter:'blur(' + r3(fe0 * 4) + 'px)' }); }
+      else if (fHero) { var fe = win(k, 0, 0.5);
         put(fHero, { transform:'translate(' + r3(cx - from.x) + 'px,' + r3(cy - from.y) + 'px) scale(' + r3(1 + (1 / s0 - 1) * k) + ')',
                      opacity:r3(1 - fe), filter:'blur(' + r3(fe * 4) + 'px)' }); }
       /* its artwork travels with the box (centre to the same relative spot) and shrinks; coins blur out first, then the stars */
@@ -876,15 +942,27 @@ class Component extends DCLogic {
       if (fStars) put(fStars, { opacity:r3(1 - win(k, 0.35, 0.8)) });
       /* the amount settles from the big number; its tracking and colour reach the card's own in the first half, in 24
          steps (the only text layout / repaint of the exit: a handful of frames while the number travels fast) */
-      var q = Math.round(win(k, 0, 0.5) * 24) / 24, lsP = ls0 + (lsP1 - ls0) * q, lsD = ls0 + (lsD1 - ls0) * q;
-      put(pS, { letterSpacing:r3(lsP) + 'px' }); put(dS, { letterSpacing:r3(lsD) + 'px' });
-      var mxk = mx + ((lsP - lsP1) + (lsD - lsD1) * nD) / 2;
-      put(amt, { transform:'translate(' + r3(cx - ar.left - sc * mxk) + 'px,' + r3(cy - ar.top - sc * my) + 'px) scale(' + r3(sc) + ')',
-                 color:mixHex(srcColor, '#ffffff', q) });
-      put(R.hcDec, { opacity:r3(win(k, 0.3, 0.75)) });
-      /* while the amount is still larger than its own size it takes more room: what is under it makes way (the amount's
-         bottom edge beyond its resting one), as a layout change would, so the legend never runs into the digits */
-      var push = Math.max(0, (cy - sc * my + sc * ah) - (toC.y - my + ah));
+      var push = 0;
+      if (!used) {
+        var q = Math.round(win(k, 0, 0.5) * 24) / 24, lsP = ls0 + (lsP1 - ls0) * q, lsD = ls0 + (lsD1 - ls0) * q;
+        put(pS, { letterSpacing:r3(lsP) + 'px' }); put(dS, { letterSpacing:r3(lsD) + 'px' });
+        var mxk = mx + ((lsP - lsP1) + (lsD - lsD1) * nD) / 2;
+        put(amt, { transform:'translate(' + r3(cx - ar.left - sc * mxk) + 'px,' + r3(cy - ar.top - sc * my) + 'px) scale(' + r3(sc) + ')',
+                   color:mixHex(srcColor, '#ffffff', q) });
+        put(R.hcDec, { opacity:r3(win(k, 0.3, 0.75)) });
+        /* while the amount is still larger than its own size it takes more room: what is under it makes way (the amount's
+           bottom edge beyond its resting one), as a layout change would, so the legend never runs into the digits */
+        push = Math.max(0, (cy - sc * my + sc * ah) - (toC.y - my + ah));
+      }
+      /* part used: the travelling pairs (see above) */
+      pairs.forEach(function(pq){
+        var px = pq.sx + (pq.tx - pq.sx) * k, py = pq.sy + (pq.ty - pq.sy) * k;
+        var fo = win(k, 0.2, 0.55), fi = win(k, 0.26, 0.62);
+        put(pq.cl, { transform:'translate(' + r3(px - pq.sx) + 'px,' + r3(py - pq.sy) + 'px) scale(' + r3(Math.pow(pq.rho, -k)) + ')',
+                     opacity:r3(1 - fo), filter:'blur(' + r3(fo * 3) + 'px)' });
+        put(pq.te, { transform:'translate(' + r3(px - pq.tx) + 'px,' + r3(py - pq.ty) + 'px) scale(' + r3(Math.pow(pq.rho, 1 - k)) + ')',
+                     opacity:r3(fi), filter:'blur(' + r3((1 - fi) * 2) + 'px)' });
+      });
       /* the rest of the card, on windows of the same progress — early enough to overlap what is leaving (no empty card),
          each rising its MT.Y distance and coming into focus (a little blur smooths the crossfade) */
       CLK.forEach(function(c){
@@ -894,9 +972,12 @@ class Component extends DCLogic {
         put(c.el, o);
       });
       /* the fills revealed left to right (see segs) */
-      var fw = r3((1 - win(k, 0.42, 0.95)) * W0);
+      var fw = r3((1 - (used ? win(k, 0.6, 1) : win(k, 0.42, 0.95))) * W0);
       put(R.hcFill, { transform:'translateX(' + (-fw) + 'px)' });
-      segs.forEach(function(el){ put(el, { transform:'translateX(' + fw + 'px)' }); });
+      segs.forEach(function(el){ put(el, { transform:'translateX(' + r3(fw - (el === greenSeg ? gHide * (1 - cnt.r) : 0)) + 'px)' }); });
+      /* part used: the available amount counts up with the green part of the bar (text written only when it changes) */
+      if (cnt) { var tv = self.money(Math.round(cnt.from + (cnt.to - cnt.from) * cnt.r), 0).slice(1);
+        if (tv !== cnt.last) { cnt.last = tv; cnt.node.nodeValue = tv; } }
       /* on the box's bottom edge: the pill comes in as the edge passes halfway and rides it up (the glow, in the box, too) */
       put(R.hcPill, { opacity:r3(win(k, 0.38, 0.58)), transform:'translateY(' + down + 'px)' });
       /* the shadow fades in on the closing box's outline (not the card's own, which would show as an edge inside the
@@ -917,10 +998,15 @@ class Component extends DCLogic {
     var lastK = 0, EASE_IN = [0.22, 0.61, 0.36, 1], springDone = false;
     var apply = function(k){
       lastK = k;
+      /* part used: the count starts once the amount has come in (its entrance done) */
+      if (cnt && !cnt.on && cnt.go) { cnt.on = true;
+        cnt.anim = fm.animate(0, 1, { duration:0.9, delay:0.08, ease:[0.22, 1, 0.36, 1],
+          onUpdate: function(v){ cnt.r = v; apply(lastK); },
+          onComplete: function(){ cnt.anim = null; cnt.r = 1; apply(lastK); end(); } }); }
       CLK.forEach(function(c){ if (!c.on && k >= c.at) { c.on = true;
         c.anim = fm.animate(0, 1, { duration:0.34, ease:EASE_IN,
           onUpdate: function(v){ c.r = v; apply(lastK); },
-          onComplete: function(){ c.anim = null; c.r = 1; apply(lastK); end(); } }); } });
+          onComplete: function(){ c.anim = null; c.r = 1; if (c.count && cnt) cnt.go = true; apply(lastK); end(); } }); } });
       V(k).forEach(function(p){ var el = p[0], o = p[1]; for (var q in o) set(el, q, String(o[q])); });
     };
     apply(0);
@@ -936,12 +1022,13 @@ class Component extends DCLogic {
     window.__wdExitScale = ts;
     /* at rest once the spring and every clocked entrance are done */
     var off = null, ended = false, end = function(){
-      if (ended || !springDone || CLK.some(function(c){ return c.r < 1; })) return;
+      if (ended || !springDone || CLK.some(function(c){ return c.r < 1; }) || (cnt && cnt.r < 1)) return;
       ended = true;
       apply(1); if (off) off();
       /* at rest: the card takes its colour, shadow and glow back the same frame the screen goes (identical box, blue,
          shadow and glow: nothing changes on screen); every inline style is what it was before the exit */
       touched.forEach(function(el){ for (var p in el.__iv) el.style[p] = el.__iv[p]; delete el.__iv; delete el.__lv; });
+      if (cnt) cnt.node.nodeValue = cnt.orig;                          /* React's own text (the same value) */
       made.forEach(function(d){ if (d.parentNode) d.parentNode.removeChild(d); });
       if (o.done) o.done();
     };
@@ -972,10 +1059,14 @@ class Component extends DCLogic {
     var availStr = this.money(B.avail, 2).split('.');
     var img = (src, w, h, style) => React.createElement('img', { src:src, alt:'', width:w, height:h, draggable:false,
       style:Object.assign({ display:'block', maxWidth:'none', width:w, height:h }, style || {}) });
+    /* text: a string, or (part-used intro, with-credit-limit-used.html) a list of [text, ref] pieces — the amounts and the
+       date are what the Credit limit screen's own numbers turn into, so each is a box of its own the exit can move */
     var legend = (key, dot, text, ref) => React.createElement('div', { key:key, ref:this.ref(ref), style:{ display:'flex', flexDirection:'row', gap:4, alignItems:'center', flex:'none' } }, [
-      React.createElement('span', { key:'d', style:{ width:6, height:6, flex:'none', display:'block' } }, img(dot, 6, 6)),
-      this.sp(text, Object.assign({ flex:'1 1 auto', minWidth:0, fontFamily:'Inter, sans-serif', fontWeight:400, fontSize:12, lineHeight:'16px' }, dim), { key:'t' })
+      React.createElement('span', { key:'d', ref:this.ref(ref + 'D'), style:{ width:6, height:6, flex:'none', display:'block' } }, img(dot, 6, 6)),
+      this.sp(typeof text === 'string' ? text : text.map((p, i) => this.sp(p[0], { display:'inline-block', whiteSpace:'pre' }, { key:i, ref:this.ref(p[1]) })),
+        Object.assign({ flex:'1 1 auto', minWidth:0, fontFamily:'Inter, sans-serif', fontWeight:400, fontSize:12, lineHeight:'16px' }, dim), { key:'t' })
     ]);
+    var split = (window.WD_TUNE || {}).intro === 'total';
     /* the bar (Figma node 9867:36993): white then green side by side, each as long as its share of the total credit.
        The white one overlaps the green by 4px (margin -4, drawn on top) so its rounded end leaves no gap; the green one
        is 4px longer to make up for it, so the green that shows is exactly its share. */
@@ -1039,8 +1130,10 @@ class Component extends DCLogic {
         ]),
         React.createElement('div', { key:'slider', style:{ display:'flex', flexDirection:'column', gap:8 } }, [
           React.createElement('div', { key:'legend', style:{ display:'flex', flexDirection:'column', gap:2 } }, [
-            legend('total', 'assets/dot-total-credit.svg', 'Total credit: ' + this.money(B.total, 0), 'hcLeg0'),
-            legend('temp', 'assets/dot-temporary.svg', 'Temporary: ' + this.money(B.temp, 0) + ' (Incl. valid till ' + B.till + ')', 'hcLeg1')
+            legend('total', 'assets/dot-total-credit.svg', split ? [['Total credit: ', 'hcT0p'], [this.money(B.total, 0), 'hcT0a']]
+              : 'Total credit: ' + this.money(B.total, 0), 'hcLeg0'),
+            legend('temp', 'assets/dot-temporary.svg', split ? [['Temporary: ', 'hcT1p'], [this.money(B.temp, 0), 'hcT1a'], [' (Incl. valid till ', 'hcT1m'], [B.till, 'hcT1d'], [')', 'hcT1e']]
+              : 'Temporary: ' + this.money(B.temp, 0) + ' (Incl. valid till ' + B.till + ')', 'hcLeg1')
           ]),
           React.createElement('div', { key:'bar', ref:this.ref('hcBar'), style:{ position:'relative', isolation:'isolate', height:8,
             borderRadius:999, overflow:'hidden', backgroundColor:'rgba(0,1,40,0.3)' } },

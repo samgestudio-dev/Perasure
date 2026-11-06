@@ -20,6 +20,12 @@
   var avail = Number(T.available != null ? T.available : 40000), temp = Number(T.temporary != null ? T.temporary : 10000);
   if (!(temp > 0)) temp = 10000;
   var from = Math.max(0, avail - temp);
+  /* part used (with-credit-limit-used.html, WD_TUNE.intro = 'total'): the Credit limit screen shows the TOTAL credit going
+     up by the temporary amount (old = total − temporary), so its big number lands on the card's "Total credit", and its
+     increase and end date on the "Temporary" line; the available amount grows on the card itself */
+  var mode = T.intro === 'total' ? 'total' : 'available';
+  var total = Number(T.total != null ? T.total : 50000);
+  var clOld = mode === 'total' ? Math.max(0, total - temp) : from, clNew = mode === 'total' ? total : avail;
   var till = '2026-11-20';                                      /* the temporary credit's end date (card: "valid till Nov 20") */
   var resolveReady, ready = new Promise(function(r){ resolveReady = r; }), started = false;
   window.WD_INTRO = { ready:ready };
@@ -77,7 +83,7 @@
           srcR = { el:a0, x:fr0.left + ar0.left + ar0.width / 2, y:fr0.top + ar0.top + ar0.height / 2, size:parseFloat(cs0.fontSize),
                    color:'#' + rgb.map(function(v){ return ('0' + (+v).toString(16)).slice(-2); }).join('') }; }
       } catch (e) {}
-      if (window.__wdIntroExit({ box:box, iframe:f, src:srcR, done:finish })) return;
+      if (window.__wdIntroExit({ box:box, iframe:f, src:srcR, mode:mode, done:finish })) return;
     }
     var fly = null;
     if (reduce || !card || card === document.body) {
@@ -149,7 +155,7 @@
     if (!box) { box = document.createElement('div'); box.id = 'wdIntro'; document.body.insertBefore(box, document.body.firstChild); }
     var f = document.createElement('iframe');
     f.title = 'Credit limit increase'; f.setAttribute('allow', 'autoplay');
-    f.src = '../credit-limit-coins/baked/baked-heap.html?old=' + from + '&new=' + avail + '&inc=' + (avail - from) + '&exp=' + till + (v ? '&v=' + v : '');
+    f.src = '../credit-limit-coins/baked/baked-heap.html?old=' + clOld + '&new=' + clNew + '&inc=' + (clNew - clOld) + '&exp=' + till + (v ? '&v=' + v : '');
     f.addEventListener('load', function(){
       try {
         var d = f.contentDocument, s = d.createElement('style');
