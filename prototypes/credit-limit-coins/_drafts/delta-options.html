@@ -21,12 +21,19 @@ body{margin:0;background:#e9edf0;font-family:var(--ps-font-body);display:flex;ga
 /* C */
 .line{font:400 15px/22px var(--ps-font-body);color:#97a0a6;text-align:center}
 .line b{color:#6fb8f5;font:700 17px var(--ps-font-num)}.line i{font-style:normal;color:#c9d0d4;font:500 15px var(--ps-font-num)}
+.grp{display:flex;flex-direction:column;align-items:center;gap:10px}
+.sub{font:400 14px/20px var(--ps-font-body);color:#97a0a6}.sub .num{color:#c9d0d4;font-weight:500}
+.dot{display:inline-block;width:3px;height:3px;border-radius:2px;background:#5b666e;vertical-align:middle;margin:0 8px}
+.pill.big{gap:8px}.pill .d{color:#97a0a6;font-weight:500;font-size:14px}
 </style></head><body>
-<div class="wrap"><div class="tag">A · 标签说清楚两个数</div><div class="ph">
+<div class="wrap"><div class="tag">A1 · 日期放进标签</div><div class="ph">
  <div class="lab">Your new credit limit</div><div class="amt">₱50,000</div>
- <div class="pill">▲ <span class="num">₱5,000</span> added</div>
- <div class="was">Previous limit <span class="num">₱45,000</span></div>
- <div class="exp">Valid until Nov 30, 2026</div></div></div>
+ <div class="grp"><div class="pill big"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 12.5C5.5 12.2 9.2 9.8 12 4.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7.6 4.2L12.3 4l.6 4.7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">₱5,000</span> added<span class="dot"></span><span class="d">until Nov 30, 2026</span></div>
+ <div class="sub">Previous limit <span class="num">₱45,000</span></div></div></div></div>
+<div class="wrap"><div class="tag">A2 · 日期紧跟标签下方</div><div class="ph">
+ <div class="lab">Your new credit limit</div><div class="amt">₱50,000</div>
+ <div class="grp"><div class="pill"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 12.5C5.5 12.2 9.2 9.8 12 4.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7.6 4.2L12.3 4l.6 4.7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">₱5,000</span> added</div>
+ <div class="sub">Valid until Nov 30, 2026<span class="dot"></span>Previous <span class="num">₱45,000</span></div></div></div></div>
 <div class="wrap"><div class="tag">B · 前后对比卡</div><div class="ph">
  <div class="lab">Your new credit limit</div><div class="amt">₱50,000</div>
  <div class="cmp"><div><div class="k">Previous limit</div><div class="v">₱45,000</div></div><div><div class="k">Increase</div><div class="v up">+₱5,000</div></div></div>
