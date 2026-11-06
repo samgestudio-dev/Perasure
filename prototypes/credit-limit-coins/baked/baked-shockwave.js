@@ -576,7 +576,7 @@ function build(){
   shockwave(tl, F);
   /* the whole scene takes the hit */
   tl.to(['#hero', '#art'], { keyframes:{ x:[0, -7, 6, -4, 3, -1, 0], y:[0, 4, -3, 2, -1, 0, 0] }, duration:.34, ease:'none' }, 'land');
-  /* the increase pops out as a pill of its own (fully round), then the date unrolls from behind its right end: the
+  /* the increase pops out as a pill of its own (fully round) and holds a moment (0.65 s), then the date unrolls from behind its right end: the
      pill's right corners square off as the date segment opens to the right; the previous limit rises in last */
   var upR = Math.round($('up').offsetHeight / 2) + 'px', hasExp = $('exp').style.display !== 'none';
   /* while it is alone the increase stays centred under the number: the pill row starts shifted by half the date
@@ -588,15 +588,15 @@ function build(){
   tl.set('#delta', { x:half }, 0);
   tl.fromTo('#up', { scale:.3, opacity:0 }, { scale:1, opacity:1, duration:.36, ease:'back.out(2.6)' }, 'land+=.05');
   if (hasExp) {
-    tl.to('#delta', { x:0, duration:.32, ease:'power3.inOut' }, 'land+=.3');
-    tl.to('#up', { borderTopRightRadius:'0px', borderBottomRightRadius:'0px', duration:.32, ease:'power3.inOut' }, 'land+=.3');
+    tl.to('#delta', { x:0, duration:.32, ease:'power3.inOut' }, 'land+=.7');
+    tl.to('#up', { borderTopRightRadius:'0px', borderBottomRightRadius:'0px', duration:.32, ease:'power3.inOut' }, 'land+=.7');
     /* the date segment opens to the right with its right end round the whole way (a rounded clip, in px) */
     var ex = $('exp'), eW = ex.offsetWidth, eR = Math.round(ex.offsetHeight / 2);
     var clip = function(r){ return 'inset(0px ' + r + 'px 0px 0px round 0px ' + eR + 'px ' + eR + 'px 0px)'; };
-    tl.fromTo('#exp', { opacity:1, clipPath:clip(eW) }, { clipPath:clip(0), duration:.32, ease:'power3.inOut', clearProps:'clipPath' }, 'land+=.3');
-    tl.fromTo('#expText', { opacity:0, x:-6 }, { opacity:1, x:0, duration:.26, ease:'power2.out' }, 'land+=.42');
+    tl.fromTo('#exp', { opacity:1, clipPath:clip(eW) }, { clipPath:clip(0), duration:.32, ease:'power3.inOut', clearProps:'clipPath' }, 'land+=.7');
+    tl.fromTo('#expText', { opacity:0, x:-6 }, { opacity:1, x:0, duration:.26, ease:'power2.out' }, 'land+=.82');
   }
-  tl.fromTo('#was', { y:8, opacity:0 }, { y:0, opacity:1, duration:.3, ease:'power3.out' }, 'land+=.4');
+  tl.fromTo('#was', { y:8, opacity:0 }, { y:0, opacity:1, duration:.3, ease:'power3.out' }, 'land+=.8');
   tl.fromTo('#starC', { scale:0, rotation:0, svgOrigin:'118 420' }, { scale:1, rotation:90, duration:.35, ease:'back.out(3)' }, 'land+=.04');
   tl.fromTo('#starW', { scale:1, svgOrigin:'600 330' }, { scale:1.35, duration:.12, yoyo:true, repeat:1 }, 'land+=.02');
 
