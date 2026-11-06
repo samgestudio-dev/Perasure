@@ -581,7 +581,7 @@ function build(){
   var upR = Math.round($('up').offsetHeight / 2) + 'px', hasExp = $('exp').style.display !== 'none';
   /* while it is alone the increase stays centred under the number: the pill row starts shifted by half the date
      segment's width and slides back as the date opens, so the whole pill stays centred */
-  var half = hasExp ? $('exp').offsetWidth / 2 : 0;
+  var half = hasExp ? ($('exp').offsetWidth + parseFloat(getComputedStyle($('exp')).marginLeft)) / 2 : 0;   /* its width beyond the overlap */
   /* all four corners in px, half the height: the stylesheet's 999px left corners would make the browser scale every
      corner down to fit (the right ones to almost 0), so the pill would pop in with square right ends */
   tl.set('#up', { borderTopLeftRadius:upR, borderBottomLeftRadius:upR, borderTopRightRadius:upR, borderBottomRightRadius:upR }, 0);

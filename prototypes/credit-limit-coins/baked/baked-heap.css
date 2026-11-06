@@ -24,7 +24,10 @@ main{box-sizing:border-box;width:100%;max-width:480px;flex:1;display:flex;flex-d
 #up .arw{flex:none;width:calc(16px * var(--u));height:calc(16px * var(--u))}
 #up.down .arw{transform:scaleY(-1)}
 #up .num{font-family:var(--ps-font-num);font-weight:700;font-size:calc(15px * var(--u));font-variant-numeric:tabular-nums}
-#exp{display:flex;align-items:center;padding:calc(7px * var(--u)) calc(12px * var(--u));border-radius:0 999px 999px 0;background:#1A232C;
+/* the date segment starts under the increase's right end (by its corner radius, half the pill's 34px height), so
+   while that end is still round, grey shows behind it, never the page */
+#up{position:relative;z-index:1}
+#exp{display:flex;align-items:center;margin-left:calc(-17px * var(--u));padding:calc(7px * var(--u)) calc(12px * var(--u)) calc(7px * var(--u)) calc(29px * var(--u));border-radius:0 999px 999px 0;background:#1A232C;
   color:#B4BCC1;font-family:var(--ps-font-body);font-weight:500;font-size:calc(13px * var(--u));line-height:calc(20px * var(--u))}
 #was{margin-top:calc(10px * var(--u));font-family:var(--ps-font-body);font-weight:400;font-size:calc(13px * var(--u));line-height:calc(18px * var(--u));color:#7D878E}
 #was .num{font-family:var(--ps-font-num);font-weight:500;color:#B4BCC1;font-variant-numeric:tabular-nums}
