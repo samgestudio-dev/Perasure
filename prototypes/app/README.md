@@ -40,9 +40,14 @@ often instant; actions wait 0.25–1 s and show the loader only when it's long e
   under the header, so the way back stays. `APP.Loaded` does both with `PS.Cover`. `?fast=1` skips every wait (for checking a screen).
 - **What was waited for rises in** piece by piece (`PS.Rise`: 0.34 s each, 40 ms apart); a page seen before is there at once. Lists
   that replace each other (tabs) and the content of a sheet rise in the same way; home's cards do the first time it shows.
-- **Withdraw → the amount keypad** is the Withdraw demo's own transition (`prototypes/withdraw-fund-flow`): the whole screen slides up
-  from the bottom on the Smooth spring and goes back down in 0.3 s (`APP.go(name, params, 'rise')`). Existing animations are never
-  re-imagined (owner): the demo is the reference, value for value.
+- **Ordering is the Withdraw demo itself** (`screens-withdraw.js`, `shared/ps-ui/withdraw-host.js`): the screen that slides up from the
+  bottom, the amount entry and the morph into the order card when a term is picked run on the demo's own code, loaded as it ships
+  (`prototypes/withdraw-fund-flow/withdraw.js` + `motion-tokens.js`) — nothing is re-made, so a change to the demo shows up here. The app
+  gives it the limit, the blocks under the order card (coupons, order details, protection, withdrawal method, agreement) and what
+  Confirm does. The amount and term chosen there are the app's loan, so coupons follow them ("Keep your coupon?" included).
+- **Every way into ordering starts at the amount entry** (owner): Withdraw on the home card and in the credit limit hub, a coupon's
+  "Use" (the coupon is put on the loan once the amount and term are chosen, if it fits), "Go to borrow" in a message — `APP.borrow()`.
+  The terms are the demo's 4 / 6 / 8.
 - **Order submit** is the Order submit demo value for value (`PS.OrderSubmit`): letters in and out one by one, the dots that keep
   counting, the coin changing to the tick only at the end of its turn — and the app goes back to home only when the last line has
   held and the tick has finished playing.
@@ -74,7 +79,6 @@ coupons section; sample numbers and names; stills replaced by their animations; 
 Application details (ID, details check, basic information, trusted contact, selfie, loan estimate), add documents, FAQs, phone
 number change, withdrawal account change with face check — these routes show a "not in the test app yet" page. 
 
-**Withdraw demo motion still to bring over exactly** (to be ported from `prototypes/withdraw-fund-flow/withdraw.js`, not re-imagined):
-the amount entry closing into the order card when a term is picked (the travelling amount, the card, the chips, the confirm blocks),
-and the Credit limit increase closing into the home card (`introExit`). Today the app goes keypad → loan detail with a page push and the
-Credit limit increase simply ends on home.
+**Withdraw demo motion still to bring over exactly**: the Credit limit increase closing into the home card (`introExit` in
+`withdraw.js`, with `intro.js`). Today the Credit limit increase simply ends on home. The `amount` and `loan` pages built on the shared
+components are only what shows if the demo's code cannot be loaded.

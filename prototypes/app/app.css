@@ -38,6 +38,11 @@ html.ps-edge .app-bot-consent { padding-bottom: calc(var(--sb) + var(--spacing-p
 .app-amount__sheet { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-between; gap: var(--spacing-gap-md); padding: 0 var(--spacing-padding-2xl) var(--spacing-padding-3xl);
   background: var(--color-surface-card-default); border-radius: var(--radius-xl) var(--radius-xl) 0 0; box-shadow: var(--shadow-over); }
 html.ps-edge .app-amount__sheet { padding-bottom: calc(var(--sb) + var(--spacing-padding-xl)); }
+/* the Withdraw demo's loan screen (screens-withdraw.js): drawn 360 wide from the frame's top-left corner and scaled to the frame; over the pages, under the sheets */
+.app-wd { position: absolute; left: 0; top: 0; width: 360px; height: 0; transform-origin: 0 0; z-index: 10; }
+.app-wd .ps-sb { visibility: hidden; }   /* the demo's drawn status bar: hidden on a phone there too */
+.app-wd__tune { position: absolute; right: var(--spacing-padding-lg); top: 56px; z-index: 11; height: 40px; display: flex; align-items: center; }
+html.ps-edge .app-wd__tune { top: calc(56px + var(--e)); }
 .app-amount__top { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); padding: var(--spacing-padding-3xl) 0; }
 /* the amount as it is typed (Figma 52:12744): ₱ 28 Inter, digits 48 / 44 Satoshi, what is not typed yet in the disabled colour */
 .app-amount__num { display: flex; align-items: flex-end; height: 44px; font-family: var(--ps-font-num); font-weight: var(--font-weight-bold); font-variant-numeric: tabular-nums; }

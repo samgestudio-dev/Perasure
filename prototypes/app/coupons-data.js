@@ -7,7 +7,7 @@ window.CS = (function () {
   var NOW = Date.now(), HOUR = 3600e3;
 
   var credit = { available: 45000, total: 50000, temporary: 10000, temporaryUntil: 'Nov 20' };
-  var loan = { min: 500, step: 100, terms: [3, 6, 8], term: 6, days: 15, interest: 0.015, fee: 0.005, start: new Date(2026, 10, 12) };
+  var loan = { min: 500, step: 100, terms: [4, 6, 8], term: 6, days: 15, interest: 0.015, fee: 0.005, start: new Date(2026, 10, 12) };
   var user = { initials: 'SG', name: 'Sam Ge', verified: true };
   var payment = { amount: 800, due: 'Dec 27, 2026', badge: 'Due in 45 days' };
   var today = 'Nov 12, 2026';
@@ -16,19 +16,19 @@ window.CS = (function () {
      min: smallest loan it works with · terms: terms it works with · long: the rule line is cut, ⓘ opens the whole rule */
   var ALL = [
     { id: 'd25', kind: 'discount', type: 'percent', pct: 25, scope: 'first', value: '25% OFF', name: '25% off first-payment interest', label: 'First-payment interest',
-      min: 0, terms: [3, 6, 8], expiresAt: NOW + 24 * HOUR - 1000, until: 'Nov 13, 2026' },
+      min: 0, terms: [4, 6, 8], expiresAt: NOW + 24 * HOUR - 1000, until: 'Nov 13, 2026' },
     { id: 'd20', kind: 'discount', type: 'percent', pct: 20, scope: 'all', value: '20% OFF', name: '20% off interest on all payments', label: 'Interest on all payments',
       min: 6000, terms: [6, 8], until: 'Nov 30, 2026' },
     { id: 'a300', kind: 'discount', type: 'amount', off: 300, scope: 'first', value: '₱300 OFF', name: '₱300 off first-payment interest', label: 'First-payment interest',
-      min: 10000, terms: [3, 6], long: true, extra: 'One per account, on your first loan of the month', until: 'Dec 15, 2026' },
-    { id: 'l5', kind: 'limit', type: 'limit', add: 5000, value: '+₱5,000', name: '+₱5,000 credit limit', label: 'Credit limit increase', min: 6000, terms: [3, 6, 8], until: 'Nov 30, 2026' },
+      min: 10000, terms: [4, 6], long: true, extra: 'One per account, on your first loan of the month', until: 'Dec 15, 2026' },
+    { id: 'l5', kind: 'limit', type: 'limit', add: 5000, value: '+₱5,000', name: '+₱5,000 credit limit', label: 'Credit limit increase', min: 6000, terms: [4, 6, 8], until: 'Nov 30, 2026' },
     { id: 'l3', kind: 'limit', type: 'limit', add: 3000, value: '+₱3,000', name: '+₱3,000 credit limit', label: 'Credit limit increase', min: 0, terms: [6, 8], until: 'Dec 10, 2026' },
-    { id: 'l2', kind: 'limit', type: 'limit', add: 2000, value: '+₱2,000', name: '+₱2,000 credit limit', label: 'Credit limit increase', min: 20000, terms: [3, 6, 8], until: 'Dec 31, 2026' }
+    { id: 'l2', kind: 'limit', type: 'limit', add: 2000, value: '+₱2,000', name: '+₱2,000 credit limit', label: 'Credit limit increase', min: 20000, terms: [4, 6, 8], until: 'Dec 31, 2026' }
   ];
   var USED = [
-    { id: 'u1', type: 'percent', value: '25% OFF', label: 'First-payment interest', rule: 'Any amount · 3 / 6 / 8 terms', meta: 'Used on Oct 24, 2026' },
+    { id: 'u1', type: 'percent', value: '25% OFF', label: 'First-payment interest', rule: 'Any amount · 4 / 6 / 8 terms', meta: 'Used on Oct 24, 2026' },
     { id: 'u2', type: 'percent', value: '20% OFF', label: 'Interest on all payments', rule: 'Borrow ₱6,000 or more · 6 / 8 terms', meta: 'Used on Sep 30, 2026' },
-    { id: 'u3', type: 'limit', value: '+₱5,000', label: 'Credit limit increase', rule: 'Borrow ₱6,000 or more · 3 / 6 / 8 terms', meta: 'Used on Sep 30, 2026' }
+    { id: 'u3', type: 'limit', value: '+₱5,000', label: 'Credit limit increase', rule: 'Borrow ₱6,000 or more · 4 / 6 / 8 terms', meta: 'Used on Sep 30, 2026' }
   ];
   var EXPIRED = [
     { id: 'x1', type: 'amount', value: '₱200 OFF', label: 'First-payment interest', rule: 'Borrow ₱5,000 or more · 3 / 6 terms', meta: 'Expired on Nov 1, 2026' },
@@ -36,7 +36,7 @@ window.CS = (function () {
   ];
 
   function termsText(t, sep) {
-    if (t.length === loan.terms.length) return sep ? '3 / 6 / 8 terms' : 'any term';
+    if (t.length === loan.terms.length) return sep ? '4 / 6 / 8 terms' : 'any term';
     return sep ? t.join(' / ') + ' terms' : t.slice(0, -1).join(', ') + (t.length > 1 ? ' or ' : '') + t[t.length - 1] + ' terms';
   }
   function minText(c) { return c.min ? 'Borrow ' + money(c.min, 0) + ' or more' : 'Any amount'; }

@@ -46,7 +46,7 @@
   APP.screen('hub', function Hub() {
     var c = CS.credit, used = c.total - c.available;
     return h(APP.Page, { title: 'Credit limit', load: 'hub' },
-      h(PS.HubCard, { total: c.total, used: used, available: c.available, onWithdraw: function () { APP.go('amount', null, 'rise'); }, onInfo: function (e) { APP.tipAt(e.currentTarget, 'Your total credit limit is the most you can borrow at one time.'); } }),
+      h(PS.HubCard, { total: c.total, used: used, available: c.available, onWithdraw: function () { APP.borrow(); }, onInfo: function (e) { APP.tipAt(e.currentTarget, 'Your total credit limit is the most you can borrow at one time.'); } }),
       h(PS.Tiles, { title: 'Credit history', items: [{ id: 'adj', art: 'credit-adjustments', label: 'Credit adjustments', onClick: go('credit', { tab: 'adj' }) }, { id: 'act', art: 'borrowing-activity', label: 'Borrowing activity', onClick: go('credit', { tab: 'act' }) }] }),
       h(PS.Tips, { title: 'How to improve your credit limit', items: [
         { title: 'Repay on time', body: 'Pay on or before your due date to qualify for limit increases from ₱5,000 to ₱15,000.' },
@@ -177,7 +177,7 @@
   });
   APP.screen('message', function Message(p) {
     var x = p.params.msg;
-    return h(APP.Page, { title: x.title, bottom: x.cta ? h(PS.BottomBar, null, h(PS.Button, { block: true, onClick: function () { APP.home('home'); } }, x.cta)) : null },
+    return h(APP.Page, { title: x.title, bottom: x.cta ? h(PS.BottomBar, null, h(PS.Button, { block: true, onClick: function () { if (APP.S.user === 'approved') APP.borrow(); else APP.home('home'); } }, x.cta)) : null },
       h('div', { className: 'app-stack-8' }, h('div', { className: 'app-msgmeta ps-t-caption-xs ps-c-tertiary' }, h('span', null, x.kind.toUpperCase()), h('span', null, '12:59, MAY 18')),
         h(PS.Card, { style: { gap: 'var(--spacing-gap-xs)' } }, h('p', { className: 'ps-t-title-md' }, x.title), h('p', { className: 'ps-t-body-md ps-c-secondary' }, x.body))));
   });

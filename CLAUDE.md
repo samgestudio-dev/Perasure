@@ -32,7 +32,8 @@ prototypes/_template/index.html  starting point for a new prototype (links the s
 shared/ps-ui/              PeraSure UI components (React, configurable): ps-ui.css (tokens only), core.js, layout.js, home.js,
                            coupon.js, loan.js, account.js, phone-fit.js, tune.js/.css, assets/ — see "Shared components"
                            + feedback.js (loaders, status, result), form.js (fields, OTP, keypad), status.js (home states), pay.js (repayments),
-                           list.js (links, facts, activity, inbox, history, hub), fx.js (Order submit, OTP sheet, Credit limit intro)
+                           list.js (links, facts, activity, inbox, history, hub), fx.js (Order submit, OTP sheet, Credit limit intro),
+                           withdraw-host.js (runs the Withdraw demo's loan screen from the demo's own code)
 shared/gallery.html        live gallery of every shared component and its states (on the picker as "PeraSure components"; entries in gallery.js + gallery-app.js)
 shared/README.md           how to use the components, files, rules for changing them
 prototypes/app/            the whole app as a test environment ("PeraSure app") — see "The full app"
@@ -168,6 +169,9 @@ rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), buil
 - **Existing animations are never re-imagined** (owner): a motion that already exists in the repo (Withdraw: credit limit increase → home,
   home → amount entry, amount entry → order details; Order submit; OTP sheet…) is brought into the app as it is — the demo's code and values,
   the same timing and rules (Order submit: home only after the last line has held and the tick has finished). Read the demo before touching it.
+  Ordering runs the Withdraw demo's own page code (`shared/ps-ui/withdraw-host.js` loads `prototypes/withdraw-fund-flow/withdraw.js`), so
+  that file is used by the app too: keep its class, method names and the few lines listed in `PATCHES` there working when you change it.
+- **Every way into ordering starts at the amount entry** (owner): `APP.borrow(couponId?)` — never straight to the order details.
 - **Loading is the whole screen and nothing else** (owner): while a page loads, the Loading page covers everything (`PS.Cover`: no header, no
   bottom bar, no tab bar), never just the content area; Order submit likewise. A failed load shows the fallback page under the header. What
   was waited for then rises in piece by piece (`PS.Rise`).

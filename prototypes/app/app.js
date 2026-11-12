@@ -94,6 +94,7 @@ window.APP = (function () {
     var top = S.stack[S.stack.length - 1], C = screens[top.name] || screens.missing;
     return h(PS.Shell, null,
       h(PS.Pages, { id: top.key, dir: S.dir }, h(C, { params: top.params })),
+      window.APP.WithdrawHost ? h(window.APP.WithdrawHost) : null,       /* the Withdraw demo's loan screen (screens-withdraw.js) */
       h(SheetHost, { kind: 'page' }), h(SheetHost, { kind: 'plain' }), h(SheetHost, { kind: 'card' }),
       h(PS.OtpSheet, { open: !!S.otp, phone: maskPhone(S.phone), outcome: T.otp || 'ok', auto: q.get('auto') !== '0', onClose: function () { set({ otp: null }); },
         onChange: function () { set({ otp: null }); go('phone-old'); },

@@ -71,7 +71,7 @@
       });
       var update = S.loan === 'reviewing' || S.loan === 'failed';
       body = [h(PS.CreditCard, { key: 'credit', available: credit.available, total: credit.total, temporary: credit.temporary, temporaryUntil: credit.temporaryUntil,
-          onWithdraw: function () { APP.go('amount', null, 'rise'); }, onInfo: function (e) { APP.tipAt(e.currentTarget, 'Your available amount is what you can borrow today. It goes back up as you repay.'); } }),
+          onWithdraw: function () { APP.borrow(); }, onInfo: function (e) { APP.tipAt(e.currentTarget, 'Your available amount is what you can borrow today. It goes back up as you repay.'); } }),
         update ? h(PS.Strip, { key: 'upd', icon: 'info', title: 'You have updates on your loan', sub: 'Tap to view the latest status', count: 1, onClick: function () { APP.go('order'); } }) : null,
         paymentCard(S),
         h(PS.HomeCoupons, { key: 'coupons', coupons: cards, onOpen: function () { APP.go('coupons'); } }), more()].concat(trust());

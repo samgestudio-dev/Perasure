@@ -95,8 +95,11 @@
   }
 
   /* ---- loan detail ---- */
-  APP.screen('loan', function Loan() {
-    var S = APP.use(), l = S.L || fresh(null, null, null), coupons = S.coupons, sc = R.useRef(null), n = R.useState(0);
+  /* what a loan is made of — for the loan page and for the Withdraw sheet: the coupons in use, the numbers, and the blocks under the amount card.
+     agree · onAgree · nudge: the agreement's state (the page's or the sheet's) */
+  APP.freshLoan = fresh;
+  APP.loanParts = function (S, agree, onAgree, nudge) {
+    var l = S.L || fresh(null, null, null), coupons = S.coupons;
     var discs = coupons.filter(function (c) { return c.kind === 'discount'; }), lims = coupons.filter(function (c) { return c.kind === 'limit'; });
     var D = find(coupons, l.disc), Lm = find(coupons, l.lim), C = CS.calc(l.amount, l.term, D, Lm), last = S.lastRow || {}, rows = [];
     if (D) last.d = D.id; if (Lm) last.l = Lm.id;
@@ -104,6 +107,37 @@
       rows.push({ key: 'd', type: bd.type, title: bd.name, on: !!D, onClick: function () { toggleRow(bd); }, sub: D ? 'You save ' + money(C.save, C.save % 1 ? 2 : 0) : bd.rule }); }
     if (lims.length) { var bl = Lm || find(coupons, last.l) || CS.best(coupons, 'limit', l.amount, l.term) || lims[0];
       rows.push({ key: 'l', type: 'limit', title: bl.name, on: !!Lm, onClick: function () { toggleRow(bl); }, sub: Lm ? 'Your limit is ' + money(C.max, 0) + ' for this loan' : bl.rule }); }
+    var mt = S.method;
+    return { l: l, D: D, Lm: Lm, C: C, blocks: [
+      rows.length ? h(PS.CouponsSection, { key: 'coupons', count: coupons.length, onSeeAll: function () { APP.set({ draft: { tab: 'discount', disc: l.disc, lim: l.lim } }); APP.open('picker'); }, rows: rows }) : null,
+      h(PS.OrderDetails, { key: 'details', link: 'View payment schedule', onLink: function () { APP.open('plan'); }, rows: [
+        { label: 'Daily fee', value: money(C.daily) }, { label: 'First payment date', value: CS.date(1) }, { label: 'Per installment', value: money(C.per) },
+        { label: 'Discount', value: C.save ? '-' + money(C.save) : null, tone: 'positive' }, { label: 'Total payment', value: money(C.total) }] }),
+      h(PS.ProtectionCard, { key: 'prot', body: 'Get covered for up to ₱30,000, so your family isn’t left with the loan if a medical emergency or accident happens.', onLink: function () { APP.say('Benefits aren’t part of the test app yet.'); } }),
+      h(PS.MethodCard, { key: 'method', name: mt.name, last4: mt.last4, logo: logoOf(mt), logoExt: 'png', onClick: function () { APP.go('method'); } }),
+      h(PS.Agreement, { key: 'agree', on: !!agree, nudge: nudge, onToggle: onAgree }, 'By tapping Confirm, you accept the ', h('b', null, 'Loan Agreement'), ' and ', h('b', null, 'Loan Disclosure Statement'), '.')] };
+  };
+  /* Confirm: the code, then Order submit — and home only when its animation has finished */
+  APP.submitLoan = function () {
+    var P = APP.loanParts(APP.S), l = P.l, D = P.D, Lm = P.Lm, C = P.C;
+    APP.set({ otp: { then: function () {
+      APP.set({ submitting: { then: function () {
+        var spent = [D, Lm].filter(Boolean);
+        APP.set({ used: spent.map(function (c) { return { id: 'u-' + c.id, type: c.type, value: c.value, label: c.label, rule: c.rule, meta: 'Used on ' + CS.today }; }).concat(APP.S.used),
+          coupons: APP.S.coupons.filter(function (c) { return spent.indexOf(c) < 0; }), loan: 'reviewing',
+          order: { amount: l.amount, term: l.term, first: C.per, date: CS.today, method: APP.S.method } });
+        if (APP.wd) APP.wd.reset();
+        APP.home('home', -1);
+        if (APP.T.rating && +APP.T.rating && !APP.S.rated) setTimeout(function () { APP.open('rating'); }, 900);
+        else APP.say('Thanks, we’ve got your application. We’ll let you know what happens next.', 3400);
+      } } });
+    } } });
+  };
+
+  /* ---- loan detail as a page of its own (from a coupon's "Use"); Withdraw on the home card opens the Withdraw sheet instead (screens-withdraw.js) ---- */
+  APP.screen('loan', function Loan() {
+    var S = APP.use(), sc = R.useRef(null), n = R.useState(0);
+    var P = APP.loanParts(S, !!S.agree, function () { APP.set({ agree: !S.agree }); }, n[0]), l = P.l, C = P.C, Lm = P.Lm;
     function pointAgree() {
       var el = sc.current, fired = false, fire = function () { if (!fired) { fired = true; n[1](function (x) { return x + 1; }); } };
       if (!el) { fire(); return; }
@@ -111,33 +145,12 @@
       if (to - from < 24 || PS.reduce) { el.scrollTop = to; fire(); return; }
       window.Motion.animate(from, to, Object.assign({}, PS.MT.SPRING, { restDelta: 0.5, restSpeed: 5, onUpdate: function (v) { el.scrollTop = v; if (to - v < 24) fire(); }, onComplete: fire }));
     }
-    function confirm() {
-      if (!S.agree) { pointAgree(); return; }
-      APP.set({ otp: { then: function () {
-        APP.set({ submitting: { then: function () {
-          var spent = [D, Lm].filter(Boolean);
-          APP.set({ used: spent.map(function (c) { return { id: 'u-' + c.id, type: c.type, value: c.value, label: c.label, rule: c.rule, meta: 'Used on ' + CS.today }; }).concat(APP.S.used),
-            coupons: APP.S.coupons.filter(function (c) { return spent.indexOf(c) < 0; }), loan: 'reviewing',
-            order: { amount: l.amount, term: l.term, first: C.per, date: CS.today, method: APP.S.method } });
-          APP.home('home', -1);
-          if (APP.T.rating && +APP.T.rating && !APP.S.rated) setTimeout(function () { APP.open('rating'); }, 900);
-          else APP.say('Thanks, we’ve got your application. We’ll let you know what happens next.', 3400);
-        } } });
-      } } });
-    }
-    var mt = S.method;
+    function confirm() { if (!S.agree) { pointAgree(); return; } APP.submitLoan(); }
     return h(PS.Screen, { tint: true, scrollRef: sc, top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), title: 'Apply a loan', right: APP.tune() },
       bottom: h(PS.BottomBar, null, h(PS.Button, { block: true, inactive: !S.agree, onClick: confirm }, 'Confirm')) },
-      h(PS.AmountCard, { amount: l.amount, min: LOAN.min, max: C.max, step: LOAN.step, boost: !!Lm, terms: LOAN.terms, term: l.term, termNote: LOAN.days + ' days / term',
+      [h(PS.AmountCard, { key: 'card', amount: l.amount, min: LOAN.min, max: C.max, step: LOAN.step, boost: !!Lm, terms: LOAN.terms, term: l.term, termNote: LOAN.days + ' days / term',
         onAmount: function (v) { setL(Object.assign({}, APP.S.L, { amount: v })); }, onCommit: function (v) { APP.loanCheck(Object.assign({}, APP.S.L, { amount: v })); },
-        onTerm: function (t) { APP.loanCheck(Object.assign({}, APP.S.L, { term: t })); }, onEdit: function () { APP.go('amount', { edit: true }, 'rise'); } }),
-      rows.length ? h(PS.CouponsSection, { count: coupons.length, onSeeAll: function () { APP.set({ draft: { tab: 'discount', disc: l.disc, lim: l.lim } }); APP.open('picker'); }, rows: rows }) : null,
-      h(PS.OrderDetails, { link: 'View payment schedule', onLink: function () { APP.open('plan'); }, rows: [
-        { label: 'Daily fee', value: money(C.daily) }, { label: 'First payment date', value: CS.date(1) }, { label: 'Per installment', value: money(C.per) },
-        { label: 'Discount', value: C.save ? '-' + money(C.save) : null, tone: 'positive' }, { label: 'Total payment', value: money(C.total) }] }),
-      h(PS.ProtectionCard, { body: 'Get covered for up to ₱30,000, so your family isn’t left with the loan if a medical emergency or accident happens.', onLink: function () { APP.say('Benefits aren’t part of the test app yet.'); } }),
-      h(PS.MethodCard, { name: mt.name, last4: mt.last4, logo: logoOf(mt), logoExt: 'png', onClick: function () { APP.go('method'); } }),
-      h(PS.Agreement, { on: !!S.agree, nudge: n[0], onToggle: function () { APP.set({ agree: !S.agree }); } }, 'By tapping Confirm, you accept the ', h('b', null, 'Loan Agreement'), ' and ', h('b', null, 'Loan Disclosure Statement'), '.'));
+        onTerm: function (t) { APP.loanCheck(Object.assign({}, APP.S.L, { term: t })); }, onEdit: function () { APP.go('amount', { edit: true }, 'rise'); } })].concat(P.blocks));
   });
 
   /* ---- sheets of the loan page ---- */
@@ -228,7 +241,7 @@
     var empty = { use: ['No coupons yet', 'When you get a coupon, you’ll see it here.'], used: ['No used coupons yet', 'Coupons you use on a loan show up here.'], expired: ['No expired coupons', 'Coupons that run out before you use them show up here.'] }[tab];
     var body = list.length ? list.map(function (c) {
       return h(PS.CouponTicket, { key: c.id, value: c.value, label: c.label, rule: c.rule, ruleLong: c.long, meta: c.meta, expiresAt: tab === 'use' ? c.expiresAt : null, best: tab === 'use' && bestD === c,
-        state: tab === 'use' ? 'default' : tab, action: tab === 'use' && S.user === 'approved' ? 'use' : 'none', onUse: function () { APP.openLoan(c.id); }, onRule: function (el) { APP.tipAt(el, c.rule); } });
+        state: tab === 'use' ? 'default' : tab, action: tab === 'use' && S.user === 'approved' ? 'use' : 'none', onUse: function () { APP.borrow(c.id); }, onRule: function (el) { APP.tipAt(el, c.rule); } });
     }) : h(PS.EmptyState, { title: empty[0], body: empty[1], page: true });
     return h(PS.Screen, { colTop: 174, colBottom: 48, top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), title: 'Coupons', right: APP.tune(), solid: true, extraHeight: 58,
       extra: h('div', { className: 'app-ctabs' }, h(PS.Tabs, { id: 'app-centre', value: tab, onChange: function (t) { APP.set({ tip: null }); setTab(t); },
