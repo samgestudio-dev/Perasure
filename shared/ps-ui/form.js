@@ -123,8 +123,8 @@
       : h('input', { value: p.value || '', placeholder: p.placeholder, type: p.type || 'text', inputMode: p.inputMode, maxLength: p.maxLength, autoFocus: p.autoFocus,
           autoComplete: 'off', 'aria-label': p.label, className: 'ps-ff__value', onChange: function (e) { p.onChange(e.target.value); },
           onFocus: function () { setFocus(true); }, onBlur: function () { setTimeout(function () { setFocus(false); }, 120); if (p.onBlur) p.onBlur(); } });
-    var end = p.clear && filled && !pick ? h('button', { type: 'button', className: 'ps-ff__clear', 'aria-label': 'Clear', onMouseDown: function (e) { e.preventDefault(); }, onClick: function () { p.onChange(''); } }, h(PS.Icon, { name: 'close-circle-filled', size: 16, color: 'primary' }))
-      : p.icon ? h(PS.Icon, { name: p.icon, size: 16, color: 'secondary' }) : pick || p.chevron ? h(PS.Icon, { name: 'chevron-right', size: 16, color: 'tertiary' }) : null;
+    var end = p.clear && filled && !pick ? h('button', { type: 'button', className: 'ps-ff__clear', 'aria-label': 'Clear', onMouseDown: function (e) { e.preventDefault(); }, onClick: function () { p.onChange(''); } }, h(PS.Icon, { name: 'clear-small', size: 16, color: 'var(--color-neutral-950)', style: { opacity: 0.6 } }))   /* DS "Cancel small": Neutral/950 at 60 % */
+      : p.icon ? h(PS.Icon, { name: p.icon, size: 16, color: 'tertiary' }) : pick || p.chevron ? h(PS.Icon, { name: 'chevron-right', size: 16, color: 'tertiary' }) : null;   /* the calendar and the chevron: Icon/Tertiary 16 */
     var sugg = focus && p.suggest && p.suggest.length ? p.suggest : null;
     return h('div', { className: PS.cx('ps-ff', p.error && 'is-error', focus && 'is-focus', (menuOpen || sugg) && 'is-open'), ref: wrap },
       p.label ? h('span', { className: 'ps-ff__label' }, p.label) : null,
@@ -180,18 +180,18 @@
 
   /* FileRow: one file of a document card (DS 9473:27722) — the type on a 36 px inset tile, the name (Label/sm-light), and its state under it:
      done ("1.1 MB · ✓ Uploaded", a bin to remove it) · compressing · uploading (percent and a 4 px bar, ✕ to stop) · failed (red line, reload).
-     name · size (bytes) · state done | compressing | uploading | failed · progress (0–1) · onRemove · onRetry */
+     name · size (bytes) · state done | compressing | uploading | failed · progress (0–1) · onRemove · onRetry · pic (a photo's thumbnail on the tile) */
   function mb(b) { return b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB'; }
   PS.FileRow = function FileRow(p) {
     var st = p.state || 'done', ext = (String(p.name).split('.').pop() || '').toUpperCase().slice(0, 4), meta;
     if (st === 'failed') meta = h('span', { className: 'ps-t-caption-xs ps-c-negative' }, 'Upload failed, check your connection.');
     else if (st === 'compressing') meta = h('span', { className: 'ps-file__meta ps-t-caption-xs' }, 'Compressing…');
     else if (st === 'uploading') meta = h('span', { className: 'ps-file__meta ps-t-caption-xs' }, 'Uploading', h('i', null, '·'), Math.round((p.progress || 0) * 100) + '% of ' + mb(p.size));
-    else meta = h('span', { className: 'ps-file__meta ps-t-caption-xs' }, mb(p.size), h('i', null, '·'), h('b', null, h(PS.Icon, { name: 'check-sm', size: 12, color: 'var(--color-text-positive-heavy)' }), 'Uploaded'));
+    else meta = h('span', { className: 'ps-file__meta ps-t-caption-xs' }, mb(p.size), h('i', null, '·'), h('b', null, h(PS.Icon, { name: 'check', size: 8, color: 'var(--color-icon-positive-heavy)' }), 'Uploaded'));   /* DS: Icon / Check 8, 4 to the word */
     var btn = st === 'failed' ? { icon: 'reload', color: 'var(--color-icon-brand-light)', label: 'Try again', on: p.onRetry }
       : st === 'done' ? { icon: 'delete', color: 'var(--color-icon-placeholder)', label: 'Remove', on: p.onRemove } : { icon: 'close-thin', color: 'var(--color-icon-placeholder)', label: 'Stop', on: p.onRemove };
     return h('div', { className: PS.cx('ps-file', 'is-' + st) },
-      h('span', { className: 'ps-file__type' }, ext),
+      p.pic ? h('img', { className: 'ps-file__type', src: p.pic, alt: '' }) : h('span', { className: 'ps-file__type' }, ext),
       h('span', { className: 'ps-file__main' }, h('span', { className: 'ps-file__name ps-t-label-sm-light' }, p.name),
         h(PS.Swap, { k: st, y: MT.Y.digit, block: true }, meta),
         st === 'uploading' ? h('span', { className: 'ps-file__bar' }, h('i', { style: { transform: 'scaleX(' + (p.progress || 0) + ')' } })) : null),
@@ -211,6 +211,32 @@
         exit: { height: 0, opacity: 0, transition: { height: Object.assign({}, MT.SPRING, { restDelta: 0.5 }), opacity: MT.LEAVE } } },
         h('div', { className: 'ps-doc__files' }, p.files.map(function (f, i) { return h(R.Fragment, { key: f.id }, i ? h(PS.Divider) : null, h(PS.FileRow, f)); }),
           h(m.button, Object.assign({ type: 'button', ref: add, className: 'ps-doc__add ps-t-label-md-light', onClick: function () { p.onAdd(add.current); } }, PS.press()), h(PS.Icon, { name: 'add', size: 16, color: 'brand' }), 'Add files'))) : null));
+  };
+
+  /* SelfieTips: how to take the selfie (DS 5585:5407) — the title with the brand "more" dots, then three pictures (91 × 64, radius 4) each with
+     a 16 px tick or cross 4 in from its corner and a Caption/xs line under it · items [{ art, label, ok }] (default: the three Figma tips) · title · onMore(element) */
+  var TIPS = [{ art: 'selfie-tip-1', label: 'Look straight', ok: true }, { art: 'selfie-tip-2', label: 'Good lighting', ok: true }, { art: 'selfie-tip-3', label: 'Face uncovered', ok: false }];
+  PS.SelfieTips = function SelfieTips(p) {
+    var more = R.useRef(null);
+    return h(PS.Card, { className: 'ps-stips' },
+      h('div', { className: 'ps-stips__head' }, h('p', { className: 'ps-t-section-sm' }, p.title || 'Please follow the instructions below'),
+        p.onMore ? h(m.button, Object.assign({ type: 'button', ref: more, className: 'ps-stips__more', 'aria-label': 'More tips', onClick: function () { p.onMore(more.current); } }, PS.press(true)), h('i'), h('i'), h('i')) : null),
+      h('div', { className: 'ps-stips__row' }, (p.items || TIPS).map(function (t) {
+        return h('div', { key: t.label, className: 'ps-stips__item' },
+          h('span', { className: 'ps-stips__pic' }, h('img', { src: PS.asset('art/' + t.art + '.png'), alt: '' }),
+            h('i', { className: t.ok ? 'is-ok' : 'is-no' }, h(PS.Icon, { name: t.ok ? 'check' : 'close', size: 8, color: 'inverse' }))),
+          h('span', { className: 'ps-t-caption-xs ps-c-placeholder' }, t.label));
+      })));
+  };
+  /* LineTabs: tabs with a brand underline (the address sheet, DS 5975:10755) · items [{ id, label, off }] (off: can't be chosen yet) · value ·
+     onChange(id) · id (the underline's layout id). The underline glides on the Smooth spring; label colours change in 150 ms. */
+  PS.LineTabs = function LineTabs(p) {
+    return h('div', { className: 'ps-ltabs', role: 'tablist' }, p.items.map(function (it) {
+      var on = it.id === p.value;
+      return h('button', { key: it.id, type: 'button', role: 'tab', 'aria-selected': on, disabled: !!it.off, className: PS.cx('ps-ltabs__tab ps-t-body-md-em', on && 'is-on', it.off && 'is-off'),
+          onClick: function () { if (!on && !it.off) p.onChange(it.id); } },
+        h('span', null, it.label, on ? h(m.i, { layoutId: (p.id || 'ps-ltabs') + '-bar', className: 'ps-ltabs__bar', transition: MT.SPRING }) : null));
+    }));
   };
 
   /* Wheel: the iOS-like wheel of the date picker (DS 5900:9854 / 5900:9592) — @ncdai/react-wheel-picker as it ships (vendor/react-wheel-picker@1.2.3,
@@ -237,13 +263,14 @@
     var min = p.min || { y: 1900, m: 0, d: 1 }, max = p.max || { y: 2100, m: 11, d: 31 };
     function clamp(v) { var n = key(v) < key(min) ? min : key(v) > key(max) ? max : v; return { y: n.y, m: n.m, d: n.d }; }
     var s0 = R.useState(function () { return clamp(p.value || { y: new Date().getFullYear(), m: new Date().getMonth(), d: new Date().getDate() }); }), v = s0[0], setV = s0[1];
-    var s1 = R.useState({ y: v.y, m: v.m }), view = s1[0], setView = s1[1];     /* the month on show */
+    var view = v;     /* the month on show is the chosen date's: changing the month or the year changes the date (the same day, kept inside the month and min … max) */
     var s2 = R.useState('date'), mode = s2[0], setMode = s2[1], s3 = R.useState(null), wheel = s3[0], setWheel = s3[1];
-    function shift(dm) { var t = view.y * 12 + view.m + dm; if (t < min.y * 12 + min.m || t > max.y * 12 + max.m) return; setView({ y: Math.floor(t / 12), m: t % 12 }); }
+    function moveTo(y, m) { var t = Math.max(min.y * 12 + min.m, Math.min(max.y * 12 + max.m, y * 12 + m)), ny = Math.floor(t / 12), nm = t % 12;
+      setV(clamp({ y: ny, m: nm, d: Math.min(v.d, new Date(ny, nm + 1, 0).getDate()) })); }
+    function shift(dm) { var t = view.y * 12 + view.m + dm; if (t < min.y * 12 + min.m || t > max.y * 12 + max.m) return; moveTo(Math.floor(t / 12), t % 12); }
     function openWheel(which) { setWheel(which === 'month' ? view.m : view.y); setMode(which); }
     function closeWheel(ok) {
-      if (ok && wheel != null) { var nv = mode === 'month' ? { y: view.y, m: wheel } : { y: wheel, m: view.m }, t = nv.y * 12 + nv.m;
-        t = Math.max(min.y * 12 + min.m, Math.min(max.y * 12 + max.m, t)); setView({ y: Math.floor(t / 12), m: t % 12 }); }
+      if (ok && wheel != null) { if (mode === 'month') moveTo(view.y, wheel); else moveTo(wheel, view.m); }
       setMode('date');
     }
     function done() { if (mode !== 'date') { closeWheel(true); return; } p.onConfirm(v); }

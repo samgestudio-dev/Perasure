@@ -54,14 +54,15 @@
       h(PS.Button, { variant: 'inverse', size: 'md', className: 'ps-qr__save', onClick: p.onSave }, h(PS.Icon, { name: 'upload', size: 20 }), 'Save QR code'));
   };
   /* Accordion: a card that opens · title · open (first state) · children */
+  /* (small: the application's reminder, DS 9224:37691 — 12 / 16 padding, the title in Label/md-light Neutral/600, the text in Caption/sm, 12 apart) */
   PS.Accordion = function Accordion(p) {
     var s = R.useState(!!p.open), open = s[0];
-    return h(PS.Card, { className: 'ps-acc' },
+    return h(PS.Card, { className: PS.cx('ps-acc', p.small && 'ps-acc--small') },
       h(m.button, Object.assign({ type: 'button', className: 'ps-acc__head', 'aria-expanded': open, onClick: function () { s[1](!open); } }, PS.press()),
-        h('span', { className: 'ps-t-body-md-em' }, p.title),
+        h('span', { className: p.small ? 'ps-t-label-md-light' : 'ps-t-body-md-em' }, p.title),
         h(m.span, { style: { display: 'flex' }, initial: false, animate: { rotate: open ? -90 : 90 }, transition: MT.SPRING }, h(PS.Icon, { name: 'chevron-right', size: 16, color: 'tertiary' }))),
       h(AP, { initial: false }, open ? h(m.div, { key: 'b', className: 'ps-acc__body', initial: { height: 0, opacity: 0 }, animate: { height: 'auto', opacity: 1, transition: { height: MT.SPRING, opacity: MT.ENTER } },
-        exit: { height: 0, opacity: 0, transition: { height: MT.SPRING, opacity: MT.LEAVE } } }, h('div', { className: 'ps-acc__in ps-t-body-md ps-c-tertiary' }, p.children)) : null));
+        exit: { height: 0, opacity: 0, transition: { height: MT.SPRING, opacity: MT.LEAVE } } }, h('div', { className: PS.cx('ps-acc__in ps-c-tertiary', p.small ? 'ps-t-caption-sm' : 'ps-t-body-md') }, p.children)) : null));
   };
   /* MethodPicker: ways to pay (Figma DS 7792:15391) — the categories on a grey rail, every category's groups in ONE list that scrolls; the rail
      follows the list (the category on screen is the one marked) and a tap on the rail glides the list to it on the Smooth spring. The white

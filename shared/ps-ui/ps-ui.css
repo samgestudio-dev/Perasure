@@ -41,6 +41,7 @@ a { color: inherit; text-decoration: none; }
 .ps-t-label-md-light { font: var(--font-weight-medium) var(--font-size-label-md)/var(--font-line-height-label-md) var(--font-family-label); }
 .ps-t-section-xs { font: var(--font-weight-semi-bold) var(--font-size-caption-xs)/var(--font-line-height-caption-xs) var(--font-family-title); }
 .ps-t-section-sm { font: var(--font-weight-semi-bold) var(--font-size-section-title-sm)/var(--font-line-height-section-title-sm) var(--font-family-title); }
+.ps-t-section-md-light { font: var(--font-weight-medium) var(--font-size-section-title-md)/var(--font-line-height-section-title-md) var(--font-family-title); }   /* Section-title/md-light */
 .ps-t-section-md { font: var(--font-weight-semi-bold) var(--font-size-section-title-md)/var(--font-line-height-section-title-md) var(--font-family-title); }
 .ps-t-title-sm { font: var(--font-weight-bold) var(--font-size-title-sm)/var(--font-line-height-title-sm) var(--font-family-title); letter-spacing: -0.01em; }
 .ps-t-title-md { font: var(--font-weight-bold) var(--font-size-title-md)/var(--font-line-height-title-md) var(--font-family-title); letter-spacing: -0.01em; }
@@ -78,8 +79,9 @@ html.ps-edge .ps-screen { top: calc(-1 * var(--e)); height: calc(100% + var(--e)
    home card under the Credit limit screen while that closes into it — the card's content then appeared only when the screen went */
 .ps-scroll::-webkit-scrollbar { width: 0; height: 0; }
 .ps-col { position: relative; display: flex; flex-direction: column; align-items: stretch; gap: var(--spacing-gap-xl);
-  padding: var(--ps-col-top, calc(40px + 4.75rem)) var(--spacing-page-x-sm) var(--ps-col-bottom, 10.25rem); min-height: 100%; }
-html.ps-edge .ps-col { padding-top: calc(var(--ps-col-top, calc(40px + 4.75rem)) + var(--e)); padding-bottom: calc(var(--ps-col-bottom, 10.25rem) + var(--sb)); }
+  padding: var(--ps-col-top, calc(40px + 4.75rem)) var(--spacing-page-x-sm) max(var(--ps-col-bottom, 10.25rem), var(--ps-bot-room, 0px)); min-height: 100%; }
+html.ps-edge .ps-col { padding-top: calc(var(--ps-col-top, calc(40px + 4.75rem)) + var(--e)); padding-bottom: max(calc(var(--ps-col-bottom, 10.25rem) + var(--sb)), var(--ps-bot-room, 0px)); }
+/* --ps-bot-room (PS.Screen): the page's own bottom bar + 16, so content can always scroll out from under a bar that large text made tall */
 
 /* ======================================================================================= header and bottom bars
    PeraSure standard (CLAUDE.md → "Header and bottom bars"): progressive blur = five backdrop-blur bands, each stronger and
@@ -259,6 +261,10 @@ html.ps-edge .ps-nav { padding-bottom: calc(var(--sb) + var(--spacing-section-lg
 .ps-toast { position: absolute; left: var(--spacing-page-x-sm); right: var(--spacing-page-x-sm); top: var(--ps-toast-top, calc(40px + 4rem)); z-index: 40;
   display: flex; align-items: center; gap: var(--spacing-gap-sm); box-shadow: var(--shadow-focus); pointer-events: none; transform-origin: 50% 0; }   /* 8 px under the header's 40 px bar (56–96) */
 html.ps-edge .ps-toast { top: calc(var(--ps-toast-top, calc(40px + 4rem)) + var(--e)); }
+/* the stack (PS.Toasts): the newest on top, the ones before it a little lower behind; the top one can be swiped to the left */
+.ps-toasts { position: absolute; left: var(--spacing-page-x-sm); right: var(--spacing-page-x-sm); top: var(--ps-toast-top, calc(40px + 4rem)); z-index: 40; pointer-events: none; }
+html.ps-edge .ps-toasts { top: calc(var(--ps-toast-top, calc(40px + 4rem)) + var(--e)); }
+.ps-toasts > .ps-toast { left: 0; right: 0; top: 0; touch-action: pan-y; cursor: grab; }
 
 /* ---- segmented tabs ---- */
 .ps-tabs { position: relative; display: flex; padding: var(--spacing-padding-2xs); border-radius: var(--radius-full); background: var(--color-surface-card-default); box-shadow: var(--shadow-default); }
@@ -774,13 +780,14 @@ textarea.ps-field__value { white-space: normal; }
 .ps-inst__detail { display: inline-flex; align-items: center; font: var(--font-weight-semi-bold) var(--font-size-caption-xs)/var(--font-line-height-caption-xs) var(--font-family-body); }
 .ps-paybar { position: relative; display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-gap-md); padding: var(--spacing-padding-sm) var(--spacing-padding-xl); }
 .ps-paybar__amt { display: flex; align-items: flex-end; gap: var(--spacing-gap-xs); height: 2.25rem; }
+.ps-paybar__amt .ps-amount { font-family: var(--font-family-body); }   /* DS 10534:35615: the total in Inter Bold 28, the old total Inter Medium 12 */
 .ps-paybar__amt .ps-amount:first-child { font-size: calc(1.75rem * var(--ps-tx, 1)); line-height: calc(2.25rem * var(--ps-tx, 1)); color: var(--color-text-brand-default); }
 .ps-paybar__amt .ps-amount--strike { font-weight: var(--font-weight-medium); color: var(--color-text-placeholder); padding-bottom: 0.25rem; }
 .ps-paybar .ps-btn { height: 2.25rem; padding: var(--spacing-gap-sm) var(--spacing-padding-xl); }
 .ps-repay { gap: var(--spacing-gap-xl); }
 .ps-repay__head { display: flex; align-items: center; justify-content: space-between; }
 .ps-repay__head .ps-btn--outline { padding: var(--spacing-padding-2xs) var(--spacing-padding-sm); font-weight: var(--font-weight-regular); }
-.ps-repay__amount { font-size: calc(2rem * var(--ps-tx, 1)); line-height: calc(2.5rem * var(--ps-tx, 1)); color: var(--color-text-brand-default); }
+.ps-repay__amount { font-family: var(--font-family-body); font-size: calc(2rem * var(--ps-tx, 1)); line-height: calc(2.5rem * var(--ps-tx, 1)); color: var(--color-text-brand-default); }   /* DS Payment (Transfer / App / QR): ₱2,000.00 in Inter Bold 32 */
 .ps-repay__due { margin-top: calc(-1 * var(--spacing-gap-lg)); color: var(--color-text-primary); }
 .ps-insetrows { display: flex; flex-direction: column; gap: var(--spacing-gap-md); padding: var(--spacing-padding-lg) var(--spacing-padding-md); border-radius: var(--radius-sm); background: var(--color-surface-inset-default); }
 .ps-repay > .ps-insetrows { margin-top: calc(-1 * var(--spacing-gap-xs)); }   /* 16 under the due date */
@@ -796,8 +803,12 @@ textarea.ps-field__value { white-space: normal; }
 .ps-qr__save { width: 13rem; height: 2.3125rem; margin-top: calc(-1 * var(--spacing-gap-xs)); color: var(--color-text-brand-default); font: var(--font-weight-bold) var(--font-size-body-md)/var(--font-line-height-body-md) var(--font-family-body); }
 .ps-acc { gap: 0; }
 .ps-acc__head { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 1.25rem; text-align: left; color: var(--color-text-primary); }
+.ps-acc__head > span:first-child { display: flex; align-items: center; min-width: 0; }   /* a title with a tile stays as tall as the tile */
 .ps-acc__body { overflow: hidden; }
 .ps-acc__in { padding-top: var(--spacing-gap-sm); white-space: pre-line; }
+.ps-acc--small { padding: var(--spacing-padding-md) var(--spacing-padding-lg); }
+.ps-acc--small .ps-acc__head { height: auto; min-height: 1.75rem; color: var(--color-neutral-600); }   /* Figma: Neutral/600 (no text token holds it) */
+.ps-acc--small .ps-acc__in { padding-top: var(--spacing-gap-md); }
 /* MethodPicker (Figma DS 7792:15391): the rail — grey, full height, its top corners rounded — and the list beside it, 20 between groups */
 .ps-mpick { display: flex; gap: var(--spacing-gap-xs); min-height: 100%; align-items: stretch; }
 .ps-mpick__rail { position: sticky; top: 0; align-self: flex-start; flex: none; width: 4.875rem; min-height: calc(var(--ph, 740px) - 8.5rem); display: flex; flex-direction: column; gap: var(--spacing-gap-xs);
@@ -863,7 +874,8 @@ textarea.ps-field__value { white-space: normal; }
 .ps-hub__row > svg { width: 1.5rem; height: 1.5rem; }
 .ps-credit .ps-hub__btn { width: auto; height: 2.25rem; padding: var(--spacing-gap-sm) var(--spacing-padding-md); font: var(--font-weight-semi-bold) var(--font-size-label-md)/var(--font-line-height-label-md) var(--font-family-label); }
 .ps-hub__row > div { flex: 1 1 0; display: flex; flex-direction: column; gap: var(--spacing-gap-2xs); }
-.ps-hub__row p > span { margin-right: var(--spacing-gap-sm); opacity: var(--layer-opacity-secondary); }
+.ps-hub__row p { font-family: var(--ps-font-num); }   /* Figma: ₱40,000.00 in Satoshi Regular 12 */
+.ps-hub__row p > span { margin-right: var(--spacing-gap-sm); opacity: var(--layer-opacity-secondary); font-family: var(--font-family-body); font-weight: var(--font-weight-regular); }
 .ps-tiles { gap: var(--spacing-gap-lg); padding: var(--spacing-padding-lg); }
 .ps-tiles > div { display: flex; gap: var(--spacing-gap-sm); }
 .ps-tilepic { width: 7.875rem; height: 7.875rem; display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-sm); padding: 1.375rem var(--spacing-padding-2xl) 0; border-radius: var(--radius-sm); background: var(--color-surface-inset-default);
@@ -958,11 +970,13 @@ button.ps-ff__box { cursor: pointer; touch-action: manipulation; }
 .ps-file { display: flex; align-items: center; gap: var(--spacing-gap-md); min-height: 2.25rem; }
 .ps-file__type { flex: none; width: 2.25rem; height: 2.25rem; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-xs); background: var(--color-surface-inset-default);
   color: var(--color-text-placeholder); font: var(--font-weight-bold) var(--font-size-caption-xs)/var(--font-line-height-caption-xs) var(--font-family-body); }   /* Figma: Inter Bold 11 (no text style) */
-.ps-file__main { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: var(--spacing-gap-2xs); }
+img.ps-file__type { object-fit: cover; }
+.ps-file__main { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: var(--spacing-gap-2xs);
+  font: var(--font-weight-regular) var(--font-size-caption-xs)/var(--font-line-height-caption-xs) var(--font-family-body); }   /* the state line's box is 14 tall, not the page's line */
 .ps-file__name { color: var(--color-text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ps-file__meta { display: inline-flex; align-items: center; gap: var(--spacing-gap-xs); color: var(--color-text-placeholder); }
+.ps-file__meta { display: inline-flex; align-items: center; gap: var(--spacing-gap-sm); color: var(--color-text-placeholder); }   /* DS 9473:27722: 8 around the dot */
 .ps-file__meta > i { font-style: normal; }
-.ps-file__meta > b { display: inline-flex; align-items: center; gap: var(--spacing-gap-2xs); font-weight: inherit; color: var(--color-text-positive-heavy); }
+.ps-file__meta > b { display: inline-flex; align-items: center; gap: var(--spacing-gap-xs); font-weight: inherit; color: var(--color-text-positive-heavy); }
 .ps-file__bar { position: relative; height: 0.25rem; margin-top: var(--spacing-gap-2xs); border-radius: var(--radius-full); background: var(--color-surface-inset-default); overflow: hidden; }
 .ps-file__bar > i { position: absolute; inset: 0; border-radius: inherit; background: var(--color-icon-brand-light); transform-origin: 0 50%; }   /* follows the upload: no easing */
 .ps-file__btn { flex: none; width: 2rem; height: 2rem; margin: -0.5rem; display: flex; align-items: center; justify-content: center; touch-action: manipulation; }
@@ -975,3 +989,25 @@ button.ps-ff__box { cursor: pointer; touch-action: manipulation; }
 .ps-doc__files { display: flex; flex-direction: column; gap: var(--spacing-gap-md); padding: var(--spacing-gap-xs) var(--spacing-padding-md) var(--spacing-padding-md); }
 .ps-doc__add { height: 2.75rem; display: flex; align-items: center; justify-content: center; gap: var(--spacing-gap-sm); border-radius: var(--radius-full); color: var(--color-text-brand-default);
   border: var(--stroke-width-strong) dashed var(--tag-color-neutral-stroke-default); touch-action: manipulation; }
+
+
+/* ---- SelfieTips (DS 5585:5407) ---- */
+.ps-stips { gap: var(--spacing-gap-lg); align-self: stretch; }
+.ps-stips__head { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-gap-md); color: var(--color-text-primary); }
+.ps-stips__more { flex: none; width: 1rem; height: 1rem; display: flex; align-items: center; justify-content: space-between; padding: 0; margin: -0.5rem; box-sizing: content-box; padding: 0.5rem; touch-action: manipulation; }
+.ps-stips__more > i { width: 0.25rem; height: 0.25rem; border-radius: var(--radius-full); background: var(--color-brand-600); }   /* Figma: three 4 px Brand/600 dots */
+.ps-stips__row { display: flex; gap: var(--spacing-gap-md); }
+.ps-stips__item { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: var(--spacing-gap-xs); text-align: center; }
+.ps-stips__pic { position: relative; height: 4rem; border-radius: 0.25rem; overflow: hidden; background: var(--color-surface-page-default); }   /* 91 × 64, radius 4 */
+.ps-stips__pic > img { display: block; width: 100%; height: 100%; object-fit: cover; }   /* Figma's export of the picture box (the second one's light included) */
+.ps-stips__pic > i { position: absolute; right: 0.25rem; bottom: 0.25rem; width: 1rem; height: 1rem; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; }
+.ps-stips__pic > i.is-ok { background: var(--color-surface-icon-positive-default); }
+.ps-stips__pic > i.is-no { background: var(--color-surface-card-negative); }
+
+/* ---- LineTabs (DS 5975:10755): labels in Body/md-emphasis, tertiary → brand when chosen, placeholder when not yet open; a 2 px brand bar under ---- */
+.ps-ltabs { display: flex; }
+.ps-ltabs__tab { flex: 1 1 0; min-width: 0; display: flex; justify-content: center; padding: var(--spacing-padding-md) 0 0; color: var(--color-text-tertiary); transition: color 0.15s ease; touch-action: manipulation; }
+.ps-ltabs__tab > span { position: relative; padding-bottom: var(--spacing-padding-sm); white-space: nowrap; }
+.ps-ltabs__tab.is-on { color: var(--color-text-brand-default); }
+.ps-ltabs__tab.is-off { color: var(--color-text-placeholder); cursor: default; }
+.ps-ltabs__bar { position: absolute; left: 0; right: 0; bottom: 0; height: var(--stroke-width-strong); border-radius: var(--radius-full); background: var(--color-icon-brand-default); }

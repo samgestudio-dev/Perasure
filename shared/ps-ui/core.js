@@ -208,9 +208,22 @@
   };
   /* Lottie: src (json url) · width · height · viewBox ('x y w h': crop) · intro [a, b] (played once) · loop [a, b] (then looped;
      with no intro / loop the file loops, or plays once and holds with once) · once · play (false: wait) · onDone · api (ref → the lottie item)
-     Reduced motion: the resting frame, no movement. */
+     active (false: holds its first frame; true again: plays from the start — a carousel's pages, owner: only the page on show plays, and
+     each time it comes back it plays again). Reduced motion: the resting frame, no movement. */
   PS.Lottie = function Lottie(p) {
-    var ref = R.useRef(null), cb = R.useRef(p.onDone); cb.current = p.onDone;
+    var ref = R.useRef(null), cb = R.useRef(p.onDone), item = R.useRef(null), act = R.useRef(p.active), first = p.intro ? p.intro[0] : 0;
+    cb.current = p.onDone; act.current = p.active;
+    function start(a) {
+      if (p.intro) {
+        var looped = false;
+        a.removeEventListener('complete'); a.loop = false;
+        a.addEventListener('complete', function () {
+          if (looped || item.current !== a) return; looped = true;
+          if (p.loop) { a.loop = true; a.playSegments(p.loop, true); } else if (cb.current) cb.current();
+        });
+        a.playSegments(p.intro, true);
+      } else { if (p.once) { a.removeEventListener('complete'); a.addEventListener('complete', function () { if (cb.current) cb.current(); }); } a.goToAndPlay(0, true); }
+    }
     R.useEffect(function () {
       var dead = false, a = null;
       PS.loadLottie().then(function (l) {
@@ -220,20 +233,22 @@
         if (p.api) p.api.current = a;
         a.addEventListener('DOMLoaded', function () {
           if (dead) return;
+          item.current = a; a.__ready = true;
           if (PS.reduce) { a.goToAndStop(p.loop ? p.loop[0] : p.once ? a.totalFrames - 1 : 0, true); if (cb.current) cb.current(); return; }
           if (p.play === false) return;
-          if (p.intro) {
-            var looped = false;
-            a.addEventListener('complete', function () {
-              if (looped || dead) return; looped = true;
-              if (p.loop) { a.loop = true; a.playSegments(p.loop, true); } else if (cb.current) cb.current();
-            });
-            a.playSegments(p.intro, true);
-          } else { if (p.once) a.addEventListener('complete', function () { if (cb.current) cb.current(); }); a.play(); }
+          if (act.current === false) { a.goToAndStop(first, true); return; }
+          start(a);
         });
       }, function () {});
-      return function () { dead = true; if (a) a.destroy(); if (p.api) p.api.current = null; };
+      return function () { dead = true; item.current = null; if (a) a.destroy(); if (p.api) p.api.current = null; };
     }, [p.src, p.play]);
+    /* active turning on plays it again from the start; turning off holds the first frame once it has slid away */
+    R.useEffect(function () {
+      var a = item.current; if (!a || !a.__ready || PS.reduce || p.active === undefined) return;
+      if (p.active) { start(a); return; }
+      var t = setTimeout(function () { if (item.current === a && act.current === false) { a.loop = false; a.goToAndStop(first, true); } }, 450);
+      return function () { clearTimeout(t); };
+    }, [p.active]);
     return h('span', { className: PS.cx('ps-lottie', p.className), ref: ref, 'aria-hidden': true, style: Object.assign({ width: PS.rem(p.width), height: PS.rem(p.height || p.width) }, p.style) });
   };
   /* Anim: one of the repo's illustrations by name, cropped to its art so `size` is the picture's box (as the Figma still)
@@ -250,6 +265,6 @@
   PS.Anim = function Anim(p) {
     var a = ANIMS[p.name], b = a.box, side = Math.max(b[2] - b[0], b[3] - b[1]) * (p.fit || 1), cx = (b[0] + b[2]) / 2, cy = (b[1] + b[3]) / 2;
     return h(PS.Lottie, { src: PS.root + 'animations/' + p.name + '/' + p.name + '.json', width: p.size || 100, className: p.className, style: p.style,
-      viewBox: [cx - side / 2, cy - side / 2, side, side].map(Math.round).join(' '), intro: a.intro, loop: a.loop, once: a.once });
+      viewBox: [cx - side / 2, cy - side / 2, side, side].map(Math.round).join(' '), intro: a.intro, loop: a.loop, once: a.once, active: p.active });
   };
 })();

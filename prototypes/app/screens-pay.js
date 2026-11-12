@@ -53,7 +53,7 @@
     return h(R.Fragment, null,
       h('div', { className: 'app-sheethead app-sheethead--left' }, h('p', { className: 'ps-t-section-md' }, 'Protect yourself from scams'), h(PS.Close, { onClick: APP.close })),
       h(PS.Carousel, { index: i, onIndex: s[1], dots: true, pages: AD.scams.map(function (c, k) {
-        return h('div', { key: k, className: 'app-scams__page' }, h(PS.Anim, { name: c.anim, size: 100 }),
+        return h('div', { key: k, className: 'app-scams__page' }, h(PS.Anim, { name: c.anim, size: 100, active: k === i }),   /* only the card on show plays, again each time (owner) */
           h('div', null, h('p', { className: 'ps-t-section-md' }, c.title), h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, c.body)));
       }) }),
       h(PS.Button, { block: true, onClick: next }, h(PS.Swap, { k: last ? 'u' : 'n' }, h('span', null, last ? 'I understand' : 'Next'))));

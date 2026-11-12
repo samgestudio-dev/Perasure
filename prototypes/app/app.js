@@ -12,7 +12,7 @@ window.APP = (function () {
   var subs = [], uid = 1;
   var S = {
     stack: [{ name: 'opening', key: 'k0', params: {} }], dir: 0, tab: 'home',
-    sheet: null, tip: null, toast: null, busy: false, otp: null, submitting: false, intro: false,
+    sheet: null, tip: null, toast: null, toasts: [], busy: false, otp: null, submitting: false, intro: false,
     user: T.user || 'approved', loan: T.loan || 'active',
     repay: CS.current && /^(active|overdue)$/.test(CS.current.state) ? CS.current.state : null,   /* the loan being repaid: it stays when another one is ordered */
     seenScam: false, rated: false,
@@ -35,8 +35,14 @@ window.APP = (function () {
   function home(tab, dir) { set({ stack: [entry('tabs')], tab: tab || 'home', dir: dir == null ? -1 : dir, tip: null, sheet: null }); }
   function open(name, params) { set({ sheet: { name: name, params: params || {} }, tip: null }); }
   function close() { set({ sheet: null }); }
-  var toastT = 0;
-  function say(text, ms) { clearTimeout(toastT); set({ toast: text }); toastT = setTimeout(function () { set({ toast: null }); }, ms || 2600); }
+  /* say: a toast — each call shows a new one on top of the stack (owner: a repeat is not merged or held back); each goes after its own
+     time or when it is swiped away. S.toast is the newest text (for checks), S.toasts the stack. */
+  var toastN = 0;
+  function dropToast(id) { var l = S.toasts.filter(function (t) { return t.id !== id; }); set({ toasts: l, toast: l.length ? l[l.length - 1].text : null }); }
+  function say(text, ms) {
+    var id = ++toastN; set({ toasts: S.toasts.concat([{ id: id, text: text }]).slice(-4), toast: text });
+    setTimeout(function () { dropToast(id); }, ms || 2600);
+  }
   /* tipAt(element, text, width, { icon, big }): the tooltip on what was tapped (it places itself: PS.Tooltip) */
   function tipAt(el, text, width, o) {
     set({ tip: Object.assign({ text: text, anchor: PS.frameRect(el), width: width }, o) });
@@ -106,7 +112,7 @@ window.APP = (function () {
       h(PS.Overlay, { open: S.busy }, h(PS.Loader, { fill: true })),
       h(PS.Tooltip, { open: !!S.tip, anchor: S.tip ? S.tip.anchor : null, width: S.tip ? S.tip.width : null, icon: S.tip && S.tip.icon, big: S.tip && S.tip.big, text: S.tip ? S.tip.text : '', onClose: function () { set({ tip: null }); } }),
       /* the toast: at the top, under the header's bar (owner) */
-      h(PS.Toast, { msg: S.toast }));
+      h(PS.Toasts, { items: S.toasts, onClose: dropToast }));
   }
   function maskPhone(p) { return '0' + p.slice(0, 2) + '****' + p.slice(-4); }
 

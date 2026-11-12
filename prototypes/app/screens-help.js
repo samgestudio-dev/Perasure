@@ -120,22 +120,14 @@
       h(PS.PhoneField, { value: v, onChange: function (x) { set(x); setErr(null); }, error: err }));
   });
   /* the selfie: the front camera in the circle and the tips (DS 8833:31280); Next opens the full camera */
-  var TIPS = [['Look straight ahead', 1, true], ['Good lighting', 2, true], ['Face uncovered', 3, false]];
-  function SelfieTips() {
-    return h(PS.Card, { className: 'app-selfie__tips' }, h('p', { className: 'ps-t-section-sm' }, 'Follow these tips'),
-      h('div', { className: 'app-selfie__row' }, TIPS.map(function (t) {
-        return h('div', { key: t[0] }, h('span', { className: 'app-selfie__pic' }, h('img', { src: PS.asset('art/selfie-tip-' + t[1] + '.png'), alt: '' }),
-          h('i', { className: t[2] ? 'is-ok' : 'is-no' }, h(PS.Icon, { name: t[2] ? 'check' : 'close', size: 8, color: 'inverse' }))), h('span', { className: 'ps-t-caption-xs ps-c-tertiary' }, t[0]));
-      })));
-  }
   APP.screen('phone-selfie', function PhoneSelfie(p) {
     var cam = APP.useCamera('user', true);
     return h(APP.Page, { title: 'PeraSure account', bottom: h(PS.BottomBar, null, h(PS.Button, { block: true, onClick: function () { APP.go('face', p.params); } }, 'Next')) },
-      h(APP.Head, { title: 'Take a selfie', body: 'Look straight ahead with a natural expression. Use good lighting and take off glasses or hats.' }),
+      h(APP.Head, { title: 'Take a selfie', body: 'Look straight ahead with a relaxed face. Use good lighting and remove glasses or hats.' }),
       h('div', { className: 'app-selfie is-live' },
         h('div', { className: 'app-selfie__ring' }, h('video', { ref: cam.video, className: 'app-selfie__video', playsInline: true, muted: true, autoPlay: true }),
           cam.state === 'none' ? h('span', { className: 'app-selfie__none ps-t-caption-sm' }, 'The camera isn’t available here. Tap Next to use a sample.') : null),
-        h(SelfieTips)));
+        h(PS.SelfieTips, { onMore: function (el) { APP.tipAt(el, 'Hold the phone at eye level, keep your whole face inside the circle and stay still while we take the photo.'); } })));
   });
   /* the face camera (DS 8667:28313 / 8667:28329): the whole screen, an oval; after the shutter, the photo with Take again / Next */
   APP.screen('face', function Face(p) {

@@ -2,9 +2,12 @@
    with a Tune panel, after PSTune.setup so its settings are known).
    RESPONSIVE (owner's rule for pages built on the shared components): the layout fills the phone's width — cards stretch
    with the 16 px page margins, heights follow the visible screen. How big it is drawn is the "fit" mode, set by the page
-   (window.PS_FIT = { mode, max }) or the Tune panel (PS_TUNE.fit / PS_TUNE.zoom), default capped 1.1:
-     cap   — capped zoom: the 360 px design is enlarged with the screen, but at most `max` times (1.1: a 390 px phone
-             shows it at 1.08×, a 430 px one at 1.1×, where full zoom would be 1.19×); the layout fills what is left;
+   (window.PS_FIT = { mode, max }) or the Tune panel (PS_TUNE.fit / PS_TUNE.zoom), default capped 1.15 (owner):
+     cap   — capped zoom: the 360 px design is enlarged with the screen, but at most `max` times (1.15: a 390 px phone
+             shows it at 1.08×, a 430 px one at 1.15×, where full zoom would be 1.19×); the layout fills what is left.
+             The browser enlarges the whole page (the viewport is narrower than the screen), so every px in it grows too;
+     rem   — capped zoom in rem: the same factor, but the page is laid out at the phone's own width and the root font size
+             carries the factor, so everything sized in rem grows and anything in px (the hosted Withdraw demo) stays 1:1;
      fit   — 1:1: laid out at the phone's own width, nothing enlarged (true sizes, text can feel small on big iPhones);
      scale — full zoom: the 360 px design scaled to the screen (as the older demos, prototypes/withdraw-fund-flow/phone-fit.js).
    A phone narrower than 360 px is never shrunk (cap / fit): the layout takes its width.
@@ -33,7 +36,7 @@
   var edge = /[?&]edge=1/.test(qs) || (iosSafari && ver >= 26 && !/[?&]edge=0/.test(qs));
   root.classList.add('ps-phone'); if (edge) root.classList.add('ps-edge');
   var T = window.PS_TUNE || {}, F = window.PS_FIT || {};
-  var mode = F.mode || T.fit || 'cap', zmax = +(F.max || T.zoom || 1.1) || 1.1;
+  var mode = F.mode || T.fit || 'cap', zmax = +(F.max || T.zoom || 1.15) || 1.15;
   /* the text size: ts = the phone's setting (1 = default), ui = the part the whole layout follows, tx = the rest, for text only */
   var TS_MIN = 0.85, TS_MAX = 1.5, UI_MAX = 1.3, ios = /iP(hone|od|ad)/.test(ua) || (/Macintosh/.test(ua) && touch);
   function textSize(){
@@ -49,8 +52,8 @@
     return { med: med, ts: ts, ui: ui, tx: ts / ui };
   }
   function text(){
-    if (!F.text) return;
-    var t = textSize(), pct = Math.round(t.ui * 16 / t.med * 100000) / 1000;
+    if (!F.text && mode !== 'rem') return;
+    var t = F.text ? textSize() : { med: 16, ts: 1, ui: 1, tx: 1 }, pct = Math.round(t.ui * (G.fz || 1) * 16 / t.med * 100000) / 1000;
     root.style.fontSize = pct + '%';                                    /* relative to medium, so the browser's own scaling stays in */
     root.style.setProperty('--ps-tx', String(Math.round(t.tx * 10000) / 10000));
     root.classList.toggle('ps-text-big', t.ts > 1.01);                 /* lets a few rows wrap that sit on one line at the default size */
@@ -82,7 +85,7 @@
     if (touch) {
       /* layout width W (CSS px) → the browser draws it at sw0 / W */
       if (mode === 'scale') W = Math.max(360, Math.ceil(600 / r));
-      else if (mode === 'fit') W = sw0;
+      else if (mode === 'fit' || mode === 'rem') W = sw0;
       else W = Math.round(sw0 / Math.max(1, Math.min(zmax, sw0 / 360)));
       V = Math.floor(W * r);
       var ms = Math.max(0.1, Math.ceil(sw0 / W * 1000) / 1000);
@@ -102,6 +105,7 @@
       ext = Math.max(0, top - 40);                                 // header grows up by this much
     }
     var U = edge ? hs - sb - (top - 40) : V + 40;                  // usable frame height (status mock + content)
+    G.fz = mode === 'rem' ? Math.max(1, Math.min(zmax, (touch ? sw0 : Math.min(window.innerWidth, 600)) / 360)) : 1;   /* the rem mode's factor */
     G.mode = mode; G.W = W; G.V = V; G.hs = hs; G.top = top; G.sb = sb; G.ext = ext; G.run = run; G.U = U; G.ver = ver; G.edge = edge;
     root.style.setProperty('--vh', (edge ? hs : V) + 'px');
     root.style.setProperty('--ph', (U + sb) + 'px');
@@ -129,7 +133,7 @@
     d.textContent = 'safari ' + ver + ' edge ' + edge + ' touch ' + touch + '\nscreen ' + screen.width + 'x' + screen.height + ' dpr ' + devicePixelRatio +
       '\ninner ' + innerWidth + 'x' + innerHeight + ' vv ' + (vv ? Math.round(vv.width) + 'x' + Math.round(vv.height) + ' @' + vv.scale.toFixed(3) : '-') +
       '\nenv top ' + e.t + ' bottom ' + e.b + ' scrollY ' + Math.round(scrollY) +
-      '\nfit ' + G.mode + ' W ' + G.W + ' V ' + G.V + ' hs ' + G.hs + ' top ' + G.top + ' run ' + G.run + '\nsb ' + G.sb + ' ext ' + G.ext + ' U ' + G.U +
+      '\nfit ' + G.mode + (G.fz > 1 ? ' ×' + G.fz.toFixed(3) : '') + ' W ' + G.W + ' V ' + G.V + ' hs ' + G.hs + ' top ' + G.top + ' run ' + G.run + '\nsb ' + G.sb + ' ext ' + G.ext + ' U ' + G.U +
       (F.text ? '\ntext ' + Math.round(G.ts * 100) + '% (ui ' + Math.round(G.ui * 100) + '% · text only ×' + G.tx.toFixed(2) + ') medium ' + G.med : '');
   }, 500);
 })();

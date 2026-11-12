@@ -42,7 +42,7 @@
     }, []);
     /* the demo is laid out as wide as the frame (no scaling) */
     R.useEffect(function () {
-      function fit() { var f = box.current && box.current.parentNode; if (!f || H.width === f.clientWidth) return; H.width = f.clientWidth; if (H.sheet) H.sheet.forceUpdate(); }
+      function fit() { var f = box.current && box.current.parentNode, hw = H.heroEl ? H.heroEl.clientWidth : 0; if (!f || (H.width === f.clientWidth && H.heroW === hw)) return; H.width = f.clientWidth; H.heroW = hw; if (H.sheet) H.sheet.forceUpdate(); }
       fit(); window.addEventListener('ps-viewport', fit); window.addEventListener('resize', fit);
       return function () { window.removeEventListener('ps-viewport', fit); window.removeEventListener('resize', fit); };
     }, [K]);

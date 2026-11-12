@@ -29,7 +29,7 @@
     APP.tipAt(el, APP.penaltyTip(), 288, { big: true });
   }
   APP.showPenalty = showPenalty;
-  function apply() { if (!APP.signedIn()) APP.go('login'); else APP.go('kyc-id'); }
+  function apply() { if (!APP.signedIn()) APP.go('login'); else APP.apply(); }   /* the loan estimate first (DS 3908:1341) */
   function pay() { APP.set({ tab: 'payment' }); }
 
   function actions(S) {
@@ -62,7 +62,7 @@
       body = [h(PS.StateCard, { key: 's', title: st.title, body: st.body, support: { text: st.ask, onClick: APP.support } }),
         h('div', { key: 'offer', className: 'app-stack-8' }, h(PS.DotTitle, null, 'More for you'), h(PS.OfferCard, Object.assign({}, AD.offer, { onClick: function () { APP.say('LoadCash opens outside the test app.'); } })))].concat(trust());
     } else if (S.user === 'expired') {
-      body = [h(PS.StateCard, { key: 's', title: st.title, body: st.body, button: { label: 'Reapply now', icon: 'money-out', onClick: function () { APP.go('kyc-id'); } } }), paymentCard(S)].concat(trust());
+      body = [h(PS.StateCard, { key: 's', title: st.title, body: st.body, button: { label: 'Reapply now', icon: 'money-out', onClick: function () { APP.apply(); } } }), paymentCard(S)].concat(trust());
     } else if (S.user === 'hold') {
       body = [h(PS.StateCard, { key: 's', title: st.title, body: st.body, support: { text: st.ask, onClick: APP.support } }), paymentCard(S)].concat(trust());
     } else {

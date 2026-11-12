@@ -155,7 +155,7 @@ built on it. Details and the head block to copy: `shared/README.md`; reference p
   follow a slider never animate; selection states change colour only (150 ms); leaving pages and sheets take no taps.
   Details: `shared/README.md` → "Rules for changing components".
 - Responsive (see "Requirements for a demo page"): no fixed 360 px widths in `ps-ui.css`; fixed sizes only for things
-  that are fixed in Figma (icons, pictures, buttons' heights). Fit mode: capped zoom ≤ 1.1× by default.
+  that are fixed in Figma (icons, pictures, buttons' heights). Fit mode: capped zoom ≤ 1.15× by default.
 - The amount slider follows the finger at once; when something else moves it (a coupon raises or removes the limit,
   "Keep coupon" sets the amount) the knob, fill and amount glide there on the Smooth spring (`PS.AmountCard`).
 - Coupon illustrations: the Figma version with the green badge — with shadow and white outline from 40 px up, the plain
@@ -171,7 +171,8 @@ rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), buil
 - **New work goes in here too.** When a new screen, flow or motion piece is added to the repo, add it to the app as well (a screen in
   `screens-*.js`, its states in Tune), so the app stays complete. Change co-maker and the landing page are not part of it.
 - States that can't be reached by tapping are switched in Tune (account, loan, coupons, network, code / ID / selfie outcomes, inbox,
-  rating). Also in Tune: Screen fit (default capped zoom 1.1×), Text size (default: the phone's setting) and progressive blur (default off).
+  rating). Also in Tune: Screen fit (default capped zoom 1.15×; "Capped zoom · rem" gives the same factor through the root font size), Text size
+  (default: the phone's setting) and progressive blur (default off).
 - **Text size follows the phone** (owner asked for rem): `<meta name="text-scale" content="scale">` (Chrome / Android WebView) and
   Dynamic Type (iOS, read through `-apple-system-body`) set the root size in `phone-fit.js` (`PS_FIT.text`). Up to 130 % the whole layout
   follows; above that only text grows (`--ps-tx`); the phone's setting is capped at 150 % until every component holds 200 %. The hosted
@@ -189,12 +190,19 @@ rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), buil
   was waited for then rises in piece by piece (`PS.Rise`).
 - **Where things sit** (owner): the loader (a 72 px coin + dots) is in the very middle of the screen; Order submit's coin (72 px, the same) and text sit a little above the middle (`.ps-stage`);
   full-page empty states (`PS.EmptyState{page}`) and the fallback put their picture at Order submit's height.
-- **Toasts sit at the top** (owner): under the header bar, like an iPhone notification (`PS.Toast`).
+- **Toasts sit at the top** (owner): under the header bar, like an iPhone notification (`PS.Toasts`). Every tap shows a new one at once (never
+  queued or merged); the new one covers the old, which moves down a little, shrinks and fades (a stack of 3, not a list); a swipe left closes one.
 - **Secondary pages** (owner): every page except the Home / Payment / Account tabs has a solid header in the page colour (`PS.Screen{secondary}`);
   the immersive amount entry and the order page are not secondary pages.
 - **Lists in the application are popovers** (owner, DS 7201:12032 — the bottom-sheet lists are retired): `PS.FormField{menu}` / `PS.Popover`.
   **Dates** use `PS.DatePicker` (DS 7628:14113); its month / year wheel is react-wheel-picker (`PS.Wheel`), not a hand-made one.
 - **Payment logos are 24 px** (owner) in the withdrawal method and bank lists.
+- **Fonts as Figma marks them** (owner): Satoshi only where the Figma node says Satoshi (`PS.Amount`, the keypad, the hero, payment card…);
+  amounts Figma sets in Inter or Hanken stay in Inter / Hanken. Check the node's font before changing one.
+- **Applying** (owner): Your loan estimate → Basic info → ID type + both sides → Check the details → selfie → trusted contact → Submit
+  (`APP.apply()`). Addresses are the Philippines' real Region → Province → City list (`prototypes/app/ph-places.js`, PSA PSGC).
+- **Carousels of animations** (owner): only the card on screen plays, and it plays again from the start each time it is swiped to
+  (`PS.Anim{active}`), e.g. "Protect yourself from scams".
 - **One set of numbers** (owner): every amount and date that matters comes from `prototypes/app/coupons-data.js` (`NUM` → `CS.credit`: limit,
   used, temporary + its end date, total, available; `CS.current`: the loan being repaid, whose principal is the used credit) — never a number
   typed into a screen. Temporary credit is not a limit-increase coupon (that raises what one loan may borrow). Not in Tune, except the
@@ -250,7 +258,8 @@ bundle was unpacked onto the shared environment):
   scales it to the screen, and fill the visible height (no green backdrop / phone frame / fake status bar).
   **Exception (owner): pages built on the shared components are responsive** — layouts fill the width with the 16 px
   page margins (`shared/ps-ui/phone-fit.js`). How big they are drawn is a fit mode (Tune → "Screen fit"; the owner is
-  comparing them on phones): **capped zoom** (default: the 360 design enlarged with the screen, at most 1.1×), **1:1**
+  comparing them on phones): **capped zoom** (default: the 360 design enlarged with the screen, at most 1.15×), **capped zoom · rem**
+  (the same factor through the root font size, so only rem sizes grow; the hosted Withdraw demo stays 1:1), **1:1**
   (true size: text felt small on big iPhones) or **full zoom** (the old 360 scaling). Load `phone-fit.js` after
   `PSTune.setup`. Check at 360, 390 and 430 px wide.
 - `touch-action: manipulation` on interactive elements — iOS Safari otherwise delays every tap ~300ms.

@@ -1,6 +1,6 @@
-/* PeraSure app — applying for a credit limit (Figma app file, "Application Details" 52:5194 … 52:7050):
-   ID type and the two sides of the ID (camera or album) → check the recognised details → a selfie → basic information → a trusted contact →
-   the loan estimate → the application is in review. Owner's rule for this test app: whatever is filled in and in the right format passes;
+/* PeraSure app — applying for a credit limit (Figma app file, "Application Details" 52:5194 … 52:7050; DS 3908:1341):
+   the loan estimate → basic information → ID type and the two sides of the ID (camera or album) → check the recognised details → a selfie →
+   a trusted contact → Submit: the application is in review. Owner's rule for this test app: whatever is filled in and in the right format passes;
    the camera is the phone's real camera (front for the selfie, back for the ID); a photo is only shown, never uploaded or kept — once it is
    taken the step passes. Tune → ID check / Selfie check pick the outcomes (a failure only on the first try). Nothing here is saved. */
 (function () {
@@ -15,14 +15,6 @@
   var GENDER = ['Male', 'Female'];
   var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   var DOMAINS = ['gmail.com', 'yahoo.com', 'outlook.com', 'icloud.com', 'hotmail.com'];
-  /* regions → provinces → cities (a short sample) */
-  var PLACES = [
-    { region: 'NCR', provinces: [{ name: 'Metro Manila', cities: ['Manila', 'Quezon City', 'Makati', 'Taguig', 'Pasig', 'Caloocan'] }] },
-    { region: 'Central Luzon', provinces: [{ name: 'Pampanga', cities: ['Angeles City', 'San Fernando', 'Mabalacat'] }, { name: 'Bulacan', cities: ['Malolos', 'Meycauayan', 'San Jose del Monte'] }] },
-    { region: 'CALABARZON', provinces: [{ name: 'Cavite', cities: ['Bacoor', 'Imus', 'Dasmariñas'] }, { name: 'Laguna', cities: ['Santa Rosa', 'Calamba', 'Biñan'] }] },
-    { region: 'Central Visayas', provinces: [{ name: 'Cebu', cities: ['Cebu City', 'Mandaue', 'Lapu-Lapu'] }] },
-    { region: 'Davao Region', provinces: [{ name: 'Davao del Sur', cities: ['Davao City', 'Digos'] }] }];
-
   var EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/, MOBILE = /^(09\d{9}|\+639\d{9}|639\d{9}|9\d{9})$/, DIGITS = /^\d+$/;
   function K() { return APP.S.kyc || {}; }
   function setK(patch) { APP.set({ kyc: Object.assign({}, K(), patch) }); }
@@ -75,18 +67,27 @@
   }
 
   APP.useCamera = useCamera; APP.pickFile = pickFile;   /* also used by the phone change and the documents (screens-help.js) */
+  /* the application is sent from the last step (the trusted contact): a first application has no loan to repay yet; someone reapplying keeps theirs */
+  function sendApplication() {
+    APP.run(function () { var first = APP.S.user === 'new' || APP.S.user === 'guest'; APP.set(Object.assign({ user: 'review', kyc: null }, first ? { repay: null } : null)); APP.home('home', 0);
+      APP.say('Thanks, we’ve got your application. We’ll let you know what happens next.', 3400); });
+  }
+  /* the way in: the loan estimate comes first (DS 9224:37691), then basic information, then the ID */
+  APP.apply = function () { APP.go('kyc-estimate'); };
 
-  /* the ID camera (Figma 52:6602 / 52:6616): the whole screen, the ID's box, the side named along it, the shutter */
+  /* the ID camera (Figma 52:6602 / 52:6616; DS 5788:13914 / 5797:13982): the whole screen, laid out for an ID held sideways — the hint down
+     the left, the ID's box, the side (ID card mark + name, Text/Brand/Light) down the right, the shutter, a back button turned the same way */
   APP.screen('camera', function Camera(p) {
     var side = p.params.side || 'front', cam = useCamera('environment', true);
     function shoot() { var pic = cam.snap(PS.asset('art/id-' + side + '.png')), f = {}; f[side] = pic; setK(f); APP.back(); }
     return h('div', { className: 'app-cam' },
       h('video', { ref: cam.video, className: 'app-cam__video', playsInline: true, muted: true, autoPlay: true }),
-      h('div', { className: 'app-cam__box' }, cam.state === 'none' ? h('span', { className: 'ps-t-caption-sm' }, 'The camera isn’t available here. Take the picture anyway to use a sample.') : null),
-      h('p', { className: 'app-cam__hint ps-t-caption-sm' }, 'Make sure every detail is clear and the whole ID fits in the box.'),
-      h('p', { className: 'app-cam__side ps-t-title-sm' }, side === 'front' ? 'Front side of your ID' : 'Back side of your ID'),
+      h('div', { className: 'app-cam__frame' },
+        h('p', { className: 'app-cam__hint ps-t-caption-sm' }, 'Make sure every detail is clear and the whole ID fits in the box.'),
+        h('div', { className: 'app-cam__box' }, cam.state === 'none' ? h('span', { className: 'ps-t-caption-sm' }, 'The camera isn’t available here. Take the picture anyway to use a sample.') : null),
+        h('p', { className: 'app-cam__side ps-t-title-sm' }, h(PS.Icon, { name: 'id-card', size: 28, color: 'brand-light' }), side === 'front' ? 'Front side of your ID' : 'Back side of your ID')),
       h(m.button, Object.assign({ type: 'button', className: 'app-cam__shutter', 'aria-label': 'Take the picture', onClick: shoot }, PS.press(true)), h('i')),
-      h('div', { className: 'app-cam__close' }, h(PS.Glass, { icon: 'close', label: 'Close the camera', onClick: function () { APP.back(); } })));
+      h(m.button, Object.assign({ type: 'button', className: 'app-cam__close', 'aria-label': 'Close the camera', onClick: function () { APP.back(); } }, PS.press(true)), h(PS.Icon, { name: 'chevron-left', size: 18, color: 'inverse' })));
   });
 
   /* one side of the ID (Figma 52:6066 / 52:6134): the picture (the sample, or the photo taken: green ring and tick), its name, Camera / Album */
@@ -98,7 +99,7 @@
         h('div', { className: 'app-idside__row' },
           h('span', { className: PS.cx('app-idside__pic', pic && 'is-done') }, h('img', { src: pic || PS.asset('art/id-' + p.side + '.png'), alt: '' }),
             pic ? h(m.span, { className: 'app-idside__tick', initial: { scale: 0.6, opacity: 0 }, animate: { scale: 1, opacity: 1, transition: Object.assign({}, MT.SPRING, { restDelta: 0.001 }) } }, h(PS.Icon, { name: 'check', size: 12, color: 'inverse' })) : null),
-          h('span', { className: 'app-idside__text' }, h('span', { className: 'ps-t-section-md' }, p.name), h('span', { className: 'ps-t-caption-sm' }, pic ? 'Added. Take it again if it isn’t clear.' : p.hint))),
+          h('span', { className: 'app-idside__text' }, h('span', { className: 'ps-t-section-md' }, p.name), h('span', { className: 'ps-t-caption-sm' }, pic ? 'Added. Retake it if it’s blurry.' : p.hint))),
         h(PS.Divider),
         h('div', { className: 'app-idside__btns' },
           h(PS.Button, { variant: 'soft', size: 'sm', onClick: p.onCamera }, 'Camera'),
@@ -118,7 +119,7 @@
     }
     function album(side) { pickFile('image/*', function (pic) { var f = {}; f[side] = pic; setK(f); }); }
     return h(APP.Page, { title: '', bottom: h(PS.BottomBar, null, h(PS.Button, { block: true, inactive: !ready, onClick: next }, 'Next')) },
-      h(APP.Head, { title: 'Verify your identity', body: 'Choose an ID type and upload a clear photo. Your information is kept private.' }),
+      h(APP.Head, { title: 'Verify your identity', body: 'Choose an ID type and upload a clear photo.' }),
       h(PS.FormField, { label: 'ID type', value: k.type, placeholder: 'Select ID type', menu: { options: ID_TYPES, onPick: function (o) { setK({ type: o }); } } }),
       h(PS.AP, { initial: false }, k.type ? h(m.div, Object.assign({ key: 'sides', className: 'app-stack-20' }, PS.fade(MT.Y.block)),
         h(IdSide, { side: 'front', title: 'Upload front side of ID', name: 'Front side of ID', hint: 'Show the side with your photo', pic: k.front,
@@ -126,28 +127,33 @@
         h(IdSide, { side: 'back', title: 'Upload back side of ID', name: 'Back side of ID', hint: 'Show the other side', pic: k.back,
           onCamera: function () { APP.go('camera', { side: 'back' }); }, onAlbum: function () { album('back'); } })) : null));
   });
-  /* the ID is already in use (Figma 52:6204) · the check failed (Figma 52:6381) */
+  /* the ID is already in use (DS 5908:10722) · the check failed (DS 5908:11000) */
+  function IdOpt(p) {
+    return h(m.button, Object.assign({ type: 'button', className: 'app-idres__opt', onClick: p.onClick }, PS.press()),
+      h('span', { className: 'ps-t-section-md-light ps-c-link' }, p.title), h('span', { className: 'ps-t-caption-xs ps-c-tertiary' }, p.sub));
+  }
   APP.sheet('id-inuse', { kind: 'card', label: 'This ID is already in use', className: 'app-idres', render: function InUse() {
     return h(R.Fragment, null,
-      h('div', { className: 'app-idres__top' }, h('img', { src: PS.asset('art/id-in-use.png'), alt: '', style: { width: '6.25rem', height: '6.25rem' } }),
-        h('p', { className: 'ps-t-title-sm' }, 'This ID is already in use'),
-        h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, 'This ID is linked to another account. Choose what you’d like to do next.')),
-      h('div', { className: 'app-stack-8' },
-        h(PS.Button, { variant: 'outline', block: true, className: 'app-idres__opt', onClick: function () { APP.close(); APP.go('login'); } }, h('span', null, 'Log in to your existing account', h('small', null, 'Continue with your previous account'))),
-        h(PS.Button, { variant: 'outline', block: true, className: 'app-idres__opt', onClick: function () { APP.close(); APP.go('phone-old'); } }, h('span', null, 'Can’t access that number', h('small', null, 'Recover your account with a new phone number'))),
-        h(PS.Button, { variant: 'text', block: true, onClick: function () { setK({ front: null, back: null, type: null }); APP.close(); } }, 'Use a different ID')));
+      h('div', { className: 'app-idres__top' }, h('img', { src: PS.asset('art/id-in-use.png'), alt: '', className: 'app-idres__art' }),
+        h('p', { className: 'ps-t-title-md' }, 'This ID is already in use'),
+        h('p', { className: 'ps-t-body-md ps-c-secondary' }, 'This ID is linked to another account. Choose what you’d like to do next.')),
+      h('div', { className: 'app-idres__opts' },
+        h(IdOpt, { title: 'Log in to your existing account', sub: 'Continue with your previous account', onClick: function () { APP.close(); APP.go('login'); } }),
+        h(IdOpt, { title: 'Can’t access that number', sub: 'Recover your account with a new phone number', onClick: function () { APP.close(); APP.go('phone-old'); } }),
+        h(m.button, Object.assign({ type: 'button', className: 'app-idres__other ps-t-section-sm-light ps-c-placeholder', onClick: function () { setK({ front: null, back: null, type: null }); APP.close(); } }, PS.press()), 'Use a different ID')));
   } });
-  APP.sheet('id-failed', { kind: 'card', label: 'ID verify failed', className: 'app-idres', render: function Failed() {
+  APP.sheet('id-failed', { kind: 'card', label: 'We couldn’t verify your ID', className: 'app-idres app-idres--failed', render: function Failed() {
     var tips = [['Avoid false documents', 0], ['Avoid flash', 1], ['Avoid incomplete', 2], ['Avoid blurry', 3]];
     return h(R.Fragment, null,
-      h('div', { className: 'app-sheethead app-sheethead--left' }, h('p', { className: 'ps-t-section-md ps-c-negative app-idres__title' }, h(PS.Icon, { name: 'alert-circle', size: 16, color: 'var(--color-icon-negative-default)' }), 'We couldn’t verify your ID'), h(PS.Close, { onClick: APP.close })),
-      h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, 'Repeated failures may affect your application, so check the photo carefully.'),
-      h('div', { className: 'app-idres__tips ps-inset' }, tips.map(function (t) {
-        return h('div', { key: t[0] }, h('span', { className: 'app-idres__tip', style: { backgroundPosition: (t[1] % 2) * 100 + '% ' + Math.floor(t[1] / 2) * 100 + '%', backgroundImage: 'url("' + PS.asset('art/verify-failed.webp') + '")' } }), h('span', { className: 'ps-t-caption-xs ps-c-tertiary' }, t[0]));
+      h('div', { className: 'app-sheethead app-sheethead--left app-idres__head' }, h('p', { className: 'ps-t-title-sm app-idres__title' }, h(PS.Icon, { name: 'warning-filled', size: 16, color: 'var(--color-icon-negative-light)' }), 'We couldn’t verify your ID'), h(PS.Close, { onClick: APP.close })),
+      h('p', { className: 'ps-t-body-md', style: { color: 'var(--color-text-negative-light)' } }, 'Repeated failures may affect your application, so check the photo carefully.'),
+      h('div', { className: 'app-idres__tips' }, tips.map(function (t) {
+        return h('div', { key: t[0] }, h('span', { className: 'app-idres__tip', style: { backgroundPosition: (t[1] % 2) * 100 + '% ' + Math.floor(t[1] / 2) * 100 + '%', backgroundImage: 'url("' + PS.asset('art/verify-failed.webp') + '")' } }), h('span', { className: 'ps-t-caption-sm ps-c-tertiary' }, t[0]));
       })),
+      /* DS: "Try again" is the quiet one (Popover btn: Stroke/Subtle, Text/Disabled) — repeated tries count against the application */
       h('div', { className: 'app-idres__acts' },
-        h(PS.Button, { variant: 'outline', onClick: function () { setK({ front: null, back: null }); APP.close(); } }, 'Try again'),
-        h(PS.Button, { onClick: function () { APP.close(); APP.go('kyc-check', { manual: true }); } }, 'Enter manually')));
+        h(PS.Button, { variant: 'ghost', size: 'md', onClick: function () { setK({ front: null, back: null }); APP.close(); } }, 'Try again'),
+        h(PS.Button, { size: 'md', onClick: function () { APP.close(); APP.go('kyc-check', { manual: true }); } }, 'Enter manually')));
   } });
 
   /* ---- 2. Check the details (Figma 52:5203): what was read from the ID, to complete ---- */
@@ -167,40 +173,39 @@
         h(PS.FormField, { label: 'First name', value: v.first, placeholder: 'Enter your first name', error: F.err('first'), clear: true, onChange: function (x) { F.set('first', x); }, onBlur: function () { F.touch('first'); } }),
         h(PS.FormField, { label: 'Last name', value: v.last, placeholder: 'Enter your last name', error: F.err('last'), clear: true, onChange: function (x) { F.set('last', x); }, onBlur: function () { F.touch('last'); } }),
         h(PS.FormField, { label: 'Middle name (optional)', value: v.middle, placeholder: 'Enter your middle name', clear: true, onChange: function (x) { F.set('middle', x); } }),
-        h(PS.FormField, { label: 'Suffix (optional)', value: v.suffix, placeholder: 'Jr., Sr., III', clear: true, onChange: function (x) { F.set('suffix', x); } }),
+        h(PS.FormField, { label: 'Suffix name (optional)', value: v.suffix, placeholder: 'Jr., Sr., III', clear: true, onChange: function (x) { F.set('suffix', x); } }),
         h(PS.FormField, { label: 'Gender', value: v.gender, placeholder: 'Select your gender', error: F.err('gender'), menu: { options: GENDER, onPick: function (o) { F.set('gender', o); } } }),
         h(PS.FormField, { label: 'ID number', value: v.idno, placeholder: 'Enter ID number', error: F.err('idno'), clear: true, onChange: function (x) { F.set('idno', x); }, onBlur: function () { F.touch('idno'); } }),
         h(PS.FormField, { label: 'Date of birth', value: fmtDate(v.dob), placeholder: 'Select your date of birth', icon: 'calendar', error: F.err('dob'),
           onClick: function () { APP.open('date', { value: v.dob || { y: 1995, m: 0, d: 1 }, min: { y: 1940, m: 0, d: 1 }, max: { y: TODAY.y - 18, m: TODAY.m, d: TODAY.d }, then: function (d) { F.set('dob', d); } }); } })));
   });
 
-  /* ---- 3. Take a selfie (Figma 52:5784 / 52:5912 / 52:6050): the front camera in the circle; Next takes it ---- */
+  /* ---- 3. Take a selfie (Figma 52:5784 / 52:5912 / 52:6050; DS 5561:7329 · uploading 5561:7501 · failed 5561:7411): the front camera in the
+     circle; Next takes it. While it uploads only the circle stays (a turning dashed ring, "Uploading"); a failed check shows "Failed" in red ---- */
   APP.screen('kyc-selfie', function KycSelfie() {
-    var st = R.useState('live'), state = st[0], cam = useCamera('user', state === 'live'), shot = R.useState(null);
+    var st = R.useState('live'), state = st[0], cam = useCamera('user', state === 'live'), busy = state === 'checking';
     function take() {
-      if (state === 'checking') return;
-      if (state === 'failed') { st[1]('live'); shot[1](null); return; }
-      shot[1](cam.snap(null)); st[1]('checking');
+      if (busy) return;
+      if (state === 'failed') { st[1]('live'); return; }
+      st[1]('checking');   /* the photo is only taken, never uploaded or kept */
       setTimeout(function () {
         if ((APP.T.selfie || 'pass') !== 'pass' && once('selfie')) { st[1]('failed'); return; }
-        setK({ selfie: true }); APP.go('kyc-basic');
-      }, 1100);
+        setK({ selfie: true }); APP.go('kyc-contact');
+      }, 1600);
     }
-    var tips = [['Look straight ahead', 1, true], ['Good lighting', 2, true], ['Face uncovered', 3, false]];
-    return h(APP.Page, { title: '', bottom: h(PS.BottomBar, null, h(PS.Button, { block: true, inactive: state === 'checking', onClick: take }, h(PS.Swap, { k: state === 'failed' ? 'a' : 'n' }, h('span', null, state === 'failed' ? 'Try again' : 'Next')))) },
-      h(APP.Head, { title: 'Take a selfie', body: 'Look straight ahead with a natural expression. Use good lighting and take off glasses or hats.' }),
+    var hide = { animate: { opacity: busy ? 0 : 1, transition: busy ? MT.LEAVE : MT.ENTER }, style: { pointerEvents: busy ? 'none' : null } };   /* what leaves takes no taps */
+    return h(APP.Page, { title: '', bottom: h(PS.BottomBar, null, h(m.div, Object.assign({ initial: false }, hide), h(PS.Button, { block: true, inactive: busy, onClick: take }, h(PS.Swap, { k: state === 'failed' ? 'a' : 'n' }, h('span', null, state === 'failed' ? 'Try again' : 'Next'))))) },
+      h(m.div, Object.assign({ initial: false }, hide), h(APP.Head, { title: 'Take a selfie', body: 'Look straight ahead with a relaxed face. Use good lighting and remove glasses or hats.' })),
       h('div', { className: PS.cx('app-selfie', 'is-' + state) },
         h('div', { className: 'app-selfie__ring' },
           h('video', { ref: cam.video, className: 'app-selfie__video', playsInline: true, muted: true, autoPlay: true, style: { visibility: state === 'live' ? 'visible' : 'hidden' } }),
-          shot[0] && state !== 'live' ? h('img', { className: 'app-selfie__video', src: shot[0], alt: '' }) : null,
-          h(PS.AP, null, state === 'checking' ? h(m.span, Object.assign({ key: 'c', className: 'app-selfie__state is-brand' }, PS.fade(MT.Y.text)), h(PS.Icon, { name: 'upload', size: 20, color: 'brand' }), 'Checking')
-            : state === 'failed' ? h(m.span, Object.assign({ key: 'f', className: 'app-selfie__state is-negative' }, PS.fade(MT.Y.text)), h(PS.Icon, { name: 'alert-circle', size: 20, color: 'var(--color-icon-negative-default)' }), 'Try again')
+          h(PS.AP, null, busy ? h(m.svg, { key: 'ring', className: 'app-selfie__dash', viewBox: '0 0 200 200', 'aria-hidden': true, initial: { opacity: 0, rotate: 0 },
+              animate: { opacity: 1, rotate: PS.reduce ? 0 : 360, transition: { opacity: MT.ENTER, rotate: { duration: 8, ease: 'linear', repeat: Infinity } } }, exit: { opacity: 0, transition: MT.LEAVE } },
+            h('circle', { cx: 100, cy: 100, r: 90 })) : null),
+          h(PS.AP, null, busy ? h(m.span, Object.assign({ key: 'c', className: 'app-selfie__state is-brand' }, PS.fade(MT.Y.text)), h(PS.Icon, { name: 'upload-cloud', size: 26, color: 'brand-light' }), h('span', { className: 'ps-t-section-sm' }, 'Uploading'))
+            : state === 'failed' ? h(m.span, Object.assign({ key: 'f', className: 'app-selfie__state is-negative' }, PS.fade(MT.Y.text)), h(PS.Icon, { name: 'alert-filled', size: 26, color: 'var(--color-text-negative-default)' }), h('span', { className: 'ps-t-section-sm' }, 'Failed'))
             : cam.state === 'none' ? h('span', { key: 'n', className: 'app-selfie__none ps-t-caption-sm' }, 'The camera isn’t available here. Tap Next to use a sample.') : null)),
-        h(PS.Card, { className: 'app-selfie__tips' }, h('p', { className: 'ps-t-section-sm' }, 'Follow these tips'),
-          h('div', { className: 'app-selfie__row' }, tips.map(function (t) {
-            return h('div', { key: t[0] }, h('span', { className: 'app-selfie__pic' }, h('img', { src: PS.asset('art/selfie-tip-' + t[1] + '.png'), alt: '' }),
-              h('i', { className: t[2] ? 'is-ok' : 'is-no' }, h(PS.Icon, { name: t[2] ? 'check' : 'close', size: 8, color: 'inverse' }))), h('span', { className: 'ps-t-caption-xs ps-c-tertiary' }, t[0]));
-          })))));
+        h(m.div, Object.assign({ initial: false, className: 'app-selfie__tips' }, hide), h(PS.SelfieTips, { onMore: function (el) { APP.tipAt(el, 'Hold the phone at eye level, keep your whole face inside the circle and stay still while we take the photo.'); } }))));
   });
 
   /* ---- 4. Basic information (Figma 52:5689 / 52:5717 / 52:5755 / 52:7023 / 52:7000) ---- */
@@ -221,8 +226,8 @@
       });
     }
     function field(key, o) { return h(PS.FormField, Object.assign({ value: v[key], error: F.err(key), onChange: function (x) { F.set(key, x); }, onBlur: function () { F.touch(key); } }, o)); }
-    return h(APP.Page, { title: '', bottom: h(PS.BottomBar, null, h(PS.Button, { block: true, inactive: !F.ok(), onClick: function () { F.submit(function () { APP.go('kyc-contact'); }); } }, 'Next')) },
-      h(APP.Head, { title: 'Basic information', body: 'Share a few details so we can understand your needs and estimate your loan limit.' }),
+    return h(APP.Page, { title: '', bottom: h(PS.BottomBar, null, h(PS.Button, { block: true, inactive: !F.ok(), onClick: function () { F.submit(function () { APP.go('kyc-id'); }); } }, 'Next')) },
+      h(APP.Head, { title: 'Basic information', body: 'Share a few details so we can better understand your needs and estimate your loan limit.' }),
       h('div', { className: 'app-form' },
         field('email', { label: 'Email', placeholder: 'Enter your email', inputMode: 'email', type: 'email', clear: true, suggest: sugg, onSuggest: function (x) { F.set('email', x); } }),
         h(PS.FormField, { label: 'Marital status', value: v.marital, placeholder: 'Select your marital status', error: F.err('marital'), menu: { options: MARITAL, onPick: function (o) { F.set('marital', o); } } }),
@@ -238,26 +243,26 @@
         field('income', { label: 'Total monthly income (PHP)', placeholder: 'Enter your monthly income', inputMode: 'numeric', clear: true }),
         h('div', { className: 'app-files' },
           h('span', { className: 'ps-ff__label' }, 'Support documents (optional)'),
+          /* DS 9548:30951: each file on a white card (PS.FileRow), then the dashed "Add files" (with the hint only while there are none) */
           v.files.map(function (f, i) {
-            return h('div', { key: f.name + i, className: 'app-files__item' }, f.pic ? h('img', { src: f.pic, alt: '' }) : h('span', { className: 'app-files__pdf' }, 'PDF'),
-              h('span', { className: 'app-files__name' }, h('span', { className: 'ps-t-label-sm' }, f.name), h('span', { className: 'ps-t-caption-xs ps-c-tertiary' }, Math.max(1, Math.round(f.size / 1024)) + ' KB')),
-              h('button', { type: 'button', 'aria-label': 'Remove', onClick: function () { F.set('files', v.files.filter(function (x, j) { return j !== i; })); } }, h(PS.Icon, { name: 'close', size: 16, color: 'tertiary' })));
+            return h('div', { key: f.name + i, className: 'app-files__item' }, h(PS.FileRow, { name: f.name, size: f.size, pic: f.pic, state: 'done',
+              onRemove: function () { F.set('files', v.files.filter(function (x, j) { return j !== i; })); } }));
           }),
           h('div', { className: 'app-files__add' },
-            h(m.button, Object.assign({ type: 'button', className: 'app-files__btn', onClick: function () { ms[1](true); } }, PS.press()),
-              h('span', { className: 'ps-c-brand' }, h(PS.Icon, { name: 'add', size: 16, color: 'brand' }), ' Add files (' + v.files.length + '/3)'),
+            h(m.button, Object.assign({ type: 'button', className: PS.cx('app-files__btn', v.files.length && 'has-files'), onClick: function () { ms[1](true); } }, PS.press()),
+              h('span', { className: 'ps-c-brand' }, h(PS.Icon, { name: 'add', size: 16, color: 'brand' }), h('span', null, 'Add files'), h('span', null, '(' + v.files.length + '/3)')),
               v.files.length ? null : h('span', { className: 'ps-t-caption-xs ps-c-placeholder' }, 'Show us your job or income with payslips, bank or e-wallet statements, or a company ID.')),
             h(PS.Popover, { open: menu, options: ['Take a photo', 'Choose from photos', 'Choose from files'], onClose: function () { ms[1](false); },
               onPick: function (o) { add(o === 'Choose from files' ? 'files' : 'photos'); } })),
-          h('p', { className: 'app-files__note ps-t-caption-xs ps-c-placeholder' }, h(PS.Icon, { name: 'info', size: 12, color: 'placeholder' }), 'Supports JPG, JPEG, PNG and PDF.'))));
+          h('p', { className: 'app-files__note ps-t-caption-xs ps-c-placeholder' }, h(PS.Icon, { name: 'alert-circle', size: 12, color: 'placeholder' }), 'Supports JPG, JPEG, PNG and PDF.'))));
   });
 
   /* ---- 5. Add a trusted contact (Figma 52:5772) ---- */
   APP.screen('kyc-contact', function KycContact() {
     var F = useForm('contact', { name: '', mobile: '' }, { name: req(), mobile: function (x) { var c = String(x || '').replace(/[\s-]/g, ''); return !c ? 'This field is required' : MOBILE.test(c) ? null : 'Enter a mobile number like 0917 123 4567'; } });
     var v = F.v;
-    return h(APP.Page, { title: '', bottom: h(PS.BottomBar, null, h('p', { className: 'app-contact__note ps-t-caption-xs ps-c-placeholder' }, 'Philippine SEC rules ask us for an emergency contact. We only call them if a payment is overdue and we can’t reach you.'),
-        h(PS.Button, { block: true, inactive: !F.ok(), onClick: function () { F.submit(function () { APP.go('kyc-estimate'); }); } }, 'Next')) },
+    return h(APP.Page, { title: '', bottom: h(PS.BottomBar, { className: 'app-contact__bar' }, h('p', { className: 'app-contact__note ps-t-caption-xs ps-c-placeholder' }, 'SEC rules ask us for an emergency contact. We only call them if a payment is overdue and we can’t reach you.'),
+        h(PS.Button, { block: true, inactive: !F.ok(), onClick: function () { F.submit(sendApplication); } }, 'Submit')) },
       h(APP.Head, { title: 'Add a trusted contact', body: 'We’ll only reach out to them if we can’t contact you. Adding one may also improve your approval chances.' }),
       h('div', { className: 'app-form app-form--12' },
         h(PS.FormField, { label: 'Full name', value: v.name, placeholder: 'Enter their full name', clear: true, error: F.err('name'), onChange: function (x) { F.set('name', x); }, onBlur: function () { F.touch('name'); } }),
@@ -267,18 +272,18 @@
   /* ---- 6. Your loan estimate (Figma 52:7050): a friendly reminder, the estimated limit with the amount card and the numbers ---- */
   APP.screen('kyc-estimate', function KycEstimate() {
     var CS = window.CS, money = PS.money, st = R.useState({ amount: 12500, term: 6 }), e = st[0], C = CS.calc(e.amount, e.term, null, null);
-    /* a first application has no loan to repay yet; someone reapplying keeps theirs */
-    function apply() { APP.run(function () { var first = APP.S.user === 'new' || APP.S.user === 'guest'; APP.set(Object.assign({ user: 'review', kyc: null }, first ? { repay: null } : null)); APP.home('home', 0); APP.say('Thanks, we’ve got your application. We’ll let you know what happens next.', 3400); }); }
+    function apply() { APP.go('kyc-basic'); }
     return h(APP.Page, { title: '', bottom: h(PS.BottomBar, null, h(PS.Button, { block: true, onClick: apply }, 'Continue to apply')) },
       h(APP.Head, { title: 'Your loan estimate', body: 'Low rates, with costs you can see upfront. Explore an amount and repayment plan that work for you.' }),
-      h(PS.Accordion, { title: h('span', { className: 'app-remind' }, h('span', { className: 'ps-tile' }, h(PS.Icon, { name: 'heart', size: 20, color: 'inverse' })), 'A friendly reminder'), open: true },
-        'These are estimated amounts and rates. If they work for you, continue to apply. We’ll review your details to work out your final offer.'),
+      h(PS.Accordion, { small: true, title: h('span', { className: 'app-remind' }, h('span', { className: 'ps-tile' }, h(PS.Icon, { name: 'heart', size: 20, color: 'inverse' })), 'A friendly reminder'), open: true },
+        'Take a look at the estimated loan amounts and rates. If they work for you, continue to apply. We’ll review your details to work out your final offer.'),
       h('div', { className: 'app-estimate' },
         h(PS.AmountCard, { label: 'Estimated credit limit', amount: e.amount, min: 500, max: 50000, step: 100, terms: CS.loan.terms, term: e.term, termNote: CS.loan.days + ' days / term',
           onAmount: function (a) { st[1]({ amount: a, term: e.term }); }, onCommit: function () {}, onTerm: function (t) { st[1]({ amount: e.amount, term: t }); } }),
-        h(PS.Card, { className: 'app-estimate__rows' }, h(PS.Rows, { rows: [{ label: 'Daily fee', value: money(C.daily) }, { label: 'First payment date', value: CS.date(1) }, { label: 'Per installment', value: money(C.per) }, { label: 'Total payment', value: money(C.total) }] }),
-          h(PS.Link, { onClick: function () { APP.say('Your payment schedule shows once you apply.'); } }, 'View payment schedule'))),
-      h('p', { className: 'ps-t-caption-xs ps-c-placeholder', style: { padding: '0 var(--spacing-padding-sm)' } }, 'These are examples only. Approval and your final loan details depend on our review.'));
+        /* one card with the amount card above (DS 9224:37691): a line after the terms, the rows, a line, the schedule link */
+        h(PS.Card, { className: 'app-estimate__rows' }, h(PS.Divider), h(PS.Rows, { rows: [{ label: 'Daily fee', value: money(C.daily) }, { label: 'First payment date', value: CS.date(1) }, { label: 'Per installment', value: money(C.per) }, { label: 'Total payment', value: money(C.total) }] }),
+          h(PS.Divider), h(PS.Link, { onClick: function () { APP.say('Your payment schedule shows once you apply.'); } }, 'View payment schedule')),
+        h('p', { className: 'ps-t-caption-xs ps-c-placeholder', style: { padding: '0 var(--spacing-padding-sm)', marginTop: 'var(--spacing-gap-sm)' } }, 'These are examples only. Approval and your final loan details depend on our review.')));
   });
 
   /* ---- the date sheet (DS 7628:14113 · 5900:9854 · 5900:9592): the shared date picker — the month's days, or a wheel for the month or the year ---- */
@@ -287,28 +292,52 @@
       onConfirm: function (v) { APP.close(); if (p.params.then) p.params.then(v); } });
   } });
 
-  /* ---- the city sheet (Figma 52:6748): search, then region → province → city ---- */
-  APP.sheet('city', { kind: 'page', label: 'Select city', className: 'app-city', render: function City(p) {
-    var q = R.useState(''), tab = R.useState('region'), sel = R.useState({}), k = q[0].trim().toLowerCase(), s = sel[0];
-    function choose(city, prov, region) { APP.close(); if (p.params.then) p.params.then(city + ', ' + prov); }
-    var rows;
+  /* ---- the address sheet (DS 5975:10755 · 5975:10704 · 5975:11304): search, or Region → Province → City on the Philippines' real list
+     (ph-places.js, PSA PSGC 2025-2Q). The tabs underline the step; City opens once a province is chosen. Search shows the matching cities,
+     provinces and regions in groups, the typed part in brand blue. The field gets "City, Province". ---- */
+  function placeIndex() {
+    if (placeIndex.v) return placeIndex.v;
+    var regions = (window.PH_PLACES || []).map(function (r) { return { name: r[0], provinces: r[1].map(function (p) { return { name: p[0], region: r[0], cities: p[1] }; }) }; });
+    var provinces = [], cities = [];
+    regions.forEach(function (r) { r.provinces.forEach(function (p) { p.r = r; provinces.push(p); p.cities.forEach(function (c) { cities.push({ name: c, p: p }); }); }); });
+    return (placeIndex.v = { regions: regions, provinces: provinces, cities: cities });
+  }
+  function hit(text, q) { return text.toLowerCase().indexOf(q) >= 0; }
+  APP.sheet('city', { kind: 'page', label: 'Select city and province', className: 'app-city', render: function City(p) {
+    var X = placeIndex(), q = R.useState(''), tab = R.useState('region'), sel = R.useState({}), k = q[0].trim().toLowerCase(), s = sel[0];
+    function choose(c, pv) { APP.close(); if (p.params.then) p.params.then(c + ', ' + pv.name); }
+    function pickRegion(r) { sel[1]({ region: r }); tab[1]('province'); }
+    function pickProvince(pv) { sel[1]({ region: pv.r, prov: pv }); tab[1]('city'); q[1](''); }
+    function row(key, title, sub, go, chevron) {
+      return h(m.button, Object.assign({ key: key, type: 'button', className: PS.cx('app-city__row', sub && 'has-sub'), onClick: go }, PS.press()),
+        h('span', { className: 'app-city__text' }, h('span', { className: 'ps-t-body-md' }, k ? marked(title, k) : title), sub ? h('span', { className: 'ps-t-caption-sm ps-c-tertiary' }, sub) : null),
+        chevron ? h(PS.Icon, { name: 'chevron-right', size: 16, color: 'tertiary' }) : null);
+    }
+    var body;
     if (k) {
-      rows = []; PLACES.forEach(function (r) { r.provinces.forEach(function (pv) { pv.cities.forEach(function (c) { if (c.toLowerCase().indexOf(k) >= 0) rows.push({ key: c + pv.name, title: c, sub: pv.name + ', ' + r.region, go: function () { choose(c, pv.name, r.region); } }); }); }); });
-    } else if (tab[0] === 'region') {
-      rows = PLACES.map(function (r) { return { key: r.region, title: r.region, sub: r.provinces.map(function (x) { return x.name; }).join(', '), go: function () { sel[1]({ region: r }); tab[1]('province'); } }; });
-    } else if (tab[0] === 'province') {
-      var R0 = s.region || PLACES[0];
-      rows = R0.provinces.map(function (pv) { return { key: pv.name, title: pv.name, sub: R0.region, go: function () { sel[1]({ region: R0, prov: pv }); tab[1]('city'); } }; });
+      var cs = X.cities.filter(function (c) { return hit(c.name, k); }).slice(0, 40), ps = X.provinces.filter(function (pv) { return hit(pv.name, k); }).slice(0, 20), rs = X.regions.filter(function (r) { return hit(r.name, k); });
+      var groups = [['City', cs.map(function (c, i) { return row('c' + i, c.name, c.p.name + ', ' + c.p.region, function () { choose(c.name, c.p); }); })],
+        ['Province', ps.map(function (pv) { return row('p' + pv.name, pv.name, null, function () { pickProvince(pv); }, true); })],
+        ['Region', rs.map(function (r) { return row('r' + r.name, r.name, null, function () { q[1](''); pickRegion(r); }, true); })]].filter(function (g) { return g[1].length; });
+      var single = groups.length === 1;
+      body = groups.length ? groups.map(function (g) {
+        return h('div', { key: g[0], className: 'app-city__group' }, single ? null : h('p', { className: 'ps-ff__label' }, g[0]), h('div', { className: 'ps-card app-city__list' }, g[1]));
+      }) : h(PS.EmptyState, { title: 'No matching places', body: 'Check the spelling or try another name.', style: { marginTop: '4.5rem' } });
     } else {
-      var R1 = s.region || PLACES[0], P1 = s.prov || R1.provinces[0];
-      rows = P1.cities.map(function (c) { return { key: c, title: c, sub: P1.name + ', ' + R1.region, go: function () { choose(c, P1.name, R1.region); } }; });
+      var R0 = s.region, P0 = s.prov, rows;
+      if (tab[0] === 'region') rows = X.regions.map(function (r) { return row(r.name, r.name, null, function () { pickRegion(r); }, true); });
+      else if (tab[0] === 'province') rows = (R0 || X.regions[0]).provinces.map(function (pv) { return row(pv.name, pv.name, null, function () { pickProvince(pv); }, true); });
+      else rows = (P0 || X.provinces[0]).cities.map(function (c) { var pv = P0 || X.provinces[0]; return row(c, c, pv.name + ', ' + pv.region, function () { choose(c, pv); }); });
+      body = h('div', { className: 'ps-card app-city__card' },
+        h(PS.LineTabs, { id: 'app-city', value: tab[0], onChange: tab[1], items: [{ id: 'region', label: 'Region' }, { id: 'province', label: 'Province', off: !R0 }, { id: 'city', label: 'City', off: !P0 }] }),
+        h(PS.Crossfade, { k: tab[0] + (R0 ? R0.name : '') + (P0 ? P0.name : ''), className: 'app-city__list' }, rows));
     }
     return h(R.Fragment, null,
       h('div', { className: 'app-banks__head' }, h(PS.Search, { value: q[0], onChange: q[1], placeholder: 'Search city name' }), h(PS.Close, { onClick: APP.close })),
-      h('div', { className: 'app-banks__body' },
-        k ? null : h(PS.Tabs, { id: 'app-city', value: tab[0], onChange: tab[1], items: [{ id: 'region', label: 'Region' }, { id: 'province', label: 'Province' }, { id: 'city', label: 'City' }] }),
-        h(PS.Crossfade, { k: (k ? 'q' : tab[0]) + rows.length, className: 'ps-card app-city__list' }, rows.length ? rows.map(function (r) {
-          return h(m.button, Object.assign({ key: r.key, type: 'button', className: 'app-city__row', onClick: r.go }, PS.press()), h('span', { className: 'ps-t-section-sm' }, r.title), h('span', { className: 'ps-t-caption-sm ps-c-tertiary' }, r.sub));
-        }) : h('p', { className: 'ps-t-body-md ps-c-tertiary', style: { padding: '1rem' } }, 'No city found. Check the spelling or try another name.'))));
+      h('div', { className: 'app-banks__body' }, h(PS.Crossfade, { k: k ? 'q' : 'tabs', className: 'app-city__body' }, body)));
   } });
+  function marked(text, q) {
+    var i = text.toLowerCase().indexOf(q); if (i < 0) return text;
+    return [text.slice(0, i), h('span', { key: 'm', className: 'ps-c-brand' }, text.slice(i, i + q.length)), text.slice(i + q.length)];
+  }
 })();

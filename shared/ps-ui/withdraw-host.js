@@ -38,7 +38,7 @@
     ["this.sp('₱50,000', {", "this.maxLabel({"],
     ["}, 'Flexible amounts from ₱500–₱50,000');", "}, 'Flexible amounts from ₱500–' + this.money(this.maxH() * 100, 0));"],
     /* the home card's bar is as long as the card's inside (304 at 360); its temporary-credit line shows while some is left */
-    ["var B = this.creditBar(), W = 304;", "var B = this.creditBar(), W = this.vw() - 56;"],
+    ["var B = this.creditBar(), W = 304;", "var B = this.creditBar(), W = this.heroW() - 24;"],   /* the bar: the card's own inner width (the app sizes its page margins in rem) */
     ["legend('temp', 'assets/dot-temporary.svg',", "B.temp > 0 && legend('temp', 'assets/dot-temporary.svg',"],
     /* the order page: hooks for the host's blocks and numbers, the sample data, taps */
     ["    ];\n    return this.el('div', {\n      key:'blocks',", "    ];\n    blocks = this.hostBlocks(blocks);\n    return this.el('div', {\n      key:'blocks', ref:this.blocksRef(),"],
@@ -95,6 +95,8 @@
     return class WithdrawSheet extends Base {
       /* the frame's width (the demo's 360 when not set) */
       vw() { return Math.max(320, Math.round(this.opt('width') || 360)); }
+      /* the home card's width: the element the app gives it (its column follows the rem page margins and the text size), else the screen's less 2 × 16 */
+      heroW() { var el = this.opt('heroEl'); return el && el.clientWidth ? el.clientWidth : this.vw() - 32; }
       /* host: one object that stays the same while its fields change. The sheet must not be re-rendered from outside — the demo keeps
          part of its state out of React's queue — so what changes is read from here when a part draws, never passed as new props. */
       opt(name) { var hst = this.props.host; return hst && hst[name] != null ? hst[name] : this.props[name]; }

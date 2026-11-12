@@ -50,7 +50,15 @@
         states: [['Try it', live(null, function (tip, set) {
           return frame(260, [h('div', { key: 'r', style: { display: 'flex', justifyContent: 'space-between', padding: 24 } }, ['left', 'middle', 'right'].map(function (k) {
             return h(PS.Glass, { key: k, icon: 'help-circle', label: 'Help', onClick: function (e) { set({ anchor: PS.frameRect(e.currentTarget), text: 'Your available amount is what you can borrow today.' }); } }); })),
-            h(PS.Tooltip, { key: 't', open: !!tip, anchor: tip && tip.anchor, text: tip ? tip.text : '', onClose: function () { set(null); } })]); })]] }] },
+            h(PS.Tooltip, { key: 't', open: !!tip, anchor: tip && tip.anchor, text: tip ? tip.text : '', onClose: function () { set(null); } })]); })]] },
+      { name: 'Toasts', desc: 'Messages at the top, like iPhone notifications: every tap shows a new one at once, covering the one before (it slips down, shrinks and fades; three deep). Swipe one left to close it.',
+        props: 'items [{ id, text }] · onClose(id) · top',
+        states: [['Try it', live({ n: 0, items: [] }, function (v, set) {
+          var texts = ['Code sent to +63 •••• 4567.', 'We’ve copied the reference number.', 'Your loan is now ₱6,000 · 6 terms.'];
+          function close(id) { set(function (o) { return { n: o.n, items: o.items.filter(function (t) { return t.id !== id; }) }; }); }
+          return frame(200, [h(PS.Toasts, { key: 't', items: v.items, onClose: close, top: 16 }),
+            h('div', { key: 'b', style: { position: 'absolute', left: 0, right: 0, bottom: 16, display: 'flex', justifyContent: 'center' } },
+              h(PS.Button, { size: 'sm', onClick: function () { var id = v.n + 1; set({ n: id, items: v.items.concat([{ id: id, text: texts[id % 3] }]).slice(-4) }); setTimeout(function () { close(id); }, 2600); } }, 'Show a toast'))]); })]] }] },
 
     { id: 'forms', title: 'Forms', items: [
       { name: 'Field · PhoneField', desc: 'The 56 px typing box with its label inside. A field that opens a picker shows a chevron.',
@@ -86,12 +94,16 @@
           ['Days', live({ y: 2026, m: 11, d: 24 }, function (v, set) { return h('div', { className: 'ps-card', style: { padding: '20px 16px 32px' } }, h(PS.DatePicker, { value: v, min: { y: 2026, m: 0, d: 1 }, max: { y: 2027, m: 11, d: 31 }, onConfirm: set, onCancel: noop })); })],
           ['Wheel', live(5, function (v, set) { return h(PS.Wheel, { options: PS.MONTHS.map(function (n, i) { return { value: i, label: n }; }), value: v, onChange: set, infinite: true }); })]] },
       { name: 'DocCard · FileRow', desc: 'Proof of income (DS 9473:27722): a kind of document with a + until a file is added, then its files with their state, a chevron to fold them and a dashed Add files.',
-        props: 'DocCard: title · sub · files · open · onToggle · onAdd(element) — FileRow: name · size · state done | compressing | uploading | failed · progress · onRemove · onRetry',
+        props: 'DocCard: title · sub · files · open · onToggle · onAdd(element) — FileRow: name · size · state done | compressing | uploading | failed · progress · onRemove · onRetry · pic',
         states: [
           ['Empty', function () { return h(PS.DocCard, { title: 'Payslips', sub: 'From the last 2–3 months', files: [], onAdd: noop, onToggle: noop }); }],
           ['Files', live(true, function (v, set) { return h(PS.DocCard, { title: 'Payslips', sub: 'From the last 2–3 months', open: v, onToggle: function () { set(!v); }, onAdd: noop, files: [
             { id: 'a', name: 'SSS_Contributions_2026.pdf', size: 1153434, state: 'done', onRemove: noop }, { id: 'b', name: 'Payslip_scan_Sept_2026.jpg', size: 2516582, state: 'uploading', progress: 0.62, onRemove: noop },
             { id: 'c', name: 'Payslip_scan_Sept_2026.jpeg', size: 2516582, state: 'compressing', onRemove: noop }, { id: 'd', name: 'SSS_Contributions_2026_012345.png', size: 900000, state: 'failed', onRetry: noop }] }); })]] },
+      { name: 'SelfieTips · LineTabs', desc: 'The selfie instructions (DS 5585:5407): three pictures with a tick or a cross, and More (three brand dots) for the full tip. Underlined tabs (the address sheet\'s Region / Province / City): the line glides to the step; a step not reached yet is grey.',
+        props: 'SelfieTips: items [{ art, label, ok }] · title · onMore(element) — LineTabs: items [{ id, label, off }] · value · onChange · id',
+        states: [['Selfie tips', function () { return h(PS.SelfieTips, { onMore: noop }); }],
+          ['Tabs', live('province', function (v, set) { return h(PS.LineTabs, { id: 'g-lt', value: v, onChange: set, items: [{ id: 'region', label: 'Region' }, { id: 'province', label: 'Province' }, { id: 'city', label: 'City', off: v === 'region' }] }); })]] },
       { name: 'Search · Consent', desc: 'The search pill of full-height sheets and the small agreement line.',
         props: 'Search: value · onChange · placeholder — Consent: on · onToggle · children',
         states: [

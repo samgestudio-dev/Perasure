@@ -77,12 +77,16 @@
       var b = (bot.current && bot.current.firstElementChild) || host.querySelector('.ps-nav');
       var left = s.scrollHeight - s.clientHeight - s.scrollTop, o = Math.max(0, Math.min(1, left / ((b && b.offsetHeight) || 108))).toFixed(3);
       if (o !== f.o) { f.o = o; host.style.setProperty('--ps-bot-fade', o); }
+      /* room under the content for this page's own bar, however tall large text makes it (never less than colBottom) */
+      var own = bot.current && bot.current.firstElementChild, room = own ? own.offsetHeight + 16 + 'px' : '0px';
+      if (room !== f.r && col.current) { f.r = room; col.current.style.setProperty('--ps-bot-room', room); }
       if (p.onScroll) p.onScroll(s);
     }, [p.onScroll]);
     R.useEffect(function () {
       update();
       var ro = window.ResizeObserver ? new ResizeObserver(update) : null;
       if (ro && col.current) ro.observe(col.current);
+      if (ro && bot.current && bot.current.firstElementChild) ro.observe(bot.current.firstElementChild);
       window.addEventListener('ps-viewport', update);
       return function () { if (ro) ro.disconnect(); window.removeEventListener('ps-viewport', update); };
     }, [update]);
@@ -212,6 +216,25 @@
 
   /* Toast: a short message at the top, under the header's bar, like an iPhone notification (owner) · msg (null hides) · top (px, 104)
      It drops in from above on the Smooth spring, coming into focus from the 3 px blur; it leaves upwards on LEAVE. */
+  /* Toasts: the app's notices, stacked like iPhone notifications (owner) — every call shows a new one (a repeat is not merged or held back):
+     the newest sits on top, the ones before it slip a little lower behind it, smaller and fainter (two show behind at most), each goes
+     after its own time, and a swipe to the left closes one at once. items [{ id, text }] (oldest first) · onClose(id) · top (frame px) */
+  var STACK = [{ y: 0, s: 1, o: 1 }, { y: 10, s: 0.94, o: 0.55 }, { y: 18, s: 0.88, o: 0.3 }];
+  PS.Toasts = function Toasts(p) {
+    var items = (p.items || []).slice(-3), n = items.length, MT = PS.MT, b = 'blur(' + MT.BLUR + 'px)', sw = R.useState({}), swiped = sw[0];
+    var spring = Object.assign({}, MT.SPRING, { restDelta: 0.01, restSpeed: 0.1 });
+    function swipe(id) { sw[1](function (o) { var x = Object.assign({}, o); x[id] = true; return x; }); setTimeout(function () { p.onClose(id, 'swipe'); }, 0); }
+    return h('div', { className: 'ps-toasts', style: p.top ? { '--ps-toast-top': PS.y(p.top) } : null },
+      h(AP, { initial: false }, items.map(function (t, i) {
+        var d = n - 1 - i, k = STACK[Math.min(d, 2)], top = d === 0;
+        return h(m.div, { key: t.id, className: 'ps-toast ps-bubble ps-t-body-md', role: 'status', style: { zIndex: 10 - d, pointerEvents: top ? 'auto' : 'none' },
+          initial: { opacity: 0, y: -16, scale: 0.97, filter: b },
+          animate: { opacity: k.o, y: PS.px(k.y), scale: k.s, x: 0, filter: 'blur(0px)', transition: { default: spring, opacity: d ? { duration: 0.2 } : MT.ENTER, filter: MT.ENTER } },
+          exit: swiped[t.id] ? { x: '-110%', opacity: 0, transition: { x: spring, opacity: MT.LEAVE } } : { opacity: 0, y: -10, scale: 0.98, filter: b, transition: MT.LEAVE },
+          drag: top ? 'x' : false, dragConstraints: { left: 0, right: 0 }, dragElastic: { left: 0.9, right: 0.08 },
+          onDragEnd: function (e, info) { if (info.offset.x < -56 || info.velocity.x < -320) swipe(t.id); } }, t.text);
+      })));
+  };
   PS.Toast = function Toast(p) {
     var MT = PS.MT, b = 'blur(' + MT.BLUR + 'px)';
     return h(AP, null, p.msg ? h(m.div, { key: p.msg, className: 'ps-toast ps-bubble ps-t-body-md', role: 'status', style: p.top ? { '--ps-toast-top': PS.y(p.top) } : null,

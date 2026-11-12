@@ -73,7 +73,7 @@ rule in `CLAUDE.md` asks.
 | `list.js` | `LinkList`, `Facts`, `ActivityItem`, `InboxItem`, `HistoryRow`, `HubCard`, `Tiles`, `Tips` |
 | `fx.js` | the earlier demos' motion as components: `OrderSubmit`, `OtpSheet`, `CreditLimitIntro` (hosts the shipped page; `exit` hands the closing to the page, as the demo's intro.js does) |
 | `withdraw-host.js` | `PS.loadWithdraw()`: the Withdraw demo's loan screen (slide up, amount entry, morph into the order card) the demo's home card and loan screen (slide up, amount entry, morph, the order page's own blocks) run from the demo's own code, laid out at the host's width; the host gives the limit, numbers, sample data, extra blocks and taps (header of the file) — wrappers get `.ps-wd` |
-| `phone-fit.js` | responsive phone page, iOS 26 edge to edge; fit mode cap (default, ≤ 1.1×) / fit (1:1) / scale (old 360 zoom), from `window.PS_FIT` or Tune (`fit`, `zoom`); sets `--vh --ph --ftop --e --sb` |
+| `phone-fit.js` | responsive phone page, iOS 26 edge to edge; fit mode cap (default, ≤ 1.15×) / rem (the same factor through the root font size) / fit (1:1) / scale (old 360 zoom), from `window.PS_FIT` or Tune (`fit`, `zoom`); sets `--vh --ph --ftop --e --sb` |
 | `tune.js`, `tune.css` | the prototype Tune panel, configured per page (`PSTune.setup`) |
 | `assets/icons/` | one-colour icons exported from Figma, drawn as masks (`PS.Icon`) so their colour is a token (an icon's own opacity is set where it is used) |
 | `assets/art/`, `assets/logos/` | full-colour pictures: coupon illustrations, empty box, ticket mask, laurels, logos |
@@ -86,6 +86,12 @@ New in round 5: `PS.FormField` (application fields) with `PS.Popover` (DS 7201:1
 `PS.DocCard` + `PS.FileRow` (proof of income), `PS.Carousel` and `PS.Pager{progress}`, `PS.Installment{tone}`, `PS.Toast` at the
 top, `PS.Screen{secondary}`, `PS.CreditCard` without temporary credit, `PS.Button{variant: 'soft' | 'glass'}` (all in form.js / pay.js / home.js / layout.js / core.js).
 
+New in round 6: `PS.Toasts` (layout.js: a stack of the last three, each new one covering the one before, swipe left to close),
+`PS.SelfieTips` (DS 5585:5407: the three selfie pictures + More) and `PS.LineTabs` (underlined tabs, `off` for a step not reached yet)
+in form.js, `PS.Lottie{active}` / `PS.Anim{active}` (core.js: play from the start when it becomes the card on screen), `PS.Accordion{small}`
+(pay.js), `PS.FileRow{pic}` (a photo's thumbnail; the tick is Icon / Check 8, 8 around the dot), `.ps-t-section-md-light`, and the icons
+`clear-small` (the fields' clear button: Neutral/950 at 60 %), `upload-cloud`, `alert-filled`, `warning-filled`.
+
 ## Rules for changing components
 
 - **Sizes are rem** (owner): 1rem = 16 design px at the default text size. Load `tokens-rem/tokens-rem.css` after `tokens/tokens.css`;
@@ -97,8 +103,8 @@ top, `PS.Screen{secondary}`, `PS.CreditCard` without temporary credit, `PS.Butto
 
 - **Responsive.** Layouts fill the width with the 16 px page margins (360–430 px phones, up to 600 px on a desktop).
   No fixed 360 px widths; fixed sizes only where Figma fixes them. How big the page is drawn is phone-fit's mode:
-  capped zoom by default (the 360 design enlarged with the screen, at most 1.1×; a 430 px phone shows 14 px text at
-  15.4 px), 1:1, or full zoom. With a Tune panel, load `phone-fit.js` after `PSTune.setup`.
+  capped zoom by default (the 360 design enlarged with the screen, at most 1.15×; a 430 px phone shows 14 px text at
+  16.1 px), 1:1, or full zoom. With a Tune panel, load `phone-fit.js` after `PSTune.setup`.
 - **Tokens only.** Colours, spacing, radii, type, shadows and blur come from `tokens/tokens.css`. A value with no
   token goes once into `:root` of `ps-ui.css` as `--ps-*`, with a note saying so.
 - **Configurable, not copied.** Anything that differs between screens (copy, amounts, states, which parts show) is a
