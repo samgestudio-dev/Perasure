@@ -37,8 +37,9 @@ window.APP = (function () {
   function close() { set({ sheet: null }); }
   var toastT = 0;
   function say(text, ms) { clearTimeout(toastT); set({ toast: text }); toastT = setTimeout(function () { set({ toast: null }); }, ms || 2600); }
-  function tipAt(el, text, width) {
-    set({ tip: { text: text, anchor: PS.frameRect(el), width: width } });
+  /* tipAt(element, text, width, { icon, big }): the tooltip on what was tapped (it places itself: PS.Tooltip) */
+  function tipAt(el, text, width, o) {
+    set({ tip: Object.assign({ text: text, anchor: PS.frameRect(el), width: width }, o) });
   }
 
   /* ---- the made-up network ---- */
@@ -103,9 +104,9 @@ window.APP = (function () {
         onVerified: function () { var cb = S.otp && S.otp.then; set({ otp: null }); if (cb) cb(); } }),
       h(PS.Overlay, { open: S.submitting }, S.submitting ? h(PS.OrderSubmit, { onDone: function () { var cb = S.submitting.then; set({ submitting: false }); if (cb) cb(); } }) : null),
       h(PS.Overlay, { open: S.busy }, h(PS.Loader, { fill: true })),
-      h(PS.Tooltip, { open: !!S.tip, anchor: S.tip ? S.tip.anchor : null, width: S.tip ? S.tip.width : null, text: S.tip ? S.tip.text : '', onClose: function () { set({ tip: null }); } }),
-      /* the toast sits just above what is at the bottom of the screen (owner: not high up); over the Withdraw sheet that is its Confirm button */
-      h(PS.Toast, { msg: S.toast, bottom: 'auto', above: S.wd && S.stack.length <= S.wd ? Math.round(76 * ((document.querySelector('.ps-frame') || {}).clientWidth || 360) / 360) : 0 }));
+      h(PS.Tooltip, { open: !!S.tip, anchor: S.tip ? S.tip.anchor : null, width: S.tip ? S.tip.width : null, icon: S.tip && S.tip.icon, big: S.tip && S.tip.big, text: S.tip ? S.tip.text : '', onClose: function () { set({ tip: null }); } }),
+      /* the toast: at the top, under the header's bar (owner) */
+      h(PS.Toast, { msg: S.toast }));
   }
   function maskPhone(p) { return '0' + p.slice(0, 2) + '****' + p.slice(-4); }
 
@@ -114,7 +115,7 @@ window.APP = (function () {
   /* Page: a secondary page with a back button and a title; `load` (a key) shows the loader first */
   function Page(p) {
     var top = Object.assign({ left: h(PS.Back, { onClick: p.onBack || function () { back(); } }), title: p.title, right: p.right === undefined ? tune() : p.right }, p.top);
-    return h(PS.Screen, { top: top, bottom: p.bottom, tint: p.tint, colTop: p.colTop, colBottom: p.colBottom == null ? (p.bottom ? 140 : 48) : p.colBottom, className: p.className, scrollRef: p.scrollRef },
+    return h(PS.Screen, { secondary: true, top: top, bottom: p.bottom, tint: p.tint, colTop: p.colTop, colBottom: p.colBottom == null ? (p.bottom ? 140 : 48) : p.colBottom, className: p.className, scrollRef: p.scrollRef },
       p.load ? h(Loaded, { k: p.load, className: 'app-col' }, p.children) : p.children);
   }
   /* Head: a page's own big title + one line under it (24 / 32 and 14 / 20, inset 8 from the column) */

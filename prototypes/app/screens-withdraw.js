@@ -75,8 +75,8 @@
           var why = CS.why(c, amount, next.term);
           if (why) setTimeout(function () { APP.say(why + '. See all to pick another.', 3200); }, 620); else if (c.kind === 'limit') l.lim = c.id; else l.disc = c.id;
         }
-        H.withId = null; APP.S.L = l; APP.S.lastRow = {}; tellLater();
-      } else if (next.phase === 'confirm' && APP.S.L && (next.amt !== prev.amt || next.term !== prev.term)) {
+        H.withId = null; APP.S.L = l; APP.S.lastRow = {}; s._lastMax = null; tellLater();
+      } else if (next.phase === 'confirm' && APP.S.L && !s.gliding() && (next.amt !== prev.amt || next.term !== prev.term)) {   /* (a glide is the app's own change) */
         var want = { amount: pesos(next), term: next.term };
         if (APP.S.L.amount === want.amount && APP.S.L.term === want.term) return;
         if (next.term !== prev.term) { APP.loanCheck(Object.assign({}, APP.S.L, want)); return; }
@@ -97,11 +97,21 @@
     H.onSchedule = function () { APP.open('plan'); };
     H.onBenefits = function () { APP.say('Benefits aren’t part of the test app yet.'); };
     H.onConfirm = function () { APP.submitLoan(); };
+    /* the slider's right end: with a limit coupon in use, the raised limit in green with the coupon tag, swapped (old out, new in) when it
+       changes — the shared slider's boost state (coupon system) */
+    H.maxLabel = function (s, text, style, extra) {
+      var lim = APP.S.L && find(APP.S.coupons, APP.S.L.lim), boost = !!lim && s.state.phase === 'confirm';
+      return h(PS.Swap, Object.assign({ k: text + (boost ? '+' : ''), y: PS.MT.Y.digit }, extra),
+        h('span', { style: Object.assign({}, style, { display: 'inline-flex', alignItems: 'center', gap: 2 }, boost ? { color: 'var(--color-text-positive-heavy)' } : null) },
+          boost ? h(PS.Icon, { name: 'coupon-tag', size: 14, color: 'positive' }) : null, text));
+    };
     /* the app's loan → the sheet (a coupon was kept or taken off, which moved the amount or the term), and its blocks drawn again */
     R.useEffect(function () {
       var s = H.sheet; if (!s || s.state.screen !== 'loan' || s.state.phase !== 'confirm' || !S.L) return;
-      if (S.L.amount !== pesos(s.state) || S.L.term !== s.state.term) s.setState({ amt: String(Math.round(S.L.amount / 100)), term: S.L.term });
-      s.refresh();
+      if (S.L.term !== s.state.term) s.setState({ term: S.L.term });
+      if (s.state.morph) { s.refresh(); return; }
+      if (s._lastMax == null) s._lastMax = s.maxH() * 100;                              /* the order page has just opened: nothing to glide from */
+      if (S.L.amount !== pesos(s.state) || s.maxH() * 100 !== s._lastMax) s.glide(S.L.amount); else s.refresh();   /* the knob, fill and amount glide */
     });
     var open = !!S.wd, under = open && S.stack.length > S.wd;      /* a page opened from the sheet (withdrawal method) shows in its place */
     return h(R.Fragment, null,
@@ -111,12 +121,15 @@
   };
   /* WdHero: the home page's credit card — the demo's own card (the one its motion works on), drawn by the sheet into this element */
   APP.WdHero = function WdHero(p) {
-    var ref = R.useRef(null);
-    R.useLayoutEffect(function () { var el = ref.current; APP.wd.setHero(el); return function () { APP.wd.dropHero(el); }; }, []);
-    return h('div', { ref: ref, className: 'app-wdhero ps-wd', onClick: function (e) {
-      var info = ref.current.querySelector('img[src*="icon-info-circle"]');
-      if (info && p.onInfo && info.parentNode.contains(e.target)) p.onInfo(info.parentNode);
-    } });
+    var ref = R.useRef(null), cb = R.useRef(p); cb.current = p;
+    R.useLayoutEffect(function () {
+      var el = ref.current; APP.wd.setHero(el);
+      /* the card is drawn here by the sheet through a portal, so React's events go to the sheet, not to this element: a DOM listener */
+      function click(e) { var info = el.querySelector('img[src*="icon-info-circle"]'); if (info && cb.current.onInfo && info.parentNode.contains(e.target)) cb.current.onInfo(info.parentNode); }
+      el.addEventListener('click', click);
+      return function () { el.removeEventListener('click', click); APP.wd.dropHero(el); };
+    }, []);
+    return h('div', { ref: ref, className: 'app-wdhero ps-wd' });
   };
 
   /* borrow: every way into ordering starts at the amount entry (owner) — the home card, the credit limit hub, a coupon's "Use", "Go to borrow" */

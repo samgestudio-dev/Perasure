@@ -12,6 +12,7 @@
      host.width                   the frame's width in CSS px: the demo is laid out that wide (it is drawn for 360; nothing is scaled, so
                                   its type is the same size as the host's pages)
      host.max                     the most that can be borrowed, in pesos (the demo's 50,000 when not set): keypad, slider and caption
+     host.maxLabel(sheet, text, style, extra) → the slider's right end (default: the demo's grey amount) · sheet.glide(amount): see there
      host.heroEl                  an element to draw the demo's home card in (then call sheet.forceUpdate()); its Withdraw pill opens the sheet
      host.blocks(sheet, blocks)   → the order page's blocks: the demo's own, with the host's new ones added (they enter like the demo's)
      host.order(sheet)            → { daily, per, total, save } the numbers of the order details (save: a coupon's discount)
@@ -33,8 +34,8 @@
     /* the limits (₱500–₱50,000) → host.max */
     ["if (parseInt(n || '0', 10) > 500) n = '500';", "if (parseInt(n || '0', 10) > this.maxH()) n = String(this.maxH());"],
     ["(500 + p * 49500) / 100", "(500 + p * (this.maxH() * 100 - 500)) / 100"],
-    ["(this.amount() - 500) / 49500", "(this.amount() - 500) / (this.maxH() * 100 - 500)"],
-    ["this.sp('₱50,000', {", "this.sp(this.money(this.maxH() * 100, 0), {"],
+    ["(this.amount() - 500) / 49500", "(this.amount() - 500) / (this.maxShownH() * 100 - 500)"],
+    ["this.sp('₱50,000', {", "this.maxLabel({"],
     ["}, 'Flexible amounts from ₱500–₱50,000');", "}, 'Flexible amounts from ₱500–' + this.money(this.maxH() * 100, 0));"],
     /* the home card's bar is as long as the card's inside (304 at 360); its temporary-credit line shows while some is left */
     ["var B = this.creditBar(), W = 304;", "var B = this.creditBar(), W = this.vw() - 56;"],
@@ -100,6 +101,25 @@
       /* a host value: data may be a function of the sheet; a tap (on…) is passed as it is */
       hv(name, fb) { var v = this.opt(name); if (v == null) return fb === undefined ? null : fb; return typeof v === 'function' && name.slice(0, 2) !== 'on' ? v(this) : v; }
       maxH() { return Math.max(5, Math.round((this.opt('max') || 50000) / 100)); }
+      /* the slider's right end (host.maxLabel(sheet, text, style, extra): e.g. the raised limit of a coupon) and the max the knob is drawn
+         against — while glide() runs it moves with the knob instead of jumping */
+      maxShownH() { return this._maxShown != null ? this._maxShown / 100 : this.maxH(); }
+      maxLabel(style, extra) { var t = this.money(this.maxH() * 100, 0), f = this.opt('maxLabel'); return f ? f(this, t, style, extra) : this.sp(t, style, extra); }
+      /* glide(amount): something other than the finger changed the amount or the limit (a coupon was ticked or kept): the knob, the fill
+         and the amount move there on the sheet's spring (CLAUDE.md: "the amount slider follows the finger at once; when something else
+         moves it… glide there on the Smooth spring"). While it runs the sheet's amount is not the user's (gliding()). */
+      gliding() { return !!this._glide; }
+      glide(amount) {
+        var self = this, fm = this.state.fm, toMax = this.maxH() * 100, fromMax = this._maxShown != null ? this._maxShown : (this._lastMax || toMax);
+        var fromAmt = this.amount(), toAmt = amount == null ? fromAmt : amount, hund = function (v) { return String(Math.round(v / 100)); };
+        this._lastMax = toMax;
+        if (this._glide) { this._glide.stop(); this._glide = null; }
+        if (fromMax === toMax && fromAmt === toAmt) { this._maxShown = null; return; }
+        if (!fm || !fm.animate || this.reduced()) { this._maxShown = null; this.setState({ amt: hund(toAmt) }); this.refresh(); return; }
+        this._glide = fm.animate(0, 1, Object.assign({}, this.spring(), { restDelta: 0.001, restSpeed: 0.01,
+          onUpdate: function (k) { self._maxShown = fromMax + (toMax - fromMax) * k; var a = hund(fromAmt + (toAmt - fromAmt) * k); if (a !== self.state.amt) self.setState({ amt: a }); else self.refresh(); },
+          onComplete: function () { self._glide = null; self._maxShown = null; self.setState({ amt: hund(toAmt) }); self.refresh(); } }));
+      }
       order() { var o = super.order(), f = this.opt('order'); return f ? Object.assign({}, o, f(this)) : o; }
       extraRows(o) { var f = this.opt('extraRows'); return (f && f(this, o)) || []; }
       hostBlocks(blocks) { var f = this.opt('blocks'); return f ? f(this, blocks) : blocks; }
@@ -161,6 +181,8 @@
     if (klass) return Promise.resolve(klass);
     if (!loading) loading = fetch(url('withdraw.js'), { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error(r.status + ' ' + r.url); return r.text(); })
       .then(function (src) {
+        /* the demo reads its progressive blur from <html data-variant="blur"> when its code runs: follow the host page's setting (tune.js marks off as data-blur="off") */
+        var root = document.documentElement; if (root.getAttribute('data-blur') !== 'off' && !root.hasAttribute('data-variant')) root.setAttribute('data-variant', 'blur');
         window.__resources = Object.assign({ motionTokens: url('motion-tokens.js'), framerMotion: '', mayaLogo: url('assets/maya-logo.png') }, window.__resources);
         var Base = new Function('React', 'DCLogic', patch(src) + '\n;return Component;')(R, DCLogic);
         klass = make(Base); return klass;

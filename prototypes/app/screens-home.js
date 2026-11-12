@@ -15,15 +15,18 @@
   });
 
   /* the penalty explainer (tooltip on the overdue card and in Payment detail) */
+  /* the penalty explainer (Figma 10545:38381): title, the three rules (when in brand / red, what in secondary), a line, the note */
   APP.penaltyTip = function () {
     return h('div', { className: 'app-pen' }, h('p', { className: 'ps-t-section-sm', style: { whiteSpace: 'nowrap' } }, 'How penalties work for this installment'),
-      h('div', { className: 'app-pen__rows' }, AD.penalties.map(function (r, i) {
-        return h('div', { key: i, className: PS.cx('app-pen__row ps-t-caption-sm', i === 1 && 'is-now') }, h('b', { className: 'ps-c-brand' }, r[0]), h('span', null, r[1]));
-      })),
-      h('p', { className: 'ps-t-caption-xs ps-c-tertiary' }, 'We don’t charge penalties on penalties. Your due date doesn’t change.'));
+      h('div', { className: 'app-pen__detail' },
+        h('div', { className: 'app-pen__rows' }, AD.penalties.map(function (r, i) {
+          return h('div', { key: i, className: 'app-pen__row' }, h('b', { className: PS.cx('ps-t-label-sm', i ? 'ps-c-negative-heavy' : 'ps-c-brand') }, r[0]), h('span', { className: 'ps-t-caption-sm ps-c-secondary' }, r[1]));
+        })),
+        h(PS.Divider),
+        h('p', { className: 'ps-t-caption-xs ps-c-placeholder' }, 'We don’t charge penalties on penalties. Your due date doesn’t change.')));
   };
   function showPenalty(el) {
-    APP.tipAt(el, APP.penaltyTip(), 296);
+    APP.tipAt(el, APP.penaltyTip(), 288, { big: true });
   }
   APP.showPenalty = showPenalty;
   function apply() { if (!APP.signedIn()) APP.go('login'); else APP.go('kyc-id'); }
@@ -70,13 +73,15 @@
           cond: c.terms.length === CS.loan.terms.length ? 'Any term' : CS.termsText(c.terms).replace(/^./, function (x) { return x.toUpperCase(); }) };
       });
       var update = S.loan === 'reviewing' || S.loan === 'failed';
-      var tip = 'Your available amount is what you can borrow today. It goes back up as you repay.' +
-        (credit.temporaryLeft ? ' ' + money(credit.temporaryLeft, 0) + ' of it is temporary credit, valid until ' + credit.temporaryUntilLong + '. We use your temporary credit first.' : '');
-      /* the Withdraw demo's own card (the one its motion works on); ?card=ps, or before the demo's code has loaded: the shared component */
-      body = [APP.wd && APP.wd.heroReady() && !APP.q.get('card')
-          ? h(APP.WdHero, { key: 'credit', onInfo: function (el) { APP.tipAt(el, tip); } })
+      /* the card's ⓘ (Figma 9137:25806): how long the credit lasts — the temporary credit's end date while some is left, else the limit's */
+      var tip = credit.temporaryLeft ? 'Your ' + money(credit.temporaryLeft, 0) + ' temporary credit is valid until ' + credit.temporaryUntilFull + '. We use it first.'
+        : 'This credit limit is valid until ' + credit.limitUntil + '.';
+      /* the Withdraw demo's own card (the one its motion works on) while there is temporary credit; without it, the shared card in its
+         one-line layout (Figma 10789:29220) — and before the demo's code has loaded, or with ?card=ps */
+      body = [APP.wd && APP.wd.heroReady() && credit.temporaryLeft > 0 && !APP.q.get('card')
+          ? h(APP.WdHero, { key: 'credit', onInfo: function (el) { APP.tipAt(el, tip, null, { icon: 'clock' }); } })
           : h(PS.CreditCard, { key: 'credit', available: credit.available, total: credit.total, temporary: credit.temporaryLeft, temporaryUntil: credit.temporaryUntil,
-              onWithdraw: function () { APP.borrow(); }, onInfo: function (e) { APP.tipAt(e.currentTarget, tip); } }),
+              onWithdraw: function () { APP.borrow(); }, onInfo: function (e) { APP.tipAt(e.currentTarget, tip, null, { icon: 'clock' }); } }),
         update ? h(PS.Strip, { key: 'upd', raised: true, icon: 'info', title: 'You have updates on your loan', sub: 'Tap to view the latest status', count: 1, onClick: function () { APP.go('order'); } }) : null,
         paymentCard(S),
         h(PS.HomeCoupons, { key: 'coupons', coupons: cards, onOpen: function () { APP.go('coupons'); } }), more()].concat(trust());

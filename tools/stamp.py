@@ -7,11 +7,13 @@ Run before committing a change to index.html, animations/, assets/, prototypes/ 
 
     python3 tools/stamp.py
 """
-import os, re, time
+import os, re, subprocess, sys, time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PAGES = ['index.html', 'animations/player.html']
 stamp = time.strftime('%Y%m%d%H%M', time.gmtime())
+# the rem version of the tokens (tokens-rem/) is made from tokens/tokens.css: keep it in step before anything is stamped
+subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'rem-tokens.py')], check=True)
 pat = re.compile(r'((?:playground-ui|animations)\.js)\?v=[\w-]+')
 for rel in PAGES:
     p = os.path.join(ROOT, rel)
@@ -23,7 +25,7 @@ for rel in PAGES:
 # prototypes that load their own files (page.js / page.css / data.json next to them) mark them ?v=<stamp> too
 own = re.compile(r'((?:href|src|data-[\w-]+)="(?!\.\./\.\./)[^"?]+\.(?:js|css|json))\?v=[\w-]+"')
 # … and the shared components they link (../../shared/ps-ui/…?v=)
-shared = re.compile(r'((?:href|src)="\.\./\.\./shared/[^"?]+\.(?:js|css))\?v=[\w-]+"')
+shared = re.compile(r'((?:href|src)="\.\./\.\./(?:shared|tokens-rem)/[^"?]+\.(?:js|css))\?v=[\w-]+"')
 for d, _, files in os.walk(os.path.join(ROOT, 'prototypes')):
     for f in files:
         if not f.endswith('.html'): continue

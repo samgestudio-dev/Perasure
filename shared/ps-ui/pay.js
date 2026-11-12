@@ -12,8 +12,8 @@
   /* Installment: one repayment (328 × 114) · month ('JAN') · day ('15') · amount · sub ('Overdue 18 days') · tone negative | brand (date tile and sub)
      on (ticked: part of what is paid now) · onToggle · note (footer line) · noteIcon (12 px) · onDetail */
   PS.Installment = function Installment(p) {
-    var neg = p.tone === 'negative';
-    return h(PS.Card, { className: PS.cx('ps-inst', neg && 'is-negative') },
+    /* tone: default (grey date) · brand (due today: blue) · negative (overdue: red) — Figma 10534:35615 */
+    return h(PS.Card, { className: PS.cx('ps-inst', p.tone === 'negative' && 'is-negative', p.tone === 'brand' && 'is-brand') },
       h(m.button, Object.assign({ type: 'button', role: 'checkbox', 'aria-checked': !!p.on, className: 'ps-inst__top', onClick: p.onToggle }, PS.press()),
         h('span', { className: 'ps-inst__date' }, h('span', null, p.month), h('b', null, p.day)),
         h('span', { className: 'ps-inst__main' }, h(PS.Amount, { value: p.amount, className: 'ps-inst__amount' }), h('span', { className: 'ps-inst__sub' }, p.sub)),
@@ -63,27 +63,86 @@
       h(AP, { initial: false }, open ? h(m.div, { key: 'b', className: 'ps-acc__body', initial: { height: 0, opacity: 0 }, animate: { height: 'auto', opacity: 1, transition: { height: MT.SPRING, opacity: MT.ENTER } },
         exit: { height: 0, opacity: 0, transition: { height: MT.SPRING, opacity: MT.LEAVE } } }, h('div', { className: 'ps-acc__in ps-t-body-md ps-c-tertiary' }, p.children)) : null));
   };
-  /* MethodPicker: categories on a rail + the methods of each · cats [{ id, icon, label, groups: [{ title, tag, items: [{ id, name }] }] }] · value (cat) · onCat · onPick(item) */
+  /* MethodPicker: ways to pay (Figma DS 7792:15391) — the categories on a grey rail, every category's groups in ONE list that scrolls; the rail
+     follows the list (the category on screen is the one marked) and a tap on the rail glides the list to it on the Smooth spring. The white
+     mark moves between rail items (layoutId); colours change in 150 ms.
+     cats [{ id, icon, label, groups: [{ title, tag, items: [{ id, name }] }] }] · value (cat) · onCat · onPick(item) · scroller (the element
+     that scrolls the list: the sheet's body; default the picker's own list) */
   PS.MethodPicker = function MethodPicker(p) {
-    var cat = p.cats.filter(function (c) { return c.id === p.value; })[0] || p.cats[0];
+    var list = R.useRef(null), anchors = R.useRef({}), gliding = R.useRef(null), cat = p.cats.filter(function (c) { return c.id === p.value; })[0] || p.cats[0];
+    function scroller() { return (p.scroller && p.scroller.current) || list.current; }
+    /* the rail follows the list: the last category whose first group has reached the top of the list */
+    R.useEffect(function () {
+      var sc = scroller(); if (!sc) return;
+      function spy() {
+        if (gliding.current) return;
+        var top = sc.getBoundingClientRect().top + 8, on = p.cats[0] && p.cats[0].id;
+        p.cats.forEach(function (c) { var el = anchors.current[c.id]; if (el && el.getBoundingClientRect().top <= top + 1) on = c.id; });
+        if (sc.scrollTop + sc.clientHeight >= sc.scrollHeight - 2 && p.cats.length) on = p.cats[p.cats.length - 1].id;   /* the end: the last one */
+        if (on && on !== p.value) p.onCat(on);
+      }
+      sc.addEventListener('scroll', spy, { passive: true });
+      return function () { sc.removeEventListener('scroll', spy); };
+    }, [p.cats, p.value]);
+    function go(c) {
+      var sc = scroller(), el = anchors.current[c.id]; p.onCat(c.id); if (!sc || !el) return;
+      var to = Math.min(sc.scrollHeight - sc.clientHeight, sc.scrollTop + el.getBoundingClientRect().top - sc.getBoundingClientRect().top - (p.offset || 0));
+      if (gliding.current) gliding.current.stop();
+      var Mo = window.Motion; if (PS.reduce || !Mo || !Mo.animate) { sc.scrollTop = to; return; }
+      gliding.current = Mo.animate(sc.scrollTop, to, Object.assign({}, MT.SPRING, { restDelta: 0.5, onUpdate: function (v) { sc.scrollTop = v; },
+        onComplete: function () { gliding.current = null; } }));
+    }
     return h('div', { className: 'ps-mpick' },
       h('div', { className: 'ps-mpick__rail', role: 'tablist' }, p.cats.map(function (c) {
         var on = c === cat;
-        return h('button', { key: c.id, type: 'button', role: 'tab', 'aria-selected': on, className: PS.cx('ps-mpick__cat', on && 'is-on'), onClick: function () { p.onCat(c.id); } },
+        return h('button', { key: c.id, type: 'button', role: 'tab', 'aria-selected': on, className: PS.cx('ps-mpick__cat', on && 'is-on'), onClick: function () { go(c); } },
+          on ? h(m.span, { layoutId: 'ps-mpick-mark', className: 'ps-mpick__mark', transition: MT.SPRING }) : null,
           h(PS.Icon, { name: c.icon, size: 24 }), h('span', null, c.label));
       })),
-      h(PS.Crossfade, { k: cat.id, className: 'ps-mpick__pane' }, h('div', { className: 'ps-mpick__list' }, cat.groups.map(function (g, i) {
-        return h('div', { key: i, className: 'ps-mpick__group' },
-          h('div', { className: 'ps-mpick__title' }, h('span', { className: 'ps-t-title-14' }, g.title), g.tag ? h(PS.Tag, { tone: 'positive' }, g.tag) : null),
-          g.items.map(function (it) {
-            return h(m.button, Object.assign({ key: it.id, type: 'button', className: 'ps-mpick__row ps-t-body-md-em', onClick: function () { p.onPick(it, cat); } }, PS.press()), h('span', null, it.name),
-              h(PS.Icon, { name: 'chevron-right', size: 16, color: 'tertiary' }));
-          }));
-      }))));
+      h('div', { ref: list, className: 'ps-mpick__list' }, p.cats.map(function (c) {
+        return h('div', { key: c.id, className: 'ps-mpick__cat-groups', ref: function (n) { anchors.current[c.id] = n; } }, c.groups.map(function (g, i) {
+          return h('div', { key: i, className: 'ps-mpick__group' },
+            h('div', { className: 'ps-mpick__title' }, h('span', { className: 'ps-t-section-sm-light' }, g.title), g.tag ? h(PS.Tag, { tone: 'positive' }, g.tag) : null),
+            h('div', { className: 'ps-mpick__rows' }, g.items.map(function (it) {
+              return h(m.button, Object.assign({ key: it.id, type: 'button', className: 'ps-mpick__row ps-t-body-md-em', onClick: function () { p.onPick(it, c); } }, PS.press()), h('span', null, it.name),
+                h(PS.Icon, { name: 'chevron-right', size: 16, color: 'tertiary' }));
+            })));
+        }));
+      })));
   };
+
   /* Pager: the dots under a carousel · n · i */
   PS.Pager = function Pager(p) {
-    var d = []; for (var i = 0; i < p.n; i++) d.push(h('i', { key: i, className: i === p.i ? 'is-on' : null }));
+    var d = []; for (var i = 0; i < p.n; i++) d.push(p.progress ? h(PagerDot, { key: i, i: i, progress: p.progress }) : h('i', { key: i, className: i === p.i ? 'is-on' : null }));
     return h('div', { className: 'ps-pager', 'aria-hidden': true }, d);
+  };
+  /* a dot that follows the swipe: as wide as the page is on screen (6 → 24) and as dark (shade 8 → 40), from the carousel's progress */
+  function PagerDot(p) {
+    var M = window.Motion, w = M.useTransform(p.progress, function (v) { return 6 + 18 * Math.max(0, 1 - Math.abs(v - p.i)); });
+    var o = M.useTransform(p.progress, function (v) { return Math.max(0, 1 - Math.abs(v - p.i)); });
+    return h(m.i, { className: 'ps-pager__dot', style: { width: w } }, h(m.b, { style: { opacity: o } }));
+  }
+  /* Carousel: pages side by side, swiped left / right (or moved by index) on the Smooth spring; as tall as its tallest page, so nothing
+     jumps when the page changes (owner) · pages [nodes] · index · onIndex(i) · dots (a Pager under it that follows the swipe) */
+  PS.Carousel = function Carousel(p) {
+    var M = window.Motion, box = R.useRef(null), x = M.useMotionValue(0), prog = M.useMotionValue(p.index || 0), n = p.pages.length, wRef = R.useRef(0);
+    R.useEffect(function () { return x.on('change', function (v) { var w = wRef.current || 1; prog.set(-v / w); }); }, []);
+    function width() { var w = box.current ? box.current.clientWidth : 0; wRef.current = w; return w; }
+    function settle(i) {
+      var w = width(); i = Math.max(0, Math.min(n - 1, i));
+      if (PS.reduce) x.jump(-i * w); else M.animate(x, -i * w, Object.assign({}, MT.SPRING));
+      if (i !== p.index && p.onIndex) p.onIndex(i);
+    }
+    R.useEffect(function () { settle(p.index || 0); }, [p.index]);
+    R.useEffect(function () { function fit() { x.jump(-(p.index || 0) * width()); } window.addEventListener('resize', fit); return function () { window.removeEventListener('resize', fit); }; }, [p.index]);
+    return h('div', { className: 'ps-carousel' },
+      h('div', { ref: box, className: 'ps-carousel__view' },
+        h(m.div, { className: 'ps-carousel__track', style: { x: x }, drag: 'x', dragElastic: 0.18, dragMomentum: false,
+          dragConstraints: { left: -(n - 1) * (wRef.current || 1000), right: 0 },
+          onDragStart: function () { width(); },
+          onDragEnd: function (e, info) { var w = wRef.current || 1, i = p.index || 0, dx = info.offset.x, vx = info.velocity.x;
+            if (dx < -w * 0.2 || vx < -400) i += 1; else if (dx > w * 0.2 || vx > 400) i -= 1; settle(i); } },
+          p.pages.map(function (pg, i) { return h('div', { key: i, className: 'ps-carousel__page', 'aria-hidden': i !== p.index }, pg); }))),
+      p.dots ? h(PS.Pager, { n: n, progress: prog }) : null);
   };
 })();

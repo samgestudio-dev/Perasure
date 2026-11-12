@@ -31,7 +31,7 @@
   /* TopBar: left (node) · title (text) · right (node) · extra (node under the 116 px bar, e.g. tabs) + extraHeight · solid (page colour, no blur) · live */
   PS.TopBar = function TopBar(p) {
     var hgt = 116 + (p.extraHeight || 0);
-    return h('header', { className: PS.cx('ps-top', p.solid && 'ps-top--solid', p.live && 'is-live'), style: { '--ps-top-h': hgt + 'px' } },
+    return h('header', { className: PS.cx('ps-top', p.solid && 'ps-top--solid', p.live && 'is-live'), style: { '--ps-top-h': PS.y(hgt) } },
       h(PS.Bands, { pos: 'top' }),
       h('div', { className: 'ps-top__row' },
         h('div', { className: 'ps-top__side' }, p.left),
@@ -60,7 +60,9 @@
   /* Screen: one page of the app. Owns its scroller. The bars have no colour while they cover nothing: the header's veil (and blur)
      comes in as content scrolls under it, the bottom bar's goes as the scroll reaches the end (CLAUDE.md → "Header and bottom bars").
      top: TopBar props · bottom: node (a BottomBar or a Navigator) · tint: green top glow (loan pages) · colTop / colBottom (px)
-     scrollRef: gets the scroller · className: on the column · rise: the content rises in piece by piece when the page first shows · children: the page content */
+     scrollRef: gets the scroller · className: on the column · rise: the content rises in piece by piece when the page first shows · children: the page content
+     secondary: a secondary page (二级页面: every page but the app's tabs — owner): the header is solid, in the page's own colour, and the bottom
+     bar's veil is the secondary-page colour (CLAUDE.md) */
   PS.Screen = function Screen(p) {
     var sc = R.useRef(null), bot = R.useRef(null), col = R.useRef(null), fade = R.useRef({}), ls = R.useState(false), live = ls[0], setLive = ls[1], liveRef = R.useRef(false);
     var update = R.useCallback(function () {
@@ -87,13 +89,13 @@
     R.useEffect(function () { if (p.scrollRef) p.scrollRef.current = sc.current; });
     R.useLayoutEffect(function () { if (p.rise) PS.rise(col.current, { delay: 120 }); }, []);
     var es = R.useState(null), colStyle = {};
-    if (p.colTop != null) colStyle['--ps-col-top'] = p.colTop + 'px';
-    if (p.colBottom != null) colStyle['--ps-col-bottom'] = p.colBottom + 'px';
-    return h('div', { className: 'ps-screen', ref: es[1] },
+    if (p.colTop != null) colStyle['--ps-col-top'] = PS.y(p.colTop);
+    if (p.colBottom != null) colStyle['--ps-col-bottom'] = PS.rem(p.colBottom);
+    return h('div', { className: PS.cx('ps-screen', p.secondary && 'ps-screen--secondary'), ref: es[1] },
       p.tint ? h('div', { className: 'ps-screen__tint' }) : null,
       h(ScreenCtx.Provider, { value: es[0] }, h('div', { className: 'ps-scroll', ref: sc, onScroll: update },
         h('div', { className: PS.cx('ps-col', p.className), ref: col, style: colStyle }, p.children))),
-      p.top ? h(PS.TopBar, Object.assign({}, p.top, { live: live })) : null,
+      p.top ? h(PS.TopBar, Object.assign({}, p.top, { live: live }, p.secondary ? { solid: true } : null)) : null,
       p.bottom ? h('div', { ref: bot, style: { display: 'contents' } }, p.bottom) : null,
       p.overlay || null);
   };
@@ -166,27 +168,36 @@
     return h('div', { className: 'ps-sheet__titlebar' }, h('p', { className: 'ps-t-title-sm' }, p.children), h(PS.Close, { onClick: p.onClose }));
   };
 
-  /* Tooltip: a frosted bubble that places itself · open · text (string or node) · onClose (any tap closes it) · width (248)
-     anchor { left, top, right, bottom } (frame px, PS.frameRect(el)): it sits 8 px under what was tapped — centred on it, or, when that is
-     in the left / right third of the screen, with its edge 16 px past it — always inside the 16 px screen margins, and goes above when there is no room below. at { x, y } (older calls): a top-left corner, kept on screen.
-     Comes in on ENTER, goes on LEAVE. */
+  /* Tooltip: a frosted bubble that places itself · open · text (string or node) · onClose (any tap closes it) · width (250)
+     icon: a 28 px brand tile with that icon before the text, and a × after it (Figma 9137:25806) · big: the roomy one (16 padding, radius 24:
+     the penalty explainer, Figma 10545:38381)
+     anchor { left, top, right, bottom } (frame px, PS.frameRect(el)): one corner covers what was tapped and reaches 12 px past it on both
+     sides (owner) — the top-right corner for something in the right third of the screen, the top-left in the left third, centred over it in
+     the middle; when there is no room below it covers it with a bottom corner instead and opens upwards; always inside the 16 px screen
+     margins. at { x, y } (older calls): a top-left corner, kept on screen. Grows from the anchor on ENTER, goes on LEAVE. */
   function TipBody(p) {
     var ref = R.useRef(null);
     R.useLayoutEffect(function () {
       var el = ref.current, f = el && el.offsetParent; if (!el || !f) return;
-      var w = el.offsetWidth, hh = el.offsetHeight, FW = f.clientWidth, FH = f.clientHeight, M = 16, G = 8, x, y;
+      var w = el.offsetWidth, hh = el.offsetHeight, FW = f.clientWidth, FH = f.clientHeight, M = PS.px(16), O = PS.px(12), x, y, oy = 0;
       var bottomSafe = M + (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sb')) || 0);
       if (p.anchor) {
-        var a = p.anchor, cx = (a.left + a.right) / 2; y = a.bottom + G;
-        x = cx > FW * 2 / 3 ? a.right + M - w : cx < FW / 3 ? a.left - M : cx - w / 2;   /* near a side: its edge reaches 16 px past what was tapped (Figma 52:13180) */
-        if (y + hh > FH - bottomSafe && a.top - G - hh > M) y = a.top - G - hh;
+        var a = p.anchor, cx = (a.left + a.right) / 2;
+        x = cx > FW * 2 / 3 ? a.right + O - w : cx < FW / 3 ? a.left - O : cx - w / 2;
+        y = a.top - O;
+        if (y + hh > FH - bottomSafe) { y = a.bottom + O - hh; oy = 1; }
       } else { x = p.at.x; y = p.at.y; }
       x = Math.max(M, Math.min(FW - w - M, x)); y = Math.max(M, Math.min(FH - hh - bottomSafe, y));
       el.style.left = Math.round(x) + 'px'; el.style.top = Math.round(y) + 'px';
-      if (p.anchor) el.style.setProperty('--ps-tip-ox', Math.round((p.anchor.left + p.anchor.right) / 2 - x) + 'px');   /* grows from the anchor */
+      if (p.anchor) el.style.transformOrigin = Math.round((p.anchor.left + p.anchor.right) / 2 - x) + 'px ' + Math.round((p.anchor.top + p.anchor.bottom) / 2 - y) + 'px';   /* grows from what was tapped */
     });
-    return h(m.div, Object.assign({ ref: ref, className: 'ps-tip ps-bubble ps-t-body-md', role: 'tooltip', style: { left: 0, top: 0, width: p.width || undefined }, onClick: p.onClose },
-      { initial: { opacity: 0, scale: 0.96, filter: 'blur(' + PS.MT.BLUR + 'px)' }, animate: { opacity: 1, scale: 1, filter: 'blur(0px)', transition: PS.MT.ENTER }, exit: { opacity: 0, scale: 0.98, transition: PS.MT.LEAVE } }), p.text);
+    var body = p.icon ? h(R.Fragment, null,
+        h('span', { className: 'ps-tip__icon' }, h(PS.Icon, { name: p.icon, size: 20, color: 'inverse' })),
+        h('span', { className: 'ps-tip__text' }, p.text),
+        h('span', { className: 'ps-tip__x', 'aria-hidden': true }, h(PS.Icon, { name: 'close-thin', size: 12, color: 'brand' })))
+      : p.text;
+    return h(m.div, Object.assign({ ref: ref, className: PS.cx('ps-tip ps-bubble ps-t-body-md', p.icon && 'ps-tip--icon', p.big && 'ps-tip--big'), role: 'tooltip', style: { left: 0, top: 0, width: p.width ? PS.rem(p.width) : undefined }, onClick: p.onClose },
+      { initial: { opacity: 0, scale: 0.96, filter: 'blur(' + PS.MT.BLUR + 'px)' }, animate: { opacity: 1, scale: 1, filter: 'blur(0px)', transition: PS.MT.ENTER }, exit: { opacity: 0, scale: 0.98, transition: PS.MT.LEAVE } }), body);
   }
   PS.Tooltip = function Tooltip(p) {
     return h(AP, null, p.open ? h(R.Fragment, { key: 'tip' },
@@ -199,25 +210,14 @@
     return h(m.button, Object.assign({ type: 'button', className: 'ps-tune-btn', onClick: window.PSTune.open }, PS.press()), 'Tune');
   };
 
-  /* Toast: a short message above the bottom bar · msg (null hides) · bottom: px above the frame bottom (120), or 'auto' — it places
-     itself (owner: low, close to what is at the bottom): 12 px above the tab bar, the bottom bar's button or the pay bar of the page on
-     top, and 24 px above the screen edge when nothing is there · above: px of something at the bottom the page can't know by its class */
-  PS.toastBottom = function (frame, above) {
-    var fr = frame.getBoundingClientRect(), top = null, edge = document.documentElement.classList.contains('ps-edge') ? (window.__PS_SB || 0) : 0;
-    [].forEach.call(frame.querySelectorAll('.ps-nav__bar, .ps-bot > :not(.ps-pb), .ps-paybar'), function (el) {
-      var r = el.getBoundingClientRect();
-      if (!r.height || r.top > fr.bottom || r.bottom < fr.bottom - 200 || el.closest('.ps-sheet') || getComputedStyle(el).visibility === 'hidden') return;
-      if (top == null || r.top < top) top = r.top;
-    });
-    var h0 = top == null ? 0 : fr.bottom - top;
-    if (above) h0 = Math.max(h0, above + edge);
-    return Math.round(h0 ? h0 + 12 : 24 + edge);
-  };
+  /* Toast: a short message at the top, under the header's bar, like an iPhone notification (owner) · msg (null hides) · top (px, 104)
+     It drops in from above on the Smooth spring, coming into focus from the 3 px blur; it leaves upwards on LEAVE. */
   PS.Toast = function Toast(p) {
-    var auto = p.bottom === 'auto';
-    return h(AP, null, p.msg ? h(m.div, Object.assign({ key: p.msg, className: 'ps-toast ps-bubble ps-t-body-md', role: 'status',
-      ref: auto ? function (el) { if (el && el.offsetParent) el.style.bottom = PS.toastBottom(el.offsetParent, p.above) + 'px'; } : null,
-      style: !auto && p.bottom ? { '--ps-toast-bottom': p.bottom + 'px' } : null }, PS.fade(PS.MT.Y.block)), p.msg) : null);
+    var MT = PS.MT, b = 'blur(' + MT.BLUR + 'px)';
+    return h(AP, null, p.msg ? h(m.div, { key: p.msg, className: 'ps-toast ps-bubble ps-t-body-md', role: 'status', style: p.top ? { '--ps-toast-top': PS.y(p.top) } : null,
+      initial: { opacity: 0, y: -16, scale: 0.97, filter: b }, animate: { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)',
+        transition: { default: Object.assign({}, MT.SPRING, { restDelta: 0.01, restSpeed: 0.1 }), opacity: MT.ENTER, filter: MT.ENTER } },   /* fade on the clock, the drop on the spring */
+      exit: { opacity: 0, y: -10, scale: 0.98, filter: b, transition: MT.LEAVE } }, p.msg) : null);
   };
   /* useToast: [msg, show(text, ms)] */
   PS.useToast = function () {

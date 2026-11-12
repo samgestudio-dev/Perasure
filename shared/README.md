@@ -81,7 +81,19 @@ rule in `CLAUDE.md` asks.
 Each component's props are written in a comment right above it and listed in the gallery. Fields left out are not
 drawn (a coupon with no `best`, a summary with no `newLimit`, an order row whose `value` is `null`).
 
+New in round 5: `PS.FormField` (application fields) with `PS.Popover` (DS 7201:12032), `PS.DatePicker` + `PS.Wheel`
+(react-wheel-picker, `vendor/react-wheel-picker@1.2.3` — load its script after React and its `style.css` before ps-ui.css),
+`PS.DocCard` + `PS.FileRow` (proof of income), `PS.Carousel` and `PS.Pager{progress}`, `PS.Installment{tone}`, `PS.Toast` at the
+top, `PS.Screen{secondary}`, `PS.CreditCard` without temporary credit, `PS.Button{variant: 'soft' | 'glass'}` (all in form.js / pay.js / home.js / layout.js / core.js).
+
 ## Rules for changing components
+
+- **Sizes are rem** (owner): 1rem = 16 design px at the default text size. Load `tokens-rem/tokens-rem.css` after `tokens/tokens.css`;
+  write new CSS in rem (`1.5rem` for 24 px), never a fixed px — except hairlines (1–2 px strokes), shadows and blurs, the 40 px status
+  strip above the screen (`calc(40px + 4.75rem)` is the 116 px header line) and a page's max width. In JavaScript give design px through
+  `PS.rem(n)` (a size), `PS.y(n)` (a distance from the frame's top, which includes the strip) or `PS.px(n)` (the CSS px it is right now,
+  for geometry). A box that holds text gets `min-height`, not `height`, so larger text has room. `phone-fit.js` (with
+  `PS_FIT.text`) sets the root size from the phone's text size: up to 130 % everything follows, above that only text (`--ps-tx`).
 
 - **Responsive.** Layouts fill the width with the 16 px page margins (360–430 px phones, up to 600 px on a desktop).
   No fixed 360 px widths; fixed sizes only where Figma fixes them. How big the page is drawn is phone-fit's mode:

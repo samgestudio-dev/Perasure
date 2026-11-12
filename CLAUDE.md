@@ -45,10 +45,13 @@ animations/<slug>/             <slug>.json (+ <slug>.lottie, preview.png, gsap/<
 tools/                     flatten-lottie-masks.py, flatten-svg-masks.py (Safari mask-blur fixes), unscale-gsap-svg.py (Safari scale glitch)
 tokens/                    versioned design tokens from the Figma design system (tokens.css, tokens.json, CHANGELOG.md, snapshot)
                            — not shown on the picker; updated only through tools/sync-tokens.py (see "Updating tokens")
+tokens-rem/                the same length tokens in rem (tokens-rem.css), MADE by tools/rem-tokens.py from tokens/tokens.css
+                           (stamp.py runs it) — never edit it or the token files by hand; used by the app and shared/ps-ui
 tools/figma-tokens/        Figma side of the token pipeline: core.js (export + digest) and the export plugin
 .github/workflows/tokens.yml  applies exports dropped in tokens/inbox/, tags tokens-v<version>, checks generated files
 vendor/<lib>@<version>/    pinned libraries: lottie-web, gsap (+ plugins; esm/ = ES modules), react, react-dom, mui-material,
-                           motion (motion-react.js = React API, motion.js = vanilla; both set window.Motion), matter-js
+                           motion (motion-react.js = React API, motion.js = vanilla; both set window.Motion), matter-js,
+                           react-wheel-picker (the package's dist/index.js unchanged in a small wrapper → window.WheelPicker; + style.css)
 README.md                  human-facing summary + demo / animation tables
 .claude/skills/            PeraSure skills: perasure-tone-of-voice (all copy), perasure-card-morph (morph motion: short SKILL.md,
                            references/ read per branch, engine.js, example.html) — see "PeraSure skills"
@@ -142,6 +145,11 @@ built on it. Details and the head block to copy: `shared/README.md`; reference p
   ticket, coupon row, amount card, order details, protection, method, profile, credit limit, menu…). Every state is a
   prop (`state`, `on`, `tone`, `variant`) and is shown in `shared/gallery.html` — add new states there too.
 - Styles only from the tokens; a value with no token goes into `:root` of `ps-ui.css` as `--ps-*` with a note.
+- **Sizes in rem, never a fixed px** (owner): 1rem = 16 design px at the default text size; tokens from `tokens-rem/` (load it after
+  `tokens/tokens.css`). px only for hairlines (1–2 px strokes), shadows, blurs, the 40 px status strip above the screen
+  (`calc(40px + 4.75rem)` = the 116 px header line) and a page's max width. JS lengths: `PS.rem(n)`, `PS.y(n)` (from the frame's top),
+  `PS.px(n)` (geometry). Text boxes get `min-height`, not `height`. Check at the default text size (it must look exactly as before)
+  and at 130 % / 150 % (Tune → Text size).
 - Motion (owner: refined and just right, never in the way): reuse the repo's values — `PS.MT` in `core.js` is withdraw's
   `motion-tokens.js` (Smooth spring 240/30/1, ENTER/LEAVE crossfade with 3 px blur, press 60 ms 0.985 / 0.92). Numbers that
   follow a slider never animate; selection states change colour only (150 ms); leaving pages and sheets take no taps.
@@ -163,7 +171,11 @@ rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), buil
 - **New work goes in here too.** When a new screen, flow or motion piece is added to the repo, add it to the app as well (a screen in
   `screens-*.js`, its states in Tune), so the app stays complete. Change co-maker and the landing page are not part of it.
 - States that can't be reached by tapping are switched in Tune (account, loan, coupons, network, code / ID / selfie outcomes, inbox,
-  rating). Fit is fixed at capped zoom. Loading is made up: `APP.useLoad` (a page's first data: random time, sometimes slow) and
+  rating). Also in Tune: Screen fit (default capped zoom 1.1×), Text size (default: the phone's setting) and progressive blur (default off).
+- **Text size follows the phone** (owner asked for rem): `<meta name="text-scale" content="scale">` (Chrome / Android WebView) and
+  Dynamic Type (iOS, read through `-apple-system-body`) set the root size in `phone-fit.js` (`PS_FIT.text`). Up to 130 % the whole layout
+  follows; above that only text grows (`--ps-tx`); the phone's setting is capped at 150 % until every component holds 200 %. The hosted
+  Withdraw demo is px (its own code) and follows only the screen fit. Loading is made up: `APP.useLoad` (a page's first data: random time, sometimes slow) and
   `APP.run` (an action); Tune → Network makes the first try fail (the "Something went wrong" state).
 - Order submit plays only after Confirm on apply-a-loan (after the code).
 - **Existing animations are never re-imagined** (owner): a motion that already exists in the repo (Withdraw: credit limit increase → home,
@@ -177,8 +189,12 @@ rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), buil
   was waited for then rises in piece by piece (`PS.Rise`).
 - **Where things sit** (owner): the loader (a 72 px coin + dots) is in the very middle of the screen; Order submit's coin (72 px, the same) and text sit a little above the middle (`.ps-stage`);
   full-page empty states (`PS.EmptyState{page}`) and the fallback put their picture at Order submit's height.
-- **Toasts sit low** (owner): `PS.Toast{bottom:'auto'}` — 12 px above the tab bar / bottom button / pay bar of the page on top, 24 px above the
-  screen edge when nothing is there.
+- **Toasts sit at the top** (owner): under the header bar, like an iPhone notification (`PS.Toast`).
+- **Secondary pages** (owner): every page except the Home / Payment / Account tabs has a solid header in the page colour (`PS.Screen{secondary}`);
+  the immersive amount entry and the order page are not secondary pages.
+- **Lists in the application are popovers** (owner, DS 7201:12032 — the bottom-sheet lists are retired): `PS.FormField{menu}` / `PS.Popover`.
+  **Dates** use `PS.DatePicker` (DS 7628:14113); its month / year wheel is react-wheel-picker (`PS.Wheel`), not a hand-made one.
+- **Payment logos are 24 px** (owner) in the withdrawal method and bank lists.
 - **One set of numbers** (owner): every amount and date that matters comes from `prototypes/app/coupons-data.js` (`NUM` → `CS.credit`: limit,
   used, temporary + its end date, total, available; `CS.current`: the loan being repaid, whose principal is the used credit) — never a number
   typed into a screen. Temporary credit is not a limit-increase coupon (that raises what one loan may borrow). Not in Tune, except the
@@ -197,7 +213,8 @@ rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), buil
 - **Default shadow** on home's blue card, payment card and updates strip (owner). Coupon pictures are Figma's SVG exports (`PS.CouponArt`).
 - **Bars have no colour while they cover nothing** (owner): the header's veil appears as content scrolls under it, the bottom / tab bar's goes
   when the scroll reaches the end; both fade with the scroll (`PS.Screen`).
-- **Tooltips place themselves** (owner): `APP.tipAt(element, text)` / `PS.Tooltip{anchor}` — next to what was tapped, never off screen.
+- **Tooltips place themselves** (owner, DS 9137:25806): `APP.tipAt(element, text)` / `PS.Tooltip{anchor}` — a corner covers what was tapped and
+  reaches 12 px past it on both sides; never off screen.
 - **Icons come from Figma** (owner): export the icon (`download_assets` on its node) into `shared/ps-ui/assets/icons`; don't redraw one.
 - **Animations replace stills** (owner): wherever Figma shows a still that has an animation in `animations/`, the app plays the
   animation (`PS.Anim`, core.js): anti-scam cards, rating, sending code, every empty state and the fallback, loaders, order submit.
@@ -306,7 +323,8 @@ bundle was unpacked onto the shared environment):
   3. `{"unchanged":true}` → tell the owner nothing changed; stop. Otherwise save the result verbatim to a scratch
      file; if it says `"parts": N` with N > 1, run step 2 again with part 1 … N−1 and save each.
   4. `python3 tools/sync-tokens.py part0.json [part1.json …] --message-out /tmp/msg.txt`.
-- Then commit `tokens/` with `/tmp/msg.txt` as the message and push to `main`. Don't tag: the *Tokens* workflow
+- Then run `python3 tools/rem-tokens.py` (it remakes `tokens-rem/tokens-rem.css` from the new tokens) and commit `tokens/` + `tokens-rem/` with
+  `/tmp/msg.txt` as the message and push to `main`. Don't tag: the *Tokens* workflow
   tags `tokens-v<version>` on push. `stamp.py` is not needed for token-only changes.
 - Report the summary line and any removed / renamed CSS names (the *Developer impact* of the new
   `CHANGELOG.md` entry — read just that entry), plus the tag.

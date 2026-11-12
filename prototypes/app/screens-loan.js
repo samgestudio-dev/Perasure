@@ -48,7 +48,7 @@
       var l = fresh(amount, t, null); APP.set({ L: l, agree: false, lastRow: {} }); APP.swap('loan', null, 1);
     }
     var shown = typed ? PS.num(amount, 0).slice(0, -2) : '';   /* the comma sits where it will in the whole amount: 12,5|00 */
-    return h(PS.Screen, { tint: true, colBottom: 0, className: 'app-amount', top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), title: 'Apply a loan', right: APP.tune() } },
+    return h(PS.Screen, { tint: true, colBottom: 0, className: 'app-amount',   /* the amount entry: not a secondary page (owner) */ top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), title: 'Apply a loan', right: APP.tune() } },
       h('div', { className: 'app-amount__sheet' },
         h('div', { className: 'app-amount__top' },
           h('p', { className: 'ps-t-body-md-em ps-c-secondary' }, 'Disbursement amount'),
@@ -149,7 +149,7 @@
       window.Motion.animate(from, to, Object.assign({}, PS.MT.SPRING, { restDelta: 0.5, restSpeed: 5, onUpdate: function (v) { el.scrollTop = v; if (to - v < 24) fire(); }, onComplete: fire }));
     }
     function confirm() { if (!S.agree) { pointAgree(); return; } APP.submitLoan(); }
-    return h(PS.Screen, { tint: true, scrollRef: sc, top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), title: 'Apply a loan', right: APP.tune() },
+    return h(PS.Screen, { tint: true, scrollRef: sc,   /* the order details: not a secondary page (owner) */ top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), title: 'Apply a loan', right: APP.tune() },
       bottom: h(PS.BottomBar, null, h(PS.Button, { block: true, inactive: !S.agree, onClick: confirm }, 'Confirm')) },
       [h(PS.AmountCard, { key: 'card', amount: l.amount, min: LOAN.min, max: C.max, step: LOAN.step, boost: !!Lm, terms: LOAN.terms, term: l.term, termNote: LOAN.days + ' days / term',
         onAmount: function (v) { setL(Object.assign({}, APP.S.L, { amount: v })); }, onCommit: function (v) { APP.loanCheck(Object.assign({}, APP.S.L, { amount: v })); },
@@ -178,7 +178,7 @@
           onPick: function () { var r = CS.why(c, l.amount, l.term); if (r) { APP.say(r + '.'); return; }
             var d = Object.assign({}, draft); if (c.kind === 'limit') d.lim = d.lim === c.id ? null : c.id; else d.disc = d.disc === c.id ? null : c.id; APP.set({ draft: d }); },
           onRule: function (el) { APP.tipAt(el, c.rule); } });
-      }) : h(PS.EmptyState, { title: kind === 'limit' ? 'No limit increases yet' : 'No discounts yet', body: 'When you get one, it shows up here.', style: { marginTop: 72 } }));
+      }) : h(PS.EmptyState, { title: kind === 'limit' ? 'No limit increases yet' : 'No discounts yet', body: 'When you get one, it shows up here.', style: { marginTop: '4.5rem' } }));
   } });
   APP.sheet('keep', { kind: 'card', label: 'Keep your coupon?', render: function Keep() {
     var S = APP.use(), keep = S.keep || [], k = keep[0], K = k ? find(S.coupons, k.id) : null;
@@ -232,9 +232,9 @@
       h('div', { className: 'app-banks__body' }, keys.length ? keys.map(function (k) {
         return h(PS.Card, { key: k, className: 'app-banks__group' }, h('p', { className: 'ps-t-caption-xs ps-c-tertiary' }, k), groups[k].map(function (b, i) {
           return h(R.Fragment, { key: b[0] }, i ? h(PS.Divider) : null, h(m.button, Object.assign({ type: 'button', className: 'app-banks__row ps-t-body-md-em', onClick: function () { APP.set({ pickedBank: b, sheet: null }); } }, PS.press()),
-            h('img', { src: PS.asset('logos/pay-' + b[0] + '.png'), alt: '', width: 18, height: 18 }), b[1]));
+            h('img', { src: PS.asset('logos/pay-' + b[0] + '.png'), alt: '', className: 'app-banks__logo' }), b[1]));
         }));
-      }) : h(PS.EmptyState, { title: 'No matching banks found', body: 'Check the spelling or try another name.', style: { marginTop: 72 } })));
+      }) : h(PS.EmptyState, { title: 'No matching banks found', body: 'Check the spelling or try another name.', style: { marginTop: '4.5rem' } })));
   } });
 
   /* ---- coupon centre ---- */
@@ -246,7 +246,7 @@
       return h(PS.CouponTicket, { key: c.id, value: c.value, label: c.label, rule: c.rule, ruleLong: c.long, meta: c.meta, expiresAt: tab === 'use' ? c.expiresAt : null, best: tab === 'use' && bestD === c,
         state: tab === 'use' ? 'default' : tab, action: tab === 'use' && S.user === 'approved' ? 'use' : 'none', onUse: function () { APP.borrow(c.id); }, onRule: function (el) { APP.tipAt(el, c.rule); } });
     }) : h(PS.EmptyState, { title: empty[0], body: empty[1], page: true });
-    return h(PS.Screen, { colTop: 174, colBottom: 48, top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), title: 'Coupons', right: APP.tune(), solid: true, extraHeight: 58,
+    return h(PS.Screen, { secondary: true, colTop: 174, colBottom: 48, top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), title: 'Coupons', right: APP.tune(), solid: true, extraHeight: 58,
       extra: h('div', { className: 'app-ctabs' }, h(PS.Tabs, { id: 'app-centre', value: tab, onChange: function (t) { APP.set({ tip: null }); setTab(t); },
         items: [{ id: 'use', label: 'To use', count: coupons.length || null }, { id: 'used', label: 'Used' }, { id: 'expired', label: 'Expired' }] })) } },
       h(APP.Loaded, { k: 'coupons', rise: false }, h(PS.Crossfade, { k: tab, rise: true, className: list.length ? 'ps-list' : null }, body)));

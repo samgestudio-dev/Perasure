@@ -13,7 +13,7 @@
     var s = p.size || 36, name = ART[p.type] || ART.percent;
     if (s < 40) return h(PS.Art, { name: name + '-sm', size: s, className: p.className, style: p.style });
     /* the outline reaches 3.31 % left and 5 % right of the box (Figma insets), so the picture is drawn wider than its box */
-    return h('span', { className: PS.cx('ps-cart', p.className), style: Object.assign({ '--ps-s': s + 'px' }, p.style), 'aria-hidden': true },
+    return h('span', { className: PS.cx('ps-cart', p.className), style: Object.assign({ '--ps-s': PS.rem(s) }, p.style), 'aria-hidden': true },
       h('img', { src: PS.asset('art/' + name + '.svg'), alt: '', draggable: false }));
   };
 

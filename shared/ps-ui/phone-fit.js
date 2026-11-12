@@ -9,6 +9,14 @@
      scale — full zoom: the 360 px design scaled to the screen (as the older demos, prototypes/withdraw-fund-flow/phone-fit.js).
    A phone narrower than 360 px is never shrunk (cap / fit): the layout takes its width.
 
+   TEXT SIZE (pages that opt in with PS_FIT.text = true: the app). The page is sized in rem (tokens-rem/, shared/ps-ui): 1rem is the
+   phone's text size — 16 px at the default setting. The setting is read from the browser: Chrome / Android WebView with
+   <meta name="text-scale" content="scale"> put it in the root font size (medium), iOS Safari / WKWebView in -apple-system-body (Dynamic
+   Type, 17 px at the default), desktop browsers in their default font size; Tune → Text size can fix it for checking. Up to 130 % the whole
+   UI follows (spacing, icons and boxes grow with the text, so nothing clips); above that only text grows (--ps-tx), up to 150 % for
+   now (the phone's setting is capped there until every component holds 200 %; Tune → Text size 200 % shows what still breaks). The screen
+   fit above is a separate, second factor. Sets the root font size (%) and --ps-tx.
+
    iOS Safari 26+ (Liquid Glass): the status bar and the floating search bar sit OVER the page, so the page runs edge to
    edge (viewport-fit=cover): the header grows up behind the status bar, the bottom bar grows down behind the search bar
    and its button keeps clear of it, and the document is scrolled by the status-bar height (a "scroll runway") so Safari
@@ -26,6 +34,28 @@
   root.classList.add('ps-phone'); if (edge) root.classList.add('ps-edge');
   var T = window.PS_TUNE || {}, F = window.PS_FIT || {};
   var mode = F.mode || T.fit || 'cap', zmax = +(F.max || T.zoom || 1.1) || 1.1;
+  /* the text size: ts = the phone's setting (1 = default), ui = the part the whole layout follows, tx = the rest, for text only */
+  var TS_MIN = 0.85, TS_MAX = 1.5, UI_MAX = 1.3, ios = /iP(hone|od|ad)/.test(ua) || (/Macintosh/.test(ua) && touch);
+  function textSize(){
+    var o = +(T.text || 0), p = document.createElement('div');
+    p.style.cssText = 'position:absolute;left:0;top:0;visibility:hidden;pointer-events:none;font-size:medium';
+    root.appendChild(p);
+    var med = parseFloat(getComputedStyle(p).fontSize) || 16, dt = 0;
+    if (ios) { p.style.font = '-apple-system-body'; dt = parseFloat(getComputedStyle(p).fontSize) || 0; }
+    p.remove();
+    var ts = o ? o / 100 : dt ? dt / 17 : med / 16;
+    ts = Math.max(TS_MIN, Math.min(o ? 2 : TS_MAX, ts));                 /* Tune can go to 200 % to show what still needs work */
+    var ui = Math.min(ts, UI_MAX);
+    return { med: med, ts: ts, ui: ui, tx: ts / ui };
+  }
+  function text(){
+    if (!F.text) return;
+    var t = textSize(), pct = Math.round(t.ui * 16 / t.med * 100000) / 1000;
+    root.style.fontSize = pct + '%';                                    /* relative to medium, so the browser's own scaling stays in */
+    root.style.setProperty('--ps-tx', String(Math.round(t.tx * 10000) / 10000));
+    root.classList.toggle('ps-text-big', t.ts > 1.01);                 /* lets a few rows wrap that sit on one line at the default size */
+    G.ts = t.ts; G.ui = t.ui; G.tx = t.tx; G.med = t.med;
+  }
   root.setAttribute('data-fit', mode);
   if (!touch && meta) meta.setAttribute('content', 'width=device-width, initial-scale=1');
   /* status-bar height (pt) by screen height, used when Safari reports no top inset */
@@ -79,6 +109,7 @@
     root.style.setProperty('--e', ext + 'px');
     root.style.setProperty('--sb', sb + 'px');
     window.__PS_PH = U; window.__PS_SB = sb; window.__PS_E = ext;
+    text();
     window.dispatchEvent(new Event('ps-viewport'));
     runway(); setTimeout(runway, 60); setTimeout(runway, 400);
   }
@@ -89,6 +120,7 @@
   document.addEventListener('focusout', function(){ setTimeout(function(){ if (!typing()) fit(false); }, 300); });
   window.addEventListener('orientationchange', function(){ setTimeout(function(){ fit(true); }, 250); });
   window.addEventListener('load', function(){ fit(true); });
+  document.addEventListener('visibilitychange', function(){ if (!document.hidden && F.text) { text(); window.dispatchEvent(new Event('ps-viewport')); } });   /* the text size changed in Settings */
   window.addEventListener('scroll', runway, { passive: true });
   if (/[?&]debug=1/.test(qs)) setInterval(function(){
     var d = document.getElementById('ps-debug');
@@ -97,6 +129,7 @@
     d.textContent = 'safari ' + ver + ' edge ' + edge + ' touch ' + touch + '\nscreen ' + screen.width + 'x' + screen.height + ' dpr ' + devicePixelRatio +
       '\ninner ' + innerWidth + 'x' + innerHeight + ' vv ' + (vv ? Math.round(vv.width) + 'x' + Math.round(vv.height) + ' @' + vv.scale.toFixed(3) : '-') +
       '\nenv top ' + e.t + ' bottom ' + e.b + ' scrollY ' + Math.round(scrollY) +
-      '\nfit ' + G.mode + ' W ' + G.W + ' V ' + G.V + ' hs ' + G.hs + ' top ' + G.top + ' run ' + G.run + '\nsb ' + G.sb + ' ext ' + G.ext + ' U ' + G.U;
+      '\nfit ' + G.mode + ' W ' + G.W + ' V ' + G.V + ' hs ' + G.hs + ' top ' + G.top + ' run ' + G.run + '\nsb ' + G.sb + ' ext ' + G.ext + ' U ' + G.U +
+      (F.text ? '\ntext ' + Math.round(G.ts * 100) + '% (ui ' + Math.round(G.ui * 100) + '% · text only ×' + G.tx.toFixed(2) + ') medium ' + G.med : '');
   }, 500);
 })();

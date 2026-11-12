@@ -36,7 +36,7 @@
   /* OfferCard: another product offered when ours isn't available · logo (svg in assets/logos) · tag · label · value · rows [{ label, value }] · action · onClick */
   PS.OfferCard = function OfferCard(p) {
     return h(PS.Card, { className: 'ps-offer' },
-      h('div', { className: 'ps-offer__head' }, h('img', { src: PS.asset('logos/' + p.logo + '.svg'), alt: p.name || '', height: 24 }), p.tag ? h(PS.Tag, { tone: 'soft' }, p.tag) : null),
+      h('div', { className: 'ps-offer__head' }, h('img', { src: PS.asset('logos/' + p.logo + '.svg'), alt: p.name || '', style: { height: '1.5rem' } }), p.tag ? h(PS.Tag, { tone: 'soft' }, p.tag) : null),
       h('div', { className: 'ps-offer__value' }, h('p', { className: 'ps-t-body-md ps-c-tertiary' }, p.label), h('p', { className: 'ps-offer__num' }, p.value)),
       h(PS.Divider),
       (p.rows || []).map(function (r, i) { return h(PS.KV, { key: i, label: r.label, value: r.value }); }),

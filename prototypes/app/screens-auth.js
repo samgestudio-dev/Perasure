@@ -15,7 +15,7 @@
       }, APP.q.get('page') ? 60 : APP.rnd(900, 1500));
       return function () { clearTimeout(t); };
     }, []);
-    return h('div', { className: 'app-opening' }, h(m.img, { src: PS.asset('logos/perasure-mark.svg'), alt: 'PeraSure', width: 64, height: 64,
+    return h('div', { className: 'app-opening' }, h(m.img, { src: PS.asset('logos/perasure-mark.svg'), alt: 'PeraSure', style: { width: '4rem', height: '4rem' },
       initial: { opacity: 0, scale: 0.9 }, animate: { opacity: 1, scale: 1, transition: PS.MT.ENTER } }));
   });
 
@@ -27,7 +27,7 @@
       if (!agree) { APP.say('Tick the box to agree to the terms first.'); return; }
       APP.set({ phone: phone }); APP.go('sending');
     }
-    return h(PS.Screen, { colBottom: 180, top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), right: APP.tune() },
+    return h(PS.Screen, { secondary: true, colBottom: 180, top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), right: APP.tune() },
       bottom: h(PS.BottomBar, { className: 'app-bot-consent' },
         h(PS.Consent, { on: agree, onToggle: function () { setAgree(!agree); } }, 'By continuing, you agree to our ', h('b', null, 'Terms of Service'), ' and ', h('b', null, 'Privacy & Data Collection Policy'), '.'),
         h(PS.Button, { block: true, onClick: submit }, 'Log in')) },
@@ -38,8 +38,8 @@
   });
 
   /* Sending: the code is on its way (animation: Loading state OTP) */
-  APP.screen('sending', function Sending() {
-    R.useEffect(function () { if (!APP.auto) return; var t = setTimeout(function () { APP.swap('otp', null, 0); }, APP.rnd(1400, 2400)); return function () { clearTimeout(t); }; }, []);
+  APP.screen('sending', function Sending(p) {   /* params (phone, then) are handed to the code page */
+    R.useEffect(function () { if (!APP.auto) return; var t = setTimeout(function () { APP.swap('otp', p.params, 0); }, APP.rnd(1400, 2400)); return function () { clearTimeout(t); }; }, []);
     return h('div', { className: 'ps-screen app-center' },
       h(PS.Card, { className: 'app-sending' }, h(PS.Anim, { name: 'loading-state-otp', size: 120 }),
         h('div', null, h('p', { className: 'ps-t-title-md' }, 'Sending security code…'), h('p', { className: 'ps-t-body-md ps-c-tertiary' }, 'This may take a few seconds'))));
@@ -70,8 +70,8 @@
         APP.set({ user: APP.S.user === 'guest' ? 'new' : APP.S.user }); APP.swap('permission', null, 1);
       }, APP.rnd(450, 1000));
     }
-    var ph = APP.S.phone;
-    return h(PS.Screen, { top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), right: APP.tune() } },
+    var ph = p.params.phone || APP.S.phone;   /* a new number being confirmed (phone change), else the one logging in */
+    return h(PS.Screen, { secondary: true, top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), right: APP.tune() } },
       h(APP.Head, { title: 'Verification code sent', body: h(R.Fragment, null, 'Enter the verification code sent to', h('br'), '+63 ••••••' + ph.slice(-4) + ' via ' + (WAYS.filter(function (w) { return w.id === st.way; })[0].label) + '.') }),
       h('div', { className: 'app-otp' },
         h(PS.OtpBoxes, { value: st.code, onChange: onCode, error: !!st.err, disabled: st.busy }),
@@ -87,7 +87,7 @@
   APP.screen('permission', function Permission() {
     var s = R.useState(true), agree = s[0], setAgree = s[1];
     function done() { if (!agree) { APP.say('Tick the box to agree first.'); return; } APP.run(function () { APP.home('home', 1); }); }
-    return h(PS.Screen, { colBottom: 180, top: { left: h(PS.Glass, { round: false }, 'Permissions we need'), right: APP.tune() },
+    return h(PS.Screen, { secondary: true, colBottom: 180, top: { left: h(PS.Glass, { round: false }, 'Permissions we need'), right: APP.tune() },
       bottom: h(PS.BottomBar, null,
         h(PS.Button, { block: true, onClick: done }, 'Agree and continue'),
         h(PS.Button, { variant: 'text', block: true, onClick: function () { APP.home('home', 1); } }, 'Not now')) },

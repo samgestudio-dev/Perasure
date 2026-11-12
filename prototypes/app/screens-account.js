@@ -72,7 +72,7 @@
   APP.screen('credit', function Credit(p) {
     var s = R.useState(p.params.tab || 'adj'), tab = s[0], S = APP.S, none = S.loan === 'none' && S.user !== 'approved';
     var rows = tab === 'act' ? acts(S) : ADJ;
-    return h(PS.Screen, { colTop: 172, colBottom: 48, top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), title: 'Credit history', right: APP.tune(), solid: true, extraHeight: 56,
+    return h(PS.Screen, { secondary: true, colTop: 172, colBottom: 48, top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), title: 'Credit history', right: APP.tune(), solid: true, extraHeight: 56,
       extra: h('div', { className: 'app-ptabs' }, h(PS.Tabs, { id: 'app-credit', split: true, value: tab, onChange: s[1], items: [{ id: 'adj', label: 'Credit adjustments' }, { id: 'act', label: 'Borrowing activity' }] })) } },
       h(APP.Loaded, { k: 'credit', rise: false }, h(PS.Crossfade, { k: tab, rise: true, className: none ? null : 'app-stack-12' },
         none ? h(PS.EmptyState, { title: 'No limit history yet', body: 'Complete your profile check and link your e-wallet to activate your revolving credit limit.', page: true })
@@ -150,18 +150,30 @@
   } });
 
   /* ---- rating: after a loan (Tune → Ask for a rating). Good ratings go to the store, the others to support. ---- */
+  var RATE = {
+    ask: { pic: h(PS.Anim, { name: 'doc-verify', size: 100 }), title: 'How was your experience with PeraSure?' },
+    good: { pic: h('img', { src: PS.asset('art/stars.svg'), alt: '5 stars', style: { width: '9.25rem', height: '1.75rem' } }), title: 'Thank you for your feedback!', body: 'Share your experience with PeraSure by leaving a review on Google Play.' },
+    bad: { pic: h(PS.Anim, { name: 'customer-service-chat', size: 100 }), title: 'Help us improve PeraSure', body: 'Share your concerns with our online customer service. We’ll get back to you soon.' } };
   APP.sheet('rating', { kind: 'card', label: 'Rate PeraSure', className: 'app-rating', render: function Rating() {
     var s = R.useState('ask'), step = s[0];
     function done() { APP.set({ rated: true, sheet: null }); }
     var P = step === 'ask' ? { pic: h(PS.Anim, { name: 'doc-verify', size: 100 }), title: 'How was your experience with PeraSure?', ok: 'Satisfied', onOk: function () { s[1]('good'); }, no: 'Not satisfied', onNo: function () { s[1]('bad'); } }
-      : step === 'good' ? { head: 'Thank you for your feedback!', pic: h('img', { src: PS.asset('art/stars.svg'), alt: '5 stars', width: 148, height: 28 }), title: 'Thank you for your feedback!',
+      : step === 'good' ? { head: 'Thank you for your feedback!', pic: h('img', { src: PS.asset('art/stars.svg'), alt: '5 stars', style: { width: '9.25rem', height: '1.75rem' } }), title: 'Thank you for your feedback!',
           body: 'Share your experience with PeraSure by leaving a review on Google Play.', ok: 'Leave a review', onOk: function () { done(); APP.say('Google Play opens outside the test app.'); }, no: 'Later', onNo: done }
       : { head: 'Thank you for your feedback!', pic: h(PS.Anim, { name: 'customer-service-chat', size: 100 }), title: 'Help us improve PeraSure',
           body: 'Share your concerns with our online customer service. We’ll get back to you soon.', ok: 'Contact customer support', onOk: function () { done(); APP.support(); }, no: 'Later', onNo: done };
+    /* the three steps lie on top of each other, so the sheet keeps the height of the tallest and nothing jumps (owner); the step shown
+       crossfades in (ENTER, 3 px blur), the one before it out (LEAVE) — the title and the buttons swap their words the same way */
+    var all = ['ask', 'good', 'bad'].map(function (k) {
+      var Q = k === step ? P : RATE[k], on = k === step;
+      return h(m.div, { key: k, className: PS.cx('app-rating__page', k === 'ask' && 'is-ask'), 'aria-hidden': !on, initial: false,
+        animate: on ? { opacity: 1, filter: 'blur(0px)', transition: PS.MT.ENTER } : { opacity: 0, filter: 'blur(' + PS.MT.BLUR + 'px)', transition: PS.MT.LEAVE },
+        style: { gridArea: '1 / 1', pointerEvents: on ? 'auto' : 'none' } }, Q.pic,
+        h('div', null, h('p', { className: 'ps-t-title-sm' }, Q.title), Q.body ? h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, Q.body) : null));
+    });
     return h(R.Fragment, null,
       h('div', { className: 'app-sheethead app-sheethead--left' }, h(PS.Swap, { k: step, block: true }, h('span', { className: 'ps-t-title-16' }, P.head || '')), h(PS.Close, { onClick: done })),
-      h(PS.Crossfade, { k: step }, h('div', { className: PS.cx('app-rating__page', step === 'ask' && 'is-ask') }, P.pic,
-        h('div', null, h('p', { className: 'ps-t-title-sm' }, P.title), P.body ? h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, P.body) : null))),
+      h('div', { className: 'app-rating__pages' }, all),
       h('div', { className: 'app-rating__acts' }, h(PS.Button, { block: true, onClick: P.onOk }, h(PS.Swap, { k: step }, h('span', null, P.ok))),
         h(PS.Button, { variant: 'text', block: true, onClick: P.onNo }, h(PS.Swap, { k: step }, h('span', null, P.no)))));
   } });
@@ -184,7 +196,7 @@
     var empty = !list.length ? ['No messages yet', 'When we have news about your loan or account, you’ll see it here.'] : tab === 'unread' ? ['You’re all caught up', 'You’ve read every message.'] : ['No read messages yet', 'Messages you open show up here.'];
     var markAll = h(PS.AP, null, un.length && tab === 'unread' ? h(m.div, Object.assign({ key: 'fab', className: 'app-fab' }, PS.fade(MT_Y)),
       h(PS.Glass, { round: false, onClick: function () { APP.set({ inbox: list.map(function (x) { return Object.assign({}, x, { unread: false }); }) }); } }, 'Mark all read')) : null);
-    return h(PS.Screen, { colTop: 172, colBottom: un.length && tab === 'unread' ? 124 : 48, overlay: markAll, top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), title: 'Inbox', solid: true, extraHeight: 56,
+    return h(PS.Screen, { secondary: true, colTop: 172, colBottom: un.length && tab === 'unread' ? 124 : 48, overlay: markAll, top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), title: 'Inbox', solid: true, extraHeight: 56,
       right: APP.tune(),
       extra: h('div', { className: 'app-ptabs app-ptabs--16' }, h(PS.Tabs, { id: 'app-inbox', split: true, value: tab, onChange: s[1], items: [{ id: 'unread', label: 'Unread' + (un.length ? ' (' + un.length + ')' : '') }, { id: 'read', label: 'Read' }] })) } },
       h(APP.Loaded, { k: 'inbox', rise: false }, h(PS.Crossfade, { k: tab + shown.length, rise: true, className: shown.length ? 'app-stack-12' : null }, shown.length ? shown.map(function (x) {

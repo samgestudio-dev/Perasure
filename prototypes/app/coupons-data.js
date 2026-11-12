@@ -12,12 +12,13 @@ window.CS = (function () {
      date, one value in three spellings. Ordering in the app takes the amount out of the available credit (take()).
      A limit-increase coupon is something else: it raises what one loan may borrow (see `coupons` below, kind 'limit'), not the credit. ---- */
   var TUNE = window.PS_TUNE || {};
-  var NUM = { limit: 40000, used: String(TUNE.loan || 'active') === 'none' ? 0 : 5000, temporary: String(TUNE.temp) === '0' ? 0 : 10000, temporaryUntil: 'Nov 20', temporaryUntilLong: 'Nov 20, 2026', temporaryUntilISO: '2026-11-20' };
+  var NUM = { limit: 40000, used: String(TUNE.loan || 'active') === 'none' ? 0 : 5000, temporary: String(TUNE.temp) === '0' ? 0 : 10000, temporaryUntil: 'Nov 20', temporaryUntilLong: 'Nov 20, 2026', temporaryUntilFull: 'November 20, 2026', temporaryUntilISO: '2026-11-20',
+    limitUntil: 'May 31, 2027' };   /* limitUntil: how long the long-term limit lasts (the card's ⓘ when there is no temporary credit) */
   /* what follows from them: total credit = limit + temporary · available = total − used */
   /* temporaryLeft: what is left of the temporary credit — it is used first (owner), so a loan takes from it before the long-term limit */
   var credit = { limit: NUM.limit, used: NUM.used, temporary: NUM.temporary, total: NUM.limit + NUM.temporary, available: NUM.limit + NUM.temporary - NUM.used,
     temporaryLeft: Math.max(0, NUM.temporary - NUM.used),
-    temporaryUntil: NUM.temporaryUntil, temporaryUntilLong: NUM.temporaryUntilLong, temporaryUntilISO: NUM.temporaryUntilISO };
+    temporaryUntil: NUM.temporaryUntil, temporaryUntilLong: NUM.temporaryUntilLong, temporaryUntilFull: NUM.temporaryUntilFull, temporaryUntilISO: NUM.temporaryUntilISO, limitUntil: NUM.limitUntil };
   /* take: a loan was ordered — its amount is used credit from now on (a limit coupon can let one loan go past the credit: none is left then) */
   function take(amount) { credit.used += amount; credit.available = Math.max(0, credit.total - credit.used); credit.temporaryLeft = Math.max(0, credit.temporary - credit.used); }
   var loan = { min: 500, step: 100, terms: [4, 6, 8], term: 6, days: 15, interest: 0.015, fee: 0.005, penalty: 0.05, grace: 3, start: new Date(2026, 10, 12) };
@@ -99,7 +100,7 @@ window.CS = (function () {
       var d = new Date(start.getTime() + k * loan.days * DAY), left = Math.round((d - loan.start) / DAY), late = left < 0 ? -left : 0, off = k === 1 ? c.save : 0;
       dues.push({ id: 'p' + k, month: d.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(), day: ('0' + d.getDate()).slice(-2), amount: round2(c.per - off),
         late: late, penalty: late > loan.grace ? round2(c.principal * loan.penalty) : 0, due: fmt(d, true), dueShort: fmt(d), loanDate: fmt(start, true),
-        interest: round2(c.interest - off), fee: c.fee, coupon: off, badge: late ? null : left ? 'Due in ' + left + ' day' + (left === 1 ? '' : 's') : 'Due today' });
+        interest: round2(c.interest - off), fee: c.fee, coupon: off, today: !late && !left, badge: late ? null : left ? 'Due in ' + left + ' day' + (left === 1 ? '' : 's') : 'Due today' });
     }
     return { state: st, amount: amount, term: term, date: fmt(start), ago: ago, per: c.per, first: dues[0].amount, dues: dues,
       /* what a late payment costs, and from when (the day after the days without a penalty) */

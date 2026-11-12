@@ -13,12 +13,17 @@ The whole app in one prototype. Figma: file `barda5NcnFzxG7CHtISKsW`, page `38:1
 | `screens-loan.js` | amount keypad, loan detail with coupons, coupon sheets, withdrawal method, bank search, coupon centre, loan application status |
 | `screens-pay.js` | Payment tab, payment detail, anti-scam cards, how to pay, the pay page (app / number / QR) |
 | `screens-account.js` | Account tab, log out, credit limit hub and history, contact us, about, SEC / BIR, manage and delete account, inbox, loan history, cancel a loan, rating |
+| `screens-kyc.js` | the application: ID type and both sides (camera or album), the check of the details, the selfie, basic information, a trusted contact, the loan estimate; the date and city sheets |
+| `screens-help.js` | help articles (index, topic, article, search), changing the phone number (old → new → code → selfie → done), proof of income (documents) |
+| `screens-withdraw.js` | the home card and Withdraw: the Withdraw demo's own code, hosted |
 
 ## Tune
 
 Account (credit ready, logged out, new, in review, documents needed, not approved, expired, on hold) · Loan (none, in review,
 repaying, overdue, transfer failed) · Coupons (six, one, none) · Credit limit increase when the app opens · Network (normal, slow,
-fails once) · Verification code (correct, wrong first, SMS fails first) · ID check · Selfie check · Inbox · Ask for a rating · blur.
+fails once) · Verification code (correct, wrong first, SMS fails first) · ID check · Selfie check · Inbox · Ask for a rating ·
+Progressive blur (off by default, owner) · **Screen fit** (capped zoom 1.1× by default · 1:1 · full zoom) · **Text size** (System — the
+phone's setting — or 85 / 100 / 115 / 130 / 150 / 200 % for checking; see "Sizes and text size").
 A change reloads the app from its opening screen. Links: any setting as `?user=hold&loan=overdue`, `?page=<screen>` (for example
 `page=payment`, `page=loan`, `page=inbox`), `?auto=0` (the app types no codes and doesn't move on by itself).
 
@@ -36,7 +41,7 @@ often instant; actions wait 0.25–1 s and show the loader only when it's long e
 ## Loading, entrances, tooltips
 
 - **Loading covers the whole screen** (owner): while a page's data loads, the Loading page fills the screen — coin and dots in the
-  very middle, larger than on the Loading page (an 88 px coin, dots 128 wide) — and nothing else shows. When it fails, the fallback page ("Something went wrong", Figma 52:10976) shows
+  very middle, larger than on the Loading page (a 72 px coin, dots 128 wide) — and nothing else shows. When it fails, the fallback page ("Something went wrong", Figma 52:10976) shows
   under the header, so the way back stays. `APP.Loaded` does both with `PS.Cover`. `?fast=1` skips every wait (for checking a screen).
 - **What was waited for rises in** piece by piece (`PS.Rise`: 0.34 s each, 40 ms apart); a page seen before is there at once. Lists
   that replace each other (tabs) and the content of a sheet rise in the same way; home's cards do the first time it shows.
@@ -68,13 +73,45 @@ often instant; actions wait 0.25–1 s and show the loader only when it's long e
   slides out). With no temporary credit (Tune) there is nothing to announce: no intro, and the card has no temporary line. At the end
   the Credit limit screen goes in the same moment (it used to flash back for a frame).
 - **Home's blue card, the payment card and the "You have updates on your loan" strip** have the default shadow (owner).
-- **Toasts sit low** (owner): 12 px above whatever is at the bottom of the page on top — the tab bar, a bottom bar's button, the pay
-  bar, the order page's Confirm — and 24 px above the screen edge when nothing is there (`PS.Toast{bottom:'auto'}`).
+- **Toasts sit at the top** (owner), under the header bar like an iPhone notification: they drop in from above on the Smooth spring and
+  rise away (`PS.Toast`).
+- **Secondary pages** (owner): every page except the Home / Payment / Account tabs has a solid header in the page colour, no gradient
+  (`PS.Screen{secondary}`, `APP.Page`); the immersive amount entry and the order page keep theirs.
 - **Loading and Order submit are the whole screen and nothing else**: no header, no bottom bar, no tab bar.
 - **Bars have no colour while they cover nothing**: the header's veil comes in as content scrolls under it (over the first 24 px),
   the bottom bar's and the tab bar's goes as the scroll reaches the end.
-- **Tooltips place themselves** (`APP.tipAt(element, text, width)`): 8 px under what was tapped, centred on it, or with their edge
-  16 px past it when it is near a side; never outside the 16 px margins; above when there is no room below.
+- **Tooltips place themselves** (`APP.tipAt(element, text, width, { icon, big })`, DS 9137:25806): one corner covers what was tapped and
+  reaches 12 px past it on both sides — top-right for something in the right third, top-left in the left third, centred in the middle;
+  a bottom corner (opening upwards) when there is no room below; never outside the 16 px margins.
+- **Lists in the application are popovers** (DS 7201:12032; the bottom-sheet lists are retired): glass card, 36 px pills, at most 220
+  high with a thumb and a fade, 8 px under the field and right-aligned, above it when there is no room (`PS.FormField{menu}`). The
+  email suggestions use the same card.
+- **Dates** (DS 7628:14113): the month's days, the chosen one on a brand circle; the month or the year opens a wheel
+  (react-wheel-picker, `vendor/react-wheel-picker@1.2.3`) with Cancel / Confirm (`PS.DatePicker`). A date of birth is 18+, a payday
+  within two months. The card keeps six weeks' height, so stepping months never makes it jump (Figma shows five).
+- **The camera is the phone's own** (ID: back camera in a box; selfie and the phone change: front camera). A photo is only shown, never
+  uploaded or kept; once it's taken the step passes. Whatever is filled in and in the right format passes (owner).
+- **Payment logos are 24 px** (owner) in the withdrawal method and bank lists.
+
+## Sizes and text size
+
+Everything is sized in **rem** (owner): 1rem = 16 design px at the default text size. The tokens come in rem from
+[`tokens-rem/`](../../tokens-rem/README.md) (made from `tokens/tokens.css` by `tools/rem-tokens.py`; the token files are never edited),
+`shared/ps-ui/ps-ui.css` and `app.css` are written in rem, and lengths given in JavaScript go through `PS.rem(n)` / `PS.y(n)` /
+`PS.px(n)` (core.js). What stays px: hairlines (1–2 px strokes), shadows and blurs, the 40 px status strip above the screen, and the
+Withdraw demo (its own code, see below).
+
+Two separate factors decide how big things are drawn:
+
+1. **Screen fit** (Tune, default capped zoom): the 360 design enlarged with the screen, at most 1.1× (`phone-fit.js`, as before).
+2. **Text size**: the phone's own setting — Chrome / Android WebView through `<meta name="text-scale" content="scale">` (Chrome 146+),
+   iOS Safari / WKWebView through Dynamic Type (`-apple-system-body`), desktop browsers through their default font size. Up to **130 %**
+   the whole layout follows (spacing, icons and boxes grow with the text, so nothing clips); above that only text grows (`--ps-tx`), and
+   the phone's setting is capped at **150 %** for now. Tune → Text size fixes a value for checking; 200 % there shows what still needs work.
+
+At the default size every page is pixel-identical to the px version (checked page by page). Known gaps: the Withdraw demo's screens
+(home card, amount entry, order page) are the demo's px code, so they follow the screen fit but not the text size; at 200 % some
+one-line rows (coupon tickets, top bar titles, installment rows, the log in consent) still need room to wrap.
 
 ## One set of numbers
 
@@ -105,7 +142,11 @@ Every page and sheet that is built was laid over its Figma frame (Figma | app | 
 method and bank search, verification sheet, loan application status (in review, failed), Payment tab (list, empty, signed out),
 payment detail, anti-scam cards, how-to-pay sheet, pay page (app, number, QR), Account tab (signed in, signed out), log out, credit
 limit hub, credit history (both tabs), contact us, about, SEC and BIR registration, manage account, delete account and its sheets,
-inbox and message, loan history, loan record, cancel a loan, rating sheets, the fallback page.
+inbox and message, loan history, loan record, cancel a loan, rating sheets, the fallback page; and in round 5 the application
+pages against the design system's "Application Details" (3908:1341: ID type, upload, check, popovers, date, basic information, contact,
+selfie, estimate, camera), the withdrawal method tabs (52:8389), the payment method sheet (7792:15391), the repayment tiles
+(10534:35615), the tooltips (9137:25806, 10545:38381), the home card without temporary credit (10789:29220), help articles
+(5453:4712), the phone change (8655:27419) and proof of income (9465:26742, 9473:27722).
 
 Icons are the Figma exports (`shared/ps-ui/assets/icons`), not redrawn ones.
 
@@ -114,9 +155,5 @@ coupons section; sample numbers and names; stills replaced by their animations; 
 
 ## Not in yet
 
-Application details (ID, details check, basic information, trusted contact, selfie, loan estimate), add documents, FAQs, phone
-number change, withdrawal account change with face check — these routes show a "not in the test app yet" page. 
-
-**Withdraw demo motion still to bring over exactly**: the Credit limit increase closing into the home card (`introExit` in
-`withdraw.js`, with `intro.js`). Today the Credit limit increase simply ends on home. The `amount` and `loan` pages built on the shared
-components are only what shows if the demo's code cannot be loaded.
+The withdrawal account change with its face check (换绑卡流程) shows a "not in the test app yet" page. The `amount` and `loan` pages
+built on the shared components are only what shows if the demo's code cannot be loaded.

@@ -58,9 +58,9 @@
     var pct = Math.max(0, Math.min(1, p.used / (p.total || 1))), C = 2 * Math.PI * 8;
     return h('div', { className: 'ps-credit ps-hub' }, h('img', { className: 'ps-credit__glow', src: PS.asset('art/card-glow.svg'), alt: '' }),
       h('div', { className: 'ps-credit__top' }, h('div', { style: { flex: 1, minWidth: 0 } }, h('p', { className: 'ps-credit__label' }, 'Total credit limit'), h(PS.Amount, { value: p.total, className: 'ps-hub__amount' })),
-        h(m.button, Object.assign({ type: 'button', 'aria-label': 'About your credit limit', onClick: p.onInfo, style: { height: 20 } }, PS.press(true)), h(PS.Icon, { name: 'info', size: 20, color: 'inverse', style: { opacity: 0.6 } }))),
+        h(m.button, Object.assign({ type: 'button', 'aria-label': 'About your credit limit', onClick: p.onInfo, style: { height: '1.25rem' } }, PS.press(true)), h(PS.Icon, { name: 'info', size: 20, color: 'inverse', style: { opacity: 0.6 } }))),
       h('div', { className: 'ps-hub__row' },
-        h('svg', { width: 20, height: 20, viewBox: '0 0 20 20', 'aria-hidden': true }, h('circle', { cx: 10, cy: 10, r: 8, fill: 'none', stroke: 'currentColor', strokeOpacity: 0.3, strokeWidth: 3 }),
+        h('svg', { style: { width: '1.25rem', height: '1.25rem' }, viewBox: '0 0 20 20', 'aria-hidden': true }, h('circle', { cx: 10, cy: 10, r: 8, fill: 'none', stroke: 'currentColor', strokeOpacity: 0.3, strokeWidth: 3 }),
           h('circle', { cx: 10, cy: 10, r: 8, fill: 'none', stroke: 'currentColor', strokeWidth: 3, strokeLinecap: 'round', strokeDasharray: C * pct + ' ' + C, transform: 'rotate(-90 10 10)' })),
         h('div', { className: 'ps-t-caption-sm' }, h('p', null, h('span', null, 'Used:'), PS.money(p.used)), h('p', null, h('span', null, 'Available:'), PS.money(p.available))),
         h(PS.Button, { variant: 'shade', className: 'ps-hub__btn', onClick: p.onWithdraw }, 'Withdraw')));

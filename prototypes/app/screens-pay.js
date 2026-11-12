@@ -17,7 +17,7 @@
     var total = list.filter(function (d) { return sel.indexOf(d.id) >= 0; }).reduce(function (a, d) { return a + d.amount + (d.penalty || 0); }, 0);
     var late = list.filter(function (d) { return d.late; }), soon = list.filter(function (d) { return !d.late; }), body;
     function card(d) {
-      return h(PS.Installment, { key: d.id, month: d.month, day: d.day, amount: d.amount + (d.penalty || 0), tone: d.late ? 'negative' : 'brand', on: sel.indexOf(d.id) >= 0, onToggle: function () { toggle(d.id); },
+      return h(PS.Installment, { key: d.id, month: d.month, day: d.day, amount: d.amount + (d.penalty || 0), tone: d.late ? 'negative' : d.today ? 'brand' : 'default', on: sel.indexOf(d.id) >= 0, onToggle: function () { toggle(d.id); },
         sub: d.late ? 'Overdue ' + d.late + ' days' : d.badge, note: d.penalty ? 'Includes ' + money(d.penalty) + ' penalty' : d.late >= CS.loan.grace ? 'No penalty if you pay today' : 'No penalty for 3 days after the due date', noteIcon: d.late ? 'info' : 'order',
         onDetail: function () { APP.open('paydetail', { id: d.id }); } });
     }
@@ -45,15 +45,18 @@
   } });
 
   /* Anti-scam: three cards, once before the first payment (and from the strip) */
+  /* Anti-scam: three cards, once before the first payment (and from the strip) — swiped left / right or moved on with Next; the sheet keeps
+     the height of its tallest card, and the dots follow the swipe (owner) */
   APP.sheet('scams', { kind: 'card', label: 'Protect yourself from scams', className: 'app-scams', render: function Scams(p) {
-    var s = R.useState(0), i = s[0], c = AD.scams[i], last = i === AD.scams.length - 1;
+    var s = R.useState(0), i = s[0], last = i === AD.scams.length - 1;
     function next() { if (!last) { s[1](i + 1); return; } APP.set({ seenScam: true, sheet: null }); if (p.params.then) setTimeout(p.params.then, 260); }
     return h(R.Fragment, null,
       h('div', { className: 'app-sheethead app-sheethead--left' }, h('p', { className: 'ps-t-section-md' }, 'Protect yourself from scams'), h(PS.Close, { onClick: APP.close })),
-      h(PS.Crossfade, { k: i }, h('div', { className: 'app-scams__page' }, h(PS.Anim, { name: c.anim, size: 100 }),
-        h('div', null, h('p', { className: 'ps-t-section-md' }, c.title), h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, c.body)))),
-      h(PS.Pager, { n: AD.scams.length, i: i }),
-      h(PS.Button, { block: true, onClick: next }, last ? 'I understand' : 'Next'));
+      h(PS.Carousel, { index: i, onIndex: s[1], dots: true, pages: AD.scams.map(function (c, k) {
+        return h('div', { key: k, className: 'app-scams__page' }, h(PS.Anim, { name: c.anim, size: 100 }),
+          h('div', null, h('p', { className: 'ps-t-section-md' }, c.title), h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, c.body)));
+      }) }),
+      h(PS.Button, { block: true, onClick: next }, h(PS.Swap, { k: last ? 'u' : 'n' }, h('span', null, last ? 'I understand' : 'Next'))));
   } });
 
   /* How to pay: categories on the left, methods on the right */
@@ -64,15 +67,16 @@
     { id: 'online', icon: 'smartphone', label: 'Online Transfer', groups: [{ title: 'Online Transfer', items: [{ id: 'bdo-on', name: 'BDO Online', kind: 'transfer' }, { id: 'ub-on', name: 'UnionBank Online', kind: 'transfer' }] }] },
     { id: 'bank', icon: 'bank', label: 'Bank Transfer', groups: [{ title: 'Bank Transfer', items: [{ id: 'bpi-b', name: 'BPI', kind: 'transfer' }, { id: 'mb-b', name: 'Metrobank', kind: 'transfer' }, { id: 'lb-b', name: 'Landbank', kind: 'transfer' }] }] },
     { id: 'offline', icon: 'store', label: 'Offline Payment', groups: [{ title: 'Over the counter', items: [{ id: '711', name: '7-Eleven', kind: 'transfer' }, { id: 'ceb', name: 'Cebuana Lhuillier', kind: 'transfer' }] }] }];
-  APP.sheet('paymethods', { kind: 'page', label: 'Choose how to pay', className: 'app-banks', render: function Methods(p) {
-    var s = R.useState(''), q = s[0], c = R.useState('qr'), k = q.trim().toLowerCase();
+  /* How to pay (Figma DS 7792:15391): a tall white sheet — search and close over its top, then the rail and every way to pay in one list */
+  APP.sheet('paymethods', { kind: 'page', label: 'Choose how to pay', className: 'app-pm', render: function Methods(p) {
+    var s = R.useState(''), q = s[0], c = R.useState('qr'), k = q.trim().toLowerCase(), body = R.useRef(null);
     var cats = !k ? CATS : CATS.map(function (x) { return Object.assign({}, x, { groups: x.groups.map(function (g) { return Object.assign({}, g, { items: g.items.filter(function (it) { return it.name.toLowerCase().indexOf(k) >= 0; }) }); })
       .filter(function (g) { return g.items.length; }) }); }).filter(function (x) { return x.groups.length; });
     return h(R.Fragment, null,
-      h('div', { className: 'app-banks__head' }, h(PS.Search, { value: q, onChange: s[1], placeholder: 'Search payment method' }), h(PS.Close, { onClick: APP.close })),
-      h('div', { className: 'app-banks__body app-banks__body--flush' }, cats.length ? h(PS.MethodPicker, { cats: cats, value: c[0], onCat: c[1],
+      h('div', { className: 'app-pm__head' }, h(PS.Search, { value: q, onChange: s[1], placeholder: 'Search payment method' }), h(PS.Close, { onClick: APP.close })),
+      h('div', { ref: body, className: 'app-pm__body' }, cats.length ? h(PS.MethodPicker, { cats: cats, value: c[0], onCat: c[1], scroller: body,
         onPick: function (it) { APP.close(); APP.run(function () { APP.go('pay', { total: p.params.total, method: it }); }); } })
-        : h(PS.EmptyState, { title: 'No repayment method found', body: 'Check the spelling or try another name.', style: { marginTop: 72 } })));
+        : h(PS.EmptyState, { title: 'No repayment method found', body: 'Check the spelling or try another name.', style: { marginTop: '4.5rem' } })));
   } });
 
   /* The pay page: the amount, then the way to pay it (app, reference number, or QR code) */

@@ -12,6 +12,13 @@
   var BASE = me ? me.replace(/[^/]*(\?.*)?$/, '') : '../../shared/ps-ui/';
   PS.base = BASE;
   PS.asset = function (p) { return BASE + 'assets/' + p; };
+  /* lengths: everything is sized in rem (1rem = 16 design px at the default text size, tokens-rem/). A size given as a number of design px
+     (an icon's size, a column's top) is written with these:
+     rem(n) — n design px as rem · y(n) — a distance from the frame's top, which includes the 40 px status strip above the screen (it stays px)
+     px(n) — n design px in CSS px right now (for JavaScript geometry: tooltip margins, popover gaps) */
+  PS.rem = function (n) { return typeof n === 'number' ? (n ? n / 16 + 'rem' : 0) : n; };
+  PS.y = function (n) { return typeof n === 'number' ? 'calc(40px + ' + (n - 40) / 16 + 'rem)' : n; };
+  PS.px = function (n) { return n * (parseFloat(getComputedStyle(document.documentElement).fontSize) || 16) / 16; };
 
   PS.h = h; PS.m = M.m; PS.AP = M.AnimatePresence;
   PS.reduce = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -86,7 +93,7 @@
   /* Icon: a one-colour icon from assets/icons, drawn as a mask so its colour is a token.
      name: file name without .svg · size (px, 20) · color: primary | secondary | tertiary | brand | positive | inverse | … (default: text colour) */
   PS.Icon = function Icon(p) {
-    var st = { '--ps-s': (p.size || 20) + 'px', '--ps-src': 'url("' + PS.asset('icons/' + p.name + '.svg') + '")' };
+    var st = { '--ps-s': PS.rem(p.size || 20), '--ps-src': 'url("' + PS.asset('icons/' + p.name + '.svg') + '")' };
     if (p.color) st.color = ICON_C[p.color] || p.color;
     return h('span', { className: PS.cx('ps-icon', p.className), style: Object.assign(st, p.style), 'aria-hidden': true });
   };
@@ -94,7 +101,7 @@
   /* Art: a full-colour picture from assets/art (illustrations, logos) · name · size (px) · ext (svg) · dir (art | logos) */
   PS.Art = function Art(p) {
     return h('img', { className: PS.cx('ps-art', p.className), src: PS.asset((p.dir || 'art') + '/' + p.name + '.' + (p.ext || 'svg')), alt: p.alt || '',
-      style: Object.assign({ '--ps-s': (p.size || 36) + 'px' }, p.style), draggable: false });
+      style: Object.assign({ '--ps-s': PS.rem(p.size || 36) }, p.style), draggable: false });
   };
 
   /* Amount: ₱ + digits in the number font (Satoshi; ₱ from Inter), as in the app. Numbers never animate.
@@ -227,7 +234,7 @@
       }, function () {});
       return function () { dead = true; if (a) a.destroy(); if (p.api) p.api.current = null; };
     }, [p.src, p.play]);
-    return h('span', { className: PS.cx('ps-lottie', p.className), ref: ref, 'aria-hidden': true, style: Object.assign({ width: p.width, height: p.height || p.width }, p.style) });
+    return h('span', { className: PS.cx('ps-lottie', p.className), ref: ref, 'aria-hidden': true, style: Object.assign({ width: PS.rem(p.width), height: PS.rem(p.height || p.width) }, p.style) });
   };
   /* Anim: one of the repo's illustrations by name, cropped to its art so `size` is the picture's box (as the Figma still)
      name: customer-service-chat | customer-service | empty-box | loading-state-otp | safe-transaction | verification-code | doc-verify */

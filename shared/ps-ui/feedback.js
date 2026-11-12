@@ -17,8 +17,8 @@
       var start = a.playCount || 0, t = setInterval(function () { if (!a.isLoaded || (a.playCount || 0) > start) done(); }, 120);   /* a turn's end the event missed */
       return function () { clearInterval(t); off(); };   /* the item may already be destroyed */
     }, [ok]);
-    var st = { width: size, height: size, margin: -inset };
-    return h('span', { className: 'ps-coin', style: { width: box, height: box } },
+    var st = { width: PS.rem(size), height: PS.rem(size), margin: PS.rem(-inset) };
+    return h('span', { className: 'ps-coin', style: { width: PS.rem(box), height: PS.rem(box) } },
       swapped ? h(PS.Lottie, { key: 's', src: COINS + 'success-coin.json', width: size, once: true, onDone: p.onDone, style: st })
               : h(PS.Lottie, { key: 'l', src: COINS + 'loading-coin.json', width: size, api: api, style: st }));
   };
@@ -28,11 +28,11 @@
     return h(PS.Lottie, { src: PS.asset('lottie/loading-dots.json'), width: w, height: Math.round(w * 22 / 84), viewBox: '50 130 425 180', className: 'ps-dots' });
   };
   /* Loader: the Loading page's coin + dots, drawn larger than there (owner: 50 px read too small in the app): a 72 px coin, the same as Order submit's
-     (its picture hangs 10 px outside its box, as 7 does at 50), dots 104 × 27, 16 px apart, centred in its box · label (optional line under it)
+     (its picture hangs 10 px outside its box, as 7 does at 50), dots 128 × 34, 16 px apart (owner: larger), centred in its box · label (optional line under it)
      fill: a whole screen that is loading — the coin and the dots sit in the very middle of the screen (owner) */
   PS.Loader = function Loader(p) {
     return h('div', { className: PS.cx('ps-loader', p.fill && 'ps-loader--fill', p.className), style: p.style, role: 'status', 'aria-label': p.label || 'Loading' },
-      h(PS.Coin, { size: 72, inset: 10 }), h(PS.Dots, { width: 104 }), p.label ? h('p', { className: 'ps-t-body-md ps-c-tertiary' }, p.label) : null);
+      h(PS.Coin, { size: 72, inset: 10 }), h(PS.Dots, { width: 128 }), p.label ? h('p', { className: 'ps-t-body-md ps-c-tertiary' }, p.label) : null);
   };
   /* Busy: the small three-dot pulse inside a button that is waiting */
   PS.Busy = function Busy() { return h('span', { className: 'ps-busy', role: 'status', 'aria-label': 'Loading' }, h('i'), h('i'), h('i')); };

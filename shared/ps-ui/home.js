@@ -13,26 +13,31 @@
   };
 
   /* CreditCard: available amount on the brand card · available · total · temporary (+ temporaryUntil) · onWithdraw · onInfo
-     label ('Available amount') · action ('Withdraw') */
+     label ('Available amount') · action ('Withdraw')
+     With temporary credit: the two-line legend and the white + green bar (the Withdraw demo's card). Without (Figma 10789:29220): one line,
+     "Total credit:" with the amount, and the white bar alone; the card is as tall as its content (186 here). */
   PS.CreditCard = function CreditCard(p) {
     var tot = p.total || 1, temp = p.temporary || 0;
     var white = Math.max(0, Math.min(100, (p.available - temp) / tot * 100)), green = Math.max(0, Math.min(100 - white, temp / tot * 100));
-    return h('div', { className: PS.cx('ps-credit', p.className) },
+    var bar = h('div', { className: 'ps-credit__bar', 'aria-hidden': true }, h('i', { style: { width: white + '%' } }), temp ? h('i', { style: { width: green + '%' } }) : null);
+    return h('div', { className: PS.cx('ps-credit', !temp && 'ps-credit--one', p.className) },
       h('img', { className: 'ps-credit__glow', src: PS.asset('art/card-glow.svg'), alt: '' }),
       h('div', { className: 'ps-credit__top' },
         h('div', { style: { flex: 1, minWidth: 0 } },
           h('p', { className: 'ps-credit__label' }, p.label || 'Available amount'),
           h(PS.Amount, { value: p.available, className: 'ps-credit__amount' })),
-        h(m.button, { type: 'button', 'aria-label': 'About your credit', onClick: p.onInfo, whileTap: PS.TAP_ICON, transition: PS.MT.PRESS, style: { height: 20 } },
+        h(m.button, { type: 'button', 'aria-label': 'About your credit', onClick: p.onInfo, whileTap: PS.TAP_ICON, transition: PS.MT.PRESS, style: { height: '1.25rem' } },
           h(PS.Icon, { name: 'info', size: 20, color: 'inverse', style: { opacity: 0.6 } }))),
-      h('div', { className: 'ps-credit__legend ps-t-caption-sm' },
-        h('p', null, h('i', { className: 'ps-credit__dot' }), h('span', null, 'Total credit: ' + PS.money(tot, 0))),
-        temp ? h('p', null, h('i', { className: 'ps-credit__dot ps-credit__dot--temp' }),
-          h('span', null, 'Temporary: ' + PS.money(temp, 0) + (p.temporaryUntil ? ' (included, valid until ' + p.temporaryUntil + ')' : ''))) : null,
-        h('div', { className: 'ps-credit__bar', 'aria-hidden': true }, h('i', { style: { width: white + '%' } }), temp ? h('i', { style: { width: green + '%' } }) : null)),
+      temp ? h('div', { className: 'ps-credit__legend ps-t-caption-sm' },
+          h('p', null, h('i', { className: 'ps-credit__dot' }), h('span', null, 'Total credit: ' + PS.money(tot, 0))),
+          h('p', null, h('i', { className: 'ps-credit__dot ps-credit__dot--temp' }),
+            h('span', null, 'Temporary: ' + PS.money(temp, 0) + (p.temporaryUntil ? ' (included, valid until ' + p.temporaryUntil + ')' : ''))),
+          bar)
+        : h('div', { className: 'ps-credit__one' },
+          h('p', null, h('span', { className: 'ps-t-section-sm-light' }, 'Total credit: '), h(PS.Amount, { value: tot, className: 'ps-credit__total' })),
+          bar),
       h(PS.Button, { variant: 'shade', onClick: p.onWithdraw }, p.action || 'Withdraw'));
   };
-
   /* PaymentCard: next repayment · amount · was (struck-through original, optional) · due (date text) · badge ('Due in 45 days')
      onPay · payLabel (default 'Pay ₱800 now') · title ('Next payment') · overdue (red badge)
      notice { title, body, onHelp }: the overdue layout — due date under the amount, the penalty box, a full-width button */
@@ -106,11 +111,19 @@
     return h('div', { key: k, className: 'ps-logo', style: { width: L.w } }, inner);
   }
   /* PartnerLogos: the bank and wallet logos, scrolling slowly (still with reduced motion) */
+  /* the strip runs on its own compositor animation, started once when it appears. It was a Motion `animate` prop: every redraw of the home
+     page (any change in the app: a toast, a tooltip, the sheet's state…) handed it a new target and it started over from 0, so on a busy
+     page it seemed to stand still (owner: "the partner logos often don't move") */
   PS.PartnerLogos = function PartnerLogos() {
-    var L = PARTNERS.reduce(function (s, x) { return s + x.w + 24; }, 0);
+    var L = PARTNERS.reduce(function (s, x) { return s + x.w + 24; }, 0), track = R.useRef(null);
+    R.useEffect(function () {
+      var el = track.current; if (!el || PS.reduce || !el.animate) return;
+      var a = el.animate([{ transform: 'translateX(0px)' }, { transform: 'translateX(' + (-L) + 'px)' }], { duration: L / 28 * 1000, iterations: Infinity, easing: 'linear' });
+      return function () { a.cancel(); };
+    }, []);
     var row = PARTNERS.map(function (x, i) { return logo(x, 'a' + i); }).concat(PARTNERS.map(function (x, i) { return logo(x, 'b' + i); }));
     return h('div', { className: 'ps-marquee', 'aria-label': 'DBP, EastWest Bank, GCash, AUB, Maya and other partners' },
-      h(m.div, { className: 'ps-marquee__track', animate: PS.reduce ? undefined : { x: [0, -L] }, transition: { duration: L / 28, ease: 'linear', repeat: Infinity } }, row));
+      h('div', { ref: track, className: 'ps-marquee__track' }, row));
   };
   /* TrustCard: "Made for Filipinos", the NPC and SEC tiles and the partner logos · kicker · title */
   PS.TrustCard = function TrustCard(p) {
