@@ -40,11 +40,18 @@ often instant; actions wait 0.25–1 s and show the loader only when it's long e
   under the header, so the way back stays. `APP.Loaded` does both with `PS.Cover`. `?fast=1` skips every wait (for checking a screen).
 - **What was waited for rises in** piece by piece (`PS.Rise`: 0.34 s each, 40 ms apart); a page seen before is there at once. Lists
   that replace each other (tabs) and the content of a sheet rise in the same way; home's cards do the first time it shows.
-- **Ordering is the Withdraw demo itself** (`screens-withdraw.js`, `shared/ps-ui/withdraw-host.js`): the screen that slides up from the
-  bottom, the amount entry and the morph into the order card when a term is picked run on the demo's own code, loaded as it ships
-  (`prototypes/withdraw-fund-flow/withdraw.js` + `motion-tokens.js`) — nothing is re-made, so a change to the demo shows up here. The app
-  gives it the limit, the blocks under the order card (coupons, order details, protection, withdrawal method, agreement) and what
-  Confirm does. The amount and term chosen there are the app's loan, so coupons follow them ("Keep your coupon?" included).
+- **Everything the Withdraw demo covers is the demo as it is on GitHub** (owner), apart from new features and the numbers
+  (`screens-withdraw.js`, `shared/ps-ui/withdraw-host.js`, which loads `prototypes/withdraw-fund-flow/withdraw.js` + `motion-tokens.js` as
+  they ship — nothing is re-made, so a change to the demo shows up here): the home card, the screen that slides up from the bottom, the
+  amount entry, the morph into the order card when a term is picked, and the order page's blocks — order details, borrower protection
+  with its Protected / Add button, withdrawal method, the agreement and the nudge when Confirm is tapped before it is ticked — with the
+  demo's look and copy. The app adds the coupons section (new) above the order details and a Discount row, and gives the numbers, the
+  first payment date, the withdrawal method chosen in the app and what the taps on the method card, "View payment schedule" and Confirm
+  do. The amount and term chosen there are the app's loan, so coupons follow them ("Keep your coupon?" included).
+- **Same size on every page** (owner): the demo is laid out as wide as the screen and never scaled (it was drawn 360 wide and scaled up
+  on bigger phones, so its type came out up to ~10 % larger than the app's), and its own page CSS comes with it (`.ps-wd`: taps that
+  fire at once — without it iOS waited ~0.3 s on every key and term pill — the caret's blink, content-box sizing).
+- **Page changes crossfade** (owner), as home's tabs do: no sideways slide. The amount page used when the sheet cannot load still rises.
 - **Every way into ordering starts at the amount entry** (owner): Withdraw on the home card and in the credit limit hub, a coupon's
   "Use" (the coupon is put on the loan once the amount and term are chosen, if it fits), "Go to borrow" in a message — `APP.borrow()`.
   The terms are the demo's 4 / 6 / 8.
@@ -52,13 +59,15 @@ often instant; actions wait 0.25–1 s and show the loader only when it's long e
   counting, the coin changing to the tick only at the end of its turn — and the app goes back to home only when the last line has
   held and the tick has finished playing.
 - **Where loading, Order submit and empty states sit** (owner): the loader is in the very middle of the screen; Order submit's coin
-  (88 px, the same size as the loader's) and text sit a little above the middle (`.ps-stage`); a page that only has an empty state
+  (72 px, the same size as the loader's) and text sit a little above the middle (`.ps-stage`); a page that only has an empty state
   (`PS.EmptyState{page}`), the fallback and the signed-out Payment page put their picture / text at Order submit's height.
 - **The Credit limit increase closes into the home card as in the Withdraw demo**: home's credit card is the demo's own card
-  (`APP.WdHero`: the sheet draws it into the page, scaled to the column on screens wider than 360), and the exit is the demo's
+  (`APP.WdHero`: the sheet draws it into the page), and the exit is the demo's
   `introExit` — both credit states (see CLAUDE.md → "Withdraw: the two credit states"): Tune → Loan "No loan" gives *credit unused*
   (the big number travels into the card), any other loan state gives *partly used* (the available amount counts up, the green bar
-  slides out). With no temporary credit (Tune) there is nothing to announce: no intro, and the shared `PS.CreditCard` is shown.
+  slides out). With no temporary credit (Tune) there is nothing to announce: no intro, and the card has no temporary line. At the end
+  the Credit limit screen goes in the same moment (it used to flash back for a frame).
+- **Home's blue card, the payment card and the "You have updates on your loan" strip** have the default shadow (owner).
 - **Toasts sit low** (owner): 12 px above whatever is at the bottom of the page on top — the tab bar, a bottom bar's button, the pay
   bar, the order page's Confirm — and 24 px above the screen edge when nothing is there (`PS.Toast{bottom:'auto'}`).
 - **Loading and Order submit are the whole screen and nothing else**: no header, no bottom bar, no tab bar.
@@ -78,8 +87,9 @@ except two switches:
 | Temporary credit | ₱10,000 until Nov 20, 2026 — **Tune → Temporary credit** on / off | home card (legend, green part of the bar, ⓘ tooltip), Credit limit increase (the increase and its end date), credit history ("Temporary credit added") |
 | Total credit | limit + temporary = ₱50,000 | home card, hub, Account |
 | Used credit | the current loan, ₱5,000 — ₱0 with **Tune → Loan** "No loan" | hub, credit history |
-| Available | total − used = ₱45,000 | home card, hub, Account, the most that can be borrowed (keypad, slider) |
-| Limit-increase coupon | +₱5,000 / +₱3,000 / +₱2,000 — not credit: it raises what **one loan** may borrow | order page, coupon pages |
+| Temporary credit left | temporary − used = ₱5,000: **the temporary credit is used first** (owner) | home card (legend, green part of the bar, ⓘ tooltip); the partly-used intro counts the available amount up by it |
+| Available | total − used = ₱45,000 | home card, hub, Account, the most that can be typed on the amount entry |
+| Limit-increase coupon | +₱5,000 / +₱3,000 / +₱2,000 — not credit: it raises what **one loan** may borrow, and only on the order page once it is ticked there (owner) — never on home or the amount entry | order page, coupon pages |
 | The current loan | ₱5,000, 4 terms, with the 25% first-payment coupon; taken 10 days ago (repaying), 18 days ago (overdue: first payment 3 days late, the last day without a penalty) or today (in review / transfer failed) | home payment card, Payment tab, payment detail, pay page, loan application page, "Your loan has been sent" message, "Used" coupons, credit history |
 
 - Ordering a loan in the app takes its amount out of the available credit at once (`CS.take`): home card, hub, Account, credit

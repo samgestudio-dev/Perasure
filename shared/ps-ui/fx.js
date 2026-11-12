@@ -66,7 +66,7 @@
         return h('span', { key: n, className: 'ps-osub__l', 'data-i': n++, 'data-dot': step === 1 && c === '.' ? ++dot : 0 }, c); })), wi < all.length - 1 ? ' ' : null);
     });
     return h('div', { className: 'ps-stage ps-osub', role: 'status', 'aria-live': 'polite', 'aria-label': lines[step] },
-      h('span', { className: 'ps-stage__icon' }, h(PS.Coin, { size: 88, state: ok[0] ? 'success' : 'loading', onDone: function () { fin.current.coin = true; finish(); } })),
+      h('span', { className: 'ps-stage__icon' }, h(PS.Coin, { size: 72, state: ok[0] ? 'success' : 'loading', onDone: function () { fin.current.coin = true; finish(); } })),
       h('div', { className: 'ps-stage__text' }, h('p', { key: step, ref: ref, className: 'ps-osub__line', 'aria-hidden': true }, words)));
   };
 
@@ -144,7 +144,14 @@
     var d = p.data || {}, box = R.useRef(null), fr = R.useRef(null), cb = R.useRef(p); cb.current = p;
     R.useEffect(function () {
       var doneAt = 0, leaving = false, hold = 0, safety = 0, dead = false;
-      function finish() { if (!dead && cb.current.onDone) cb.current.onDone(); }
+      /* as intro.js: at rest the box (its styles put back: full screen, dark) goes in the same moment — hidden here at once, since React
+         removes it a frame or more later and it would flash back */
+      function finish() {
+        var b = box.current, f = fr.current;
+        if (b) b.style.display = 'none';
+        try { if (f) f.src = 'about:blank'; } catch (e) {}
+        if (!dead && cb.current.onDone) cb.current.onDone();
+      }
       function go() {
         if (dead) return;
         var b = box.current, f = fr.current, P = cb.current;

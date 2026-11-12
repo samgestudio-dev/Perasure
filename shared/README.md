@@ -61,18 +61,18 @@ rule in `CLAUDE.md` asks.
 | --- | --- |
 | `ps-ui.css` | every component's styles, on the tokens only (values with no token are `--ps-*` variables at the top, with a note) |
 | `core.js` | namespace, motion values (`PS.MT`, `PS.fade`, `PS.reveal`, `PS.press`) and helpers (`PS.money`), `PS.rise` / `Rise` (content that rises in piece by piece), `Lottie` + `Anim` (the repo's animations, cropped to their art), `Icon`, `Art`, `Amount`, `Button` (`inactive`), `Glass` / `Back` / `Close`, `Brand`, `Tag`, `Count`, `Chip`, `Check`, `Divider`, `Card`, `Section`, `Link`, `KV`, `Rows`, `Swap` |
-| `layout.js` | `Shell`, `Screen` (`rise`), `Cover` (a loading or failed page, over the whole screen), `TopBar`, `BottomBar`, `Bands` (progressive blur), `Navigator`, `Pages` (push / pop / rise from the bottom), `Sheet` + `SheetTitle` (their content rises in), `Tooltip` (places itself next to its `anchor`), `Toast` + `useToast`, `TuneButton`, `frameRect` |
+| `layout.js` | `Shell`, `Screen` (`rise`), `Cover` (a loading or failed page, over the whole screen), `TopBar`, `BottomBar`, `Bands` (progressive blur), `Navigator`, `Pages` (crossfade; rise from the bottom / back down), `Sheet` + `SheetTitle` (their content rises in), `Tooltip` (places itself next to its `anchor`), `Toast` + `useToast`, `TuneButton`, `frameRect` |
 | `home.js` | `HomeActions`, `CreditCard`, `PaymentCard`, `HomeCoupons` (two / one / none), `PartnerLogos`, `TrustCard`, `Legal` |
 | `coupon.js` | `CouponArt`, `Countdown`, `CouponTicket` (default, selected, used, expired, unavailable), `Tabs`, `Crossfade` (`rise`), `EmptyState`, `CouponRow`, `Summary`, `CouponPicker`, `Decision` |
 | `loan.js` | `Slider`, `AmountCard`, `CouponsSection`, `OrderDetails`, `ProtectionCard`, `MethodCard`, `Agreement` (`nudge`: withdraw's ripple), `RepaymentPlan` |
 | `account.js` | `Profile`, `CreditLimitCard`, `Menu`, `Social` |
 | `feedback.js` | `Coin` (Coins loading: loop → success), `Dots`, `Loader` (the Loading page's coin + dots, larger; `fill`: in the very middle of a whole screen), `Busy`, `StatusBox`, `Notice`, `Result`, `Overlay` |
 | `form.js` | `Field` (typing box, also a picker row), `PhoneField`, `OtpBoxes`, `ContactMethods`, `Keypad`, `Segmented`, `SelectBar`, `Search`, `Consent`, `UploadTile` |
-| `status.js` | home states: `StateCard`, `Strip`, `DotTitle`, `OfferCard`, `Banners`, `Hero`, `Reviews`, `PermissionCard` |
+| `status.js` | home states: `StateCard`, `Strip` (`raised`: default shadow), `DotTitle`, `OfferCard`, `Banners`, `Hero`, `Reviews`, `PermissionCard` |
 | `pay.js` | `ScamStrip`, `Installment`, `PayBar`, `RepayCard`, `InsetRows`, `PayTimer`, `QrPanel`, `Accordion`, `MethodPicker`, `Pager` |
 | `list.js` | `LinkList`, `Facts`, `ActivityItem`, `InboxItem`, `HistoryRow`, `HubCard`, `Tiles`, `Tips` |
 | `fx.js` | the earlier demos' motion as components: `OrderSubmit`, `OtpSheet`, `CreditLimitIntro` (hosts the shipped page; `exit` hands the closing to the page, as the demo's intro.js does) |
-| `withdraw-host.js` | `PS.loadWithdraw()`: the Withdraw demo's loan screen (slide up, amount entry, morph into the order card) run from the demo's own code, with the host page's limit, confirm blocks and Confirm action; `host.heroEl`: also the demo's home card, drawn where the host says |
+| `withdraw-host.js` | `PS.loadWithdraw()`: the Withdraw demo's loan screen (slide up, amount entry, morph into the order card) the demo's home card and loan screen (slide up, amount entry, morph, the order page's own blocks) run from the demo's own code, laid out at the host's width; the host gives the limit, numbers, sample data, extra blocks and taps (header of the file) — wrappers get `.ps-wd` |
 | `phone-fit.js` | responsive phone page, iOS 26 edge to edge; fit mode cap (default, ≤ 1.1×) / fit (1:1) / scale (old 360 zoom), from `window.PS_FIT` or Tune (`fit`, `zoom`); sets `--vh --ph --ftop --e --sb` |
 | `tune.js`, `tune.css` | the prototype Tune panel, configured per page (`PSTune.setup`) |
 | `assets/icons/` | one-colour icons exported from Figma, drawn as masks (`PS.Icon`) so their colour is a token (an icon's own opacity is set where it is used) |
@@ -107,7 +107,8 @@ drawn (a coupon with no `best`, a summary with no `newLimit`, an order row whose
   Motion (`m.*`, strict `LazyMotion` with `domMax`) comes from `PS.Shell`; `MotionConfig reducedMotion="user"`.
 - **Coupon pictures** (`PS.CouponArt`): from 40 px up the Figma version with the green badge, its shadow and the white
   outline (`assets/art/coupon-<type>.svg`, drawn 3.31 % / 5 % wider than its box, as in Figma); below 40 px the plain
-  small one (`coupon-<type>-sm.svg`). Both are composed from the Figma layers, so re-export from Figma if they change.
+  small one (`coupon-<type>-sm.svg`). Both are Figma's own SVG exports (app file, "Coupon center": 80 px 52:16887 / 52:16857 /
+  52:16835, 36 px 52:15586 / 52:15725 / 52:15780) with the canvas behind them taken out — re-export them if they change; never redraw.
 - **Copy** in examples and defaults follows the `perasure-tone-of-voice` skill (sentence case, plain words).
 - **Phone rules** from `CLAUDE.md` hold here: `touch-action: manipulation`, no coloured overlay left in the page when a
   sheet is closed (sheets unmount), the header blur runs only while content is under it, with blur off the bottom

@@ -1,20 +1,26 @@
-/* PeraSure UI — the Withdraw demo's loan screen, run from the demo's own code.
-   Owner's rule: an animation that exists is never re-imagined. So this file does not copy or re-write the Withdraw fund flow
-   (prototypes/withdraw-fund-flow): it loads that page's code as it ships (withdraw.js + motion-tokens.js) and mounts its loan screen —
-   the screen that slides up from the bottom, the amount entry, and the morph into the order card when a term is picked (the
-   travelling amount, the card, the chips, the keypad leaving, the confirm blocks and the Confirm bar), all the demo's functions and
-   numbers. A change to the demo's motion therefore shows up here by itself.
+/* PeraSure UI — the Withdraw demo's home card and loan screen, run from the demo's own code.
+   Owner's rule: everything the Withdraw fund flow (prototypes/withdraw-fund-flow) covers is the demo as it is on GitHub — its motion,
+   its look, its interactions, its copy — apart from new features and the numbers. So this file does not copy or re-write the demo: it
+   loads that page's code as it ships (withdraw.js + motion-tokens.js) and mounts it — the home card, the screen that slides up from the
+   bottom, the amount entry, the morph into the order card when a term is picked (the travelling amount, the card, the chips, the keypad
+   leaving), the order page's blocks (order details, borrower protection with its Protected / Add button, withdrawal method, the
+   agreement and its nudge) and the Confirm bar. A change to the demo therefore shows up here by itself.
 
-   What a host page may set (everything else is the demo's):
+   What a host page may set (everything else is the demo's) — one `host` object, read when a part draws (see opt()):
      PS.loadWithdraw()            → Promise of the sheet component (class)
-     <Sheet ref scale initialAmount availableAmount totalBalance temporaryAmount temporaryValidTill
-            host={{ max, blocks, onState, onConfirm, onNudge, heroEl }} />      (render it from a memo'd parent: see opt())
-            host.heroEl: an element to draw the demo's home card in (then call sheet.forceUpdate()); its Withdraw pill opens the sheet
-            host.blocks(sheet) → [nodes]   the confirm blocks (default: the demo's own) — they enter exactly as the demo's blocks do
-            host.onState(next, prev, sheet) · host.onConfirm(sheet) · host.onNudge(sheet) (Confirm tapped before the agreement is ticked)
-     sheet.open()  · sheet.close()  · sheet.state { screen 'home' | 'loan', phase 'enter' | 'confirm', amt (hundreds, as text), term, agree }
-   scale: the demo is drawn 360 wide; on a wider frame the host scales it (and tells the sheet, so its heights still fit the screen).
-   max: the most that can be borrowed, in pesos (the demo's own 50,000 when not set) — the keypad, the slider and the caption follow it.
+     <Sheet ref initialAmount availableAmount totalBalance temporaryAmount temporaryValidTill host={host} />   (from a memo'd parent)
+     host.width                   the frame's width in CSS px: the demo is laid out that wide (it is drawn for 360; nothing is scaled, so
+                                  its type is the same size as the host's pages)
+     host.max                     the most that can be borrowed, in pesos (the demo's 50,000 when not set): keypad, slider and caption
+     host.heroEl                  an element to draw the demo's home card in (then call sheet.forceUpdate()); its Withdraw pill opens the sheet
+     host.blocks(sheet, blocks)   → the order page's blocks: the demo's own, with the host's new ones added (they enter like the demo's)
+     host.order(sheet)            → { daily, per, total, save } the numbers of the order details (save: a coupon's discount)
+     host.extraRows(sheet, o)     → rows added above "Total payment" (drawn with sheet.drow / sheet.hr: the demo's own row)
+     host.firstDate · host.methodName · host.methodSub · host.methodLogo   values (or functions of the sheet) for the demo's sample data
+     host.onMethod · host.onSchedule · host.onBenefits   taps on the method card, "View payment schedule", "See benefits"
+     host.onState(next, prev, sheet) · host.onConfirm(sheet) (Confirm with the agreement ticked)
+     sheet.open()  · sheet.close()  · sheet.refresh() · sheet.state { screen 'home' | 'loan', phase 'enter' | 'confirm', amt (hundreds,
+     as text), term, agree, morph }
    Needs core.js; the page must not set window.__resources itself. */
 (function () {
   'use strict';
@@ -22,18 +28,41 @@
   var klass = null, loading = null;
   function url(p) { return new URL(PS.root + 'prototypes/withdraw-fund-flow/' + p, document.baseURI).href; }
 
-  /* the demo's limits are written into its code as numbers (₱500–₱50,000); these four spots read the host's limit instead. Motion code is not touched. */
+  /* Where the demo writes sample data or a fixed size into its code, these spots read the host instead. Motion code is not touched. */
   var PATCHES = [
+    /* the limits (₱500–₱50,000) → host.max */
     ["if (parseInt(n || '0', 10) > 500) n = '500';", "if (parseInt(n || '0', 10) > this.maxH()) n = String(this.maxH());"],
     ["(500 + p * 49500) / 100", "(500 + p * (this.maxH() * 100 - 500)) / 100"],
     ["(this.amount() - 500) / 49500", "(this.amount() - 500) / (this.maxH() * 100 - 500)"],
     ["this.sp('₱50,000', {", "this.sp(this.money(this.maxH() * 100, 0), {"],
-    ["}, 'Flexible amounts from ₱500–₱50,000');", "}, 'Flexible amounts from ₱500–' + this.money(this.maxH() * 100, 0));"]
+    ["}, 'Flexible amounts from ₱500–₱50,000');", "}, 'Flexible amounts from ₱500–' + this.money(this.maxH() * 100, 0));"],
+    /* the home card's bar is as long as the card's inside (304 at 360); its temporary-credit line shows while some is left */
+    ["var B = this.creditBar(), W = 304;", "var B = this.creditBar(), W = this.vw() - 56;"],
+    ["legend('temp', 'assets/dot-temporary.svg',", "B.temp > 0 && legend('temp', 'assets/dot-temporary.svg',"],
+    /* the order page: hooks for the host's blocks and numbers, the sample data, taps */
+    ["    ];\n    return this.el('div', {\n      key:'blocks',", "    ];\n    blocks = this.hostBlocks(blocks);\n    return this.el('div', {\n      key:'blocks', ref:this.blocksRef(),"],
+    ["this.drow('First payment date', 'Oct 3, 2026', null, 'b')", "this.drow('First payment date', this.hv('firstDate', 'Oct 3, 2026'), null, 'b')"],
+    ["this.drow('Total payment', this.money(o.total), null, 'e')", "...this.extraRows(o), this.drow('Total payment', this.money(o.total), null, 'e')"],
+    ["cursor:'pointer' }, { key:'f' })", "cursor:'pointer' }, { key:'f', onClick:this.hv('onSchedule') })"],
+    ["cursor:'pointer' }, { key:'s' })", "cursor:'pointer' }, { key:'s', onClick:this.hv('onBenefits') })"],
+    ["React.createElement('div', { key:'c', style:{ height:72,", "React.createElement('div', { key:'c', onClick:this.hv('onMethod'), style:{ height:72, cursor:'pointer',"],
+    ["src: window.__resources.mayaLogo, alt:'Maya',", "src: this.hv('methodLogo', window.__resources.mayaLogo), alt:this.hv('methodName', 'Maya'),"],
+    ["this.sp('Bank of the Philippins Islands',", "this.sp(this.hv('methodName', 'Bank of the Philippins Islands'),"],
+    ["this.sp('Ending in 4567',", "this.sp(this.hv('methodSub', 'Ending in 4567'),"]
+  ];
+  /* the demo is drawn 360 wide: these lengths follow the host's width instead (the keypad and its line keep 24 px from the edges) */
+  var WIDE = [
+    ["width:360,", "width:this.vw(),"],
+    ["width:312, marginLeft:-156,", "width:this.vw() - 48, marginLeft:-(this.vw() - 48) / 2,"]
   ];
   function patch(src) {
     PATCHES.forEach(function (p) {
       if (src.split(p[0]).length !== 2) { console.warn('[withdraw-host] the demo changed: could not find', p[0]); return; }
       src = src.replace(p[0], p[1]);
+    });
+    WIDE.forEach(function (p) {
+      if (src.split(p[0]).length < 2) console.warn('[withdraw-host] the demo changed: could not find', p[0]);
+      src = src.split(p[0]).join(p[1]);
     });
     /* the home card's pictures are named relative to the demo's own page */
     src = src.split("'assets/").join("'" + url('assets/'));
@@ -63,17 +92,17 @@
 
   function make(Base) {
     return class WithdrawSheet extends Base {
-      scale() { return this.props.scale || 1; }
-      /* the demo reads the screen from phone-fit's globals (design px); on a scaled frame the same numbers, in its own px */
-      ex() { var p = (window.__PS_PH || 740) / this.scale(); return p > 740 ? Math.round(p - 740) : 0; }
-      df() { var p = (window.__PS_PH || 740) / this.scale(); return p < 740 ? Math.min(100, Math.round(740 - p)) : 0; }
-      sb() { return Math.max(0, Math.round((window.__PS_SB || 0) / this.scale())); }
-      ee() { return Math.max(0, Math.round((window.__PS_E || 0) / this.scale())); }
-      /* host: one object that stays the same while its fields change (max, blocks, onState, onConfirm, onNudge). The sheet must not be
-         re-rendered from outside — the demo keeps part of its state out of React's queue, and a re-render from a parent would put the
-         old state back — so what changes is read from here when a slot draws, never passed as new props. */
+      /* the frame's width (the demo's 360 when not set) */
+      vw() { return Math.max(320, Math.round(this.opt('width') || 360)); }
+      /* host: one object that stays the same while its fields change. The sheet must not be re-rendered from outside — the demo keeps
+         part of its state out of React's queue — so what changes is read from here when a part draws, never passed as new props. */
       opt(name) { var hst = this.props.host; return hst && hst[name] != null ? hst[name] : this.props[name]; }
+      /* a host value: data may be a function of the sheet; a tap (on…) is passed as it is */
+      hv(name, fb) { var v = this.opt(name); if (v == null) return fb === undefined ? null : fb; return typeof v === 'function' && name.slice(0, 2) !== 'on' ? v(this) : v; }
       maxH() { return Math.max(5, Math.round((this.opt('max') || 50000) / 100)); }
+      order() { var o = super.order(), f = this.opt('order'); return f ? Object.assign({}, o, f(this)) : o; }
+      extraRows(o) { var f = this.opt('extraRows'); return (f && f(this, o)) || []; }
+      hostBlocks(blocks) { var f = this.opt('blocks'); return f ? f(this, blocks) : blocks; }
       /* open: what the demo's Withdraw pill does (hero(), "tap") */
       open() {
         if (this._mpStep) { cancelAnimationFrame(this._mpStep); this._mpStep = null; }
@@ -91,28 +120,16 @@
         super.setState(patch, cb);
         var on = this.opt('onState'); if (patch && on) on(Object.assign({}, prev, patch), prev, this);
       }
-      /* the host's blocks changed for a reason the sheet doesn't know (a coupon was picked): draw them again */
+      /* the host's numbers or blocks changed for a reason the sheet doesn't know (a coupon was picked): draw them again */
       refresh() { var S = this._subs || {}; ['amount', 'blocks'].forEach(function (ch) { if (S[ch]) S[ch].forEach(function (x) { x.forceUpdate(); }); }); }
+      /* Confirm: before the agreement is ticked, the demo's own scroll + nudge; after, the host's */
       confirmTap() {
         if (!this.state.agree) return super.confirmTap();
         var on = this.opt('onConfirm'); if (on) on(this);
       }
-      nudgeAgree() { var on = this.opt('onNudge'); if (on) on(this); else super.nudgeAgree(); }
-      /* the confirm blocks: the host's content, in the demo's wrapper (same place, same entrance: each block on MT.REVEAL(i)) */
-      confirmBlocks() {
-        var make = this.opt('blocks'); if (!make) return super.confirmBlocks();
-        var MT = this.mt(), self = this, blocks = make(this).filter(Boolean);
-        return this.el('div', {
-          key: 'blocks', ref: this._blocksRef || (this._blocksRef = function (n) { self.watchBlocks(n); }),
-          initial: { opacity: 0 }, animate: { opacity: 1, transition: { duration: 0.2 } }, exit: { opacity: 0, transition: MT.LEAVE },
-          style: { position: 'absolute', left: 16, right: 16, top: 382, zIndex: 1, display: 'flex', flexDirection: 'column', gap: 20 }
-        }, blocks.map(function (b, i) {
-          var RV = MT.REVEAL(i);
-          return self.el('div', { key: 'b' + i, initial: RV.initial, animate: { opacity: 1, y: 0, scale: 1, transition: RV.transition }, style: {} }, b);
-        }));
-      }
-      /* the demo's order page has a fixed length (made for its own blocks); with the host's blocks the page is as long as they need:
-         the last block ends 24 px above the Confirm bar (108) */
+      /* the demo's order page has a fixed length, made for its own blocks (its last block ends 24 px above the Confirm bar, 108);
+         with the host's blocks added it is as long as they need, with the same 24 px */
+      blocksRef() { var self = this; return this._blocksRef || (this._blocksRef = function (n) { self.watchBlocks(n); }); }
       watchBlocks(n) {
         var self = this;
         if (this._ro) { this._ro.disconnect(); this._ro = null; }
@@ -130,12 +147,12 @@
       componentWillUnmount() { if (this._ro) this._ro.disconnect(); if (super.componentWillUnmount) super.componentWillUnmount(); }
       render() {
         var v = this.renderVals();
-        /* the demo's home-card slot stays mounted (empty): the demo's partial re-rendering needs both slots */
+        /* the demo's home-card slot stays mounted (empty when there is no element for it): its partial re-rendering needs both slots */
         var el = this.opt('heroEl');
         return h(R.Fragment, null, el ? window.ReactDOM.createPortal(v.hero, el) : h('div', { 'aria-hidden': true, style: { display: 'none' } }, v.hero), v.loan);
       }
-      /* the demo's home card: drawn into the element the host gives (host.heroEl) — the same card the Credit limit increase closes into
-         (introExit) and whose Withdraw pill opens the sheet; with no element the slot stays mounted, empty */
+      /* the demo's home card: drawn into host.heroEl — the card the Credit limit increase closes into (introExit) and whose Withdraw
+         pill opens the sheet */
       _renderHero() { return this.opt('heroEl') ? super._renderHero() : null; }
     };
   }

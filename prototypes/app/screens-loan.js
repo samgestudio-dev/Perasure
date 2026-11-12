@@ -108,8 +108,10 @@
     if (lims.length) { var bl = Lm || find(coupons, last.l) || CS.best(coupons, 'limit', l.amount, l.term) || lims[0];
       rows.push({ key: 'l', type: 'limit', title: bl.name, on: !!Lm, onClick: function () { toggleRow(bl); }, sub: Lm ? 'Your limit is ' + money(C.max, 0) + ' for this loan' : bl.rule }); }
     var mt = S.method;
-    return { l: l, D: D, Lm: Lm, C: C, blocks: [
-      rows.length ? h(PS.CouponsSection, { key: 'coupons', count: coupons.length, onSeeAll: function () { APP.set({ draft: { tab: 'discount', disc: l.disc, lim: l.lim } }); APP.open('picker'); }, rows: rows }) : null,
+    var cpn = rows.length ? h(PS.CouponsSection, { key: 'coupons', count: coupons.length, onSeeAll: function () { APP.set({ draft: { tab: 'discount', disc: l.disc, lim: l.lim } }); APP.open('picker'); }, rows: rows }) : null;
+    /* coupons: the coupons section alone (the Withdraw sheet puts it above the demo's own blocks); blocks: the whole page (the keypad fallback) */
+    return { l: l, D: D, Lm: Lm, C: C, coupons: cpn, blocks: [
+      cpn,
       h(PS.OrderDetails, { key: 'details', link: 'View payment schedule', onLink: function () { APP.open('plan'); }, rows: [
         { label: 'Daily fee', value: money(C.daily) }, { label: 'First payment date', value: CS.date(1) }, { label: 'Per installment', value: money(C.per) },
         { label: 'Discount', value: C.save ? '-' + money(C.save) : null, tone: 'positive' }, { label: 'Total payment', value: money(C.total) }] }),

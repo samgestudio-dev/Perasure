@@ -21,9 +21,10 @@
         p.button.icon ? h(PS.Icon, { name: p.button.icon, size: 16 }) : null, p.button.label) : null);
   };
   /* Strip: a white one-line card that leads somewhere · icon (20, on a 28 px brand tile) · tone brand | negative
-     title + sub (loan updates: 58 px tall, radius 20) · text (one two-line text: 64 px tall, radius 24 — lg) · count (green badge) · chevron · onClick */
+     title + sub (loan updates: 58 px tall, radius 20) · text (one two-line text: 64 px tall, radius 24 — lg) · count (green badge) · chevron · onClick
+     raised: the default shadow (on home) */
   PS.Strip = function Strip(p) {
-    return h(m.button, Object.assign({ type: 'button', className: PS.cx('ps-strip', (p.lg || p.text) && 'ps-strip--lg', p.className), onClick: p.onClick }, PS.press()),
+    return h(m.button, Object.assign({ type: 'button', className: PS.cx('ps-strip', (p.lg || p.text) && 'ps-strip--lg', p.raised && 'ps-strip--raised', p.className), onClick: p.onClick }, PS.press()),
       h('span', { className: PS.cx('ps-tile', p.tone === 'negative' && 'is-negative') }, h(PS.Icon, { name: p.icon || 'info', size: 20, color: 'inverse' })),
       h('span', { className: 'ps-strip__text' }, p.text ? h('span', { className: 'ps-t-title-14' }, p.text) : h(R.Fragment, null,
         h('span', { className: 'ps-t-title-14' }, p.title), p.sub ? h('span', { className: 'ps-t-caption-xs' }, p.sub) : null)),

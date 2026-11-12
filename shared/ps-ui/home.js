@@ -41,13 +41,13 @@
       p.badge ? h(PS.Tag, { tone: p.overdue ? 'negative' : 'soft' }, p.badge) : null);
     var amt = h('div', { className: 'ps-payment__amt' }, h(PS.Amount, { value: p.amount }), p.was != null ? h(PS.Amount, { value: p.was, strike: true }) : null);
     var due = h('p', { className: 'ps-payment__date ps-t-body-md' }, h(PS.Icon, { name: 'calendar', size: 16, color: 'secondary' }), p.notice ? 'Due ' + p.due : p.due);
-    if (p.notice) return h(PS.Card, { variant: 'outline', className: 'ps-payment ps-payment--stack' }, head,
+    if (p.notice) return h(PS.Card, { variant: 'outline', className: 'ps-payment ps-payment--stack ps-card--raised' }, head,
       h('div', { className: 'ps-payment__sum' }, amt, due),
       h('div', { className: 'ps-payment__note' }, h('p', null, p.notice.title), h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, p.notice.body),
         p.notice.onHelp ? h(m.button, Object.assign({ type: 'button', 'aria-label': 'How penalties work', onClick: function (e) { p.notice.onHelp(e.currentTarget); } }, PS.press(true)),
           h(PS.Icon, { name: 'help-circle', size: 16, color: 'tertiary' })) : null),
       h(PS.Button, { block: true, size: 'md', onClick: p.onPay }, p.payLabel || 'Pay now'));
-    return h(PS.Card, { variant: 'outline', className: 'ps-payment' }, head, amt,
+    return h(PS.Card, { variant: 'outline', className: 'ps-payment ps-card--raised' }, head, amt,   /* default shadow (owner) */
       h(PS.Divider),
       h('div', { className: 'ps-payment__foot' },
         h('div', { className: 'ps-payment__due' }, h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, 'Due date'), due),

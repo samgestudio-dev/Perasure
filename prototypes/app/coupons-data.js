@@ -14,10 +14,12 @@ window.CS = (function () {
   var TUNE = window.PS_TUNE || {};
   var NUM = { limit: 40000, used: String(TUNE.loan || 'active') === 'none' ? 0 : 5000, temporary: String(TUNE.temp) === '0' ? 0 : 10000, temporaryUntil: 'Nov 20', temporaryUntilLong: 'Nov 20, 2026', temporaryUntilISO: '2026-11-20' };
   /* what follows from them: total credit = limit + temporary · available = total − used */
+  /* temporaryLeft: what is left of the temporary credit — it is used first (owner), so a loan takes from it before the long-term limit */
   var credit = { limit: NUM.limit, used: NUM.used, temporary: NUM.temporary, total: NUM.limit + NUM.temporary, available: NUM.limit + NUM.temporary - NUM.used,
+    temporaryLeft: Math.max(0, NUM.temporary - NUM.used),
     temporaryUntil: NUM.temporaryUntil, temporaryUntilLong: NUM.temporaryUntilLong, temporaryUntilISO: NUM.temporaryUntilISO };
   /* take: a loan was ordered — its amount is used credit from now on (a limit coupon can let one loan go past the credit: none is left then) */
-  function take(amount) { credit.used += amount; credit.available = Math.max(0, credit.total - credit.used); }
+  function take(amount) { credit.used += amount; credit.available = Math.max(0, credit.total - credit.used); credit.temporaryLeft = Math.max(0, credit.temporary - credit.used); }
   var loan = { min: 500, step: 100, terms: [4, 6, 8], term: 6, days: 15, interest: 0.015, fee: 0.005, penalty: 0.05, grace: 3, start: new Date(2026, 10, 12) };
   var user = { initials: 'SG', name: 'Sam Ge', verified: true };
   var payment = { amount: 800, due: 'Dec 27, 2026', badge: 'Due in 45 days' };

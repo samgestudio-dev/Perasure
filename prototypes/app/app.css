@@ -40,9 +40,11 @@ html.ps-edge .app-bot-consent { padding-bottom: calc(var(--sb) + var(--spacing-p
   background: var(--color-surface-card-default); border-radius: var(--radius-xl) var(--radius-xl) 0 0; box-shadow: var(--shadow-over); }
 html.ps-edge .app-amount__sheet { padding-bottom: calc(var(--sb) + var(--spacing-padding-xl)); }
 /* the Withdraw demo's loan screen (screens-withdraw.js): drawn 360 wide from the frame's top-left corner and scaled to the frame; over the pages, under the sheets */
-.app-wd { position: absolute; left: 0; top: 0; width: 360px; height: 0; transform-origin: 0 0; z-index: 10; }
-.app-wdhero { min-height: 196px; }   /* the demo's home card is drawn in here: 328 wide, scaled to the column on a wider frame */
-.app-wdhero__in { width: 328px; transform-origin: 0 0; }
+.app-wd { position: absolute; left: 0; top: 0; width: 100%; height: 0; z-index: 10; }   /* the Withdraw demo, laid out as wide as the frame */
+.app-wdhero { min-height: 196px; }   /* the demo's home card is drawn in here */
+/* while the Withdraw sheet covers the whole screen (the demo marks the frame .ps-covered), the tabs' blur bands under it are not drawn —
+   as the demo does with its own home's (withdraw.css): a blur no one sees still costs the GPU a pass while the sheet moves */
+.ps-covered .app-tabs .ps-pb > i:not(.ps-veil) { display: none; }
 .app-wd .ps-sb { visibility: hidden; }   /* the demo's drawn status bar: hidden on a phone there too */
 .app-wd__tune { position: absolute; right: var(--spacing-padding-lg); top: 56px; z-index: 11; height: 40px; display: flex; align-items: center; }
 html.ps-edge .app-wd__tune { top: calc(56px + var(--e)); }

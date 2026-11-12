@@ -175,7 +175,7 @@ rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), buil
 - **Loading is the whole screen and nothing else** (owner): while a page loads, the Loading page covers everything (`PS.Cover`: no header, no
   bottom bar, no tab bar), never just the content area; Order submit likewise. A failed load shows the fallback page under the header. What
   was waited for then rises in piece by piece (`PS.Rise`).
-- **Where things sit** (owner): the loader (an 88 px coin + dots) is in the very middle of the screen; Order submit's coin (88 px) and text sit a little above the middle (`.ps-stage`);
+- **Where things sit** (owner): the loader (a 72 px coin + dots) is in the very middle of the screen; Order submit's coin (72 px, the same) and text sit a little above the middle (`.ps-stage`);
   full-page empty states (`PS.EmptyState{page}`) and the fallback put their picture at Order submit's height.
 - **Toasts sit low** (owner): `PS.Toast{bottom:'auto'}` — 12 px above the tab bar / bottom button / pay bar of the page on top, 24 px above the
   screen edge when nothing is there.
@@ -184,8 +184,17 @@ rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), buil
   typed into a screen. Temporary credit is not a limit-increase coupon (that raises what one loan may borrow). Not in Tune, except the
   Temporary credit on / off switch (and Loan "No loan" → nothing used). Ordering takes the amount out of the available credit (`CS.take`).
   Table: `prototypes/app/README.md` → "One set of numbers".
-- **Home's credit card is the Withdraw demo's own card** (`APP.WdHero`; the sheet draws it, scaled on frames wider than 360), so the Credit
-  limit increase closes into it with the demo's `introExit` in both credit states; with no temporary credit the shared `PS.CreditCard` shows.
+- **What the Withdraw demo covers is the demo as on GitHub** (owner) — home card, sheet, amount entry, morph, the order page's blocks
+  (order details, borrower protection and its Protected / Add button, withdrawal method, agreement + nudge), look and copy — apart from new
+  features (the coupons section, its Discount row) and the numbers. Host it, never re-make it: `withdraw-host.js` patches only sample data
+  and sizes (`PATCHES` / `WIDE`) and gives hooks (`host.blocks`, `order`, `extraRows`, `method…`, `on…`). Home's credit card is the demo's
+  own (`APP.WdHero`), so the Credit limit increase closes into it with the demo's `introExit` in both credit states.
+- **Same size on every page** (owner): nothing is scaled — the demo is laid out as wide as the frame (`host.width`). Its wrappers carry
+  `.ps-wd` (ps-ui.css: what the demo's withdraw.css gives its elements — instant taps on iOS, caret blink, content-box).
+- **Page changes crossfade** (owner), like home's tabs — never a sideways slide (`PS.Pages`).
+- **Temporary credit is used first** (owner): the card's temporary amount is what is left of it (`CS.credit.temporaryLeft`). The amount entry's
+  maximum is the available credit; a limit coupon raises it only on the order page, once ticked.
+- **Default shadow** on home's blue card, payment card and updates strip (owner). Coupon pictures are Figma's SVG exports (`PS.CouponArt`).
 - **Bars have no colour while they cover nothing** (owner): the header's veil appears as content scrolls under it, the bottom / tab bar's goes
   when the scroll reaches the end; both fade with the scroll (`PS.Screen`).
 - **Tooltips place themselves** (owner): `APP.tipAt(element, text)` / `PS.Tooltip{anchor}` — next to what was tapped, never off screen.

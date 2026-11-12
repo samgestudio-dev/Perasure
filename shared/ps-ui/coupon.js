@@ -4,7 +4,8 @@
   'use strict';
   var R = window.React, PS = window.PS, h = R.createElement, m = PS.m, AP = PS.AP, MT = PS.MT;
 
-  /* CouponArt: the coupon picture (Figma "Percentage discount", "number discount", "credit limit increase")
+  /* CouponArt: the coupon picture — Figma's own SVG exports (app file, "Coupon center": 80 px 52:16887 / 52:16857 / 52:16835; 36 px with the
+     green badge 52:15586 / 52:15725 / 52:15780), only the canvas behind them taken out (owner: exported, not redrawn)
      type percent (% off) | amount (₱ off) | limit (credit limit increase) · size (px).
      From 40 px up: the version with the white outline and the badge's shadow; below 40 px (the 36 px rows): the plain small one. */
   var ART = { percent: 'coupon-percent', amount: 'coupon-amount', limit: 'coupon-limit' };

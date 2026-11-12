@@ -119,17 +119,19 @@
      dir -2: it goes back down in 0.3 s on (0.4, 0, 1, 1), as there.
      Push / pop ride the PeraSure Smooth spring (the page underneath moves a quarter as far); a swap crossfades on
      ENTER / LEAVE. A page that is leaving no longer takes taps. id: the page's key · dir · children: the page */
+  /* page changes crossfade, as home's tabs do (owner: no sideways slide) — the new page fades in on ENTER, the old one out on LEAVE;
+     dir 2 / -2: a page that rises from the bottom like a sheet / goes back down (withdraw's sheet exit) */
   var PAGE = {
     enter: function (d) {
       if (d === 2) return { x: '0%', y: '100%', opacity: 1, zIndex: 2 };
       if (d === -2) return { x: '0%', y: '0%', opacity: 1, zIndex: 0 };
-      return d ? { x: d > 0 ? '100%' : '-25%', y: '0%', opacity: 1, zIndex: d > 0 ? 2 : 0 } : { y: '0%', opacity: 0, zIndex: 1 };
+      return { x: '0%', y: '0%', opacity: 0, zIndex: 1 };
     },
-    center: function (d) { return d ? { x: '0%', y: '0%', opacity: 1, zIndex: 1, transition: PS.MT.SPRING_PCT } : { x: '0%', y: '0%', opacity: 1, zIndex: 1, transition: { opacity: PS.MT.ENTER } }; },
+    center: function (d) { return d === 2 || d === -2 ? { x: '0%', y: '0%', opacity: 1, zIndex: 1, transition: PS.MT.SPRING_PCT } : { x: '0%', y: '0%', opacity: 1, zIndex: 1, transition: { opacity: PS.MT.ENTER } }; },
     exit: function (d) {
       if (d === 2) return { opacity: 0.999, zIndex: 0, transition: { duration: 0.56 } };          /* stays where it is while the new page covers it */
       if (d === -2) return { y: '100%', zIndex: 2, transition: { duration: 0.3, ease: [0.4, 0, 1, 1] } };   /* withdraw's sheet exit */
-      return d ? { x: d > 0 ? '-25%' : '100%', zIndex: d > 0 ? 0 : 2, transition: PS.MT.SPRING_PCT } : { opacity: 0, zIndex: 0, transition: PS.MT.LEAVE };
+      return { opacity: 0, zIndex: 0, transition: PS.MT.LEAVE };
     }
   };
   function PageBox(p) {

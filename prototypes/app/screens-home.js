@@ -54,7 +54,7 @@
       body = [h(PS.StateCard, { key: 's', icon: 'history', title: st.title, body: st.body }), paymentCard(S)].concat(trust());
     } else if (S.user === 'docs') {
       body = [h(PS.StateCard, { key: 's', title: st.title, body: st.body, timer: { label: 'Time remaining', value: st.timer }, button: { label: 'Add documents', tone: 'white', onClick: function () { APP.go('docs'); } } }),
-        h(PS.Strip, { key: 'chat', icon: 'support-chat', text: 'Have a question about your application? Chat with support!', chevron: true, onClick: APP.support })].concat(trust());
+        h(PS.Strip, { key: 'chat', raised: true, icon: 'support-chat', text: 'Have a question about your application? Chat with support!', chevron: true, onClick: APP.support })].concat(trust());
     } else if (S.user === 'declined') {
       body = [h(PS.StateCard, { key: 's', title: st.title, body: st.body, support: { text: st.ask, onClick: APP.support } }),
         h('div', { key: 'offer', className: 'app-stack-8' }, h(PS.DotTitle, null, 'More for you'), h(PS.OfferCard, Object.assign({}, AD.offer, { onClick: function () { APP.say('LoadCash opens outside the test app.'); } })))].concat(trust());
@@ -71,14 +71,13 @@
       });
       var update = S.loan === 'reviewing' || S.loan === 'failed';
       var tip = 'Your available amount is what you can borrow today. It goes back up as you repay.' +
-        (credit.temporary ? ' ' + money(credit.temporary, 0) + ' of your total credit is temporary credit, valid until ' + credit.temporaryUntilLong + '.' : '');
-      /* the Withdraw demo's own card (the one its motion works on) — it always has a temporary-credit line, so with no temporary credit
-         (Tune) the shared component is used, as with ?card=ps */
-      body = [APP.wd && APP.wd.heroReady() && credit.temporary > 0 && !APP.q.get('card')
+        (credit.temporaryLeft ? ' ' + money(credit.temporaryLeft, 0) + ' of it is temporary credit, valid until ' + credit.temporaryUntilLong + '. We use your temporary credit first.' : '');
+      /* the Withdraw demo's own card (the one its motion works on); ?card=ps, or before the demo's code has loaded: the shared component */
+      body = [APP.wd && APP.wd.heroReady() && !APP.q.get('card')
           ? h(APP.WdHero, { key: 'credit', onInfo: function (el) { APP.tipAt(el, tip); } })
-          : h(PS.CreditCard, { key: 'credit', available: credit.available, total: credit.total, temporary: credit.temporary, temporaryUntil: credit.temporaryUntil,
+          : h(PS.CreditCard, { key: 'credit', available: credit.available, total: credit.total, temporary: credit.temporaryLeft, temporaryUntil: credit.temporaryUntil,
               onWithdraw: function () { APP.borrow(); }, onInfo: function (e) { APP.tipAt(e.currentTarget, tip); } }),
-        update ? h(PS.Strip, { key: 'upd', icon: 'info', title: 'You have updates on your loan', sub: 'Tap to view the latest status', count: 1, onClick: function () { APP.go('order'); } }) : null,
+        update ? h(PS.Strip, { key: 'upd', raised: true, icon: 'info', title: 'You have updates on your loan', sub: 'Tap to view the latest status', count: 1, onClick: function () { APP.go('order'); } }) : null,
         paymentCard(S),
         h(PS.HomeCoupons, { key: 'coupons', coupons: cards, onOpen: function () { APP.go('coupons'); } }), more()].concat(trust());
     }
@@ -93,19 +92,6 @@
         var bar = document.querySelector('.app-tabs .ps-nav__bar'), row = document.querySelector('.app-tabs .ps-top__row');
         if (bar) bar.classList.add('ps-tabbar');
         if (row && !row.querySelector('img[alt="PeraSure"]')) { var sp = document.createElement('span'), im = document.createElement('img'); im.alt = 'PeraSure'; sp.hidden = true; sp.appendChild(im); row.appendChild(sp); }
-        /* on a frame wider than 360 the card is scaled (k): the demo measures on screen and moves the amount in the card's own px, so the
-           place and size the travelling number starts from are given in those px (the number still starts exactly on the big one) */
-        var k = APP.wd.heroK || 1, amt = document.querySelector('.app-wdhero [data-wd-amount]');
-        if (o.src && Math.abs(k - 1) > 0.001 && amt && amt.children[1]) {
-          var p0 = amt.children[0].getBoundingClientRect(), p1 = amt.children[1].getBoundingClientRect(), cx = (p0.left + p1.right) / 2, cy = (p0.top + p0.bottom) / 2;
-          o.src = Object.assign({}, o.src, { x: cx + (o.src.x - cx) / k, y: cy + (o.src.y - cy) / k, size: o.src.size ? o.src.size / k : o.src.size });
-        }
-        /* …and the demo lifts the card above the closing box by z-index: a scaled box is a layer of its own, so it is lifted with it until the end */
-        var inn = document.querySelector('.app-wdhero__in');
-        if (inn && Math.abs(k - 1) > 0.001) {
-          var done0 = o.done; inn.style.position = 'relative'; inn.style.zIndex = '101';
-          o = Object.assign({}, o, { done: function () { inn.style.position = ''; inn.style.zIndex = ''; if (done0) done0.apply(null, arguments); } });
-        }
         var ran = window.__wdIntroExit(o);
         if (ran) APP.set({ intro: 'out' });               /* the tab bar may show again: the exit has taken hold of it */
         return ran;
