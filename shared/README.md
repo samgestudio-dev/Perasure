@@ -14,11 +14,12 @@ React + Motion from `vendor/`, no build step (`PS.h` = `React.createElement`). P
 
 ```html
 <head>
-  <script src="../../shared/ps-ui/phone-fit.js"></script>          <!-- 360 px design fitted to the phone, iOS 26 edge to edge -->
   <script src="../../shared/ps-ui/tune.js"></script>               <!-- optional, prototype only: Tune panel -->
   <link rel="stylesheet" href="../../shared/ps-ui/tune.css">
   <script>PSTune.setup({ key: 'perasure.<slug>.tune', settings: [
-    { key: 'blur', label: 'Progressive blur (header and bottom bars)', options: [[1, 'On'], [0, 'Off']], def: 1 } ] });</script>
+    { key: 'blur', label: 'Progressive blur (header and bottom bars)', options: [[1, 'On'], [0, 'Off']], def: 1 },
+    { key: 'fit', label: 'Screen fit', options: [['cap', 'Capped zoom'], ['fit', '1:1'], ['scale', 'Full zoom']], def: 'cap' } ] });</script>
+  <script src="../../shared/ps-ui/phone-fit.js"></script>          <!-- after Tune: responsive layout, fit mode, iOS 26 edge to edge -->
   <link rel="stylesheet" href="../../tokens/tokens.css">
   <link rel="stylesheet" href="../../assets/fonts/fonts.css">
   <link rel="stylesheet" href="../../shared/ps-ui/ps-ui.css">
@@ -64,7 +65,7 @@ rule in `CLAUDE.md` asks.
 | `coupon.js` | `CouponArt`, `Countdown`, `CouponTicket` (default, selected, used, expired, unavailable), `Tabs`, `Crossfade`, `EmptyState`, `CouponRow`, `Summary`, `CouponPicker`, `Decision` |
 | `loan.js` | `Slider`, `AmountCard`, `CouponsSection`, `OrderDetails`, `ProtectionCard`, `MethodCard`, `Agreement` (`nudge`: withdraw's ripple), `RepaymentPlan` |
 | `account.js` | `Profile`, `CreditLimitCard`, `Menu`, `Social` |
-| `phone-fit.js` | responsive phone page: viewport = device width at scale 1 (never scaled), iOS 26 edge to edge; sets `--vh --ph --ftop --e --sb` |
+| `phone-fit.js` | responsive phone page, iOS 26 edge to edge; fit mode cap (default, ≤ 1.1×) / fit (1:1) / scale (old 360 zoom), from `window.PS_FIT` or Tune (`fit`, `zoom`); sets `--vh --ph --ftop --e --sb` |
 | `tune.js`, `tune.css` | the prototype Tune panel, configured per page (`PSTune.setup`) |
 | `assets/icons/` | one-colour icons, drawn as masks (`PS.Icon`) so their colour is a token |
 | `assets/art/`, `assets/logos/` | full-colour pictures: coupon illustrations, empty box, ticket mask, laurels, logos |
@@ -74,8 +75,10 @@ drawn (a coupon with no `best`, a summary with no `newLimit`, an order row whose
 
 ## Rules for changing components
 
-- **Responsive, never scaled.** Pages are laid out at the phone's own width and fill it with the 16 px page margins
-  (360–430 px phones, up to 600 px on a desktop). No fixed 360 px widths; fixed sizes only where Figma fixes them.
+- **Responsive.** Layouts fill the width with the 16 px page margins (360–430 px phones, up to 600 px on a desktop).
+  No fixed 360 px widths; fixed sizes only where Figma fixes them. How big the page is drawn is phone-fit's mode:
+  capped zoom by default (the 360 design enlarged with the screen, at most 1.1×; a 430 px phone shows 14 px text at
+  15.4 px), 1:1, or full zoom. With a Tune panel, load `phone-fit.js` after `PSTune.setup`.
 - **Tokens only.** Colours, spacing, radii, type, shadows and blur come from `tokens/tokens.css`. A value with no
   token goes once into `:root` of `ps-ui.css` as `--ps-*`, with a note saying so.
 - **Configurable, not copied.** Anything that differs between screens (copy, amounts, states, which parts show) is a

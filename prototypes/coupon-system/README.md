@@ -4,8 +4,9 @@ Figma: PeraSure design system, section `10594:45373` (Coupon center), with the l
 `10676:30203`, keep-coupon sheets `10712:55111 / 55543 / 55892`, repayment plan `10722:58508`, home `10730:58631` /
 `10747:59920` and account `10750:63340`.
 
-Built only from the shared components in [`shared/ps-ui`](../../shared/README.md). The page is responsive: it fills the
-phone's width (check at 360, 390 and 430 px), nothing is scaled. This folder holds just the flow
+Built only from the shared components in [`shared/ps-ui`](../../shared/README.md). The page is responsive: the layout fills the
+phone's width (check at 360, 390 and 430 px). Tune → "Screen fit" compares how big it is drawn: capped zoom (default,
+at most 1.1×), 1:1, or full zoom like the older demos; "Most zoom" sets the cap (1.05 / 1.1 / 1.15). This folder holds just the flow
 (`coupon-system.js`) and the sample data and coupon rules (`data.js`).
 
 ## Flow
@@ -27,8 +28,9 @@ phone's width (check at 360, 390 and 430 px), nothing is scaled. This folder hol
 
 ## Tune and links
 
-Tune (top right): progressive blur on / off, and how many coupons you have (six / one / none).
-Links: `?page=coupons|loan|account`, `&tab=used|expired`, `&sheet=picker|plan`, `&coupons=6|1|0`, `&blur=0`.
+Tune (top right): progressive blur on / off, how many coupons you have (six / one / none), screen fit and most zoom.
+Links: `?page=coupons|loan|account`, `&tab=used|expired`, `&sheet=picker|plan`, `&coupons=6|1|0`, `&blur=0`,
+`&fit=cap|fit|scale`, `&zoom=1.05|1.1|1.15`.
 
 ## Numbers
 

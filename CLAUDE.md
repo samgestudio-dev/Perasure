@@ -142,8 +142,8 @@ built on it. Details and the head block to copy: `shared/README.md`; reference p
   `motion-tokens.js` (Smooth spring 240/30/1, ENTER/LEAVE crossfade with 3 px blur, press 60 ms 0.985 / 0.92). Numbers that
   follow a slider never animate; selection states change colour only (150 ms); leaving pages and sheets take no taps.
   Details: `shared/README.md` → "Rules for changing components".
-- Responsive, never scaled (see "Requirements for a demo page"): no fixed 360 px widths in `ps-ui.css`; fixed sizes only
-  for things that are fixed in Figma (icons, pictures, buttons' heights).
+- Responsive (see "Requirements for a demo page"): no fixed 360 px widths in `ps-ui.css`; fixed sizes only for things
+  that are fixed in Figma (icons, pictures, buttons' heights). Fit mode: capped zoom ≤ 1.1× by default.
 - The amount slider follows the finger at once; when something else moves it (a coupon raises or removes the limit,
   "Keep coupon" sets the amount) the knob, fill and amount glide there on the Smooth spring (`PS.AmountCard`).
 - Coupon illustrations: the Figma version with the green badge — with shadow and white outline from 40 px up, the plain
@@ -176,9 +176,11 @@ bundle was unpacked onto the shared environment):
 
 - Designed at 360 CSS px wide: set the viewport to `width=360` on touch devices so the browser
   scales it to the screen, and fill the visible height (no green backdrop / phone frame / fake status bar).
-  **Exception (owner): pages built on the shared components are responsive** — viewport = the device width at scale 1,
-  layouts fill the width with the 16 px page margins, nothing is scaled (`shared/ps-ui/phone-fit.js`). Check them at
-  360, 390 and 430 px wide.
+  **Exception (owner): pages built on the shared components are responsive** — layouts fill the width with the 16 px
+  page margins (`shared/ps-ui/phone-fit.js`). How big they are drawn is a fit mode (Tune → "Screen fit"; the owner is
+  comparing them on phones): **capped zoom** (default: the 360 design enlarged with the screen, at most 1.1×), **1:1**
+  (true size: text felt small on big iPhones) or **full zoom** (the old 360 scaling). Load `phone-fit.js` after
+  `PSTune.setup`. Check at 360, 390 and 430 px wide.
 - `touch-action: manipulation` on interactive elements — iOS Safari otherwise delays every tap ~300ms.
 - iOS Safari 26+ (floating toolbar): `viewport-fit=cover`, extend the top/bottom bars behind the status bar
   and search bar; bottom nav / primary button sits 24px above the search bar. `?debug=1` on the withdraw
