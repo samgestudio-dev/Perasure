@@ -25,22 +25,22 @@ window.APP = (function () {
   }
 
   /* ---- navigation: a stack of pages; the tab pages are one entry ('tabs') ---- */
-  function entry(name, params) { return { name: name, key: 'k' + uid++, params: params || {} }; }
-  function go(name, params) { set({ stack: S.stack.concat([entry(name, params)]), dir: 1, tip: null }); }
+  function entry(name, params, how) { return { name: name, key: 'k' + uid++, params: params || {}, how: how }; }
+  /* go: push a page from the right; how 'rise': it comes up from the bottom like a sheet (and goes back down) */
+  function go(name, params, how) { set({ stack: S.stack.concat([entry(name, params, how)]), dir: how === 'rise' ? 2 : 1, tip: null }); }
   function swap(name, params, dir) { set({ stack: S.stack.slice(0, -1).concat([entry(name, params)]), dir: dir == null ? 0 : dir, tip: null }); }
-  function back(n) { if (S.stack.length > 1) set({ stack: S.stack.slice(0, -(n || 1)), dir: -1, tip: null }); }
+  function back(n) { if (S.stack.length > 1) set({ stack: S.stack.slice(0, -(n || 1)), dir: S.stack[S.stack.length - 1].how === 'rise' ? -2 : -1, tip: null }); }
   function home(tab, dir) { set({ stack: [entry('tabs')], tab: tab || 'home', dir: dir == null ? -1 : dir, tip: null, sheet: null }); }
   function open(name, params) { set({ sheet: { name: name, params: params || {} }, tip: null }); }
   function close() { set({ sheet: null }); }
   var toastT = 0;
   function say(text, ms) { clearTimeout(toastT); set({ toast: text }); toastT = setTimeout(function () { set({ toast: null }); }, ms || 2600); }
   function tipAt(el, text, width) {
-    var r = PS.frameRect(el), w = width || 248, x = Math.max(16, Math.min(PS.frameWidth(el) - 16 - w, r.left - w + r.width + 8));
-    set({ tip: { text: text, at: { x: x, y: r.bottom + 8 } } });
+    set({ tip: { text: text, anchor: PS.frameRect(el), width: width } });
   }
 
   /* ---- the made-up network ---- */
-  var K = T.net === 'slow' ? 2.6 : 1, seen = {}, failed = {};
+  var K = q.get('fast') ? 0 : T.net === 'slow' ? 2.6 : 1, seen = {}, failed = {};   /* ?fast=1: nothing waits (for checking a screen) */
   function rnd(a, b) { return a + Math.random() * (b - a); }
   function latency(key) {
     if (seen[key]) return Math.random() < 0.55 ? 0 : rnd(180, 420) * K;          /* a page seen before is often there at once */
@@ -58,13 +58,16 @@ window.APP = (function () {
     }, [st.state, st.n]);
     return { state: st.state, retry: function () { setSt({ state: 'loading', ms: rnd(500, 1100) * K, n: st.n + 1 }); } };
   }
-  /* Loaded: a page's content once its data is in; the Loading page meanwhile; "Something went wrong" when it fails */
+  /* Loaded: a page's content once its data is in. Until then the Loading page covers the whole screen (the header's buttons stay);
+     when it fails, the fallback page ("Something went wrong") does. Content that was waited for rises in piece by piece.
+     k (what is loaded) · className (of the box around the content: its children are the pieces) · rise false (the content brings its own entrance) */
   function Loaded(p) {
-    var l = useLoad(p.k);
-    return h(PS.Crossfade, { k: l.state }, l.state === 'ready' ? p.children
-      : l.state === 'error' ? h(PS.EmptyState, { title: 'Something went wrong', body: 'We couldn’t load this page. Check your connection and try again.', style: { marginTop: p.top == null ? 112 : p.top } },
-          h(PS.Button, { size: 'md', onClick: l.retry, className: 'app-retry' }, 'Try again'))
-      : h(PS.Loader, { className: 'app-loading', style: { marginTop: p.top == null ? 112 : p.top } }));
+    var l = useLoad(p.k), err = l.state === 'error', waited = R.useRef(l.state !== 'ready');
+    return h(R.Fragment, null,
+      h(PS.Cover, { open: l.state !== 'ready', tone: err ? 'white' : 'page' }, h(PS.Crossfade, { k: l.state, className: 'ps-cover__in' }, err
+        ? h(PS.EmptyState, { title: 'Something went wrong', className: 'app-fallback' }, h(PS.Button, { onClick: l.retry }, 'Try again'))
+        : h(PS.Loader, { fill: true }))),
+      l.state === 'ready' ? h(PS.RiseCtx.Provider, { value: !waited.current }, h(PS.Rise, { className: p.className, off: !waited.current || p.rise === false }, p.children)) : null);
   }
   /* run: an action that talks to the server. Resolves after a random wait; the loader covers the page only for the longer ones. */
   function run(fn, o) {
@@ -98,7 +101,7 @@ window.APP = (function () {
       h(PS.Overlay, { open: S.submitting }, S.submitting ? h(PS.OrderSubmit, { onDone: function () { var cb = S.submitting.then; set({ submitting: false }); if (cb) cb(); } }) : null),
       S.intro ? h(PS.CreditLimitIntro, { data: { old: CS.credit.total - CS.credit.temporary, new: CS.credit.total, inc: CS.credit.temporary, exp: '2026-11-20' }, onDone: function () { set({ intro: false }); } }) : null,
       h(PS.Overlay, { open: S.busy, tone: 'glass' }, h(PS.Loader)),
-      h(PS.Tooltip, { open: !!S.tip, at: S.tip ? S.tip.at : null, text: S.tip ? S.tip.text : '', onClose: function () { set({ tip: null }); } }),
+      h(PS.Tooltip, { open: !!S.tip, anchor: S.tip ? S.tip.anchor : null, width: S.tip ? S.tip.width : null, text: S.tip ? S.tip.text : '', onClose: function () { set({ tip: null }); } }),
       h(PS.Toast, { msg: S.toast, bottom: top.name === 'tabs' ? 112 : 124 }));
   }
   function maskPhone(p) { return '0' + p.slice(0, 2) + '****' + p.slice(-4); }
@@ -109,7 +112,7 @@ window.APP = (function () {
   function Page(p) {
     var top = Object.assign({ left: h(PS.Back, { onClick: p.onBack || function () { back(); } }), title: p.title, right: p.right === undefined ? tune() : p.right }, p.top);
     return h(PS.Screen, { top: top, bottom: p.bottom, tint: p.tint, colTop: p.colTop, colBottom: p.colBottom == null ? (p.bottom ? 140 : 48) : p.colBottom, className: p.className, scrollRef: p.scrollRef },
-      p.load ? h(Loaded, { k: p.load, top: p.loadTop }, h('div', { className: 'app-col' }, p.children)) : p.children);
+      p.load ? h(Loaded, { k: p.load, className: 'app-col' }, p.children) : p.children);
   }
   /* Head: a page's own big title + one line under it (24 / 32 and 14 / 20, inset 8 from the column) */
   function Head(p) {

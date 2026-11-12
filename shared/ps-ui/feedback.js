@@ -5,10 +5,10 @@
   var R = window.React, PS = window.PS, h = R.createElement, m = PS.m, AP = PS.AP;
   var COINS = PS.root + 'animations/coins-loading/';
 
-  /* Coin: the PeraSure coin · state loading (spins) | success (finishes the turn, lands on the tick, once) · size (56) · onDone
-     Sizes follow the files: the coin is drawn 14 % larger than its box (the Loading page's −7 px margin on 50 px). */
+  /* Coin: the PeraSure coin · state loading (spins) | success (finishes the turn, lands on the tick, once) · onDone
+     size: how big the coin is drawn (50) · inset: how much of it hangs outside its box on each side (the Loading page: 7 on a 50 px coin) */
   PS.Coin = function Coin(p) {
-    var size = p.size || 50, ok = p.state === 'success', s = R.useState(false), swapped = s[0], setSwapped = s[1], api = R.useRef(null);
+    var size = p.size || 50, inset = p.inset || 0, box = size - inset * 2, ok = p.state === 'success', s = R.useState(false), swapped = s[0], setSwapped = s[1], api = R.useRef(null);
     R.useEffect(function () {
       if (!ok) { setSwapped(false); return; }
       if (PS.reduce || !api.current) { setSwapped(true); return; }
@@ -17,20 +17,20 @@
       var t = setTimeout(done, 1900);
       return function () { clearTimeout(t); off(); };   /* the item may already be destroyed */
     }, [ok]);
-    var st = { width: size, height: size, margin: -Math.round(size * 0.14) / 2 };
-    return h('span', { className: 'ps-coin', style: { width: size, height: size } },
-      swapped ? h(PS.Lottie, { key: 's', src: COINS + 'success-coin.json', width: st.width, once: true, onDone: p.onDone, style: st })
-              : h(PS.Lottie, { key: 'l', src: COINS + 'loading-coin.json', width: st.width, api: api, style: st }));
+    var st = { width: size, height: size, margin: -inset };
+    return h('span', { className: 'ps-coin', style: { width: box, height: box } },
+      swapped ? h(PS.Lottie, { key: 's', src: COINS + 'success-coin.json', width: size, once: true, onDone: p.onDone, style: st })
+              : h(PS.Lottie, { key: 'l', src: COINS + 'loading-coin.json', width: size, api: api, style: st }));
   };
   /* Dots: the three loading dots (Loading page: 84 × 22) · width */
   PS.Dots = function Dots(p) {
     var w = p.width || 84;
     return h(PS.Lottie, { src: PS.asset('lottie/loading-dots.json'), width: w, height: Math.round(w * 22 / 84), viewBox: '50 130 425 180', className: 'ps-dots' });
   };
-  /* Loader: coin + dots, centred in its box (a page that is loading) · label (optional line under it) · fill (covers the screen) */
+  /* Loader: coin + dots at the Loading page's sizes (a 50 px coin, dots 84 × 22, 12 px apart), centred in its box (a page that is loading) · label (optional line under it) · fill (covers the screen) */
   PS.Loader = function Loader(p) {
     return h('div', { className: PS.cx('ps-loader', p.fill && 'ps-loader--fill', p.className), style: p.style, role: 'status', 'aria-label': p.label || 'Loading' },
-      h(PS.Coin, { size: 36 }), h(PS.Dots, { width: 84 }), p.label ? h('p', { className: 'ps-t-body-md ps-c-tertiary' }, p.label) : null);
+      h(PS.Coin, { size: 50, inset: 7 }), h(PS.Dots, { width: 84 }), p.label ? h('p', { className: 'ps-t-body-md ps-c-tertiary' }, p.label) : null);
   };
   /* Busy: the small three-dot pulse inside a button that is waiting */
   PS.Busy = function Busy() { return h('span', { className: 'ps-busy', role: 'status', 'aria-label': 'Loading' }, h('i'), h('i'), h('i')); };

@@ -33,7 +33,7 @@ shared/ps-ui/              PeraSure UI components (React, configurable): ps-ui.c
                            coupon.js, loan.js, account.js, phone-fit.js, tune.js/.css, assets/ — see "Shared components"
                            + feedback.js (loaders, status, result), form.js (fields, OTP, keypad), status.js (home states), pay.js (repayments),
                            list.js (links, facts, activity, inbox, history, hub), fx.js (Order submit, OTP sheet, Credit limit intro)
-shared/gallery.html        live gallery of every shared component and its states (on the picker as "PeraSure components")
+shared/gallery.html        live gallery of every shared component and its states (on the picker as "PeraSure components"; entries in gallery.js + gallery-app.js)
 shared/README.md           how to use the components, files, rules for changing them
 prototypes/app/            the whole app as a test environment ("PeraSure app") — see "The full app"
 prototypes/<slug>/index.html    main / recommended variant of a demo
@@ -165,10 +165,14 @@ rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), buil
   rating). Fit is fixed at capped zoom. Loading is made up: `APP.useLoad` (a page's first data: random time, sometimes slow) and
   `APP.run` (an action); Tune → Network makes the first try fail (the "Something went wrong" state).
 - Order submit plays only after Confirm on apply-a-loan (after the code).
+- **Loading is the whole screen** (owner): while a page loads, the Loading page covers it (`PS.Cover`; only the header's buttons stay), never
+  just the content area; a failed load shows the fallback page the same way. What was waited for then rises in piece by piece (`PS.Rise`).
+- **Tooltips place themselves** (owner): `APP.tipAt(element, text)` / `PS.Tooltip{anchor}` — next to what was tapped, never off screen.
+- **Icons come from Figma** (owner): export the icon (`download_assets` on its node) into `shared/ps-ui/assets/icons`; don't redraw one.
 - **Animations replace stills** (owner): wherever Figma shows a still that has an animation in `animations/`, the app plays the
   animation (`PS.Anim`, core.js): anti-scam cards, rating, sending code, every empty state and the fallback, loaders, order submit.
 - **Spacing is checked against Figma, not judged by eye** (owner): positions and sizes come from the Figma node geometry, and each page
-  is compared with the frame before it counts as done (text positions within about 1.5 px). `prototypes/app/README.md` lists what has
+  is laid over its frame (Figma | app | difference) and corrected before it counts as done. `prototypes/app/README.md` lists what has
   been compared.
 - Links: `?page=<screen>` opens a screen directly, `?auto=0` stops the app typing codes and moving on by itself.
 

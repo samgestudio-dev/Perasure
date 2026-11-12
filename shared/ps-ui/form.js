@@ -19,7 +19,7 @@
       p.prefix || null,
       h('span', { className: 'ps-field__main' }, p.label ? h('span', { className: 'ps-field__label' }, p.label) : null, input),
       p.clear && filled && !pick ? h('button', { type: 'button', className: 'ps-field__clear', 'aria-label': 'Clear', onClick: function (e) { e.preventDefault(); p.onChange(''); } },
-        h(PS.Icon, { name: 'close-circle-filled', size: 20, color: 'tertiary' })) : null,
+        h('img', { src: PS.asset('art/clear.svg'), alt: '', width: 20, height: 20 })) : null,
       pick ? h(PS.Icon, { name: 'chevron-right', size: 16, color: 'tertiary', className: 'ps-field__chev' }) : null);
     return h('div', { className: PS.cx('ps-fieldwrap', p.className) }, box,
       h(AP, { initial: false }, p.error ? h(m.p, Object.assign({ key: 'e', className: 'ps-field__msg is-error ps-t-caption-sm' }, PS.fade(-4)), p.error)
@@ -28,19 +28,19 @@
   /* PhoneField: country pill (+63) + the number box · value · onChange · error · label ('Phone Number') · placeholder */
   PS.PhoneField = function PhoneField(p) {
     return h('div', { className: 'ps-phonefield' },
-      h('span', { className: 'ps-phonefield__cc' }, h('span', { className: 'ps-flag-ph', 'aria-hidden': true }), h('span', { className: 'ps-t-body-md ps-c-tertiary' }, p.code || '+63')),
+      h('span', { className: 'ps-phonefield__cc' }, h('img', { src: PS.asset('art/flag-ph.png'), alt: '' }), p.code || '+63'),
       h(PS.Field, { label: p.label || 'Phone Number', value: p.value, onChange: function (v) { p.onChange(v.replace(/[^\d]/g, '').slice(0, 10)); }, error: p.error,
         placeholder: p.placeholder || 'Enter your phone number', inputMode: 'numeric', type: 'tel', autoFocus: p.autoFocus, className: 'ps-phonefield__num' }));
   };
 
   /* OtpBoxes: 6 boxes 48 × 60 over one hidden number input · value · onChange(text) · length (6) · error (red boxes) · autoFocus · disabled
-     A digit pops in (0.18 s); the active box carries the brand ring. */
+     An empty box has a grey ring, a filled one a light blue ring; the box being typed carries the brand ring and a shadow. A digit pops in (0.18 s). */
   PS.OtpBoxes = function OtpBoxes(p) {
     var n = p.length || 6, v = p.value || '', ref = R.useRef(null), s = R.useState(false), focus = s[0], setFocus = s[1];
     R.useEffect(function () { if (p.autoFocus && ref.current) ref.current.focus({ preventScroll: true }); }, []);
     var cells = [];
     for (var i = 0; i < n; i++) (function (i) {
-      var ch = v.charAt(i), active = focus && !p.error && i === Math.min(v.length, n - 1);
+      var ch = v.charAt(i), active = focus && !p.error && i === Math.max(0, Math.min(v.length, n) - 1);   /* the box being typed: the last digit (Figma) */
       cells.push(h(m.span, Object.assign({ key: i, className: PS.cx('ps-otp__box', active && 'is-active', ch && 'is-filled', p.error && 'is-error') }, p.cascade ? PS.reveal(i) : {}),
         h(AP, { initial: false }, ch ? h(m.span, { key: ch + i, initial: { opacity: 0, scale: 0.6 }, animate: { opacity: 1, scale: 1, transition: { duration: 0.18, ease: MT.ENTER.ease } },
           exit: { opacity: 0, transition: { duration: 0.1 } } }, ch) : null)));
@@ -56,7 +56,7 @@
       var on = it.id === p.value;
       return h(m.button, Object.assign({ key: it.id, type: 'button', role: 'radio', 'aria-checked': on, className: PS.cx('ps-contact__item', on && 'is-on'),
         onClick: function () { if (p.onChange) p.onChange(it.id); } }, PS.press()),
-        h('span', { className: 'ps-contact__ring' }, h(PS.Icon, { name: it.icon, size: 24 })), h('span', { className: 'ps-t-caption-sm' }, it.label));
+        h('span', { className: 'ps-contact__ring' }, h(PS.Icon, { name: it.icon, size: 28 })), h('span', null, it.label));
     }));
   };
 
@@ -89,9 +89,9 @@
   };
   /* Search: the search pill · value · onChange · placeholder · autoFocus */
   PS.Search = function Search(p) {
-    return h('label', { className: PS.cx('ps-search', p.className) }, h(PS.Icon, { name: 'search', size: 16, color: 'tertiary' }),
+    return h('label', { className: PS.cx('ps-search', p.className) }, h(PS.Icon, { name: 'search', size: 18, color: 'secondary' }),
       h('input', { value: p.value || '', placeholder: p.placeholder || 'Search', autoFocus: p.autoFocus, 'aria-label': p.placeholder || 'Search', onChange: function (e) { p.onChange(e.target.value); } }),
-      p.value ? h('button', { type: 'button', 'aria-label': 'Clear', onClick: function () { p.onChange(''); } }, h(PS.Icon, { name: 'close-circle-filled', size: 16, color: 'tertiary' })) : null);
+      p.value ? h('button', { type: 'button', 'aria-label': 'Clear', onClick: function () { p.onChange(''); } }, h('img', { src: PS.asset('art/clear.svg'), alt: '', width: 18, height: 18 })) : null);
   };
   /* Consent: small check + legal line (login, application) · on · onToggle · children */
   PS.Consent = function Consent(p) {
@@ -108,12 +108,5 @@
         st === 'done' ? h('span', { className: 'ps-upload__mark' }, h(PS.Icon, { name: 'check-circle-filled', size: 20, color: 'positive' })) : null,
         st === 'error' ? h('span', { className: 'ps-upload__mark' }, h(PS.Icon, { name: 'close-circle-filled', size: 20, color: 'var(--color-icon-negative-default)' })) : null),
       p.label ? h('span', { className: 'ps-t-caption-sm ps-c-tertiary' }, p.label) : null);
-  };
-  /* Stars: 1–5 rating · value · onChange */
-  PS.Stars = function Stars(p) {
-    return h('div', { className: 'ps-stars', role: 'radiogroup', 'aria-label': 'Rating' }, [1, 2, 3, 4, 5].map(function (n) {
-      return h(m.button, Object.assign({ key: n, type: 'button', role: 'radio', 'aria-checked': p.value === n, 'aria-label': n + ' of 5', className: PS.cx('ps-star', n <= (p.value || 0) && 'is-on'),
-        onClick: function () { p.onChange(n); } }, PS.press(true)), h(PS.Icon, { name: 'star', size: 28 }));
-    }));
   };
 })();

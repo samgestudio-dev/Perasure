@@ -16,15 +16,14 @@
 
   /* the penalty explainer (tooltip on the overdue card and in Payment detail) */
   APP.penaltyTip = function () {
-    return h('div', { className: 'app-pen' }, h('p', { className: 'ps-t-label-sm' }, 'How penalties work for this installment'),
+    return h('div', { className: 'app-pen' }, h('p', { className: 'ps-t-section-sm', style: { whiteSpace: 'nowrap' } }, 'How penalties work for this installment'),
       h('div', { className: 'app-pen__rows' }, AD.penalties.map(function (r, i) {
-        return h('div', { key: i, className: PS.cx('app-pen__row ps-t-caption-sm', i === 1 && 'is-now') }, h('b', { className: i ? 'ps-c-negative' : 'ps-c-brand' }, r[0]), h('span', null, r[1]));
+        return h('div', { key: i, className: PS.cx('app-pen__row ps-t-caption-sm', i === 1 && 'is-now') }, h('b', { className: 'ps-c-brand' }, r[0]), h('span', null, r[1]));
       })),
       h('p', { className: 'ps-t-caption-xs ps-c-tertiary' }, 'We don’t charge penalties on penalties. Your due date doesn’t change.'));
   };
   function showPenalty(el) {
-    var r = PS.frameRect(el), w = PS.frameWidth(el);
-    APP.set({ tip: { text: APP.penaltyTip(), at: { x: Math.max(16, w - 16 - 280), y: r.bottom + 8 } } });
+    APP.tipAt(el, APP.penaltyTip(), 296);
   }
   APP.showPenalty = showPenalty;
   function apply() { if (!APP.signedIn()) APP.go('login'); else APP.go('kyc-id'); }
@@ -46,15 +45,16 @@
   function more() { return h('div', { key: 'more', className: 'app-stack-8' }, h(PS.DotTitle, null, 'More from PeraSure'), h(PS.Banners, { items: AD.banners.map(function (b) {
     return Object.assign({}, b, { onClick: function () { APP.say('Offers aren’t part of the test app yet.'); } }); }) })); }
 
+  var opened = false;
   APP.tabs.home = function Home() {
     var S = APP.use(), st = AD.states[S.user], credit = CS.credit, body;
     if (S.user === 'guest' || S.user === 'new') {
       body = [h(PS.Hero, Object.assign({ key: 'hero' }, AD.hero, { onClick: apply })), h(PS.Reviews, { key: 'rev', items: AD.reviews })].concat(trust());
     } else if (S.user === 'review') {
-      body = [h(PS.StateCard, { key: 's', icon: 'pending', title: st.title, body: st.body }), paymentCard(S)].concat(trust());
+      body = [h(PS.StateCard, { key: 's', icon: 'history', title: st.title, body: st.body }), paymentCard(S)].concat(trust());
     } else if (S.user === 'docs') {
       body = [h(PS.StateCard, { key: 's', title: st.title, body: st.body, timer: { label: 'Time remaining', value: st.timer }, button: { label: 'Add documents', tone: 'white', onClick: function () { APP.go('docs'); } } }),
-        h(PS.Strip, { key: 'chat', icon: 'chat', text: 'Have a question about your application? Chat with support!', chevron: true, onClick: APP.support })].concat(trust());
+        h(PS.Strip, { key: 'chat', icon: 'support-chat', text: 'Have a question about your application? Chat with support!', chevron: true, onClick: APP.support })].concat(trust());
     } else if (S.user === 'declined') {
       body = [h(PS.StateCard, { key: 's', title: st.title, body: st.body, support: { text: st.ask, onClick: APP.support } }),
         h('div', { key: 'offer', className: 'app-stack-8' }, h(PS.DotTitle, null, 'More for you'), h(PS.OfferCard, Object.assign({}, AD.offer, { onClick: function () { APP.say('LoadCash opens outside the test app.'); } })))].concat(trust());
@@ -71,11 +71,12 @@
       });
       var update = S.loan === 'reviewing' || S.loan === 'failed';
       body = [h(PS.CreditCard, { key: 'credit', available: credit.available, total: credit.total, temporary: credit.temporary, temporaryUntil: credit.temporaryUntil,
-          onWithdraw: function () { APP.go('amount'); }, onInfo: function (e) { APP.say('Your available amount is what you can borrow today.'); } }),
+          onWithdraw: function () { APP.go('amount', null, 'rise'); }, onInfo: function (e) { APP.tipAt(e.currentTarget, 'Your available amount is what you can borrow today. It goes back up as you repay.'); } }),
         update ? h(PS.Strip, { key: 'upd', icon: 'info', title: 'You have updates on your loan', sub: 'Tap to view the latest status', count: 1, onClick: function () { APP.go('order'); } }) : null,
         paymentCard(S),
         h(PS.HomeCoupons, { key: 'coupons', coupons: cards, onOpen: function () { APP.go('coupons'); } }), more()].concat(trust());
     }
-    return h(PS.Screen, { colBottom: 120, top: { left: h(PS.Brand), right: actions(S) } }, body);
+    var first = R.useRef(!opened); opened = true;   /* the first time home shows (after the splash) its cards rise in */
+    return h(PS.Screen, { colBottom: 120, rise: first.current, top: { left: h(PS.Brand), right: actions(S) } }, body);
   };
 })();

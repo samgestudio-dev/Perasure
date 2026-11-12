@@ -60,7 +60,7 @@
       h('div', { className: PS.cx('ps-slider__ends', p.boost && 'is-boost') }, h('span', null, PS.money(p.min, 0)),
         h(PS.Swap, { k: p.max + (p.boost ? 'b' : ''), y: MT.Y.digit },
           h('span', { style: { display: 'inline-flex', alignItems: 'center', gap: 'var(--spacing-gap-2xs)' } },
-            p.boost ? h(PS.Icon, { name: 'coupon', size: 14, color: 'positive' }) : null, PS.money(p.max, 0)))));
+            p.boost ? h(PS.Icon, { name: 'coupon-tag', size: 14, color: 'positive' }) : null, PS.money(p.max, 0)))));
   };
 
   /* AmountCard: "Disbursement amount" + slider + loan term · amount · min · max · step · boost · onAmount(v) · onCommit(v)

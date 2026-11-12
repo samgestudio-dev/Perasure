@@ -3,24 +3,24 @@
   'use strict';
   var R = window.React, PS = window.PS, h = R.createElement, m = PS.m;
 
-  /* Profile: initials circle + name + verified mark · initials · name · verified */
+  /* Profile: initials circle + name + verified mark · initials · name · verified · icon (36 px, instead of initials: not signed in) */
   PS.Profile = function Profile(p) {
     return h('div', { className: 'ps-profile' },
-      h('div', { className: 'ps-profile__avatar ps-t-headline-sm' }, p.initials),
+      h('div', { className: 'ps-profile__avatar ps-t-headline-sm' }, p.icon ? h(PS.Icon, { name: p.icon, size: 36, color: 'secondary' }) : p.initials),
       h('div', { className: 'ps-profile__name' }, h('p', { className: 'ps-t-display-sm' }, p.name),
         p.verified ? h('img', { src: PS.asset('art/verified.svg'), alt: 'Verified' }) : null));
   };
 
-  /* CreditLimitCard: total and available credit · total · available · onClick · title ('Credit limit') */
+  /* CreditLimitCard: total and available credit · total · available · onClick · title ('Credit limit') · masked (₱*****: not signed in) */
   PS.CreditLimitCard = function CreditLimitCard(p) {
     return h(PS.Card, null,
       h(m.button, { type: 'button', className: 'ps-limit__head', onClick: p.onClick, whileTap: PS.TAP, transition: PS.MT.PRESS },
         h('span', null, h('span', { className: 'ps-limit__icon' }, h(PS.Icon, { name: 'wallet', size: 21.78 })), h('span', { className: 'ps-t-section-sm' }, p.title || 'Credit limit')),
         h(PS.Icon, { name: 'chevron-right', size: 16, color: 'tertiary' })),
       h('div', { className: 'ps-limit__nums ps-inset' },
-        h('div', null, h('p', { className: 'ps-num' }, PS.money(p.total)), h('p', { className: 'ps-t-section-xs ps-c-tertiary' }, 'Total credit')),
+        h('div', null, h('p', { className: 'ps-num' }, p.masked ? '₱*****' : PS.money(p.total)), h('p', { className: 'ps-t-section-xs ps-c-tertiary' }, 'Total credit')),
         h(PS.Divider, { vertical: true }),
-        h('div', null, h('p', { className: 'ps-num' }, PS.money(p.available)), h('p', { className: 'ps-t-section-xs ps-c-tertiary' }, 'Available credit'))));
+        h('div', null, h('p', { className: 'ps-num' }, p.masked ? '₱*****' : PS.money(p.available)), h('p', { className: 'ps-t-section-xs ps-c-tertiary' }, 'Available credit'))));
   };
 
   /* Menu: list of rows in a card · items [{ id, icon, label, badge, onClick }] (badge: a solid brand tag, e.g. 'New', '6 coupons') */

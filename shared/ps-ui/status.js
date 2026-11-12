@@ -4,28 +4,29 @@
   'use strict';
   var R = window.React, PS = window.PS, h = R.createElement, m = PS.m;
 
-  /* StateCard: the brand card of an application state · title · body · icon (left, in a ring: "Application in progress")
+  /* StateCard: the brand card of an application state · title (18 / 24) · body (12 / 16, 80 %) · icon (32, left: "Application in progress")
      timer { label, value } (dark row: time remaining) · support { text, action, onClick } (divider + chat row)
-     button { label, icon, onClick, tone shade | white } · tight (12 px padding: the cards that end in a button) */
+     button { label, icon, onClick, tone shade | white }. A card that ends in a shade button has 12 px padding (Figma), the others 16. */
   PS.StateCard = function StateCard(p) {
     var text = h('div', { className: 'ps-state__text' }, h('p', { className: 'ps-t-title-sm' }, p.title), p.body ? h('p', { className: 'ps-t-caption-sm' }, p.body) : null);
-    return h('div', { className: PS.cx('ps-credit ps-state', (p.button || p.tight) && 'ps-state--tight', p.className) },
+    var white = p.button && p.button.tone === 'white';
+    return h('div', { className: PS.cx('ps-credit ps-state', p.button && !white && 'ps-state--tight', p.className) },
       h('img', { className: 'ps-credit__glow', src: PS.asset('art/card-glow.svg'), alt: '' }),
-      p.icon ? h('div', { className: 'ps-state__row' }, h('span', { className: 'ps-state__icon' }, h(PS.Icon, { name: p.icon, size: 20, color: 'inverse' })), text) : text,
-      p.timer ? h('div', { className: 'ps-state__timer ps-t-caption-sm' }, h(PS.Icon, { name: 'pending', size: 14, color: 'inverse' }), h('span', null, p.timer.label), h('b', null, p.timer.value)) : null,
+      p.icon ? h('div', { className: 'ps-state__row' }, h(PS.Icon, { name: p.icon, size: 32, color: 'inverse' }), text) : text,
+      p.timer ? h('div', { className: 'ps-state__timer' }, h('span', null, h(PS.Icon, { name: 'pending', size: 16, color: 'inverse' }), p.timer.label), h('b', null, p.timer.value)) : null,
       p.support ? h(R.Fragment, null, h('span', { className: 'ps-state__line', 'aria-hidden': true }),
-        h('div', { className: 'ps-state__support' }, h(PS.Icon, { name: 'chat', size: 24, color: 'inverse' }), h('p', { className: 'ps-t-body-md' }, p.support.text),
+        h('div', { className: 'ps-state__support' }, h(PS.Icon, { name: 'support-chat', size: 24, color: 'inverse' }), h('p', { className: 'ps-t-body-md' }, p.support.text),
           h(PS.Button, { variant: 'shade', className: 'ps-state__chat', onClick: p.support.onClick }, p.support.action || 'Chat'))) : null,
-      p.button ? h(PS.Button, { variant: p.button.tone === 'white' ? 'inverse' : 'shade', className: p.button.tone === 'white' ? 'ps-state__white' : null, onClick: p.button.onClick },
+      p.button ? h(PS.Button, { variant: 'shade', className: white ? 'ps-state__white' : null, onClick: p.button.onClick },
         p.button.icon ? h(PS.Icon, { name: p.button.icon, size: 16 }) : null, p.button.label) : null);
   };
-  /* Strip: a white one-line card that leads somewhere (loan updates, chat with support) · icon · title · sub · text (one two-line text instead)
-     count (green badge) · chevron · onClick · tone brand | negative (the icon tile) */
+  /* Strip: a white one-line card that leads somewhere · icon (20, on a 28 px brand tile) · tone brand | negative
+     title + sub (loan updates: 58 px tall, radius 20) · text (one two-line text: 64 px tall, radius 24 — lg) · count (green badge) · chevron · onClick */
   PS.Strip = function Strip(p) {
-    return h(m.button, Object.assign({ type: 'button', className: PS.cx('ps-strip', p.className), onClick: p.onClick }, PS.press()),
-      h('span', { className: PS.cx('ps-strip__icon', p.tone === 'negative' && 'is-negative') }, h(PS.Icon, { name: p.icon || 'info', size: 16, color: 'inverse' })),
-      h('span', { className: 'ps-strip__text' }, p.text ? h('span', { className: 'ps-t-body-md-em' }, p.text) : h(R.Fragment, null,
-        h('span', { className: 'ps-t-section-sm' }, p.title), p.sub ? h('span', { className: 'ps-t-caption-sm ps-c-tertiary' }, p.sub) : null)),
+    return h(m.button, Object.assign({ type: 'button', className: PS.cx('ps-strip', (p.lg || p.text) && 'ps-strip--lg', p.className), onClick: p.onClick }, PS.press()),
+      h('span', { className: PS.cx('ps-tile', p.tone === 'negative' && 'is-negative') }, h(PS.Icon, { name: p.icon || 'info', size: 20, color: 'inverse' })),
+      h('span', { className: 'ps-strip__text' }, p.text ? h('span', { className: 'ps-t-title-14' }, p.text) : h(R.Fragment, null,
+        h('span', { className: 'ps-t-title-14' }, p.title), p.sub ? h('span', { className: 'ps-t-caption-xs' }, p.sub) : null)),
       p.count ? h('span', { className: 'ps-strip__count' }, p.count) : null,
       p.chevron ? h(PS.Icon, { name: 'chevron-right', size: 16, color: 'tertiary' }) : null);
   };
@@ -69,10 +70,10 @@
           h('p', { className: 'ps-review__by ps-t-caption-sm' }, h('i', { style: { '--ps-i': i } }), r.name));
       })));
   };
-  /* PermissionCard: one permission and why we ask · icon · title · body */
+  /* PermissionCard: one permission and why we ask · icon (20, on a 28 px brand tile) · title · body */
   PS.PermissionCard = function PermissionCard(p) {
     return h(PS.Card, { className: 'ps-perm' },
-      h('div', null, h('span', { className: 'ps-perm__icon' }, h(PS.Icon, { name: p.icon, size: 16, color: 'inverse' })), h('p', { className: 'ps-t-section-sm' }, p.title),
+      h('div', null, h('span', { className: 'ps-tile' }, h(PS.Icon, { name: p.icon, size: 20, color: 'inverse' })), h('p', { className: 'ps-t-section-sm' }, p.title),
         h(PS.Icon, { name: 'chevron-right', size: 16, color: 'tertiary', style: { transform: 'rotate(-90deg)' } })),
       h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, p.body));
   };

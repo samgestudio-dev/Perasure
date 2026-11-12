@@ -1,11 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="900 0 36 36" width="36" height="36" fill="none"><g id="Icon / Bank">
-<g id="Bank Horizontal Container">
-<rect id="Bank Rectangle" x="905.982" y="16.9705" width="3" height="12" rx="1.5" fill="black" />
-<rect id="Bank Rectangle_2" x="912.982" y="16.9705" width="3" height="12" rx="1.5" fill="black" />
-<rect id="Bank Rectangle_3" x="919.982" y="16.9705" width="3" height="12" rx="1.5" fill="black" />
-<rect id="Bank Rectangle_4" x="926.982" y="16.9705" width="3" height="12" rx="1.5" fill="black" />
-</g>
-<rect id="Bank Element" x="903" y="31" width="30" height="3" rx="1.5" fill="black" />
-<path id="Subtract_5" d="M917.019 2.24426C917.542 1.86813 918.246 1.86812 918.77 2.24426L933.161 12.5909C934.344 13.4415 933.742 15.3087 932.285 15.3087H903.503C902.046 15.3087 901.444 13.4415 902.627 12.5909L917.019 2.24426ZM908.37 12.3126H927.417L917.894 5.46594L908.37 12.3126Z" fill="black" />
-</g>
-</svg>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3.98779" y="11.3137" width="2" height="8" rx="1" fill="#000"/><rect x="8.6543" y="11.3137" width="2" height="8" rx="1" fill="#000"/><rect x="13.3213" y="11.3137" width="2" height="8" rx="1" fill="#000"/><rect x="17.9878" y="11.3137" width="2" height="8" rx="1" fill="#000"/><rect x="2" y="20.6667" width="20" height="2" rx="1" fill="#000"/><path d="M11.3462 1.49562C11.6948 1.24525 12.1646 1.24514 12.5132 1.49562L22.1069 8.39406C22.8954 8.96097 22.4949 10.2053 21.5239 10.2056H2.33544C1.36426 10.2056 0.963102 8.96109 1.75146 8.39406L11.3462 1.49562ZM5.58056 8.20851H18.2788L11.9292 3.64406L5.58056 8.20851Z" fill="#000"/></svg>

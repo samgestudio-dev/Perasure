@@ -33,19 +33,33 @@ often instant; actions wait 0.25–1 s and show the loader only when it's long e
 - **Order submit** plays only after Confirm on apply-a-loan, once the code is verified. **OTP sheet** opens from Confirm and from
   deleting the account. **Credit limit increase** plays on open when Tune turns it on.
 
-## Compared with Figma (text positions within about 1.5 px)
+## Loading, entrances, tooltips
 
-Compared: log in, verification code, sending code, home (credit ready, on hold, not approved, expired, in review, onboarding),
-amount keypad, withdrawal method, loan application status, Account tab, credit limit hub, contact us, about, SEC registration,
-loan history, pay page (app).
+- **Loading covers the whole screen** (owner): while a page's data loads, the Loading page fills the screen — coin and dots in the
+  middle, at the Loading page's sizes — and only the header's buttons stay. When it fails, the fallback page ("Something went wrong",
+  Figma 52:10976) fills it the same way. `APP.Loaded` does both with `PS.Cover`. `?fast=1` skips every wait (for checking a screen).
+- **What was waited for rises in** piece by piece (`PS.Rise`: 0.34 s each, 40 ms apart); a page seen before is there at once. Lists
+  that replace each other (tabs) and the content of a sheet rise in the same way; home's cards do the first time it shows.
+- **The amount keypad rises from the bottom** like a sheet (`APP.go(name, params, 'rise')`) and goes back down; typed digits rise in.
+- **Tooltips place themselves** (`APP.tipAt(element, text, width)`): 8 px under what was tapped, centred on it, or with their edge
+  16 px past it when it is near a side; never outside the 16 px margins; above when there is no room below.
 
-Built but not yet compared number by number: permissions, add-documents home, loan detail (the coupon system's page; the amount card was
-re-measured), Payment tab and payment detail, anti-scam cards, how-to-pay sheet, pay page (number / QR), log out and delete sheets,
-credit history, inbox and message, loan record, cancel a loan, rating, bank search.
+## Compared with Figma
+
+Every page and sheet that is built was laid over its Figma frame (Figma | app | difference) and corrected: log in, verification code
+(box states), sending code, permissions, home in every state (with the penalty explainer), amount keypad, loan detail, withdrawal
+method and bank search, verification sheet, loan application status (in review, failed), Payment tab (list, empty, signed out),
+payment detail, anti-scam cards, how-to-pay sheet, pay page (app, number, QR), Account tab (signed in, signed out), log out, credit
+limit hub, credit history (both tabs), contact us, about, SEC and BIR registration, manage account, delete account and its sheets,
+inbox and message, loan history, loan record, cancel a loan, rating sheets, the fallback page.
+
+Icons are the Figma exports (`shared/ps-ui/assets/icons`), not redrawn ones.
+
+Where the app differs from the frame on purpose: copy follows the PeraSure tone of voice; the loan detail has the coupon system's
+coupons section; sample numbers and names; stills replaced by their animations; the Tune button in the header.
 
 ## Not in yet
 
 Application details (ID, details check, basic information, trusted contact, selfie, loan estimate), add documents, FAQs, phone
 number change, withdrawal account change with face check — these routes show a "not in the test app yet" page. The home card →
-keypad morph of the Withdraw demo is not rebuilt yet (the keypad opens with a page push). The new shared components are not in the
-gallery yet.
+keypad → loan card morph of the Withdraw demo is not rebuilt yet (the keypad rises from the bottom instead).

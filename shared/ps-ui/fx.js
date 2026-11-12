@@ -91,18 +91,18 @@
     function resend() { tries.current = Math.max(tries.current, 1); set({ code: '', err: null, left: p.seconds || 59 }); }
     var one = st.step === 1, midH = one ? (st.err ? 116 : 60) : (st.err ? 104 : 48);
     return h(R.Fragment, null,
-      h('div', { className: 'ps-otps__head' },
-        h(PS.Swap, { k: st.step, block: true }, h('span', { className: 'ps-t-title-sm' }, one ? 'Enter code' : 'Verify it’s you')),
-        h(PS.Close, { onClick: one ? function () { set({ step: 0, code: '', err: null }); } : p.onClose })),
-      h(PS.Swap, { k: st.step, block: true, className: 'ps-otps__desc' }, h('span', { className: 'ps-t-body-md ps-c-secondary' },
-        one ? 'We sent a one-time code to you by SMS. Enter it below.' : 'We need to make sure you still have access to your registered phone number.')),
+      h('div', { className: 'ps-otps__top' },
+        h('div', { className: 'ps-otps__head' }, h(PS.Swap, { k: st.step, block: true }, h('span', { className: 'ps-t-title-sm' }, one ? 'Enter code' : 'Verify it’s you')),
+          h(PS.Close, { onClick: one ? function () { set({ step: 0, code: '', err: null }); } : p.onClose })),
+        h(PS.Swap, { k: st.step, block: true }, h('span', { className: 'ps-t-body-md ps-otps__desc', style: { display: 'block' } },
+          one ? 'We sent a one-time code to you by SMS. Copy and paste it below.' : 'We need to make sure you still have access to your registered phone number.'))),
       h(m.div, { className: 'ps-otps__mid', initial: false, animate: { height: midH }, transition: MT.SPRING },
         h(AP, { initial: false, mode: 'popLayout' }, one
           ? h(m.div, Object.assign({ key: 'code', className: 'ps-otps__pane' }, PS.fade(MT.Y.block)),
               h(PS.OtpBoxes, { value: st.code, onChange: onCode, error: !!st.err, disabled: st.busy, cascade: true, autoFocus: p.auto === false }),
               st.err ? h(m.p, Object.assign({ className: 'ps-otps__err ps-t-body-md' }, PS.fade(-4)), st.err) : null)
           : h(m.div, Object.assign({ key: 'phone', className: 'ps-otps__pane' }, PS.fade(MT.Y.block)),
-              h('div', { className: 'ps-otps__phone' }, h(PS.Icon, { name: 'smartphone', size: 20, color: 'primary' }), h('span', { className: 'ps-t-body-lg-em' }, p.phone || '091****6789'),
+              h('div', { className: 'ps-otps__phone' }, h(PS.Icon, { name: 'smartphone', size: 24, color: 'tertiary' }), h('span', { className: 'ps-t-title-16' }, p.phone || '091****6789'),
                 h(PS.Link, { onClick: p.onChange }, 'Change')),
               st.err ? h(m.p, Object.assign({ className: 'ps-otps__err ps-t-body-md' }, PS.fade(-4)), st.err) : null))),
       one ? h(PS.Button, { block: true, disabled: st.left > 0 || st.busy, onClick: resend }, h(PS.Swap, { k: st.left > 0 ? 'wait' : 'go' }, h('span', null, st.left > 0 ? 'Resend code in ' + st.left + 's' : 'Resend')))

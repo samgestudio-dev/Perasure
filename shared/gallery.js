@@ -112,7 +112,7 @@
       { name: 'Menu · Social', desc: 'Menu rows with an optional badge, and the social links.', props: 'Menu items [{ id, icon, label, badge, onClick }] — Social title · items',
         states: [['Default', function () { return h('div', { style: { display: 'flex', flexDirection: 'column', gap: 20 } }, h(PS.Menu, { items: [{ icon: 'inbox', label: 'Inbox', badge: 'New' }, { icon: 'coupon', label: 'Coupons', badge: '6 coupons' }, { icon: 'history', label: 'Loan history' }] }), h(PS.Social, {})); }]] }
     ] }
-  ];
+  ].concat(window.PS_GALLERY || []);   /* the app's components: gallery-app.js */
 
   function Toggle(p) { var s = R.useState(p.init != null ? p.init : true); return p.render(s[0], s[1]); }
   var seq = 0;

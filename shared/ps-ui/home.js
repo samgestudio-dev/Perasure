@@ -24,7 +24,7 @@
           h('p', { className: 'ps-credit__label' }, p.label || 'Available amount'),
           h(PS.Amount, { value: p.available, className: 'ps-credit__amount' })),
         h(m.button, { type: 'button', 'aria-label': 'About your credit', onClick: p.onInfo, whileTap: PS.TAP_ICON, transition: PS.MT.PRESS, style: { height: 20 } },
-          h(PS.Icon, { name: 'info', size: 20, color: 'inverse' }))),
+          h(PS.Icon, { name: 'info', size: 20, color: 'inverse', style: { opacity: 0.6 } }))),
       h('div', { className: 'ps-credit__legend ps-t-caption-sm' },
         h('p', null, h('i', { className: 'ps-credit__dot' }), h('span', null, 'Total credit: ' + PS.money(tot, 0))),
         temp ? h('p', null, h('i', { className: 'ps-credit__dot ps-credit__dot--temp' }),
@@ -43,10 +43,9 @@
     var due = h('p', { className: 'ps-payment__date ps-t-body-md' }, h(PS.Icon, { name: 'calendar', size: 16, color: 'secondary' }), p.notice ? 'Due ' + p.due : p.due);
     if (p.notice) return h(PS.Card, { variant: 'outline', className: 'ps-payment ps-payment--stack' }, head,
       h('div', { className: 'ps-payment__sum' }, amt, due),
-      h('div', { className: 'ps-payment__note' },
-        h('div', null, h('p', { className: 'ps-t-label-sm' }, p.notice.title), h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, p.notice.body)),
+      h('div', { className: 'ps-payment__note' }, h('p', null, p.notice.title), h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, p.notice.body),
         p.notice.onHelp ? h(m.button, Object.assign({ type: 'button', 'aria-label': 'How penalties work', onClick: function (e) { p.notice.onHelp(e.currentTarget); } }, PS.press(true)),
-          h(PS.Icon, { name: 'help', size: 16, color: 'tertiary' })) : null),
+          h(PS.Icon, { name: 'help-circle', size: 16, color: 'tertiary' })) : null),
       h(PS.Button, { block: true, size: 'md', onClick: p.onPay }, p.payLabel || 'Pay now'));
     return h(PS.Card, { variant: 'outline', className: 'ps-payment' }, head, amt,
       h(PS.Divider),

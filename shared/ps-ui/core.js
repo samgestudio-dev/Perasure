@@ -48,6 +48,24 @@
     return { initial: { opacity: 0, y: MT.Y.text, filter: 'blur(' + MT.BLUR + 'px)' }, animate: { opacity: 1, y: 0, filter: 'blur(0px)', transition: MT.REVEAL(i) },
       exit: { opacity: 0, transition: MT.LEAVE } };
   };
+  /* rise: plays that entrance on the direct children of el, one after another (40 ms apart) — content that has just loaded,
+     the rows of a sheet. Web Animations, so the children need no wrappers; transform / opacity / filter only. o { delay, gap, y, skip (first n children stay) } */
+  PS.rise = function (el, o) {
+    if (!el || PS.reduce || !el.animate) return;
+    o = o || {};
+    var kids = el.children, gap = o.gap == null ? 40 : o.gap, y = o.y == null ? MT.Y.block : o.y, d0 = o.delay == null ? 60 : o.delay;
+    for (var i = o.skip || 0; i < kids.length; i++) kids[i].animate(
+      [{ opacity: 0, transform: 'translateY(' + y + 'px)', filter: 'blur(' + MT.BLUR + 'px)' }, { opacity: 1, transform: 'translateY(0px)', filter: 'blur(0px)' }],
+      { duration: 340, delay: d0 + Math.min(i - (o.skip || 0), 8) * gap, easing: 'cubic-bezier(0.22, 0.61, 0.36, 1)', fill: 'backwards' });
+  };
+  /* Rise: a box whose children rise in one after another when it appears (PS.rise) · className · style · delay · gap · y · off (no motion)
+     RiseCtx: true = what is inside was not waited for (a page seen before), so lists that rise (Crossfade rise) are there at once. */
+  PS.RiseCtx = R.createContext(false);
+  PS.Rise = function Rise(p) {
+    var ref = R.useRef(null);
+    R.useLayoutEffect(function () { if (!p.off) PS.rise(ref.current, p); }, []);
+    return h('div', { ref: ref, className: p.className, style: p.style }, p.children);
+  };
   PS.cx = function () { return [].filter.call(arguments, Boolean).join(' '); };
 
   /* ---- money: ₱ with thousands separators; dec = 2 (default) or 0 ---- */

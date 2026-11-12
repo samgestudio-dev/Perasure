@@ -70,8 +70,13 @@
         h('span', null, it.label), it.count != null ? h(PS.Count, { n: it.count, on: on }) : null);
     }));
   };
-  /* Crossfade: content that is replaced (a tab's list) — the old leaves on LEAVE, the new comes in on ENTER, rising MT.Y.block */
+  /* Crossfade: content that is replaced (a tab's list) — the old leaves on LEAVE, the new comes in on ENTER, rising MT.Y.block
+     k · className · style · rise: the new content comes in piece by piece instead (its children rise one after another, PS.Rise) */
   PS.Crossfade = function Crossfade(p) {
+    var skip = R.useContext(PS.RiseCtx), first = R.useRef(true);
+    R.useEffect(function () { first.current = false; }, []);
+    if (p.rise) return h(AP, { initial: false, mode: 'popLayout' }, h(m.div, { key: p.k, style: p.style, exit: { opacity: 0, transition: MT.LEAVE } },
+      h(PS.Rise, { className: p.className, off: first.current && skip, delay: 70 }, p.children)));
     return h(AP, { initial: false, mode: 'popLayout' }, h(m.div, Object.assign({ key: p.k, className: p.className, style: p.style }, PS.fade(MT.Y.block)), p.children));
   };
 

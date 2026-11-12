@@ -19,47 +19,64 @@ html.ps-edge .app-bot-consent { padding-bottom: calc(var(--sb) + var(--spacing-p
 .app-otp__more { display: flex; flex-direction: column; gap: var(--spacing-gap-md); margin-top: var(--spacing-gap-md); text-align: center; }
 .app-otp__resend { display: flex; justify-content: flex-end; margin-top: var(--spacing-gap-xs); }
 .app-permhead { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-md); margin-bottom: var(--spacing-gap-md); }
-.app-retry { align-self: center; }
+/* the fallback page (Figma 52:10976): the block starts 224 px down, like the empty states; its button is 264 wide */
+.app-fallback { position: absolute; left: 0; top: 224px; width: 100%; padding: var(--spacing-padding-xl) var(--spacing-padding-5xl) 0; }
+.app-fallback > .ps-btn { width: 100%; }
 .app-ptabs { padding: 0 var(--spacing-page-x-sm) var(--spacing-padding-xl); }
 .app-seclabel.app-seclabel--in8 { padding: 0 var(--spacing-padding-sm); }
 .app-ptabs--16 .ps-tabs { gap: var(--spacing-gap-lg); }
-.app-rating { align-items: center; text-align: center; }
-.app-rating__page { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-sm); text-align: center; }
-.app-rating > .app-sheethead { align-self: stretch; }
+/* rating sheet (Figma 52:13419 / 13695 / 13922): picture, texts 16 in from the card, primary button + a text button */
+.app-rating { gap: 0 !important; }
+.app-rating__page { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-lg); padding-bottom: var(--spacing-padding-3xl); text-align: center; }
+.app-rating__page.is-ask { gap: var(--spacing-gap-sm); }
+.app-rating__page > div { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); padding: 0 var(--spacing-padding-lg); }
+.app-rating__acts { display: flex; flex-direction: column; }
+.app-rating__acts > .ps-btn--text { height: 48px; }
 .app-ctabs { padding: var(--spacing-gap-2xs) var(--spacing-page-x-sm) var(--spacing-padding-lg); }
 /* amount keypad page: a white sheet from under the header to the bottom */
 .app-amount { padding-left: 0; padding-right: 0; }
-.app-amount__sheet { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-between; gap: var(--spacing-gap-2xl); padding: var(--spacing-padding-3xl) var(--spacing-padding-2xl);
+.app-amount__sheet { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-between; gap: var(--spacing-gap-md); padding: 0 var(--spacing-padding-2xl) var(--spacing-padding-3xl);
   background: var(--color-surface-card-default); border-radius: var(--radius-xl) var(--radius-xl) 0 0; box-shadow: var(--shadow-over); }
 html.ps-edge .app-amount__sheet { padding-bottom: calc(var(--sb) + var(--spacing-padding-xl)); }
-.app-amount__top { display: flex; flex-direction: column; }
-.app-amount__num { display: flex; align-items: flex-end; height: 44px; margin: var(--spacing-gap-lg) 0; font-family: var(--ps-font-num); font-weight: var(--font-weight-bold); font-variant-numeric: tabular-nums; }
-.app-amount__cur { font: var(--font-weight-medium) 24px/28px var(--font-family-body); color: var(--color-text-tertiary); margin-right: var(--spacing-gap-sm); }
-.app-amount__typed { font-size: 40px; line-height: 44px; color: var(--color-text-primary); letter-spacing: -0.005em; }
-.app-amount__rest { font-size: 40px; line-height: 44px; color: var(--color-text-placeholder); letter-spacing: -0.005em; }
-.app-amount__dec { font-size: 20px; line-height: 24px; color: var(--color-text-placeholder); margin-left: var(--spacing-gap-xs); }
+.app-amount__top { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); padding: var(--spacing-padding-3xl) 0; }
+/* the amount as it is typed (Figma 52:12744): ₱ 28 Inter, digits 48 / 44 Satoshi, what is not typed yet in the disabled colour */
+.app-amount__num { display: flex; align-items: flex-end; height: 44px; font-family: var(--ps-font-num); font-weight: var(--font-weight-bold); font-variant-numeric: tabular-nums; }
+.app-amount__cur { font: var(--font-weight-medium) 28px/28px var(--font-family-body); color: var(--color-text-disabled); margin-right: var(--spacing-gap-sm); }
+.app-amount__typed { display: inline-flex; font-size: 48px; line-height: 44px; color: var(--color-text-primary); }
+.app-amount__typed > span { display: inline-block; }
+.app-amount__rest { font-size: 48px; line-height: 44px; color: var(--color-text-disabled); margin-left: var(--spacing-gap-2xs); }
+.app-amount__dec { font-size: 18px; line-height: 24px; color: var(--color-text-disabled); margin-left: var(--spacing-gap-xs); }
 .app-amount__caret { width: 2px; height: 44px; margin: 0 1px; background: var(--color-text-brand-default); animation: app-caret 1.06s steps(1, end) infinite; }
 @keyframes app-caret { 50% { opacity: 0; } }
 .app-amount__pad { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); }
-.app-banks__head { position: absolute; left: 0; right: 0; top: 0; z-index: 2; display: flex; align-items: center; gap: var(--spacing-gap-sm); padding: var(--spacing-padding-2xl) var(--spacing-padding-md) var(--spacing-gap-sm); }
+.app-banks__head { position: absolute; left: 0; right: 0; top: 0; z-index: 2; display: flex; align-items: center; gap: var(--spacing-gap-md); padding: var(--spacing-padding-3xl) var(--spacing-padding-lg) var(--spacing-gap-sm); }   /* Figma 52:7763: search 276 at 16, 32; close 12 after it */
 .app-banks__body { position: absolute; inset: 0; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; gap: var(--spacing-gap-lg); padding: 88px var(--spacing-padding-md) 48px; }
-.app-banks__group { gap: var(--spacing-gap-md); padding: var(--spacing-padding-md) var(--spacing-padding-lg); }
+.app-banks__body--flush { padding-left: 0; padding-right: 0; }
+.app-banks__group { gap: var(--spacing-gap-lg); padding: var(--spacing-padding-lg); }   /* rows 52 apart (Figma 52:8428) */
+.app-banks__group > p { margin-bottom: calc(-1 * var(--spacing-gap-xs)); }
+.app-banks__row > img { border-radius: var(--radius-2xs, 4px); }
 .app-banks__row { display: flex; align-items: center; gap: var(--spacing-gap-sm); width: 100%; text-align: left; min-height: 20px; }
 .app-order__head { display: flex; flex-direction: column; gap: var(--spacing-gap-xs); padding: 0 var(--spacing-padding-sm); }
 .app-order__amount { font-size: 32px; line-height: 40px; color: var(--color-text-brand-default); }
-.app-order__status { flex-direction: row; align-items: flex-start; gap: var(--spacing-gap-md); }
-.app-order__status > div { flex: 1 1 0; display: flex; flex-direction: column; }
+.app-order__label { font: var(--font-weight-regular) 16px/24px var(--font-family-title); color: var(--color-text-secondary); }
+.app-order__status { flex-direction: row; align-items: center; gap: var(--spacing-gap-lg); padding: 10px 14px; }   /* 12 / 16 with the 2 px ring (Figma: 328 × 80) */
+.app-order__status > div { flex: 1 1 0; display: flex; flex-direction: column; gap: var(--spacing-gap-2xs); }
 .app-amount .ps-term { height: 41px; }
-.app-pen { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); width: 248px; }
-.app-pen__rows { display: flex; flex-direction: column; }
-.app-pen__row { display: flex; gap: var(--spacing-gap-sm); padding: var(--spacing-padding-xs) var(--spacing-padding-sm); margin: 0 calc(-1 * var(--spacing-padding-sm)); border-radius: var(--radius-xs); }
-.app-pen__row > b { flex: none; width: 76px; font-weight: var(--font-weight-semi-bold); }
+/* the penalty explainer (Figma 52:13180): 288 wide, title, rows with a 100 px label column 8 apart, a line, a footnote */
+.app-pen { display: flex; flex-direction: column; gap: var(--spacing-gap-md); margin: var(--spacing-gap-xs) 0; }
+.app-pen__rows { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); margin-top: var(--spacing-gap-xs); padding-bottom: var(--spacing-gap-md); border-bottom: var(--stroke-width-default) solid var(--color-stroke-subtle); }
+.app-pen__row { display: flex; padding: var(--spacing-padding-xs) var(--spacing-padding-sm); margin: calc(-1 * var(--spacing-padding-xs)) calc(-1 * var(--spacing-padding-sm)); border-radius: var(--radius-xs); }
+.app-pen__row > b { flex: none; width: 96px; font-weight: var(--font-weight-semi-bold); }
 .app-pen__row.is-now { background: var(--color-surface-card-brand-subtle); }
 .app-col, .app-stack-20 { display: flex; flex-direction: column; gap: var(--spacing-gap-xl); }
 .app-seclabel { padding: 0 var(--spacing-padding-md); font: var(--font-weight-regular) var(--font-size-caption-sm)/var(--font-line-height-caption-sm) var(--font-family-body); color: var(--color-text-tertiary); letter-spacing: 0.02em; }
-.app-paybar { position: absolute; left: 0; right: 0; bottom: 86px; z-index: 4; }
-html.ps-edge .app-paybar { bottom: calc(86px + var(--sb)); }
+.app-seclabel.ps-c-negative { color: var(--color-text-negative-default); }
+/* the total above the tab bar (Figma 52:7925 "payment nav", 162 tall): one frosted panel with a rounded top that also sits behind the navigator */
+.app-paybar { position: absolute; left: 0; right: 0; bottom: 0; height: 162px; padding-top: var(--spacing-padding-sm); z-index: 4; border-radius: var(--radius-xxl) var(--radius-xxl) 0 0;
+  background: var(--color-surface-elevated-glass); box-shadow: var(--shadow-over); -webkit-backdrop-filter: blur(var(--blur-backdrop-bg)); backdrop-filter: blur(var(--blur-backdrop-bg)); }
+html.ps-edge .app-paybar { height: calc(162px + var(--sb)); }
 .app-sheet-tint { background: var(--color-surface-inset-default) !important; }
+.app-sheet-tint > .app-sheethead { margin-top: 11px; }   /* Figma payment detail: close at 27, title at 36, content at 83 */
 .app-sheethead { position: relative; display: flex; align-items: center; justify-content: center; min-height: 40px; }
 .app-sheethead > .ps-close { position: absolute; right: 0; top: 0; }
 .app-sheethead--left { justify-content: flex-start; padding-right: 48px; }
@@ -68,24 +85,41 @@ html.ps-edge .app-paybar { bottom: calc(86px + var(--sb)); }
 .app-scams__page { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-sm); text-align: center; padding: var(--spacing-gap-sm) 0 0; }
 .app-scams__page > div { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); padding: 0 var(--spacing-padding-lg); min-height: 92px; }
 .app-account > .ps-profile { margin-bottom: var(--spacing-gap-md); }
-.app-guest { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-lg); margin-bottom: var(--spacing-gap-md); }
-.app-confirm { gap: var(--spacing-gap-lg) !important; }
-.app-confirm__acts { display: flex; gap: var(--spacing-gap-md); }
+.app-guest { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-3xl); }
+/* Payment when not signed in (Figma 52:7683): a text block 167 px under the header, then a 264 px button */
+.app-guestpay { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-xl); margin-top: 167px; padding: var(--spacing-padding-xl) 0 0; text-align: center; }
+.app-guestpay > div { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); }
+.app-guestpay > .ps-btn { width: 264px; }
+.app-confirm { gap: var(--spacing-gap-2xl) !important; }
+.app-confirm__text { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); }
+.app-confirm__acts { display: flex; gap: 10px; }
 .app-confirm__acts > .ps-btn { flex: 1 1 0; }
-.app-btn-ghost { box-shadow: inset 0 0 0 var(--stroke-width-default) var(--color-stroke-default); color: var(--color-text-tertiary); }
 .app-about { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-xs); padding: var(--spacing-padding-lg) 0 var(--spacing-padding-xl); }
-.app-about > img { width: 64px; height: 64px; margin-bottom: var(--spacing-gap-md); border-radius: var(--radius-md); }
-.app-foot40 { margin-top: var(--spacing-gap-xl); text-align: center; }
+.app-about__logo { width: 64px; height: 64px; margin-bottom: var(--spacing-gap-md); border-radius: 19px; }   /* the app icon, 64 px (Figma 52:4640) */
+.app-about__logo > img { width: 41px; height: 41px; }
+.app-foot40 { display: flex; align-items: center; justify-content: center; gap: var(--spacing-gap-sm); margin-top: var(--spacing-gap-xl); color: var(--color-text-disabled); }
+.app-foot40 > span { display: inline-flex; align-items: center; gap: var(--spacing-gap-xs); font: var(--font-weight-semi-bold) 12px/16px var(--font-family-title); }
+.app-foot40 i { width: 14px; height: 14px; background: currentColor; -webkit-mask: url(../../shared/ps-ui/assets/logos/perasure-mark.svg) center / contain no-repeat; mask: url(../../shared/ps-ui/assets/logos/perasure-mark.svg) center / contain no-repeat; }
 .app-seccard { align-items: center; text-align: center; gap: var(--spacing-gap-xs); }
-.app-reasons { gap: var(--spacing-gap-md); padding: var(--spacing-padding-md); }
-.app-reason { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-gap-md); width: 100%; min-height: 24px; text-align: left; color: var(--color-text-primary); }
-.app-reasons__more { display: flex; flex-direction: column; align-items: flex-end; gap: var(--spacing-gap-xs); }
-.app-reasons__more > textarea { width: 100%; height: 104px; padding: var(--spacing-padding-md); border: 0; outline: 0; resize: none; border-radius: var(--radius-sm); background: var(--color-surface-inset-default);
+.app-bir { gap: var(--spacing-gap-sm); }
+.app-bir > img { width: 100%; aspect-ratio: 296 / 91; object-fit: contain; }
+.app-reasons { gap: var(--spacing-gap-lg); padding: var(--spacing-padding-lg); }
+.app-reason { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-gap-md); width: 100%; min-height: 20px; text-align: left; color: var(--color-text-primary); }
+.app-reasons__more { display: flex; flex-direction: column; align-items: flex-end; gap: var(--spacing-gap-xs); margin-top: calc(-1 * var(--spacing-gap-xs)); }
+.app-reasons__more > textarea { width: 100%; height: 148px; padding: var(--spacing-padding-md); border: 0; outline: 0; resize: none; border-radius: var(--radius-sm); background: var(--color-surface-inset-default);
   color: var(--color-text-primary); font: var(--font-weight-regular) var(--font-size-body-md)/var(--font-line-height-body-md) var(--font-family-body); }
 .app-reasons__more > textarea::placeholder { color: var(--color-text-placeholder); }
 .app-acts { display: flex; flex-direction: column; gap: var(--spacing-gap-xs); padding: var(--spacing-padding-sm) var(--spacing-padding-3xl) 0; }
+/* "Mark all read": a pill in the bottom right corner, 48 px up (Figma 52:10300) */
+.app-fab { position: absolute; right: var(--spacing-page-x-sm); bottom: var(--spacing-padding-5xl); z-index: 4; }
+html.ps-edge .app-fab { bottom: calc(var(--spacing-padding-5xl) + var(--sb)); }
+.app-fab > .ps-glass { height: 44px; padding: 0 var(--spacing-padding-xl); }
 .app-msgmeta { display: flex; justify-content: space-between; padding: 0 var(--spacing-padding-md); }
-.app-know { gap: var(--spacing-gap-md); }
+/* a payment plan as separate rows 2 px apart, the first and last rounded (Figma 52:9668) */
+.app-plan { display: flex; flex-direction: column; gap: var(--spacing-gap-2xs); border-radius: var(--radius-xl); overflow: hidden; }
+.app-plan > .ps-kv { height: 52px; padding: 0 var(--spacing-padding-lg); background: var(--color-surface-card-default); }
+.app-plan > .ps-kv > :first-child { font-weight: var(--font-weight-regular); color: var(--color-text-secondary); }
+.app-know { gap: var(--spacing-gap-sm); }
 .app-know > p { display: flex; gap: var(--spacing-gap-sm); }
 .app-know > p > i { flex: none; width: 4px; height: 4px; margin-top: 8px; border-radius: var(--radius-full); background: var(--color-icon-tertiary); }
 .app-permfoot { padding: 0 var(--spacing-padding-lg); }

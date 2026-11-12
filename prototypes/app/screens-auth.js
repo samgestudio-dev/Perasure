@@ -34,7 +34,7 @@
       h(APP.Head, { title: h(R.Fragment, null, 'Start your PeraSure', h('br'), 'journey'), body: 'Enter your phone number to get a verification code.' }),
       h('div', { className: 'app-stack-8' },
         h(PS.PhoneField, { value: phone, onChange: function (v) { setPhone(v); setErr(null); }, error: err }),
-        h('button', { type: 'button', className: 'app-ulink ps-t-body-md-em', onClick: function () { APP.go('phone-old'); } }, 'No longer have access to old number?')));
+        h('button', { type: 'button', className: 'app-ulink ps-t-section-sm', onClick: function () { APP.go('phone-old'); } }, 'No longer have access to old number?')));
   });
 
   /* Sending: the code is on its way (animation: Loading state OTP) */
