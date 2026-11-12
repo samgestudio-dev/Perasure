@@ -58,11 +58,11 @@ rule in `CLAUDE.md` asks.
 | File | What's in it |
 | --- | --- |
 | `ps-ui.css` | every component's styles, on the tokens only (values with no token are `--ps-*` variables at the top, with a note) |
-| `core.js` | namespace and helpers (`PS.money`, `PS.T` springs, `PS.TAP`), `Icon`, `Art`, `Amount`, `Button`, `Glass` / `Back` / `Close`, `Brand`, `Tag`, `Count`, `Chip`, `Check`, `Divider`, `Card`, `Section`, `Link`, `KV`, `Rows`, `Swap` |
+| `core.js` | namespace, motion values (`PS.MT`, `PS.fade`, `PS.reveal`, `PS.press`) and helpers (`PS.money`), `Icon`, `Art`, `Amount`, `Button` (`inactive`), `Glass` / `Back` / `Close`, `Brand`, `Tag`, `Count`, `Chip`, `Check`, `Divider`, `Card`, `Section`, `Link`, `KV`, `Rows`, `Swap` |
 | `layout.js` | `Shell`, `Screen`, `TopBar`, `BottomBar`, `Bands` (progressive blur), `Navigator`, `Pages` (push / pop), `Sheet` + `SheetTitle`, `Tooltip`, `Toast` + `useToast`, `TuneButton`, `frameRect` |
 | `home.js` | `HomeActions`, `CreditCard`, `PaymentCard`, `HomeCoupons` (two / one / none), `PartnerLogos`, `TrustCard`, `Legal` |
-| `coupon.js` | `CouponArt`, `Countdown`, `CouponTicket` (default, selected, used, expired, unavailable), `Tabs`, `EmptyState`, `CouponRow`, `Summary`, `CouponPicker`, `Decision` |
-| `loan.js` | `Slider`, `AmountCard`, `CouponsSection`, `OrderDetails`, `ProtectionCard`, `MethodCard`, `Agreement`, `RepaymentPlan` |
+| `coupon.js` | `CouponArt`, `Countdown`, `CouponTicket` (default, selected, used, expired, unavailable), `Tabs`, `Crossfade`, `EmptyState`, `CouponRow`, `Summary`, `CouponPicker`, `Decision` |
+| `loan.js` | `Slider`, `AmountCard`, `CouponsSection`, `OrderDetails`, `ProtectionCard`, `MethodCard`, `Agreement` (`nudge`: withdraw's ripple), `RepaymentPlan` |
 | `account.js` | `Profile`, `CreditLimitCard`, `Menu`, `Social` |
 | `phone-fit.js` | phone fitting (same as the withdraw / co-maker demos): sets `--vh --ph --ftop --e --sb` |
 | `tune.js`, `tune.css` | the prototype Tune panel, configured per page (`PSTune.setup`) |
@@ -79,9 +79,20 @@ drawn (a coupon with no `best`, a summary with no `newLimit`, an order row whose
 - **Configurable, not copied.** Anything that differs between screens (copy, amounts, states, which parts show) is a
   prop. A prototype never restyles a component's insides; if it needs another look, add a prop or a variant here.
 - **States are props:** `state`, `on`, `tone`, `variant`… and every state appears in the gallery. Add new states there too.
-- **Motion:** Motion (`m.*`, strict `LazyMotion` with `domMax`, given by `PS.Shell`), springs from `PS.T`, `whileTap: PS.TAP`
-  on pressables, `layoutId` for pills that move between options, `AnimatePresence` for content that swaps.
-  `MotionConfig reducedMotion="user"` respects reduced motion.
+- **Motion = the PeraSure values**, the same as `prototypes/withdraw-fund-flow/motion-tokens.js` and the
+  `perasure-card-morph` skill, in `PS.MT` (core.js). Reuse them; don't invent new timings:
+  - moves (sheets, page push / pop, tab and nav pills, rows opening): the Smooth spring 240 / 30 / 1 (`PS.MT.SPRING`),
+    never sped up for a short move, no bounce;
+  - content that is replaced (text after a tap, a tab's list, toasts, tooltips): `PS.fade()` / `PS.Swap` / `PS.Crossfade`
+    — LEAVE 0.15 s rising out, ENTER 0.30 s + 0.07 s rising 8–10 px, 3 px blur between;
+  - press: `PS.press()` — 60 ms, scale 0.985 (buttons, cards) / 0.92 (icon buttons);
+  - a state change that doesn't move anything (selected ticket, check, term pill, tab label) changes colour only, in 150 ms;
+  - **numbers that follow the slider never animate** (amounts, savings, totals just update);
+  - a page or sheet that is leaving takes no taps, so nothing blocks the next tap.
+  Motion (`m.*`, strict `LazyMotion` with `domMax`) comes from `PS.Shell`; `MotionConfig reducedMotion="user"`.
+- **Coupon pictures** (`PS.CouponArt`): from 40 px up the Figma version with the green badge, its shadow and the white
+  outline (`assets/art/coupon-<type>.svg`, drawn 3.31 % / 5 % wider than its box, as in Figma); below 40 px the plain
+  small one (`coupon-<type>-sm.svg`). Both are composed from the Figma layers, so re-export from Figma if they change.
 - **Copy** in examples and defaults follows the `perasure-tone-of-voice` skill (sentence case, plain words).
 - **Phone rules** from `CLAUDE.md` hold here: `touch-action: manipulation`, no coloured overlay left in the page when a
   sheet is closed (sheets unmount), the header blur runs only while content is under it, with blur off the bottom

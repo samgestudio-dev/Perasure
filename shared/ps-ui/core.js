@@ -1,5 +1,5 @@
-/* PeraSure UI — core: the namespace, helpers and atoms (icon, amount, button, tag, chip, check, card, section, rows).
-   Load order: react, react-dom, motion-react, then core.js, layout.js, and the area files the page needs
+/* PeraSure UI — core: the namespace, motion values, helpers and atoms (icon, amount, button, tag, chip, check, card,
+   section, rows). Load order: react, react-dom, motion-react, then core.js, layout.js, and the area files the page needs
    (home.js, coupon.js, loan.js, account.js). Each file adds components to window.PS. Styles: ps-ui.css.
    No JSX, no build step: PS.h = React.createElement. Docs and props: shared/README.md, live: shared/gallery.html. */
 (function () {
@@ -15,10 +15,37 @@
 
   PS.h = h; PS.m = M.m; PS.AP = M.AnimatePresence;
   PS.reduce = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
-  function spring(d, b) { return { type: 'spring', visualDuration: d, bounce: b }; }
-  /* springs (visualDuration + bounce, like the Playground's PG.T) */
-  PS.T = { ui: spring(0.3, 0.15), snap: spring(0.22, 0), pop: spring(0.35, 0.3), layout: spring(0.4, 0.12), sheet: spring(0.42, 0.08), page: spring(0.4, 0.04) };
-  PS.TAP = { scale: 0.97 };
+
+  /* ---- motion: the PeraSure values, the same as prototypes/withdraw-fund-flow/motion-tokens.js and the
+     perasure-card-morph skill. Never sped up for a short move; nothing bounces. ---- */
+  var EASE_IN = [0.22, 0.61, 0.36, 1];
+  var MT = PS.MT = {
+    /* geometry (sheets, pages, pills): withdraw's Smooth spring, settles within 0.378 px — 95 % at ≈ 290 ms, rest ≈ 560 ms */
+    SPRING: { type: 'spring', stiffness: 240, damping: 30, mass: 1, restDelta: 0.378, restSpeed: 3.78 },
+    EASE_IN: EASE_IN,
+    ENTER: { duration: 0.30, delay: 0.07, ease: EASE_IN },     /* what comes in: rises from below, 3 px blur → sharp */
+    LEAVE: { duration: 0.15, ease: [0.4, 0, 1, 1] },           /* what goes: rises out, sharp → 3 px blur */
+    Y: { text: 8, block: 10, digit: 6 }, BLUR: 3,
+    REVEAL: function (i) { return { duration: 0.34, delay: 0.06 + (i || 0) * 0.03, ease: EASE_IN }; },
+    PRESS: { duration: 0.06 }, PRESS_SCALE: { pill: 0.985, icon: 0.92 },
+    COLOR: 0.15                                                /* colour changes: 150 ms */
+  };
+  PS.T = { spring: MT.SPRING, ui: MT.SPRING, layout: MT.SPRING, sheet: MT.SPRING, page: MT.SPRING, snap: MT.PRESS, pop: MT.SPRING };
+  PS.TAP = { scale: MT.PRESS_SCALE.pill };
+  PS.TAP_ICON = { scale: MT.PRESS_SCALE.icon };
+  PS.press = function (icon) { return { whileTap: icon ? PS.TAP_ICON : PS.TAP, transition: MT.PRESS }; };
+  /* crossfade props for a keyed node inside AnimatePresence (withdraw's fade()): y = MT.Y.text | block | digit */
+  PS.fade = function (y) {
+    y = y == null ? MT.Y.text : y;
+    var b = 'blur(' + MT.BLUR + 'px)';
+    return { initial: { opacity: 0, y: y, filter: b }, animate: { opacity: 1, y: 0, filter: 'blur(0px)', transition: MT.ENTER },
+      exit: { opacity: 0, y: -y, filter: b, transition: MT.LEAVE } };
+  };
+  /* entrance of secondary content (rows, details) — the 0.34 s reveal, item i of a list */
+  PS.reveal = function (i) {
+    return { initial: { opacity: 0, y: MT.Y.text, filter: 'blur(' + MT.BLUR + 'px)' }, animate: { opacity: 1, y: 0, filter: 'blur(0px)', transition: MT.REVEAL(i) },
+      exit: { opacity: 0, transition: MT.LEAVE } };
+  };
   PS.cx = function () { return [].filter.call(arguments, Boolean).join(' '); };
 
   /* ---- money: ₱ with thousands separators; dec = 2 (default) or 0 ---- */
@@ -44,14 +71,14 @@
     return h('span', { className: PS.cx('ps-icon', p.className), style: Object.assign(st, p.style), 'aria-hidden': true });
   };
 
-  /* Art: a full-colour picture from assets/art (illustrations, logos) · name · size (px) · ext (svg) */
+  /* Art: a full-colour picture from assets/art (illustrations, logos) · name · size (px) · ext (svg) · dir (art | logos) */
   PS.Art = function Art(p) {
     return h('img', { className: PS.cx('ps-art', p.className), src: PS.asset((p.dir || 'art') + '/' + p.name + '.' + (p.ext || 'svg')), alt: p.alt || '',
       style: Object.assign({ '--ps-s': (p.size || 36) + 'px' }, p.style), draggable: false });
   };
 
-  /* Amount: ₱ + digits in the number font (Satoshi; ₱ from Inter), as in the app.
-     value (number) · dec (2) · curFont: 'num' | 'body' (Inter Medium ₱, loan amount) · split: decimals in their own span (credit card) · strike */
+  /* Amount: ₱ + digits in the number font (Satoshi; ₱ from Inter), as in the app. Numbers never animate.
+     value (number) · dec (2) · curFont: 'num' | 'body' (Inter Medium ₱, loan amount) · strike */
   PS.Amount = function Amount(p) {
     var s = num(p.value, p.dec == null ? 2 : p.dec), neg = s.charAt(0) === '-';
     if (neg) s = s.slice(1);
@@ -62,18 +89,20 @@
     return h('span', { className: PS.cx('ps-amount', p.strike && 'ps-amount--strike', p.className), style: p.style }, kids);
   };
 
-  /* Button: variant primary | text | inverse | shade (on the blue card) | outline (coupon "Use") · size lg | sm · block */
+  /* Button: variant primary | text | inverse | shade (on the blue card) | outline (coupon "Use") · size lg | sm · block
+     disabled (can't be pressed) · inactive (looks disabled but still calls onClick — e.g. to point at what's missing) */
   PS.Button = function Button(p) {
     var v = p.variant || 'primary', size = p.size || (v === 'outline' || v === 'shade' ? null : 'lg');
-    return h(PS.m.button, { type: 'button', className: PS.cx('ps-btn', 'ps-btn--' + v, size && 'ps-btn--' + size, p.block && 'ps-btn--block', p.className),
-      disabled: p.disabled, onClick: p.onClick, whileTap: p.disabled ? undefined : PS.TAP, transition: PS.T.snap, style: p.style, 'aria-label': p.label },
+    return h(PS.m.button, { type: 'button', className: PS.cx('ps-btn', 'ps-btn--' + v, size && 'ps-btn--' + size, p.block && 'ps-btn--block', p.inactive && 'is-inactive', p.className),
+      disabled: p.disabled, 'aria-disabled': p.inactive || undefined, onClick: p.onClick, whileTap: p.disabled || p.inactive ? undefined : PS.TAP, transition: MT.PRESS,
+      style: p.style, 'aria-label': p.label },
       p.icon ? h(PS.Icon, { name: p.icon, size: p.iconSize || 16 }) : null, p.children);
   };
 
   /* Glass: the frosted round / pill button of headers and sheets · icon (name) or children · round (40×40) · label (aria) */
   PS.Glass = function Glass(p) {
-    return h(PS.m.button, { type: 'button', className: PS.cx('ps-glass', (p.round !== false && !p.children) && 'ps-glass--round', p.className),
-      onClick: p.onClick, whileTap: PS.TAP, transition: PS.T.snap, 'aria-label': p.label, style: p.style },
+    return h(PS.m.button, Object.assign({ type: 'button', className: PS.cx('ps-glass', (p.round !== false && !p.children) && 'ps-glass--round', p.className),
+      onClick: p.onClick, 'aria-label': p.label, style: p.style }, PS.press(!p.children)),
       p.icon ? h(PS.Icon, { name: p.icon, size: p.iconSize || 18 }) : null, p.children);
   };
   PS.Back = function Back(p) { return h(PS.Glass, { icon: 'chevron-left', label: p.label || 'Back', onClick: p.onClick }); };
@@ -96,13 +125,12 @@
     return h('span', { className: PS.cx('ps-chip', 'ps-chip--' + tone, p.className) },
       h(PS.Icon, { name: p.icon || (tone === 'positive' ? 'check-sm' : 'arrow-up'), size: 12 }), p.children);
   };
-  /* Check: the round selection mark · on · off (can't be picked) · box (2 px ring, agreement) */
+  /* Check: the round selection mark (colour changes in 150 ms, as withdraw's agreement) · on · off (can't be picked) · box (2 px ring) */
   PS.Check = function Check(p) {
     return h('span', { className: PS.cx('ps-check', p.on && 'ps-check--on', p.off && !p.on && 'ps-check--off', p.box && 'ps-check--box', p.className), 'aria-hidden': true },
-      h(PS.AP, { initial: false }, p.on ? h(PS.m.span, { key: 'k', initial: { scale: 0.4, opacity: 0 }, animate: { scale: 1, opacity: 1 }, exit: { scale: 0.4, opacity: 0 }, transition: PS.T.pop, style: { display: 'flex' } },
-        h(PS.Icon, { name: 'check', size: 8, color: 'inverse' })) : null));
+      p.on ? h(PS.Icon, { name: 'check', size: 8, color: 'inverse' }) : null, p.children);
   };
-  PS.Divider = function Divider(p) { return h('span', { className: PS.cx('ps-divider', p.vertical && 'ps-divider--v'), 'aria-hidden': true }); };
+  PS.Divider = function Divider(p) { return h('span', { className: PS.cx('ps-divider', p.vertical && 'ps-divider--v', p.dashed && 'ps-divider--dash'), 'aria-hidden': true }); };
 
   /* Card: white rounded card · variant plain | outline (home: 2 px white ring) | raised (shadow) · clip · as (element) */
   PS.Card = function Card(p) {
@@ -113,10 +141,10 @@
   PS.Section = function Section(p) {
     return h('section', { className: PS.cx('ps-section', p.className) },
       h('div', { className: 'ps-section__head' }, h('p', { className: 'ps-section__label' }, p.label),
-        p.action ? h(PS.m.button, { type: 'button', className: 'ps-link', onClick: p.onAction, whileTap: PS.TAP }, p.action) : null),
+        p.action ? h(PS.m.button, Object.assign({ type: 'button', className: 'ps-link', onClick: p.onAction }, PS.press()), p.action) : null),
       p.children);
   };
-  PS.Link = function Link(p) { return h(PS.m.button, { type: 'button', className: PS.cx('ps-link', p.className), onClick: p.onClick, whileTap: PS.TAP }, p.children); };
+  PS.Link = function Link(p) { return h(PS.m.button, Object.assign({ type: 'button', className: PS.cx('ps-link', p.className), onClick: p.onClick }, PS.press()), p.children); };
   /* KV: a label / value row · tone positive (green value) */
   PS.KV = function KV(p) {
     return h('div', { className: PS.cx('ps-kv', 'ps-t-body-md-em', p.tone && 'is-' + p.tone, p.className) }, h('span', null, p.label), h('span', null, p.value));
@@ -130,10 +158,12 @@
     });
     return out;
   };
-  /* Swap: content that changes cross-fades in place (text, amounts) · k: what identifies the content */
+  /* Swap: text that changes after a tap crossfades in place (old rises out, new rises in, 3 px blur between) · block (fills the width).
+     k: what identifies the content — key it on the state, not on a number that follows a slider (numbers never animate). */
   PS.Swap = function Swap(p) {
-    return h('span', { style: Object.assign({ position: 'relative', display: 'inline-grid' }, p.style), className: p.className },
-      h(PS.AP, { initial: false, mode: 'popLayout' },
-        h(PS.m.span, { key: p.k, style: { gridArea: '1 / 1', display: 'inline-flex', alignItems: 'baseline' }, initial: { opacity: 0, y: 6 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: -6 }, transition: PS.T.snap }, p.children)));
+    var f = PS.fade(p.y);
+    return h('span', { style: Object.assign({ position: 'relative', display: p.block ? 'grid' : 'inline-grid', minWidth: 0 }, p.style), className: p.className },
+      h(PS.AP, { initial: false },
+        h(PS.m.span, Object.assign({ key: p.k, style: p.block ? { gridArea: '1 / 1', display: 'block', minWidth: 0 } : { gridArea: '1 / 1', display: 'inline-flex', alignItems: 'baseline', minWidth: 0 } }, f), p.children)));
   };
 })();

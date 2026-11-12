@@ -7,7 +7,7 @@
   /* HomeHeader: the brand header row content · actions: [{ icon, label, onClick }] in one frosted pill */
   PS.HomeActions = function HomeActions(p) {
     return h('div', { className: 'ps-glass', role: 'group' }, (p.actions || []).map(function (a) {
-      return h(m.button, { key: a.icon, type: 'button', 'aria-label': a.label, onClick: a.onClick, whileTap: { scale: 0.9 }, style: { display: 'flex' } },
+      return h(m.button, { key: a.icon, type: 'button', 'aria-label': a.label, onClick: a.onClick, whileTap: PS.TAP_ICON, transition: PS.MT.PRESS, style: { display: 'flex' } },
         h(PS.Icon, { name: a.icon, size: 20, color: 'primary' }));
     }));
   };
@@ -23,7 +23,7 @@
         h('div', { style: { flex: 1, minWidth: 0 } },
           h('p', { className: 'ps-credit__label' }, p.label || 'Available amount'),
           h(PS.Amount, { value: p.available, className: 'ps-credit__amount' })),
-        h(m.button, { type: 'button', 'aria-label': 'About your credit', onClick: p.onInfo, whileTap: { scale: 0.9 }, style: { height: 20 } },
+        h(m.button, { type: 'button', 'aria-label': 'About your credit', onClick: p.onInfo, whileTap: PS.TAP_ICON, transition: PS.MT.PRESS, style: { height: 20 } },
           h(PS.Icon, { name: 'info', size: 20, color: 'inverse' }))),
       h('div', { className: 'ps-credit__legend ps-t-caption-sm' },
         h('p', null, h('i', { className: 'ps-credit__dot' }), h('span', null, 'Total credit: ' + PS.money(tot, 0))),
@@ -46,37 +46,35 @@
         h(PS.Button, { size: 'sm', onClick: p.onPay }, p.payLabel || 'Pay ' + PS.money(p.amount, 0) + ' now')));
   };
 
-  /* HomeCoupons: "Coupons for your next loan" · coupons [{ type: percent | amount | limit, value: '50% OFF', until: 'Until Nov 11, 2026',
-     kind: 'Credit limit', label: 'Borrow more than ₱20,000', cond: 'Any term' }] · onOpen · title · layout auto | pair | one.
-     Two or more → the pair (first two); one → the wide card with the folder tab; none → nothing. */
+  /* HomeCoupons: "Coupons for your next loan" (Figma 10750:62557 two, 10750:61878 one) · coupons [{ type: percent | amount | limit,
+     value: '50% OFF', until: 'Until Nov 11, 2026', kind: 'Credit limit', label: 'Borrow more than ₱20,000', cond: 'Any term' }]
+     onOpen · title · layout auto | pair | one. Two or more → the pair (first two); one → the wide card with the folder tab; none → nothing. */
   PS.HomeCoupons = function HomeCoupons(p) {
     var list = p.coupons || [], title = p.title || 'Coupons for your next loan';
     if (!list.length) return null;
     var one = p.layout === 'one' || (p.layout !== 'pair' && list.length === 1);
-    var press = { role: 'button', tabIndex: 0, 'aria-label': title, onClick: p.onOpen, whileTap: { scale: 0.985 }, transition: PS.T.snap,
-      onKeyDown: function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (p.onOpen) p.onOpen(); } } };
+    var press = Object.assign({ role: 'button', tabIndex: 0, 'aria-label': title, onClick: p.onOpen,
+      onKeyDown: function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (p.onOpen) p.onOpen(); } } }, PS.press());
     if (one) {
       var c = list[0];
-      return h(m.div, Object.assign({ className: 'ps-card ps-card--outline ps-hcoupons ps-hcoupons--one' }, press),
-        h('div', { className: 'ps-hcoupons__title' }, h('p', { className: 'ps-t-section-sm', style: { paddingBottom: 'var(--spacing-gap-sm)' } }, title),
-          h('span', { className: 'ps-hcoupons__tab' },
-            h('svg', { viewBox: '0 0 24 16', 'aria-hidden': true },
-              h('defs', null, h('linearGradient', { id: 'ps-tabg', x1: 0, y1: 0, x2: 0, y2: 1 },
-                h('stop', { offset: 0, style: { stopColor: 'var(--color-brand-700)' } }), h('stop', { offset: 1, style: { stopColor: 'var(--color-brand-600)' } }))),
-              h('path', { d: 'M24 0V16H0C8 16 12 13 14.5 8C17 3 19 0 24 0Z', fill: 'url(#ps-tabg)' })),
-            h(PS.CouponArt, { type: c.type, size: 80 }))),
-        h('div', { className: 'ps-hcoupon ps-hcoupon--wide' }, h('div', { className: 'ps-hcoupon__in' },
-          h('div', { className: 'ps-hcoupon__lead' }, h('p', { className: 'ps-hcoupon__value' }, c.value),
-            h('p', { className: 'ps-t-section-xs ps-c-tertiary', style: { textTransform: 'uppercase' } }, c.kind)),
-          h(PS.Divider, { vertical: true }),
-          h('div', { className: 'ps-hcoupon__body' }, h('p', { className: 'ps-t-label-md-light ps-c-secondary' }, c.label),
-            h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, c.cond)))));
+      return h(m.div, Object.assign({ className: 'ps-card ps-hcone' }, press),
+        h('div', { className: 'ps-hcone__head' },
+          h('p', { className: 'ps-hcone__title ps-t-section-sm' }, title),
+          h('div', { className: 'ps-hcone__tabs' }, h('img', { className: 'ps-hcone__curve', src: PS.asset('art/tab-connector.svg'), alt: '' }), h('span', { className: 'ps-hcone__tab' }))),
+        h('div', { className: 'ps-hcone__panel' },
+          h(PS.CouponArt, { type: c.type, size: 80, className: 'ps-hcone__art' }),
+          h('div', { className: 'ps-hcone__in' },
+            h('div', { className: 'ps-hcone__lead' }, h('p', { className: 'ps-hcone__value' }, c.value),
+              h('p', { className: 'ps-t-section-xs ps-c-tertiary', style: { textTransform: 'uppercase' } }, c.kind)),
+            h(PS.Divider, { vertical: true, dashed: true }),
+            h('div', { className: 'ps-hcone__body' }, h('p', { className: 'ps-t-label-md-light ps-c-secondary' }, c.label),
+              h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, c.cond)))));
     }
     return h(m.div, Object.assign({ className: 'ps-card ps-card--outline ps-hcoupons' }, press),
       h('div', { className: 'ps-hcoupons__title' }, h('p', { className: 'ps-t-section-sm' }, title)),
       h('div', { className: 'ps-hcoupons__pair' }, list.slice(0, 2).map(function (c, i) {
         return h('div', { key: i, className: 'ps-hcoupon' }, h('div', { className: 'ps-hcoupon__in' },
-          h(PS.CouponArt, { type: c.type, size: 40 }),
+          h(PS.CouponArt, { type: c.type, size: 40, className: 'ps-hcoupon__art' }),
           h('p', { className: 'ps-hcoupon__value' }, c.value), h('p', { className: 'ps-t-caption-xs ps-c-tertiary' }, c.until)));
       })));
   };

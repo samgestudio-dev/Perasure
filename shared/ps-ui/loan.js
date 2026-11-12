@@ -2,7 +2,7 @@
    withdrawal method, agreement line and the repayment plan. Needs core.js and coupon.js. */
 (function () {
   'use strict';
-  var R = window.React, PS = window.PS, h = R.createElement, m = PS.m;
+  var R = window.React, PS = window.PS, h = R.createElement, m = PS.m, MT = PS.MT;
 
   /* Slider: amount slider (pointer + keyboard) · value · min · max · step · onChange(v) while dragging · onCommit(v) on release · boost (max is raised by a coupon) */
   PS.Slider = function Slider(p) {
@@ -46,8 +46,8 @@
         h(PS.KV, { label: 'Loan term', value: p.termNote || '15 days / term' }),
         h('div', { className: 'ps-terms', role: 'radiogroup', 'aria-label': 'Loan term' }, (p.terms || [3, 6, 8]).map(function (t) {
           var on = t === p.term;
-          return h(m.button, { key: t, type: 'button', role: 'radio', 'aria-checked': on, className: PS.cx('ps-term', on && 'is-on'), whileTap: PS.TAP,
-            onClick: function () { if (!on && p.onTerm) p.onTerm(t); } }, t + ' terms');
+          return h(m.button, Object.assign({ key: t, type: 'button', role: 'radio', 'aria-checked': on, className: PS.cx('ps-term', on && 'is-on'),
+            onClick: function () { if (!on && p.onTerm) p.onTerm(t); } }, PS.press()), t + ' terms');
         }))));
   };
 
@@ -81,17 +81,27 @@
   /* MethodCard: "WITHDRAWAL METHOD" · name · last4 · logo (assets/logos file, 'bank-bpi') · onClick */
   PS.MethodCard = function MethodCard(p) {
     return h(PS.Section, { label: p.label || 'Withdrawal method' },
-      h(m.button, { type: 'button', className: 'ps-card ps-method', onClick: p.onClick, whileTap: { scale: 0.985 } },
+      h(m.button, Object.assign({ type: 'button', className: 'ps-card ps-method', onClick: p.onClick }, PS.press()),
         h('span', { className: 'ps-method__main' }, h('span', { className: 'ps-method__logo' }, h(PS.Art, { dir: 'logos', name: p.logo || 'bank-bpi', size: 36 })),
           h('span', { className: 'ps-method__info' }, h('span', { className: 'ps-t-body-md-em ps-ellipsis', style: { display: 'block' } }, p.name),
             h('span', { className: 'ps-t-body-md ps-c-tertiary' }, 'Ending in ' + p.last4))),
         h(PS.Icon, { name: 'chevron-right', size: 16, color: 'tertiary' })));
   };
 
-  /* Agreement: tick line above the primary button · on · onToggle · children (text; wrap links in <b>) */
+  /* Agreement: tick line above the primary button (as withdraw's) · on · onToggle · children (text; wrap links in <b>)
+     nudge: a number — each time it changes, a brand ring ripples out of the empty circle twice (1 → 2.4×, fading, 0.6 s on
+     the ENTER curve), the page's hint that this is what's missing. Transform / opacity only. */
   PS.Agreement = function Agreement(p) {
-    return h(m.button, { type: 'button', role: 'checkbox', 'aria-checked': !!p.on, className: 'ps-agree', onClick: p.onToggle, whileTap: { scale: 0.99 } },
-      h(PS.Check, { on: p.on, box: true }), h('p', null, p.children));
+    var halo = R.useRef(null), first = R.useRef(true);
+    R.useEffect(function () {
+      if (first.current) { first.current = false; return; }
+      if (!p.nudge || p.on || PS.reduce || !halo.current || !window.Motion.animate) return;
+      var ring = function () { return window.Motion.animate(halo.current, { scale: [1, 2.4], opacity: [0.6, 0] }, { duration: 0.6, ease: MT.EASE_IN }); };
+      var a = ring(), b = null; if (a && a.then) a.then(function () { b = ring(); });
+      return function () { if (a && a.stop) a.stop(); if (b && b.stop) b.stop(); };
+    }, [p.nudge]);
+    return h(m.button, Object.assign({ type: 'button', role: 'checkbox', 'aria-checked': !!p.on, className: 'ps-agree', onClick: p.onToggle, ref: p.innerRef }, PS.press()),
+      h('span', { className: 'ps-agree__mark' }, h('span', { className: 'ps-agree__halo', ref: halo }), h(PS.Check, { on: p.on, box: true })), h('p', null, p.children));
   };
 
   /* RepaymentPlan: schedule list (inside a plain sheet) · items [{ title, date, total, rows: [{ label, value, was }] }] */

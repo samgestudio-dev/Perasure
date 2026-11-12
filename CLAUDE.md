@@ -138,6 +138,12 @@ built on it. Details and the head block to copy: `shared/README.md`; reference p
   ticket, coupon row, amount card, order details, protection, method, profile, credit limit, menu…). Every state is a
   prop (`state`, `on`, `tone`, `variant`) and is shown in `shared/gallery.html` — add new states there too.
 - Styles only from the tokens; a value with no token goes into `:root` of `ps-ui.css` as `--ps-*` with a note.
+- Motion (owner: refined and just right, never in the way): reuse the repo's values — `PS.MT` in `core.js` is withdraw's
+  `motion-tokens.js` (Smooth spring 240/30/1, ENTER/LEAVE crossfade with 3 px blur, press 60 ms 0.985 / 0.92). Numbers that
+  follow a slider never animate; selection states change colour only (150 ms); leaving pages and sheets take no taps.
+  Details: `shared/README.md` → "Rules for changing components".
+- Coupon illustrations: the Figma version with the green badge — with shadow and white outline from 40 px up, the plain
+  small version at 36 px (`PS.CouponArt` picks it).
 - Renaming / removing a prop or class: update every prototype using it in the same commit (`grep -rl "PS\.<Name>"`).
 - Links to these files carry `?v=<stamp>`; `python3 tools/stamp.py` updates them (prototypes and the gallery).
 

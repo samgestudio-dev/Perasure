@@ -2,11 +2,19 @@
    the payment summary, the coupon picker sheet and the "keep your coupon?" decision. Needs core.js and layout.js. */
 (function () {
   'use strict';
-  var R = window.React, PS = window.PS, h = R.createElement, m = PS.m, AP = PS.AP;
+  var R = window.React, PS = window.PS, h = R.createElement, m = PS.m, AP = PS.AP, MT = PS.MT;
 
-  /* CouponArt: the coupon picture · type percent (% off) | amount (₱ off) | limit (credit limit increase) · size (36 / 40 / 80 px) */
+  /* CouponArt: the coupon picture (Figma "Percentage discount", "number discount", "credit limit increase")
+     type percent (% off) | amount (₱ off) | limit (credit limit increase) · size (px).
+     From 40 px up: the version with the white outline and the badge's shadow; below 40 px (the 36 px rows): the plain small one. */
   var ART = { percent: 'coupon-percent', amount: 'coupon-amount', limit: 'coupon-limit' };
-  PS.CouponArt = function CouponArt(p) { return h(PS.Art, { name: ART[p.type] || ART.percent, size: p.size || 36, className: p.className, style: p.style }); };
+  PS.CouponArt = function CouponArt(p) {
+    var s = p.size || 36, name = ART[p.type] || ART.percent;
+    if (s < 40) return h(PS.Art, { name: name + '-sm', size: s, className: p.className, style: p.style });
+    /* the outline reaches 3.31 % left and 5 % right of the box (Figma insets), so the picture is drawn wider than its box */
+    return h('span', { className: PS.cx('ps-cart', p.className), style: Object.assign({ '--ps-s': s + 'px' }, p.style), 'aria-hidden': true },
+      h('img', { src: PS.asset('art/' + name + '.svg'), alt: '', draggable: false }));
+  };
 
   function pad(n) { return (n < 10 ? '0' : '') + n; }
   /* Countdown: "Expires in 23:59:59" ticking every second · to (time in ms) · prefix */
@@ -21,7 +29,8 @@
   /* CouponTicket: the coupon in the coupon centre and the picker.
      value ('25% OFF') · label ('First-payment interest') · rule (condition line) · ruleLong (truncated: ⓘ, tap → onRule(el)) · meta ('Valid until …')
      expiresAt (ms: live countdown instead of meta) · best · state default | selected | used | expired | unavailable · reason (unavailable)
-     action use (Use button → onUse) | pick (whole ticket toggles → onPick) | none · shadow */
+     action use (Use button → onUse) | pick (whole ticket toggles → onPick) | none · shadow.
+     Selecting changes colour only (bar, mark, shadow: 150 ms); nothing moves. */
   PS.CouponTicket = function CouponTicket(p) {
     var st = p.state || 'default', muted = st === 'used' || st === 'expired', off = st === 'unavailable', sel = st === 'selected', pick = p.action === 'pick';
     var right = muted ? h('p', { className: 'ps-ticket__status' }, st === 'used' ? 'Used' : 'Expired')
@@ -36,8 +45,7 @@
       : p.expiresAt && !muted ? h('p', { className: 'ps-ticket__count' }, h(PS.Icon, { name: 'clock', size: 12, color: 'countdown' }), h(PS.Countdown, { to: p.expiresAt }))
       : h('p', null, p.meta);
     var kids = [
-      h('span', { key: 's', className: 'ps-ticket__shape' }, h(AP, { initial: false }, sel ? h(m.span, { key: 'bar', className: 'ps-ticket__bar',
-        initial: { scaleX: 0 }, animate: { scaleX: 1 }, exit: { scaleX: 0 }, style: { originX: 0 }, transition: PS.T.ui }) : null)),
+      h('span', { key: 's', className: 'ps-ticket__shape' }, h('span', { className: 'ps-ticket__bar' })),
       h('div', { key: 'i', className: 'ps-ticket__in' },
         h('div', { className: 'ps-ticket__row' },
           h('div', { className: 'ps-ticket__head' },
@@ -46,20 +54,25 @@
           right),
         h('div', { className: 'ps-ticket__meta ps-t-caption-sm' }, h('p', null, rule), second))
     ];
-    var cls = PS.cx('ps-ticket', (sel || p.shadow) && 'ps-ticket--shadow', muted && 'ps-ticket--muted', off && 'ps-ticket--off', p.className);
-    if (pick) return h(m.button, { type: 'button', className: cls, 'aria-pressed': sel, 'aria-disabled': off || undefined, onClick: p.onPick, whileTap: { scale: 0.985 }, transition: PS.T.snap, layout: p.layout ? 'position' : undefined }, kids);
-    return h(m.div, { className: cls, layout: p.layout ? 'position' : undefined }, kids);
+    var cls = PS.cx('ps-ticket', sel && 'is-on', p.shadow && 'ps-ticket--shadow', muted && 'ps-ticket--muted', off && 'ps-ticket--off', p.className);
+    if (pick) return h(m.button, Object.assign({ type: 'button', className: cls, 'aria-pressed': sel, 'aria-disabled': off || undefined, onClick: p.onPick }, PS.press()), kids);
+    return h('div', { className: cls }, kids);
   };
 
-  /* Tabs: segmented control · items [{ id, label, count }] (count shown when set) · value · onChange(id) · glass (frosted, in sheets) · id (pill layout id) */
+  /* Tabs: segmented control · items [{ id, label, count }] (count shown when set) · value · onChange(id) · glass (frosted, in sheets)
+     id (pill layout id). The pill glides on the Smooth spring; label colours change in 150 ms. */
   PS.Tabs = function Tabs(p) {
     return h('div', { className: PS.cx('ps-tabs', p.glass && 'ps-tabs--glass', p.className), role: 'tablist' }, p.items.map(function (it) {
       var on = it.id === p.value;
-      return h(m.button, { key: it.id, type: 'button', role: 'tab', 'aria-selected': on, className: PS.cx('ps-tabs__tab', on && 'is-on'), whileTap: PS.TAP,
-        onClick: function () { if (!on && p.onChange) p.onChange(it.id); } },
-        on ? h(m.span, { layoutId: (p.id || 'ps-tabs') + '-pill', className: 'ps-tabs__pill', transition: PS.T.layout }) : null,
+      return h(m.button, Object.assign({ key: it.id, type: 'button', role: 'tab', 'aria-selected': on, className: PS.cx('ps-tabs__tab', on && 'is-on'),
+        onClick: function () { if (!on && p.onChange) p.onChange(it.id); } }, PS.press()),
+        on ? h(m.span, { layoutId: (p.id || 'ps-tabs') + '-pill', className: 'ps-tabs__pill', transition: MT.SPRING }) : null,
         h('span', null, it.label), it.count != null ? h(PS.Count, { n: it.count, on: on }) : null);
     }));
+  };
+  /* Crossfade: content that is replaced (a tab's list) — the old leaves on LEAVE, the new comes in on ENTER, rising MT.Y.block */
+  PS.Crossfade = function Crossfade(p) {
+    return h(AP, { initial: false, mode: 'popLayout' }, h(m.div, Object.assign({ key: p.k, className: p.className, style: p.style }, PS.fade(MT.Y.block)), p.children));
   };
 
   /* EmptyState: picture + title + one line · art (file in assets/art, 'empty-box') · title · body */
@@ -69,45 +82,49 @@
       h('div', null, h('p', { className: 'ps-t-title-sm ps-c-tertiary' }, p.title), p.body ? h('p', { className: 'ps-t-body-md ps-c-placeholder' }, p.body) : null));
   };
 
-  /* CouponRow: a coupon line on the loan page · type · title · sub (green when on) · on · onClick */
+  /* CouponRow: a coupon line on the loan page; a tap turns it on or off · type · title · sub (green when on) · on · onClick
+     The line under the title crossfades only when the row turns on or off; a value that follows the slider just updates. */
   PS.CouponRow = function CouponRow(p) {
-    return h(m.button, { type: 'button', className: PS.cx('ps-crow', p.on && 'is-on'), onClick: p.onClick, whileTap: PS.TAP, 'aria-pressed': !!p.on },
+    return h(m.button, Object.assign({ type: 'button', className: PS.cx('ps-crow', p.on && 'is-on'), onClick: p.onClick, 'aria-pressed': !!p.on }, PS.press()),
       h('span', { className: 'ps-crow__main' }, h(PS.CouponArt, { type: p.type, size: 36 }),
         h('span', { className: 'ps-crow__text' }, h('span', { className: 'ps-t-label-md-light ps-ellipsis' }, p.title),
-          h('span', { className: PS.cx('ps-crow__sub', p.on ? 'ps-t-label-sm-light' : 'ps-t-caption-sm') }, h(PS.Swap, { k: p.sub }, p.sub)))),
+          h(PS.Swap, { k: p.on ? 'on' : 'off', block: true },
+            h('span', { className: PS.cx('ps-crow__sub', 'ps-ellipsis', p.on ? 'ps-t-label-sm-light' : 'ps-t-caption-sm') }, p.sub)))),
       h(PS.Check, { on: p.on }));
   };
 
   /* Summary: total payment + what the coupons do · total · was (before coupons; hidden when equal) · saved (hidden when 0) · newLimit (hidden when null)
-     onConfirm · label ('Confirm'). Fields of a coupon that isn't used are hidden. */
+     onConfirm · label ('Confirm') · title. Fields of a coupon that isn't used are hidden; their row opens and closes on the spring
+     and the chips come and go on ENTER / LEAVE. Amounts update in place. */
   PS.Summary = function Summary(p) {
     var chips = [];
-    if (p.saved > 0) chips.push(h(m.span, { key: 's', layout: 'position', initial: { opacity: 0, scale: 0.9 }, animate: { opacity: 1, scale: 1 }, exit: { opacity: 0, scale: 0.9 }, transition: PS.T.pop },
-      h(PS.Chip, { tone: 'positive' }, 'Saved ' + PS.money(p.saved, p.saved % 1 ? 2 : 0))));
-    if (p.newLimit) chips.push(h(m.span, { key: 'l', layout: 'position', initial: { opacity: 0, scale: 0.9 }, animate: { opacity: 1, scale: 1 }, exit: { opacity: 0, scale: 0.9 }, transition: PS.T.pop },
-      h(PS.Chip, { tone: 'brand' }, 'New limit ' + PS.money(p.newLimit, 0))));
-    return h(m.div, { className: 'ps-summary ps-bubble', layout: true, transition: PS.T.layout },
-      h(m.div, { layout: 'position', className: 'ps-summary__total' }, h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, p.title || 'Total payment'),
-        h('div', null, h(PS.Swap, { k: p.total }, h(PS.Amount, { value: p.total })),
-          p.was != null && Math.abs(p.was - p.total) > 0.004 ? h(PS.Amount, { value: p.was, strike: true }) : null)),
-      h(AP, { initial: false }, chips.length ? h(m.div, { key: 'c', className: 'ps-summary__chips', initial: { opacity: 0, height: 0 }, animate: { opacity: 1, height: 'auto' }, exit: { opacity: 0, height: 0 }, transition: PS.T.layout },
-        h(AP, { initial: false, mode: 'popLayout' }, chips)) : null),
-      h(m.div, { layout: 'position' }, h(PS.Button, { block: true, onClick: p.onConfirm }, p.label || 'Confirm')));
+    if (p.saved > 0) chips.push(h(m.span, Object.assign({ key: 's', layout: 'position', transition: MT.SPRING }, chipIn()), h(PS.Chip, { tone: 'positive' }, 'Saved ' + PS.money(p.saved, p.saved % 1 ? 2 : 0))));
+    if (p.newLimit) chips.push(h(m.span, Object.assign({ key: 'l', layout: 'position', transition: MT.SPRING }, chipIn()), h(PS.Chip, { tone: 'brand' }, 'New limit ' + PS.money(p.newLimit, 0))));
+    var showWas = p.was != null && Math.abs(p.was - p.total) > 0.004;
+    return h('div', { className: 'ps-summary ps-bubble' },
+      h('div', { className: 'ps-summary__total' }, h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, p.title || 'Total payment'),
+        h('div', null, h(PS.Amount, { value: p.total }), showWas ? h(PS.Amount, { value: p.was, strike: true }) : null)),
+      h(AP, { initial: false }, chips.length ? h(m.div, { key: 'c', className: 'ps-summary__chips', initial: { height: 0, opacity: 0 },
+        animate: { height: 'auto', opacity: 1, transition: { height: MT.SPRING, opacity: MT.ENTER } },
+        exit: { height: 0, opacity: 0, transition: { height: MT.SPRING, opacity: MT.LEAVE } } },
+        h('div', { className: 'ps-summary__chiprow' }, h(AP, { initial: false, mode: 'popLayout' }, chips))) : null),
+      h(PS.Button, { block: true, onClick: p.onConfirm, className: 'ps-summary__go' }, p.label || 'Confirm'));
   };
+  function chipIn() {
+    return { initial: { opacity: 0, scale: 0.94, filter: 'blur(' + MT.BLUR + 'px)' }, animate: { opacity: 1, scale: 1, filter: 'blur(0px)', transition: { default: MT.ENTER, layout: MT.SPRING } },
+      exit: { opacity: 0, scale: 0.94, transition: MT.LEAVE } };
+  }
 
   /* CouponPicker: the content of a page sheet (PS.Sheet kind="page") · tabs · tab · onTab · onClose · intro (rule line)
-     loan ('₱45,000.00 · 6 terms') · children (the list of the current tab) · summary (node, e.g. PS.Summary) */
+     loan ('₱45,000.00 · 6 terms') · children (the list of the current tab) · summary (node, e.g. PS.Summary).
+     Switching tabs crossfades the list (LEAVE, then ENTER rising 10 px). */
   PS.CouponPicker = function CouponPicker(p) {
-    var order = p.tabs.map(function (t) { return t.id; }), prev = R.useRef(p.tab), dir = order.indexOf(p.tab) >= order.indexOf(prev.current) ? 1 : -1;
-    R.useEffect(function () { prev.current = p.tab; }, [p.tab]);
     return h(R.Fragment, null,
       h('div', { className: 'ps-sheet__head' }, h(PS.Tabs, { items: p.tabs, value: p.tab, onChange: p.onTab, glass: true, id: 'ps-picker', className: 'ps-grow' }), h(PS.Close, { onClick: p.onClose })),
       h('div', { className: 'ps-sheet__body' },
         h('div', { className: 'ps-picker__intro' }, p.intro ? h('p', { className: 'ps-t-body-md' }, p.intro) : null,
           p.loan ? h('div', { className: 'ps-picker__loan' }, h('span', { className: 'ps-t-body-md ps-c-tertiary' }, p.loanLabel || 'Your loan'), h('span', { className: 'ps-t-label-md' }, p.loan)) : null),
-        h(AP, { initial: false, mode: 'popLayout', custom: dir },
-          h(m.div, { key: p.tab, custom: dir, className: 'ps-list', variants: { a: function (d) { return { opacity: 0, x: 24 * d }; }, b: { opacity: 1, x: 0 }, c: function (d) { return { opacity: 0, x: -24 * d }; } },
-            initial: 'a', animate: 'b', exit: 'c', transition: PS.T.ui }, p.children))),
+        h(PS.Crossfade, { k: p.tab, className: 'ps-list' }, p.children)),
       p.summary ? h('div', { className: 'ps-sheet__foot' }, p.summary) : null);
   };
 

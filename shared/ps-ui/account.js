@@ -14,7 +14,7 @@
   /* CreditLimitCard: total and available credit · total · available · onClick · title ('Credit limit') */
   PS.CreditLimitCard = function CreditLimitCard(p) {
     return h(PS.Card, null,
-      h(m.button, { type: 'button', className: 'ps-limit__head', onClick: p.onClick, whileTap: PS.TAP },
+      h(m.button, { type: 'button', className: 'ps-limit__head', onClick: p.onClick, whileTap: PS.TAP, transition: PS.MT.PRESS },
         h('span', null, h('span', { className: 'ps-limit__icon' }, h(PS.Icon, { name: 'wallet', size: 21.78 })), h('span', { className: 'ps-t-section-sm' }, p.title || 'Credit limit')),
         h(PS.Icon, { name: 'chevron-right', size: 16, color: 'tertiary' })),
       h('div', { className: 'ps-limit__nums ps-inset' },
@@ -26,7 +26,7 @@
   /* Menu: list of rows in a card · items [{ id, icon, label, badge, onClick }] (badge: a solid brand tag, e.g. 'New', '6 coupons') */
   PS.Menu = function Menu(p) {
     return h(PS.Card, { className: 'ps-menu' }, p.items.map(function (it) {
-      return h(m.button, { key: it.id || it.label, type: 'button', className: 'ps-menu__item', onClick: it.onClick, whileTap: { scale: 0.985 } },
+      return h(m.button, { key: it.id || it.label, type: 'button', className: 'ps-menu__item', onClick: it.onClick, whileTap: PS.TAP, transition: PS.MT.PRESS },
         h('span', null, h(PS.Icon, { name: it.icon, size: 20, color: 'primary' }), h('span', { className: 'ps-t-body-md' }, it.label)),
         h('span', null, it.badge ? h(PS.Swap, { k: it.badge }, h(PS.Tag, { tone: 'solid' }, it.badge)) : null, h(PS.Icon, { name: 'chevron-right', size: 16, color: 'tertiary' })));
     }));
@@ -37,7 +37,7 @@
     var items = p.items || [{ id: 'ig', label: 'Instagram', logo: 'instagram' }, { id: 'tt', label: 'TikTok', logo: 'tiktok' }, { id: 'fb', label: 'Facebook', logo: 'facebook' }];
     return h(PS.Card, null, h('p', { className: 'ps-t-section-sm' }, p.title || 'Social media'),
       h('div', { className: 'ps-social__row' }, items.map(function (it) {
-        return h(m.button, { key: it.id, type: 'button', className: 'ps-social__item', whileTap: PS.TAP, onClick: it.onClick },
+        return h(m.button, { key: it.id, type: 'button', className: 'ps-social__item', whileTap: PS.TAP, transition: PS.MT.PRESS, onClick: it.onClick },
           h('span', null, h('img', { src: PS.asset('logos/' + it.logo + '.svg'), alt: '' })), h('span', { className: 'ps-t-caption-sm' }, it.label));
       })));
   };

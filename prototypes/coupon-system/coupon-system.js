@@ -26,6 +26,8 @@
     var s6 = R.useState([]), keep = s6[0], setKeep = s6[1];
     var s7 = R.useState(false), agree = s7[0], setAgree = s7[1];
     var s8 = R.useState(null), tip = s8[0], setTip = s8[1];
+    var s9 = R.useState(0), nudge = s9[0], setNudge = s9[1];
+    var loanSc = R.useRef(null), lastRow = R.useRef({});
     var toast = PS.useToast(), say = toast[1];
 
     var discs = coupons.filter(function (c) { return c.kind === 'discount'; }), lims = coupons.filter(function (c) { return c.kind === 'limit'; });
@@ -49,7 +51,7 @@
     function go(page, dir) { setTip(null); setN(function (n) { return Object.assign({}, n, { page: page, dir: dir == null ? 1 : dir, from: n.page }); }); }
     function back() { setTip(null); setN(function (n) { return Object.assign({}, n, { page: n.page === 'loan' && n.from === 'coupons' ? 'coupons' : 'tabs', dir: -1, from: n.page }); }); }
     function openLoan(withId) {
-      var l = freshLoan(coupons, withId); setLoan(l); setAgree(false); go('loan');
+      var l = freshLoan(coupons, withId); lastRow.current = {}; setLoan(l); setAgree(false); go('loan');
       if (l.moved) say('To use this coupon, we set your loan to ' + l.term + ' terms.');
     }
     function openCoupons() { setCtab('use'); go('coupons'); }
@@ -99,9 +101,32 @@
       setLoan(l);
     }
 
-    /* ---- apply ---- */
+    /* ---- coupon rows on the loan page: a tap turns the coupon on or off ---- */
+    function toggleRow(c) {
+      var lim = c.kind === 'limit', on = lim ? loan.lim === c.id : loan.disc === c.id, l = Object.assign({}, loan);
+      if (on) {
+        if (lim) { l.lim = null; if (l.amount > CREDIT.available) { l.amount = CREDIT.available; say('Your amount is now ' + money(CREDIT.available, 0) + ', your limit without the increase.'); } }
+        else l.disc = null;
+        setLoan(l); return;
+      }
+      var r = CS.why(c, loan.amount, loan.term);
+      if (r) { say(r + '. See all to pick another.'); return; }
+      if (lim) l.lim = c.id; else l.disc = c.id;
+      setLoan(l);
+    }
+
+    /* ---- apply. Confirm stays inactive until the agreement is ticked; a tap on it scrolls down to the agreement and the
+       empty circle ripples (withdraw's nudge) — no error message ---- */
+    function pointAgree() {
+      var sc = loanSc.current, fired = false, fire = function () { if (!fired) { fired = true; setNudge(function (n) { return n + 1; }); } };
+      if (!sc) { fire(); return; }
+      var to = sc.scrollHeight - sc.clientHeight, from = sc.scrollTop;
+      if (to - from < 24 || PS.reduce) { sc.scrollTop = to; fire(); return; }
+      window.Motion.animate(from, to, Object.assign({}, PS.MT.SPRING, { restDelta: 0.5, restSpeed: 5,
+        onUpdate: function (v) { sc.scrollTop = v; if (to - v < 24) fire(); }, onComplete: fire }));
+    }
     function confirmLoan() {
-      if (!agree) { say('Tick the box to accept the loan agreement first.'); return; }
+      if (!agree) { pointAgree(); return; }
       var spent = [D, L].filter(Boolean);
       setUsed(spent.map(function (c) { return { id: 'u-' + c.id, type: c.type, value: c.value, label: c.label, rule: c.rule, meta: 'Used on ' + CS.today }; }).concat(used));
       setCoupons(coupons.filter(function (c) { return spent.indexOf(c) < 0; }));
@@ -167,33 +192,35 @@
         top: { left: h(PS.Back, { onClick: back }), title: 'Coupons', right: tune, solid: true, extraHeight: 58,
           extra: h('div', { className: 'cs-ctabs' }, h(PS.Tabs, { id: 'cs-centre', value: ctab, onChange: function (t) { setTip(null); setCtab(t); },
             items: [{ id: 'use', label: 'To use', count: coupons.length || null }, { id: 'used', label: 'Used' }, { id: 'expired', label: 'Expired' }] })) } },
-        h(PS.AP, { initial: false, mode: 'popLayout' }, h(PS.m.div, { key: ctab, initial: { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0 }, transition: PS.T.ui }, body)));
+        h(PS.Crossfade, { k: ctab }, body));
     }
 
     function loanPage() {
-      var rows = [];
+      /* each row keeps the coupon it last showed, so turning it off leaves the same coupon there (just off) */
+      var rows = [], last = lastRow.current;
+      if (D) last.d = D.id; if (L) last.l = L.id;
       if (discs.length) {
-        var bd = D || CS.best(coupons, 'discount', loan.amount, loan.term) || discs[0];
-        rows.push({ key: 'd', type: bd.type, title: bd.name, on: !!D, onClick: function () { openPicker('discount'); },
-          sub: D ? 'You save ' + money(C.save, C.save % 1 ? 2 : 0) : CS.fits(bd, loan.amount, loan.term) ? 'Tap to save ' + money(CS.calc(loan.amount, loan.term, bd).save, 2) : bd.rule });
+        var bd = D || find(coupons, last.d) || CS.best(coupons, 'discount', loan.amount, loan.term) || discs[0];
+        rows.push({ key: 'd', type: bd.type, title: bd.name, on: !!D, onClick: function () { toggleRow(bd); },
+          sub: D ? 'You save ' + money(C.save, C.save % 1 ? 2 : 0) : bd.rule });
       }
       if (lims.length) {
-        var bl = L || CS.best(coupons, 'limit', loan.amount, loan.term) || lims[0];
-        rows.push({ key: 'l', type: 'limit', title: bl.name, on: !!L, onClick: function () { openPicker('limit'); },
+        var bl = L || find(coupons, last.l) || CS.best(coupons, 'limit', loan.amount, loan.term) || lims[0];
+        rows.push({ key: 'l', type: 'limit', title: bl.name, on: !!L, onClick: function () { toggleRow(bl); },
           sub: L ? 'Your limit is ' + money(C.max, 0) + ' for this loan' : bl.rule });
       }
-      return h(PS.Screen, { key: 'loan', tint: true,
+      return h(PS.Screen, { key: 'loan', tint: true, scrollRef: loanSc,
         top: { left: h(PS.Back, { onClick: back }), title: 'Apply a loan', right: tune },
-        bottom: h(PS.BottomBar, null, h(PS.Button, { block: true, onClick: confirmLoan }, 'Confirm')) },
+        bottom: h(PS.BottomBar, null, h(PS.Button, { block: true, inactive: !agree, onClick: confirmLoan }, 'Confirm')) },
         h(PS.AmountCard, { amount: loan.amount, min: LOAN.min, max: C.max, step: LOAN.step, boost: !!L, terms: LOAN.terms, term: loan.term, termNote: LOAN.days + ' days / term',
           onAmount: onAmount, onCommit: onCommit, onTerm: onTerm }),
-        rows.length ? h(PS.CouponsSection, { count: coupons.length, onSeeAll: function () { openPicker(D || !L ? 'discount' : 'limit'); }, rows: rows }) : null,
+        rows.length ? h(PS.CouponsSection, { count: coupons.length, onSeeAll: function () { openPicker('discount'); }, rows: rows }) : null,
         h(PS.OrderDetails, { link: 'View payment schedule', onLink: function () { setSheet('plan'); }, rows: [
           { label: 'Daily fee', value: money(C.daily) }, { label: 'First payment date', value: CS.date(1) }, { label: 'Per installment', value: money(C.per) },
           { label: 'Discount', value: C.save ? '-' + money(C.save) : null, tone: 'positive' }, { label: 'Total payment', value: money(C.total) }] }),
         h(PS.ProtectionCard, { body: 'Get covered for up to ₱30,000, so your family isn’t left with the loan if a medical emergency or accident happens.', onLink: function () { say('Benefits aren’t part of this prototype.'); } }),
         h(PS.MethodCard, { name: 'Bank of the Philippine Islands', last4: '4567' }),
-        h(PS.Agreement, { on: agree, onToggle: function () { setAgree(!agree); } }, 'By tapping Confirm, you accept the ', h('b', null, 'Loan Agreement'), ' and ', h('b', null, 'Loan Disclosure Statement'), '.'));
+        h(PS.Agreement, { on: agree, nudge: nudge, onToggle: function () { setAgree(!agree); } }, 'By tapping Confirm, you accept the ', h('b', null, 'Loan Agreement'), ' and ', h('b', null, 'Loan Disclosure Statement'), '.'));
     }
 
     /* =================================================================== sheets */
@@ -208,7 +235,7 @@
         sorted.length ? sorted.map(function (c) {
           var ok = CS.fits(c, loan.amount, loan.term), on = (kind === 'limit' ? draft.lim : draft.disc) === c.id;
           return h(PS.CouponTicket, { key: c.id, value: c.value, label: c.label, rule: c.rule, ruleLong: c.long, meta: c.meta, expiresAt: c.expiresAt, best: ok && top === c,
-            state: on ? 'selected' : ok ? 'default' : 'unavailable', reason: CS.why(c, loan.amount, loan.term), action: 'pick', layout: true,
+            state: on ? 'selected' : ok ? 'default' : 'unavailable', reason: CS.why(c, loan.amount, loan.term), action: 'pick',
             onPick: function () { pick(c); }, onRule: function (el) { showRule(c, el); } });
         }) : h(PS.EmptyState, { title: kind === 'limit' ? 'No limit increases yet' : 'No discounts yet', body: 'When you get one, it shows up here.', style: { marginTop: 72 } }));
     }

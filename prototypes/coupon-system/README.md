@@ -14,8 +14,9 @@ Built only from the shared components in [`shared/ps-ui`](../../shared/README.md
 - **Account** — Coupons row with the count → coupon centre.
 - **Coupon centre** — To use / Used / Expired. A coupon ending within a day counts down. A long rule ends in ⓘ:
   tap the line for the whole rule. Use → apply a loan with that coupon (the amount or term moves if the coupon needs it).
-- **Apply a loan** — opens with the coupons that do the most for the loan. The coupon rows and "See all" open the
-  picker; the order details show the discount only when one is used.
+- **Apply a loan** — opens with the coupons that do the most for the loan. Tapping a coupon row turns that coupon on or
+  off; "See all" opens the picker with every coupon. The order details show the discount only when one is used.
+  Confirm stays inactive until the agreement is ticked; tapping it then scrolls to the agreement and the circle ripples.
 - **Coupon picker** (sheet) — Discount / Limit increase, one of each per loan. Coupons that don't fit the loan are
   greyed with the reason. The total, "Saved" and "New limit" update as you pick; Confirm applies.
 - **Keep your coupon?** (card sheet) — when a new amount or term takes a coupon off: Keep coupon sets the amount or

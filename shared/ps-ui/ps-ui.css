@@ -145,6 +145,8 @@ html.ps-edge .ps-nav { padding-bottom: calc(var(--sb) + var(--spacing-section-lg
 .ps-icon { display: inline-block; flex: none; width: var(--ps-s, 20px); height: var(--ps-s, 20px); background: currentColor;
   -webkit-mask: var(--ps-src) center / contain no-repeat; mask: var(--ps-src) center / contain no-repeat; }
 .ps-art { display: block; flex: none; width: var(--ps-s, 36px); height: var(--ps-s, 36px); object-fit: contain; }
+.ps-cart { position: relative; display: block; flex: none; width: var(--ps-s, 80px); height: var(--ps-s, 80px); }
+.ps-cart > img { position: absolute; top: 0; left: -3.31%; width: 108.31%; height: 100%; max-width: none; }
 
 .ps-amount { font-family: var(--ps-font-num); font-weight: var(--font-weight-bold); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .ps-amount__cur--body { font-family: var(--font-family-body); font-weight: var(--font-weight-medium); }
@@ -160,6 +162,7 @@ html.ps-edge .ps-nav { padding-bottom: calc(var(--sb) + var(--spacing-section-lg
 
 .ps-divider { flex: none; height: 1px; align-self: stretch; background: var(--color-stroke-subtle); }
 .ps-divider--v { width: 1px; height: auto; align-self: stretch; }
+.ps-divider--dash.ps-divider--v { background: repeating-linear-gradient(180deg, var(--color-stroke-subtle) 0 4.14px, transparent 4.14px 8.29px); }
 
 .ps-section { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); }
 .ps-section__head { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--spacing-gap-md); min-height: 20px; }
@@ -175,7 +178,8 @@ html.ps-edge .ps-nav { padding-bottom: calc(var(--sb) + var(--spacing-section-lg
 .ps-btn--lg { height: 48px; padding: var(--spacing-gap-md) var(--spacing-padding-xl); }
 .ps-btn--sm { padding: var(--spacing-gap-sm) var(--spacing-padding-md); }
 .ps-btn--primary { background: var(--color-action-bg-primary-default); color: var(--color-text-inverse); }
-.ps-btn--primary:disabled { background: var(--color-action-bg-primary-disabled); }
+.ps-btn--primary:disabled, .ps-btn--primary.is-inactive { background: var(--color-action-bg-primary-disabled); }
+.ps-btn--primary { transition: background-color 0.15s ease; }
 .ps-btn--text { color: var(--color-text-brand-default); }
 .ps-btn--inverse { background: var(--color-action-bg-inverse); color: var(--color-text-primary); }
 .ps-btn--shade { padding: var(--spacing-padding-md); background: var(--ps-shade-30); color: var(--color-text-inverse); box-shadow: var(--blur-glass-nav-effect-shadow);
@@ -214,8 +218,9 @@ html.ps-edge .ps-nav { padding-bottom: calc(var(--sb) + var(--spacing-section-lg
 
 /* ---- check (radio-style mark) ---- */
 .ps-check { flex: none; width: 16px; height: 16px; border-radius: var(--radius-full); display: inline-flex; align-items: center; justify-content: center;
-  border: var(--stroke-width-medium) solid var(--color-stroke-default); color: var(--color-icon-inverse); }
-.ps-check--on { border: 0; background: var(--color-surface-icon-brand-default); }
+  border: var(--stroke-width-medium) solid var(--color-stroke-default); color: var(--color-icon-inverse); background: transparent;
+  transition: background-color 0.15s ease, border-color 0.15s ease; }
+.ps-check--on { border-color: var(--color-surface-icon-brand-default); background: var(--color-surface-icon-brand-default); }
 .ps-check--box { border-width: var(--stroke-width-strong); }
 .ps-check--off { border-color: var(--color-stroke-subtle); background: var(--color-surface-inset-default); }
 
@@ -236,7 +241,7 @@ html.ps-edge .ps-toast { bottom: calc(var(--ps-toast-bottom, 120px) + var(--sb))
 .ps-tabs__tab { position: relative; flex: 1 1 0; min-width: 0; display: flex; align-items: center; justify-content: center; gap: var(--spacing-gap-xs);
   padding: var(--spacing-padding-sm) 0; border-radius: var(--radius-full); color: var(--color-text-secondary);
   font: var(--font-weight-semi-bold) var(--font-size-section-title-sm)/var(--font-line-height-section-title-sm) var(--font-family-title); white-space: nowrap; }
-.ps-tabs__tab { transition: color 0.2s; }
+.ps-tabs__tab { transition: color 0.15s ease; }
 .ps-tabs__tab.is-on { color: var(--color-text-inverse); }
 .ps-tabs__tab > :not(.ps-tabs__pill) { position: relative; }
 .ps-tabs__pill { position: absolute; inset: 0; border-radius: var(--radius-full); background: var(--color-surface-card-brand); }
@@ -303,23 +308,28 @@ html.ps-edge .ps-sheet--plain { padding-bottom: calc(var(--sb) + var(--spacing-p
 .ps-hcoupons__title { display: flex; align-items: center; padding: 0 var(--spacing-padding-sm); text-align: left; }
 .ps-hcoupons__pair { display: flex; gap: var(--spacing-gap-xs); }
 .ps-hcoupon { flex: 1 1 0; min-width: 0; padding: var(--spacing-padding-lg) var(--spacing-padding-xs) var(--spacing-padding-xs); border-radius: var(--radius-md);
-  background: linear-gradient(180deg, var(--color-brand-700) 0%, var(--color-brand-600) 19.712%, var(--color-brand-400) 49.519%, var(--color-brand-200) 100%); }
+  background: linear-gradient(180deg, var(--color-brand-700) 0%, var(--color-brand-600) 14.904%, var(--color-brand-400) 59.615%, var(--color-brand-200) 100%); }
 .ps-hcoupon__in { position: relative; background: var(--color-surface-card-default); border-radius: var(--radius-sm); padding: var(--spacing-padding-sm);
   display: flex; flex-direction: column; gap: var(--spacing-gap-xs); }
-.ps-hcoupon__in .ps-art { position: absolute; left: 50%; top: -32px; margin-left: -20px; }
+.ps-hcoupon__art { position: absolute; left: 50%; top: -32px; margin-left: -20px; }
 .ps-hcoupon__value { font: var(--font-weight-bold) var(--font-size-title-md)/var(--font-line-height-title-md) var(--ps-font-num); letter-spacing: -0.01em; color: var(--color-text-brand-default); }
-/* one coupon: folder-tab header, wide panel */
-.ps-hcoupons--one { padding-top: var(--spacing-gap-lg); gap: 0; overflow: visible; }
-.ps-hcoupons--one .ps-hcoupons__title { justify-content: space-between; padding-right: 0; align-items: flex-end; }
-.ps-hcoupons__tab { position: relative; width: 114px; height: 16px; border-radius: var(--radius-md) 0 0 0; background: linear-gradient(90deg, var(--color-brand-600), var(--color-brand-700)); flex: none; }
-.ps-hcoupons__tab svg { position: absolute; left: -23.5px; bottom: 0; width: 24px; height: 16px; }
-.ps-hcoupons__tab .ps-art { position: absolute; right: 10px; top: -59px; }
-.ps-hcoupon--wide { padding: var(--spacing-padding-xs); border-radius: var(--radius-md) 0 var(--radius-md) var(--radius-md);
+/* one coupon (Figma 10750:61878): the title sits left; on the right a folder tab (gradient, top-right corner rounded) grows out of
+   the panel through the curved connector; the panel's top-right corner is square under it */
+.ps-hcone { padding: var(--spacing-gap-sm) var(--spacing-padding-sm); gap: 0; }
+.ps-hcone__head { display: flex; align-items: flex-end; justify-content: space-between; }
+.ps-hcone__title { padding: var(--spacing-gap-xs) 0 var(--spacing-gap-xs) var(--spacing-gap-sm); white-space: nowrap; }
+.ps-hcone__tabs { flex: 1 1 0; min-width: 0; display: flex; justify-content: flex-end; align-items: flex-end; }
+.ps-hcone__tab { flex: 1 1 0; max-width: 114px; height: 16px; border-radius: 0 var(--radius-md) 0 0;
+  background: linear-gradient(0deg, var(--color-brand-600) 0%, var(--color-brand-700) 100%); }
+.ps-hcone__curve { width: 24px; height: 16.003px; flex: none; transform: scaleX(-1); margin-right: -0.5px; }
+.ps-hcone__panel { position: relative; padding: var(--spacing-padding-xs); border-radius: var(--radius-md) 0 var(--radius-md) var(--radius-md);
   background: linear-gradient(180deg, var(--color-brand-600) 0%, var(--color-brand-400) 69.231%, var(--color-brand-200) 100%); }
-.ps-hcoupon--wide .ps-hcoupon__in { flex-direction: row; align-items: center; gap: var(--spacing-gap-md); text-align: left; }
-.ps-hcoupon__lead { width: 110px; flex: none; display: flex; flex-direction: column; align-items: center; text-align: center; }
-.ps-hcoupon__lead .ps-hcoupon__value { font-size: var(--font-size-title-lg); line-height: var(--font-line-height-title-lg); }
-.ps-hcoupon__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--spacing-gap-2xs); }
+.ps-hcone__art { position: absolute; right: 18px; top: -59px; }
+.ps-hcone__in { position: relative; display: flex; align-items: center; justify-content: center; gap: var(--spacing-gap-md); padding: var(--spacing-padding-sm);
+  border-radius: var(--radius-sm); background: var(--color-surface-card-default); }
+.ps-hcone__lead { width: 110px; flex: none; display: flex; flex-direction: column; text-align: center; }
+.ps-hcone__value { font: var(--font-weight-bold) var(--font-size-title-lg)/var(--font-line-height-title-lg) var(--ps-font-num); letter-spacing: -0.01em; color: var(--color-text-brand-default); }
+.ps-hcone__body { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: var(--spacing-gap-2xs); padding-left: var(--spacing-padding-xs); }
 
 .ps-trust { gap: var(--spacing-gap-sm); overflow: hidden; }
 .ps-trust__hero { display: flex; align-items: stretch; justify-content: space-between; padding: var(--spacing-gap-lg); }
@@ -345,10 +355,12 @@ html.ps-edge .ps-sheet--plain { padding-bottom: calc(var(--sb) + var(--spacing-p
 
 /* ======================================================================================= coupons */
 .ps-ticket { position: relative; height: 116px; flex: none; }
-.ps-ticket--shadow { filter: drop-shadow(0 0 1px var(--color-shadow-default-1)) drop-shadow(0 4px 6px var(--color-shadow-default-2)); }
+.ps-ticket { transition: filter 0.15s ease; filter: drop-shadow(0 0 1px transparent) drop-shadow(0 4px 6px transparent); }
+.ps-ticket--shadow, .ps-ticket.is-on { filter: drop-shadow(0 0 1px var(--color-shadow-default-1)) drop-shadow(0 4px 6px var(--color-shadow-default-2)); }
 .ps-ticket__shape, .ps-ticket__in { position: absolute; inset: 0; -webkit-mask: url("assets/art/ticket-mask.svg") center / 100% 100% no-repeat; mask: url("assets/art/ticket-mask.svg") center / 100% 100% no-repeat; }
 .ps-ticket__shape { background: var(--color-neutral-0); }
-.ps-ticket__bar { position: absolute; left: 0; top: 0; bottom: 0; width: 16px; background: var(--color-icon-brand-default); }
+.ps-ticket__bar { position: absolute; left: 0; top: 0; bottom: 0; width: 16px; background: var(--color-icon-brand-default); opacity: 0; transition: opacity 0.15s ease; }
+.ps-ticket.is-on .ps-ticket__bar { opacity: 1; }
 .ps-ticket__in { display: flex; flex-direction: column; justify-content: space-between; padding: var(--spacing-12, 12px) var(--spacing-gap-2xl) var(--spacing-12, 12px) var(--spacing-padding-2xl); }
 .ps-ticket__row { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--spacing-gap-sm); }
 .ps-ticket__head { flex: 1; min-width: 0; }
@@ -376,11 +388,13 @@ button.ps-ticket { display: block; width: 100%; text-align: left; }
 .ps-crow__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--spacing-gap-xs); }
 .ps-crow__sub { color: var(--color-text-tertiary); }
 .ps-crow.is-on .ps-crow__sub { color: var(--color-text-positive-heavy); }
-.ps-summary { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); padding: var(--spacing-padding-md); border-radius: var(--radius-xl); }
+.ps-summary { display: flex; flex-direction: column; padding: var(--spacing-padding-md); border-radius: var(--radius-xl); }
+.ps-summary__chips { overflow: hidden; }
+.ps-summary__chiprow { display: flex; flex-wrap: wrap; gap: var(--spacing-gap-sm); padding-top: var(--spacing-gap-sm); }
+.ps-summary__go { margin-top: var(--spacing-gap-lg); }
 .ps-summary__total { display: flex; flex-direction: column; gap: var(--spacing-gap-2xs); }
 .ps-summary__total > div { display: flex; align-items: baseline; gap: var(--spacing-gap-xs); }
 .ps-summary__total .ps-amount:first-child { font-size: var(--font-size-title-lg); line-height: var(--font-line-height-title-lg); letter-spacing: -0.01em; color: var(--color-text-primary); }
-.ps-summary__chips { display: flex; flex-wrap: wrap; gap: var(--spacing-gap-sm); }
 .ps-picker__intro { display: flex; flex-direction: column; gap: var(--spacing-gap-xs); margin-bottom: var(--spacing-gap-lg); }
 .ps-picker__intro > p { padding: 0 var(--spacing-padding-md); color: var(--color-text-secondary); }
 .ps-picker__loan { display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-gap-md); border-radius: var(--radius-xl); background: var(--color-surface-card-default); white-space: nowrap; }
@@ -411,6 +425,7 @@ button.ps-ticket { display: block; width: 100%; text-align: left; }
 .ps-slider__ends > span:last-child { display: flex; align-items: center; gap: var(--spacing-gap-2xs); }
 .ps-slider__ends.is-boost > span:last-child { color: var(--color-text-positive-heavy); }
 .ps-terms { display: flex; gap: var(--spacing-gap-sm); }
+.ps-term { transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease; }
 .ps-term { flex: 1 1 0; padding: var(--spacing-gap-sm) 0; border-radius: var(--radius-md); border: var(--stroke-width-medium) solid var(--color-stroke-subtle); text-align: center;
   color: var(--color-text-tertiary); font: var(--font-weight-semi-bold) var(--font-size-body-md)/var(--font-line-height-body-md) var(--font-family-body); }
 .ps-term.is-on { background: var(--color-surface-card-brand-subtle); border-color: var(--color-stroke-brand-subtle); color: var(--color-text-brand-default); }
@@ -427,7 +442,8 @@ button.ps-ticket { display: block; width: 100%; text-align: left; }
 .ps-method__logo { width: 36px; height: 36px; border-radius: var(--radius-xs); overflow: hidden; flex: none; }
 .ps-method__info { flex: 1; min-width: 0; }
 .ps-agree { display: flex; align-items: flex-start; gap: var(--spacing-gap-sm); text-align: left; width: 100%; }
-.ps-agree .ps-check { margin-top: 0; }
+.ps-agree__mark { position: relative; flex: none; width: 16px; height: 16px; }
+.ps-agree__halo { position: absolute; inset: 0; border-radius: 50%; border: var(--stroke-width-strong) solid var(--color-stroke-brand-strong); opacity: 0; pointer-events: none; }
 .ps-agree p { font: var(--font-weight-regular) var(--font-size-caption-xs)/var(--font-line-height-caption-xs) var(--font-family-body); color: var(--color-text-tertiary); }
 .ps-agree b { font-weight: var(--font-weight-medium); color: var(--color-text-link-light); }
 .ps-plan { display: flex; flex-direction: column; gap: 5px; max-height: 280px; overflow-y: auto; overflow-x: hidden; padding: var(--spacing-padding-xl) var(--spacing-padding-lg);

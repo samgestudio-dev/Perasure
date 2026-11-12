@@ -46,9 +46,9 @@
     return h('nav', { className: 'ps-nav', 'aria-label': 'Main' }, h(PS.Bands, { pos: 'bot' }),
       h('div', { className: 'ps-nav__bar' }, p.tabs.map(function (t) {
         var on = t.id === p.value;
-        return h(m.button, { key: t.id, type: 'button', className: 'ps-nav__tab', 'aria-current': on ? 'page' : undefined, whileTap: PS.TAP,
-          onClick: function () { if (!on && p.onChange) p.onChange(t.id); } },
-          on ? h(m.span, { layoutId: (p.id || 'ps-nav') + '-pill', className: 'ps-nav__pill', transition: PS.T.layout }, h('i')) : null,
+        return h(m.button, Object.assign({ key: t.id, type: 'button', className: 'ps-nav__tab', 'aria-current': on ? 'page' : undefined,
+          onClick: function () { if (!on && p.onChange) p.onChange(t.id); } }, PS.press()),
+          on ? h(m.span, { layoutId: (p.id || 'ps-nav') + '-pill', className: 'ps-nav__pill', transition: PS.MT.SPRING }, h('i')) : null,
           h(PS.Icon, { name: t.icon, size: 18, color: 'primary' }), h('span', null, t.label));
       })));
   };
@@ -91,28 +91,34 @@
   };
 
   /* Pages: one page at a time, pushed in from the right (dir 1), popped back (dir -1) or swapped in place (dir 0).
-     id: the page's key · dir · children: the page */
+     Push / pop ride the PeraSure Smooth spring (the page underneath moves a quarter as far); a swap crossfades on
+     ENTER / LEAVE. A page that is leaving no longer takes taps. id: the page's key · dir · children: the page */
   var PAGE = {
-    enter: function (d) { return d ? { x: d > 0 ? 360 : -96, zIndex: d > 0 ? 2 : 0, opacity: 1 } : { opacity: 0, zIndex: 1 }; },
-    center: { x: 0, opacity: 1, zIndex: 1 },
-    exit: function (d) { return d ? { x: d > 0 ? -96 : 360, zIndex: d > 0 ? 0 : 2, opacity: 1 } : { opacity: 0, zIndex: 0 }; }
+    enter: function (d) { return d ? { x: d > 0 ? 360 : -90, opacity: 1, zIndex: d > 0 ? 2 : 0 } : { opacity: 0, zIndex: 1 }; },
+    center: function (d) { return d ? { x: 0, opacity: 1, zIndex: 1, transition: PS.MT.SPRING } : { x: 0, opacity: 1, zIndex: 1, transition: { opacity: PS.MT.ENTER } }; },
+    exit: function (d) { return d ? { x: d > 0 ? -90 : 360, zIndex: d > 0 ? 0 : 2, transition: PS.MT.SPRING } : { opacity: 0, zIndex: 0, transition: PS.MT.LEAVE }; }
   };
+  function PageBox(p) {
+    var present = M.useIsPresent();
+    return h(m.div, { className: 'ps-page', custom: p.dir, variants: PAGE, initial: 'enter', animate: 'center', exit: 'exit',
+      style: { pointerEvents: present ? 'auto' : 'none' } }, p.children);
+  }
   PS.Pages = function Pages(p) {
-    return h(AP, { initial: false, custom: p.dir || 0 },
-      h(m.div, { key: p.id, custom: p.dir || 0, className: 'ps-page', variants: PAGE, initial: 'enter', animate: 'center', exit: 'exit',
-        transition: p.dir ? PS.T.page : { duration: 0.18 } }, p.children));
+    return h(AP, { initial: false, custom: p.dir || 0 }, h(PageBox, { key: p.id, dir: p.dir || 0 }, p.children));
   };
 
   /* Sheet: open · kind page (fills below the header: coupon picker) | card (floating, scrim: decisions) | plain (bottom, white: plans)
-     onClose · label (aria) · scrim (default: card / plain) · children. Drag the top edge down to close. */
+     onClose · label (aria) · scrim (default: card / plain) · children. Slides on the Smooth spring; the scrim fades in 0.2 s and
+     out on LEAVE. Drag the top edge down to close. While it closes it no longer blocks the page. */
   function SheetBody(p) {
-    var kind = p.kind || 'plain', controls = M.useDragControls(), scrim = p.scrim != null ? p.scrim : kind !== 'page';
-    return h('div', { className: 'ps-layer', role: 'dialog', 'aria-modal': true, 'aria-label': p.label },
-      scrim ? h(m.div, { className: 'ps-scrim', initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.2 }, onClick: p.onClose })
+    var kind = p.kind || 'plain', controls = M.useDragControls(), scrim = p.scrim != null ? p.scrim : kind !== 'page', present = M.useIsPresent();
+    return h('div', { className: 'ps-layer', role: 'dialog', 'aria-modal': true, 'aria-label': p.label, style: present ? null : { pointerEvents: 'none' } },
+      scrim ? h(m.div, { className: 'ps-scrim', initial: { opacity: 0 }, animate: { opacity: 1, transition: { duration: 0.2 } }, exit: { opacity: 0, transition: PS.MT.LEAVE }, onClick: p.onClose })
             : h('div', { className: 'ps-scrim ps-scrim--clear', onClick: p.onClose }),
-      h(m.div, { className: PS.cx('ps-sheet', 'ps-sheet--' + kind, p.className), initial: { y: '110%' }, animate: { y: 0 }, exit: { y: '110%' }, transition: PS.T.sheet,
-        drag: 'y', dragListener: false, dragControls: controls, dragConstraints: { top: 0, bottom: 0 }, dragElastic: { top: 0.04, bottom: 0.7 },
-        onDragEnd: function (e, i) { if (i.offset.y > 90 || i.velocity.y > 600) p.onClose(); } },
+      h(m.div, { className: PS.cx('ps-sheet', 'ps-sheet--' + kind, p.className), initial: { y: '100%' }, animate: { y: 0 }, exit: { y: '100%' }, transition: PS.MT.SPRING,
+        drag: 'y', dragListener: false, dragControls: controls, dragConstraints: { top: 0, bottom: 0 }, dragElastic: { top: 0, bottom: 0.6 },
+        dragTransition: { bounceStiffness: 240, bounceDamping: 30 },
+        onDragEnd: function (e, i) { if (i.offset.y > 96 || i.velocity.y > 640) p.onClose(); } },
         h('span', { className: 'ps-sheet__grab', 'aria-hidden': true }),
         h('div', { className: 'ps-sheet__drag', onPointerDown: function (e) { controls.start(e); } }),
         p.children));
@@ -123,24 +129,22 @@
     return h('div', { className: 'ps-sheet__titlebar' }, h('p', { className: 'ps-t-title-sm' }, p.children), h(PS.Close, { onClick: p.onClose }));
   };
 
-  /* Tooltip: a frosted bubble · open · at { x, y } (frame px) · text · onClose (any tap closes it) */
+  /* Tooltip: a frosted bubble · open · at { x, y } (frame px) · text · onClose (any tap closes it). Comes in on ENTER, goes on LEAVE. */
   PS.Tooltip = function Tooltip(p) {
     return h(AP, null, p.open ? h(R.Fragment, { key: 'tip' },
       h('div', { className: 'ps-tip-catch', onClick: p.onClose }),
-      h(m.div, { className: 'ps-tip ps-bubble ps-t-body-md', role: 'tooltip', style: { left: p.at.x, top: p.at.y }, onClick: p.onClose,
-        initial: { opacity: 0, y: -6, scale: 0.98 }, animate: { opacity: 1, y: 0, scale: 1 }, exit: { opacity: 0, y: -4 }, transition: PS.T.ui }, p.text)) : null);
+      h(m.div, Object.assign({ className: 'ps-tip ps-bubble ps-t-body-md', role: 'tooltip', style: { left: p.at.x, top: p.at.y }, onClick: p.onClose }, PS.fade(-PS.MT.Y.digit)), p.text)) : null);
   };
 
   /* TuneButton: opens the prototype's Tune panel (tune.js); nothing when the page has none */
   PS.TuneButton = function TuneButton() {
     if (!window.PSTune) return null;
-    return h(m.button, { type: 'button', className: 'ps-tune-btn', onClick: window.PSTune.open, whileTap: PS.TAP }, 'Tune');
+    return h(m.button, Object.assign({ type: 'button', className: 'ps-tune-btn', onClick: window.PSTune.open }, PS.press()), 'Tune');
   };
 
   /* Toast: a short message above the bottom bar · msg (null hides) · bottom (px above the frame bottom, 120) */
   PS.Toast = function Toast(p) {
-    return h(AP, null, p.msg ? h(m.div, { key: p.msg, className: 'ps-toast ps-bubble ps-t-body-md', role: 'status', style: p.bottom ? { '--ps-toast-bottom': p.bottom + 'px' } : null,
-      initial: { opacity: 0, y: 12 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: 8 }, transition: PS.T.ui }, p.msg) : null);
+    return h(AP, null, p.msg ? h(m.div, Object.assign({ key: p.msg, className: 'ps-toast ps-bubble ps-t-body-md', role: 'status', style: p.bottom ? { '--ps-toast-bottom': p.bottom + 'px' } : null }, PS.fade(PS.MT.Y.block)), p.msg) : null);
   };
   /* useToast: [msg, show(text, ms)] */
   PS.useToast = function () {
