@@ -31,8 +31,11 @@ assets/fonts/              the app's fonts (Hanken Grotesk, Inter, Satoshi 500/7
 prototypes/_template/index.html  starting point for a new prototype (links the shared fonts and libraries); not on the picker
 shared/ps-ui/              PeraSure UI components (React, configurable): ps-ui.css (tokens only), core.js, layout.js, home.js,
                            coupon.js, loan.js, account.js, phone-fit.js, tune.js/.css, assets/ — see "Shared components"
+                           + feedback.js (loaders, status, result), form.js (fields, OTP, keypad), status.js (home states), pay.js (repayments),
+                           list.js (links, facts, activity, inbox, history, hub), fx.js (Order submit, OTP sheet, Credit limit intro)
 shared/gallery.html        live gallery of every shared component and its states (on the picker as "PeraSure components")
 shared/README.md           how to use the components, files, rules for changing them
+prototypes/app/            the whole app as a test environment ("PeraSure app") — see "The full app"
 prototypes/<slug>/index.html    main / recommended variant of a demo
 prototypes/<slug>/<variant>.html  other variants of the same demo (optional)
 animations/animations.js       Lottie registry (LOTTIES array) — shared by the picker and the player
@@ -150,6 +153,24 @@ built on it. Details and the head block to copy: `shared/README.md`; reference p
   small version at 36 px (`PS.CouponArt` picks it).
 - Renaming / removing a prop or class: update every prototype using it in the same commit (`grep -rl "PS\.<Name>"`).
 - Links to these files carry `?v=<stamp>`; `python3 tools/stamp.py` updates them (prototypes and the gallery).
+
+## The full app (`prototypes/app`)
+
+One prototype that holds the whole app, like a test environment (owner's rule): every screen and motion piece in the repo plus the
+rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), built on the shared components. Guide: `prototypes/app/README.md`.
+
+- **New work goes in here too.** When a new screen, flow or motion piece is added to the repo, add it to the app as well (a screen in
+  `screens-*.js`, its states in Tune), so the app stays complete. Change co-maker and the landing page are not part of it.
+- States that can't be reached by tapping are switched in Tune (account, loan, coupons, network, code / ID / selfie outcomes, inbox,
+  rating). Fit is fixed at capped zoom. Loading is made up: `APP.useLoad` (a page's first data: random time, sometimes slow) and
+  `APP.run` (an action); Tune → Network makes the first try fail (the "Something went wrong" state).
+- Order submit plays only after Confirm on apply-a-loan (after the code).
+- **Animations replace stills** (owner): wherever Figma shows a still that has an animation in `animations/`, the app plays the
+  animation (`PS.Anim`, core.js): anti-scam cards, rating, sending code, every empty state and the fallback, loaders, order submit.
+- **Spacing is checked against Figma, not judged by eye** (owner): positions and sizes come from the Figma node geometry, and each page
+  is compared with the frame before it counts as done (text positions within about 1.5 px). `prototypes/app/README.md` lists what has
+  been compared.
+- Links: `?page=<screen>` opens a screen directly, `?auto=0` stops the app typing codes and moving on by itself.
 
 ## Withdraw: the two credit states of the Credit limit intro
 

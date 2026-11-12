@@ -34,15 +34,24 @@
   };
 
   /* PaymentCard: next repayment · amount · was (struck-through original, optional) · due (date text) · badge ('Due in 45 days')
-     onPay · payLabel (default 'Pay ₱800 now') · title ('Next payment') */
+     onPay · payLabel (default 'Pay ₱800 now') · title ('Next payment') · overdue (red badge)
+     notice { title, body, onHelp }: the overdue layout — due date under the amount, the penalty box, a full-width button */
   PS.PaymentCard = function PaymentCard(p) {
-    return h(PS.Card, { variant: 'outline', className: 'ps-payment' },
-      h('div', { className: 'ps-payment__head' }, h('p', { className: 'ps-t-section-sm' }, p.title || 'Next payment'), p.badge ? h(PS.Tag, { tone: 'soft' }, p.badge) : null),
-      h('div', { className: 'ps-payment__amt' }, h(PS.Amount, { value: p.amount }), p.was != null ? h(PS.Amount, { value: p.was, strike: true }) : null),
+    var head = h('div', { className: 'ps-payment__head' }, h('p', { className: 'ps-t-section-sm' }, p.title || 'Next payment'),
+      p.badge ? h(PS.Tag, { tone: p.overdue ? 'negative' : 'soft' }, p.badge) : null);
+    var amt = h('div', { className: 'ps-payment__amt' }, h(PS.Amount, { value: p.amount }), p.was != null ? h(PS.Amount, { value: p.was, strike: true }) : null);
+    var due = h('p', { className: 'ps-payment__date ps-t-body-md' }, h(PS.Icon, { name: 'calendar', size: 16, color: 'secondary' }), p.notice ? 'Due ' + p.due : p.due);
+    if (p.notice) return h(PS.Card, { variant: 'outline', className: 'ps-payment ps-payment--stack' }, head,
+      h('div', { className: 'ps-payment__sum' }, amt, due),
+      h('div', { className: 'ps-payment__note' },
+        h('div', null, h('p', { className: 'ps-t-label-sm' }, p.notice.title), h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, p.notice.body)),
+        p.notice.onHelp ? h(m.button, Object.assign({ type: 'button', 'aria-label': 'How penalties work', onClick: function (e) { p.notice.onHelp(e.currentTarget); } }, PS.press(true)),
+          h(PS.Icon, { name: 'help', size: 16, color: 'tertiary' })) : null),
+      h(PS.Button, { block: true, size: 'md', onClick: p.onPay }, p.payLabel || 'Pay now'));
+    return h(PS.Card, { variant: 'outline', className: 'ps-payment' }, head, amt,
       h(PS.Divider),
       h('div', { className: 'ps-payment__foot' },
-        h('div', { className: 'ps-payment__due' }, h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, 'Due date'),
-          h('p', { className: 'ps-t-body-md' }, h(PS.Icon, { name: 'calendar', size: 16, color: 'secondary' }), p.due)),
+        h('div', { className: 'ps-payment__due' }, h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, 'Due date'), due),
         h(PS.Button, { size: 'sm', onClick: p.onPay }, p.payLabel || 'Pay ' + PS.money(p.amount, 0) + ' now')));
   };
 

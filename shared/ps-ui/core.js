@@ -168,4 +168,63 @@
       h(PS.AP, { initial: false },
         h(PS.m.span, Object.assign({ key: p.k, style: p.block ? { gridArea: '1 / 1', display: 'block', minWidth: 0 } : { gridArea: '1 / 1', display: 'inline-flex', alignItems: 'baseline', minWidth: 0 } }, f), p.children)));
   };
+
+  /* ---- animations: the repo's Lottie files (animations/<slug>/), played with lottie-web (SVG renderer), which is loaded
+     the first time one is shown. Owner's rule: wherever Figma shows a still that has an animation, play the animation. ---- */
+  PS.root = BASE + '../../';
+  var lottieP = null;
+  PS.loadLottie = function () {
+    if (window.lottie) return Promise.resolve(window.lottie);
+    if (!lottieP) lottieP = new Promise(function (res, rej) {
+      var s = document.createElement('script'); s.src = PS.root + 'vendor/lottie-web@5.12.2/lottie_svg.min.js';
+      s.onload = function () { res(window.lottie); }; s.onerror = rej; document.head.appendChild(s);
+    });
+    return lottieP;
+  };
+  /* Lottie: src (json url) · width · height · viewBox ('x y w h': crop) · intro [a, b] (played once) · loop [a, b] (then looped;
+     with no intro / loop the file loops, or plays once and holds with once) · once · play (false: wait) · onDone · api (ref → the lottie item)
+     Reduced motion: the resting frame, no movement. */
+  PS.Lottie = function Lottie(p) {
+    var ref = R.useRef(null), cb = R.useRef(p.onDone); cb.current = p.onDone;
+    R.useEffect(function () {
+      var dead = false, a = null;
+      PS.loadLottie().then(function (l) {
+        if (dead || !ref.current) return;
+        var rs = { preserveAspectRatio: 'xMidYMid meet' }; if (p.viewBox) rs.viewBoxSize = p.viewBox;
+        a = l.loadAnimation({ container: ref.current, renderer: 'svg', loop: !p.once && !p.intro, autoplay: false, path: p.src, rendererSettings: rs });
+        if (p.api) p.api.current = a;
+        a.addEventListener('DOMLoaded', function () {
+          if (dead) return;
+          if (PS.reduce) { a.goToAndStop(p.loop ? p.loop[0] : p.once ? a.totalFrames - 1 : 0, true); if (cb.current) cb.current(); return; }
+          if (p.play === false) return;
+          if (p.intro) {
+            var looped = false;
+            a.addEventListener('complete', function () {
+              if (looped || dead) return; looped = true;
+              if (p.loop) { a.loop = true; a.playSegments(p.loop, true); } else if (cb.current) cb.current();
+            });
+            a.playSegments(p.intro, true);
+          } else { if (p.once) a.addEventListener('complete', function () { if (cb.current) cb.current(); }); a.play(); }
+        });
+      }, function () {});
+      return function () { dead = true; if (a) a.destroy(); if (p.api) p.api.current = null; };
+    }, [p.src, p.play]);
+    return h('span', { className: PS.cx('ps-lottie', p.className), ref: ref, 'aria-hidden': true, style: Object.assign({ width: p.width, height: p.height || p.width }, p.style) });
+  };
+  /* Anim: one of the repo's illustrations by name, cropped to its art so `size` is the picture's box (as the Figma still)
+     name: customer-service-chat | customer-service | empty-box | loading-state-otp | safe-transaction | verification-code | doc-verify */
+  var ANIMS = PS.ANIMS = {
+    'customer-service-chat': { box: [34, 34, 962, 947], intro: [0, 36], loop: [36, 96] },
+    'customer-service': { box: [227, 273, 803, 717], intro: [0, 45], loop: [45, 105] },
+    'empty-box': { box: [257, 263, 750, 740], once: true },
+    'loading-state-otp': { box: [183, 257, 823, 713], intro: [0, 36], loop: [36, 96] },
+    'safe-transaction': { box: [283, 240, 743, 730], intro: [0, 54], loop: [54, 114] },
+    'verification-code': { box: [240, 300, 790, 713], intro: [0, 56], loop: [56, 116] },
+    'doc-verify': { box: [50, 33, 983, 967], intro: [0, 36], loop: [36, 96] }
+  };
+  PS.Anim = function Anim(p) {
+    var a = ANIMS[p.name], b = a.box, side = Math.max(b[2] - b[0], b[3] - b[1]) * (p.fit || 1), cx = (b[0] + b[2]) / 2, cy = (b[1] + b[3]) / 2;
+    return h(PS.Lottie, { src: PS.root + 'animations/' + p.name + '/' + p.name + '.json', width: p.size || 100, className: p.className, style: p.style,
+      viewBox: [cx - side / 2, cy - side / 2, side, side].map(Math.round).join(' '), intro: a.intro, loop: a.loop, once: a.once });
+  };
 })();

@@ -64,7 +64,7 @@
   };
 
   /* AmountCard: "Disbursement amount" + slider + loan term · amount · min · max · step · boost · onAmount(v) · onCommit(v)
-     terms [3, 6, 8] · term · termNote ('15 days / term') · onTerm(t) · label.
+     terms [3, 6, 8] · term · termNote ('15 days / term') · onTerm(t) · label · onEdit (the pencil opens the keypad).
      The amount follows the slider at once; when a coupon changes it, the amount counts with the gliding knob (in steps). */
   PS.AmountCard = function AmountCard(p) {
     var held = R.useRef(false), step = p.step || 500, rest = step * 0.1;
@@ -84,7 +84,8 @@
           h('div', { className: 'ps-amountcard__amt', 'aria-live': 'off' },
             h('span', { className: 'ps-amount' }, h('span', { className: 'ps-amount__cur ps-amount__cur--body' }, '₱'),
               h('span', { className: 'ps-amount__int', ref: intEl }, init.current[0]), h('span', { className: 'ps-amount__dec', ref: decEl }, '.' + init.current[1])),
-            h('span', { className: 'ps-amountcard__edit' }, h(PS.Icon, { name: 'edit', size: 20, color: 'brand' })))),
+            p.onEdit ? h(m.button, Object.assign({ type: 'button', className: 'ps-amountcard__edit', 'aria-label': 'Type the amount', onClick: p.onEdit }, PS.press(true)), h(PS.Icon, { name: 'edit', size: 20, color: 'brand' }))
+              : h('span', { className: 'ps-amountcard__edit' }, h(PS.Icon, { name: 'edit', size: 20, color: 'brand' })))),
         h(PS.Slider, { value: p.amount, min: p.min, max: p.max, step: step, boost: p.boost, onChange: p.onAmount, onCommit: p.onCommit, label: p.label || 'Disbursement amount',
           amt: amt, maxMv: mx, held: held })),
       h(PS.Divider),
@@ -128,7 +129,7 @@
   PS.MethodCard = function MethodCard(p) {
     return h(PS.Section, { label: p.label || 'Withdrawal method' },
       h(m.button, Object.assign({ type: 'button', className: 'ps-card ps-method', onClick: p.onClick }, PS.press()),
-        h('span', { className: 'ps-method__main' }, h('span', { className: 'ps-method__logo' }, h(PS.Art, { dir: 'logos', name: p.logo || 'bank-bpi', size: 36 })),
+        h('span', { className: 'ps-method__main' }, h('span', { className: 'ps-method__logo' }, h(PS.Art, { dir: 'logos', name: p.logo || 'bank-bpi', ext: p.logoExt, size: 36 })),
           h('span', { className: 'ps-method__info' }, h('span', { className: 'ps-t-body-md-em ps-ellipsis', style: { display: 'block' } }, p.name),
             h('span', { className: 'ps-t-body-md ps-c-tertiary' }, 'Ending in ' + p.last4))),
         h(PS.Icon, { name: 'chevron-right', size: 16, color: 'tertiary' })));

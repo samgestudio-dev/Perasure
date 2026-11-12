@@ -1,0 +1,79 @@
+/* PeraSure UI — home states: what the home page shows instead of (or next to) the credit card while an application or a loan
+   is in some state, plus the offer / banner / review blocks. Needs core.js. Figma: app file barda5NcnFzxG7CHtISKsW, section Home. */
+(function () {
+  'use strict';
+  var R = window.React, PS = window.PS, h = R.createElement, m = PS.m;
+
+  /* StateCard: the brand card of an application state · title · body · icon (left, in a ring: "Application in progress")
+     timer { label, value } (dark row: time remaining) · support { text, action, onClick } (divider + chat row)
+     button { label, icon, onClick, tone shade | white } · tight (12 px padding: the cards that end in a button) */
+  PS.StateCard = function StateCard(p) {
+    var text = h('div', { className: 'ps-state__text' }, h('p', { className: 'ps-t-title-sm' }, p.title), p.body ? h('p', { className: 'ps-t-caption-sm' }, p.body) : null);
+    return h('div', { className: PS.cx('ps-credit ps-state', (p.button || p.tight) && 'ps-state--tight', p.className) },
+      h('img', { className: 'ps-credit__glow', src: PS.asset('art/card-glow.svg'), alt: '' }),
+      p.icon ? h('div', { className: 'ps-state__row' }, h('span', { className: 'ps-state__icon' }, h(PS.Icon, { name: p.icon, size: 20, color: 'inverse' })), text) : text,
+      p.timer ? h('div', { className: 'ps-state__timer ps-t-caption-sm' }, h(PS.Icon, { name: 'pending', size: 14, color: 'inverse' }), h('span', null, p.timer.label), h('b', null, p.timer.value)) : null,
+      p.support ? h(R.Fragment, null, h('span', { className: 'ps-state__line', 'aria-hidden': true }),
+        h('div', { className: 'ps-state__support' }, h(PS.Icon, { name: 'chat', size: 24, color: 'inverse' }), h('p', { className: 'ps-t-body-md' }, p.support.text),
+          h(PS.Button, { variant: 'shade', className: 'ps-state__chat', onClick: p.support.onClick }, p.support.action || 'Chat'))) : null,
+      p.button ? h(PS.Button, { variant: p.button.tone === 'white' ? 'inverse' : 'shade', className: p.button.tone === 'white' ? 'ps-state__white' : null, onClick: p.button.onClick },
+        p.button.icon ? h(PS.Icon, { name: p.button.icon, size: 16 }) : null, p.button.label) : null);
+  };
+  /* Strip: a white one-line card that leads somewhere (loan updates, chat with support) · icon · title · sub · text (one two-line text instead)
+     count (green badge) · chevron · onClick · tone brand | negative (the icon tile) */
+  PS.Strip = function Strip(p) {
+    return h(m.button, Object.assign({ type: 'button', className: PS.cx('ps-strip', p.className), onClick: p.onClick }, PS.press()),
+      h('span', { className: PS.cx('ps-strip__icon', p.tone === 'negative' && 'is-negative') }, h(PS.Icon, { name: p.icon || 'info', size: 16, color: 'inverse' })),
+      h('span', { className: 'ps-strip__text' }, p.text ? h('span', { className: 'ps-t-body-md-em' }, p.text) : h(R.Fragment, null,
+        h('span', { className: 'ps-t-section-sm' }, p.title), p.sub ? h('span', { className: 'ps-t-caption-sm ps-c-tertiary' }, p.sub) : null)),
+      p.count ? h('span', { className: 'ps-strip__count' }, p.count) : null,
+      p.chevron ? h(PS.Icon, { name: 'chevron-right', size: 16, color: 'tertiary' }) : null);
+  };
+  /* DotTitle: the small section title with the red dot ("More for you") */
+  PS.DotTitle = function DotTitle(p) { return h('p', { className: 'ps-dottitle ps-t-section-md' }, h('i', { 'aria-hidden': true }), p.children); };
+  /* OfferCard: another product offered when ours isn't available · logo (svg in assets/logos) · tag · label · value · rows [{ label, value }] · action · onClick */
+  PS.OfferCard = function OfferCard(p) {
+    return h(PS.Card, { className: 'ps-offer' },
+      h('div', { className: 'ps-offer__head' }, h('img', { src: PS.asset('logos/' + p.logo + '.svg'), alt: p.name || '', height: 24 }), p.tag ? h(PS.Tag, { tone: 'soft' }, p.tag) : null),
+      h('div', { className: 'ps-offer__value' }, h('p', { className: 'ps-t-body-md ps-c-tertiary' }, p.label), h('p', { className: 'ps-offer__num' }, p.value)),
+      h(PS.Divider),
+      (p.rows || []).map(function (r, i) { return h(PS.KV, { key: i, label: r.label, value: r.value }); }),
+      h(PS.Button, { block: true, size: 'md', onClick: p.onClick }, p.action || 'Apply now'));
+  };
+  /* Banners: "More from PeraSure" — cards that scroll sideways · items [{ id, title, body, onClick }] */
+  PS.Banners = function Banners(p) {
+    return h('div', { className: 'ps-banners' }, p.items.map(function (b) {
+      return h(m.button, Object.assign({ key: b.id, type: 'button', className: 'ps-banner', onClick: b.onClick }, PS.press()),
+        h('span', { className: 'ps-t-section-md' }, b.title), b.body ? h('span', { className: 'ps-t-caption-sm ps-c-tertiary' }, b.body) : null);
+    }));
+  };
+  /* Hero: the first home page, before there is a limit · label · amount · tagline · stats [{ value, label }] · action · onClick */
+  PS.Hero = function Hero(p) {
+    return h('div', { className: 'ps-hero' },
+      h('div', { className: 'ps-hero__top' }, h('p', { className: 'ps-t-section-sm' }, p.label), h(PS.Amount, { value: p.amount, dec: 0, className: 'ps-hero__amount' })),
+      h('div', { className: 'ps-hero__body' }, h('p', { className: 'ps-t-section-md' }, p.tagline),
+        h('div', { className: 'ps-hero__stats' }, p.stats.map(function (s, i) {
+          return h(R.Fragment, { key: i }, i ? h(PS.Divider, { vertical: true }) : null,
+            h('div', null, h('p', { className: 'ps-t-section-md' }, s.value), h('p', { className: 'ps-t-caption-xs ps-c-tertiary' }, s.label)));
+        })),
+        h(PS.Button, { block: true, onClick: p.onClick }, p.action)));
+  };
+  /* Reviews: "What customers say" · title · items [{ title, text, name }] */
+  PS.Reviews = function Reviews(p) {
+    return h(PS.Card, { className: 'ps-reviews' }, h('span', { className: 'ps-reviews__quote', 'aria-hidden': true }, '”'),
+      h('p', { className: 'ps-t-section-sm' }, p.title || 'What customers say'),
+      h('div', { className: 'ps-reviews__row' }, p.items.map(function (r, i) {
+        return h('div', { key: i, className: 'ps-review' },
+          h('span', { className: 'ps-review__stars', 'aria-label': '5 out of 5' }, [0, 1, 2, 3, 4].map(function (k) { return h(PS.Icon, { key: k, name: 'star', size: 14 }); })),
+          h('p', { className: 'ps-t-section-sm' }, r.title), h('p', { className: 'ps-t-caption-sm ps-c-secondary' }, r.text),
+          h('p', { className: 'ps-review__by ps-t-caption-sm' }, h('i', { style: { '--ps-i': i } }), r.name));
+      })));
+  };
+  /* PermissionCard: one permission and why we ask · icon · title · body */
+  PS.PermissionCard = function PermissionCard(p) {
+    return h(PS.Card, { className: 'ps-perm' },
+      h('div', null, h('span', { className: 'ps-perm__icon' }, h(PS.Icon, { name: p.icon, size: 16, color: 'inverse' })), h('p', { className: 'ps-t-section-sm' }, p.title),
+        h(PS.Icon, { name: 'chevron-right', size: 16, color: 'tertiary', style: { transform: 'rotate(-90deg)' } })),
+      h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, p.body));
+  };
+})();

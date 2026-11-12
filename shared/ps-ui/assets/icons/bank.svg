@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="900 0 36 36" width="36" height="36" fill="none"><g id="Icon / Bank">
+<g id="Bank Horizontal Container">
+<rect id="Bank Rectangle" x="905.982" y="16.9705" width="3" height="12" rx="1.5" fill="black" />
+<rect id="Bank Rectangle_2" x="912.982" y="16.9705" width="3" height="12" rx="1.5" fill="black" />
+<rect id="Bank Rectangle_3" x="919.982" y="16.9705" width="3" height="12" rx="1.5" fill="black" />
+<rect id="Bank Rectangle_4" x="926.982" y="16.9705" width="3" height="12" rx="1.5" fill="black" />
+</g>
+<rect id="Bank Element" x="903" y="31" width="30" height="3" rx="1.5" fill="black" />
+<path id="Subtract_5" d="M917.019 2.24426C917.542 1.86813 918.246 1.86812 918.77 2.24426L933.161 12.5909C934.344 13.4415 933.742 15.3087 932.285 15.3087H903.503C902.046 15.3087 901.444 13.4415 902.627 12.5909L917.019 2.24426ZM908.37 12.3126H927.417L917.894 5.46594L908.37 12.3126Z" fill="black" />
+</g>
+</svg>

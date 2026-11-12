@@ -62,7 +62,7 @@
   /* Tabs: segmented control · items [{ id, label, count }] (count shown when set) · value · onChange(id) · glass (frosted, in sheets)
      id (pill layout id). The pill glides on the Smooth spring; label colours change in 150 ms. */
   PS.Tabs = function Tabs(p) {
-    return h('div', { className: PS.cx('ps-tabs', p.glass && 'ps-tabs--glass', p.className), role: 'tablist' }, p.items.map(function (it) {
+    return h('div', { className: PS.cx('ps-tabs', p.glass && 'ps-tabs--glass', p.split && 'ps-tabs--split', p.className), role: 'tablist' }, p.items.map(function (it) {
       var on = it.id === p.value;
       return h(m.button, Object.assign({ key: it.id, type: 'button', role: 'tab', 'aria-selected': on, className: PS.cx('ps-tabs__tab', on && 'is-on'),
         onClick: function () { if (!on && p.onChange) p.onChange(it.id); } }, PS.press()),
@@ -75,11 +75,11 @@
     return h(AP, { initial: false, mode: 'popLayout' }, h(m.div, Object.assign({ key: p.k, className: p.className, style: p.style }, PS.fade(MT.Y.block)), p.children));
   };
 
-  /* EmptyState: picture + title + one line · art (file in assets/art, 'empty-box') · title · body */
+  /* EmptyState: picture + title + one line · art (file in assets/art; the default, 'empty-box', plays the Empty box animation) · title · body · children (a button) */
   PS.EmptyState = function EmptyState(p) {
     return h('div', { className: PS.cx('ps-empty', p.className), style: p.style },
-      h(PS.Art, { name: p.art || 'empty-box', size: 80 }),
-      h('div', null, h('p', { className: 'ps-t-title-sm ps-c-tertiary' }, p.title), p.body ? h('p', { className: 'ps-t-body-md ps-c-placeholder' }, p.body) : null));
+      !p.art || p.art === 'empty-box' ? h(PS.Anim, { name: 'empty-box', size: 80 }) : h(PS.Art, { name: p.art, size: 80 }),
+      h('div', null, h('p', { className: 'ps-t-title-sm ps-c-tertiary' }, p.title), p.body ? h('p', { className: 'ps-t-body-md ps-c-placeholder' }, p.body) : null), p.children);
   };
 
   /* CouponRow: a coupon line on the loan page; a tap turns it on or off · type · title · sub (green when on) · on · onClick

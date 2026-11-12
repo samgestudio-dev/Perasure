@@ -18,13 +18,21 @@
 <script src="vendor/react-dom@18.3.1/react-dom.production.min.js"></script>
 <script src="vendor/motion@14.4.0/motion-react.js"></script>
 <script src="vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
-<script src="assets/playground-ui.js?v=202611121058"></script>
-<script src="animations/animations.js?v=202611121058"></script>
+<script src="assets/playground-ui.js?v=202611121211"></script>
+<script src="animations/animations.js?v=202611121211"></script>
 <script>
 /* ---- Prototype registry (the "Prototypes" tab) -----------------------------------------
    To add a prototype: put its files in prototypes/<slug>/ and add one entry below.
    The first variant is the recommended one. Animations live in animations/animations.js. */
 var DEMOS = [
+  {
+    title: 'PeraSure app',
+    tag: 'In progress',
+    desc: 'The whole app as a test environment: log in, home in every account state, apply a loan (keypad, coupons, code, order submit), repay, account, inbox, history. Switch states in Tune; loading times are made up and vary.',
+    variants: [
+      { name: 'Test app', note: 'Built from the shared components. Tune: account and loan state, coupons, network, code and ID outcomes, inbox, rating, blur', href: 'prototypes/app/index.html' }
+    ]
+  },
   {
     title: 'Coupon system',
     tag: 'Coupons',

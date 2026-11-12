@@ -4,6 +4,7 @@ The building blocks of PeraSure app screens, as configurable React components. A
 states as props; the look lives here once. Change a component here and every prototype built on it changes with it.
 
 - **Live gallery:** [`shared/gallery.html`](gallery.html) — every component with its states (tap the chips) and props.
+- **The whole app built on it:** [`prototypes/app/`](../prototypes/app/README.md) (the newer files — feedback, form, status, pay, list, fx — are not in the gallery yet).
 - **First prototype built on it:** [`prototypes/coupon-system/`](../prototypes/coupon-system/README.md).
 - Figma source: PeraSure design system (`OBsvf42AiRapcRrasD7KNm`) — home `10730:58631`, loan `10656:51873`,
   coupons section `10594:45373`, account `10750:63340`.
@@ -59,12 +60,18 @@ rule in `CLAUDE.md` asks.
 | File | What's in it |
 | --- | --- |
 | `ps-ui.css` | every component's styles, on the tokens only (values with no token are `--ps-*` variables at the top, with a note) |
-| `core.js` | namespace, motion values (`PS.MT`, `PS.fade`, `PS.reveal`, `PS.press`) and helpers (`PS.money`), `Icon`, `Art`, `Amount`, `Button` (`inactive`), `Glass` / `Back` / `Close`, `Brand`, `Tag`, `Count`, `Chip`, `Check`, `Divider`, `Card`, `Section`, `Link`, `KV`, `Rows`, `Swap` |
+| `core.js` | namespace, motion values (`PS.MT`, `PS.fade`, `PS.reveal`, `PS.press`) and helpers (`PS.money`), `Lottie` + `Anim` (the repo's animations, cropped to their art), `Icon`, `Art`, `Amount`, `Button` (`inactive`), `Glass` / `Back` / `Close`, `Brand`, `Tag`, `Count`, `Chip`, `Check`, `Divider`, `Card`, `Section`, `Link`, `KV`, `Rows`, `Swap` |
 | `layout.js` | `Shell`, `Screen`, `TopBar`, `BottomBar`, `Bands` (progressive blur), `Navigator`, `Pages` (push / pop), `Sheet` + `SheetTitle`, `Tooltip`, `Toast` + `useToast`, `TuneButton`, `frameRect` |
 | `home.js` | `HomeActions`, `CreditCard`, `PaymentCard`, `HomeCoupons` (two / one / none), `PartnerLogos`, `TrustCard`, `Legal` |
 | `coupon.js` | `CouponArt`, `Countdown`, `CouponTicket` (default, selected, used, expired, unavailable), `Tabs`, `Crossfade`, `EmptyState`, `CouponRow`, `Summary`, `CouponPicker`, `Decision` |
 | `loan.js` | `Slider`, `AmountCard`, `CouponsSection`, `OrderDetails`, `ProtectionCard`, `MethodCard`, `Agreement` (`nudge`: withdraw's ripple), `RepaymentPlan` |
 | `account.js` | `Profile`, `CreditLimitCard`, `Menu`, `Social` |
+| `feedback.js` | `Coin` (Coins loading: loop → success), `Dots`, `Loader` (the Loading page), `Busy`, `StatusBox`, `Notice`, `Result`, `Overlay` |
+| `form.js` | `Field` (typing box, also a picker row), `PhoneField`, `OtpBoxes`, `ContactMethods`, `Keypad`, `Segmented`, `SelectBar`, `Search`, `Consent`, `UploadTile`, `Stars` |
+| `status.js` | home states: `StateCard`, `Strip`, `DotTitle`, `OfferCard`, `Banners`, `Hero`, `Reviews`, `PermissionCard` |
+| `pay.js` | `ScamStrip`, `Installment`, `PayBar`, `RepayCard`, `InsetRows`, `PayTimer`, `QrPanel`, `Accordion`, `MethodPicker`, `Pager` |
+| `list.js` | `LinkList`, `Facts`, `ActivityItem`, `InboxItem`, `HistoryRow`, `HubCard`, `Tiles`, `Tips` |
+| `fx.js` | the earlier demos' motion as components: `OrderSubmit`, `OtpSheet`, `CreditLimitIntro` (hosts the shipped page) |
 | `phone-fit.js` | responsive phone page, iOS 26 edge to edge; fit mode cap (default, ≤ 1.1×) / fit (1:1) / scale (old 360 zoom), from `window.PS_FIT` or Tune (`fit`, `zoom`); sets `--vh --ph --ftop --e --sb` |
 | `tune.js`, `tune.css` | the prototype Tune panel, configured per page (`PSTune.setup`) |
 | `assets/icons/` | one-colour icons, drawn as masks (`PS.Icon`) so their colour is a token |

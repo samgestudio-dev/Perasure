@@ -9,6 +9,7 @@ Phone-first motion prototypes, served with GitHub Pages.
 
 | Demo | Variants |
 | --- | --- |
+| PeraSure app | [Test app](prototypes/app/index.html) (the whole app as a test environment: every account and loan state in Tune, made-up loading; in progress) · [guide](prototypes/app/README.md) |
 | Coupon system | [Standard](prototypes/coupon-system/index.html) (home / account → coupon centre → apply a loan with coupons; Tune: blur, six / one / no coupons) · [guide](prototypes/coupon-system/README.md) |
 | PeraSure components | [Gallery](shared/gallery.html) (every shared component with its states and props) · [docs](shared/README.md) |
 | Change co-maker | [Standard](prototypes/co-maker-change/index.html) (Change → card morphs into the form; Cancel / Save morph back) · [guide](prototypes/co-maker-change/README.md) |
