@@ -165,8 +165,16 @@ rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), buil
   rating). Fit is fixed at capped zoom. Loading is made up: `APP.useLoad` (a page's first data: random time, sometimes slow) and
   `APP.run` (an action); Tune → Network makes the first try fail (the "Something went wrong" state).
 - Order submit plays only after Confirm on apply-a-loan (after the code).
-- **Loading is the whole screen** (owner): while a page loads, the Loading page covers it (`PS.Cover`; only the header's buttons stay), never
-  just the content area; a failed load shows the fallback page the same way. What was waited for then rises in piece by piece (`PS.Rise`).
+- **Existing animations are never re-imagined** (owner): a motion that already exists in the repo (Withdraw: credit limit increase → home,
+  home → amount entry, amount entry → order details; Order submit; OTP sheet…) is brought into the app as it is — the demo's code and values,
+  the same timing and rules (Order submit: home only after the last line has held and the tick has finished). Read the demo before touching it.
+- **Loading is the whole screen and nothing else** (owner): while a page loads, the Loading page covers everything (`PS.Cover`: no header, no
+  bottom bar, no tab bar), never just the content area; Order submit likewise. A failed load shows the fallback page under the header. What
+  was waited for then rises in piece by piece (`PS.Rise`).
+- **One place** (owner): the loader's coin and dots sit exactly where Order submit's coin and text sit (`.ps-stage`, a little above the middle);
+  full-page empty states (`PS.EmptyState{page}`) and the fallback put their picture at that height too.
+- **Bars have no colour while they cover nothing** (owner): the header's veil appears as content scrolls under it, the bottom / tab bar's goes
+  when the scroll reaches the end; both fade with the scroll (`PS.Screen`).
 - **Tooltips place themselves** (owner): `APP.tipAt(element, text)` / `PS.Tooltip{anchor}` — next to what was tapped, never off screen.
 - **Icons come from Figma** (owner): export the icon (`download_assets` on its node) into `shared/ps-ui/assets/icons`; don't redraw one.
 - **Animations replace stills** (owner): wherever Figma shows a still that has an animation in `animations/`, the app plays the

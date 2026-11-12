@@ -36,43 +36,6 @@
     var cur = p.params.edit ? L() : null;
     var s = R.useState(cur ? String(Math.round(cur.amount / 100)) : ''), typed = s[0], setTyped = s[1], e = R.useState(false), err = e[0], setErr = e[1];
     var max = CREDIT.available, amount = typed ? +typed * 100 : 0;
-    /* opened from the home card: the card grows into this page's sheet, and closes back into it (perasure-card-morph: one progress on the
-       Smooth spring, geometry on k, colour as two flat layers, what is in the sheet comes in on a clock once there is room, leaves on k) */
-    var from = p.params.from, sc = R.useRef(null), mo = R.useRef({ k: 0, to: 1 }), present = window.Motion.useIsPresent();
-    R.useLayoutEffect(function () {
-      if (!from) return;
-      var sheet = sc.current, scr = sheet.closest('.ps-scroll'), col = scr.firstElementChild, box = col.querySelector('.app-morph'), veil = col.querySelector('.app-morph__veil'),
-        blue = box.lastChild, top = scr.parentNode.querySelector('.ps-top'), M = mo.current, r3 = function (v) { return Math.round(v * 100) / 100; };
-      var to = { left: 0, top: sheet.offsetTop, width: col.clientWidth, height: col.clientHeight - sheet.offsetTop };
-      function win(k, a, b) { var t = Math.max(0, Math.min(1, (k - a) / (b - a))); return t * t * (3 - 2 * t); }
-      function apply(k) {
-        M.k = k; var c = Math.max(0, Math.min(1, k)), f = M.from, br = r3(24 * (1 - c));
-        box.style.left = r3(f.left + (to.left - f.left) * c) + 'px'; box.style.top = r3(f.top + (to.top - f.top) * c) + 'px';
-        box.style.width = r3(f.width + (to.width - f.width) * c) + 'px'; box.style.height = r3(f.height + (to.height - f.height) * c) + 'px';
-        box.style.borderRadius = '24px 24px ' + br + 'px ' + br + 'px';
-        box.style.opacity = r3(win(k, 0, 0.12)); blue.style.opacity = r3(1 - win(k, 0.15, 0.6));
-        veil.style.opacity = r3(win(k, 0, 0.5)); top.style.opacity = r3(win(k, 0.25, 0.7));
-        if (M.to === 1 && k >= 0.5 && !M.shown) { M.shown = true; sheet.style.opacity = ''; PS.rise(sheet.firstChild, { delay: 0, y: PS.MT.Y.text }); PS.rise(sheet.lastChild, { delay: 60, y: PS.MT.Y.text }); }
-        if (M.to === 0) sheet.style.opacity = r3(win(k, 0.6, 0.95));
-      }
-      function run(target) {
-        M.to = target;
-        var travel = Math.max(Math.abs(to.top + to.height - M.from.top - M.from.height), Math.abs(to.top - M.from.top), 1), s = Math.min(2.5, Math.max(1, travel / 378));
-        if (M.ctl) M.ctl.stop();
-        M.ctl = window.Motion.animate(M.k, target, { type: 'spring', stiffness: 240 / (s * s), damping: 30 / s, mass: 1, restDelta: 0.378 / travel, restSpeed: 3.78 / travel / s, onUpdate: apply,
-          onComplete: function () { apply(target); if (target === 1) { box.style.cssText = 'left:0;right:0;bottom:0;top:' + to.top + 'px;border-radius:24px 24px 0 0'; scr.parentNode.style.background = ''; } } });
-      }
-      M.run = run; M.from = from; blue.style.background = from.bg || '';
-      if (PS.reduce) { M.shown = true; return; }
-      scr.parentNode.style.background = 'transparent'; sheet.style.opacity = 0; apply(0); run(1);
-      return function () { if (M.ctl) M.ctl.stop(); };
-    }, []);
-    R.useLayoutEffect(function () {                       /* going back: into the card as it is on the home page now */
-      if (present || !from || APP.S.dir !== -3 || PS.reduce) return;
-      var card = document.querySelector('.app-tabs .ps-credit'), M = mo.current;
-      if (card) M.from = Object.assign({ bg: M.from.bg }, PS.frameRect(card));
-      sc.current.closest('.ps-screen').style.background = 'transparent'; M.run(0);
-    }, [present]);
     function key(k) {
       setErr(false);
       if (k === 'del') { setTyped(typed.slice(0, -1)); return; }
@@ -85,10 +48,8 @@
       var l = fresh(amount, t, null); APP.set({ L: l, agree: false, lastRow: {} }); APP.swap('loan', null, 1);
     }
     var shown = typed ? PS.num(amount, 0).slice(0, -2) : '';   /* the comma sits where it will in the whole amount: 12,5|00 */
-    return h(PS.Screen, { tint: !from, colBottom: 0, className: 'app-amount', top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), title: 'Apply a loan', right: APP.tune() } },
-      from ? h('div', { className: 'app-morph__veil', 'aria-hidden': true }, h('div', { className: 'ps-screen__tint' })) : null,
-      from ? h('div', { className: 'app-morph', 'aria-hidden': true }, h('i'), h('i')) : null,
-      h('div', { ref: sc, className: PS.cx('app-amount__sheet', from && 'is-bare') },
+    return h(PS.Screen, { tint: true, colBottom: 0, className: 'app-amount', top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), title: 'Apply a loan', right: APP.tune() } },
+      h('div', { className: 'app-amount__sheet' },
         h('div', { className: 'app-amount__top' },
           h('p', { className: 'ps-t-body-md-em ps-c-secondary' }, 'Disbursement amount'),
           h('div', { className: 'app-amount__num', 'aria-live': 'polite', 'aria-label': money(amount) },
@@ -106,7 +67,7 @@
               var on = cur && cur.term === t;
               return h(m.button, Object.assign({ key: t, type: 'button', role: 'radio', 'aria-checked': !!on, className: PS.cx('ps-term', on && 'is-on'), onClick: function () { pick(t); } }, PS.press()), t + ' terms');
             }))),
-          h(PS.Divider), h(PS.Keypad, { onKey: key, cascade: !from }))));
+          h(PS.Divider), h(PS.Keypad, { onKey: key, cascade: true }))));
   });
 
   /* ---- a change of amount or term that takes a coupon off asks whether to keep it ---- */
@@ -268,7 +229,7 @@
     var body = list.length ? list.map(function (c) {
       return h(PS.CouponTicket, { key: c.id, value: c.value, label: c.label, rule: c.rule, ruleLong: c.long, meta: c.meta, expiresAt: tab === 'use' ? c.expiresAt : null, best: tab === 'use' && bestD === c,
         state: tab === 'use' ? 'default' : tab, action: tab === 'use' && S.user === 'approved' ? 'use' : 'none', onUse: function () { APP.openLoan(c.id); }, onRule: function (el) { APP.tipAt(el, c.rule); } });
-    }) : h(PS.EmptyState, { title: empty[0], body: empty[1], style: { marginTop: 112 } });
+    }) : h(PS.EmptyState, { title: empty[0], body: empty[1], page: true });
     return h(PS.Screen, { colTop: 174, colBottom: 48, top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), title: 'Coupons', right: APP.tune(), solid: true, extraHeight: 58,
       extra: h('div', { className: 'app-ctabs' }, h(PS.Tabs, { id: 'app-centre', value: tab, onChange: function (t) { APP.set({ tip: null }); setTab(t); },
         items: [{ id: 'use', label: 'To use', count: coupons.length || null }, { id: 'used', label: 'Used' }, { id: 'expired', label: 'Expired' }] })) } },

@@ -19,6 +19,9 @@
     return { left: a.left - b.left, top: a.top - b.top, right: a.right - b.left, bottom: a.bottom - b.top, width: a.width, height: a.height };
   };
 
+  /* the outermost page (PS.Pages) an element is in, or the element itself: what a full-screen cover fills, and where a page's scroll state is kept */
+  PS.pageOf = function (el) { var pg = el.closest('.ps-page'), up; while (pg && (up = pg.parentElement && pg.parentElement.closest('.ps-page'))) pg = up; return pg || el; };
+
   /* Bands: the progressive-blur layers + token veil of a bar (pos top | bot · secondary: #EBF0EF bottom of secondary pages) */
   PS.Bands = function Bands(p) {
     return h('div', { className: PS.cx('ps-pb', 'ps-pb--' + (p.pos || 'top'), p.secondary && 'ps-pb--secondary'), 'aria-hidden': true },
@@ -54,21 +57,24 @@
       })));
   };
 
-  /* Screen: one page of the app. Owns its scroller; the header's blur runs only while content is under it, and with
-     blur off the bottom gradient fades out over the last stretch of scroll (CLAUDE.md → "Header and bottom bars").
+  /* Screen: one page of the app. Owns its scroller. The bars have no colour while they cover nothing: the header's veil (and blur)
+     comes in as content scrolls under it, the bottom bar's goes as the scroll reaches the end (CLAUDE.md → "Header and bottom bars").
      top: TopBar props · bottom: node (a BottomBar or a Navigator) · tint: green top glow (loan pages) · colTop / colBottom (px)
      scrollRef: gets the scroller · className: on the column · rise: the content rises in piece by piece when the page first shows · children: the page content */
   PS.Screen = function Screen(p) {
-    var sc = R.useRef(null), bot = R.useRef(null), col = R.useRef(null), ls = R.useState(false), live = ls[0], setLive = ls[1], liveRef = R.useRef(false);
+    var sc = R.useRef(null), bot = R.useRef(null), col = R.useRef(null), fade = R.useRef({}), ls = R.useState(false), live = ls[0], setLive = ls[1], liveRef = R.useRef(false);
     var update = R.useCallback(function () {
       var s = sc.current; if (!s) return;
       var on = s.scrollTop > 0;
       if (on !== liveRef.current) { liveRef.current = on; setLive(on); }
-      var b = bot.current && bot.current.firstElementChild;
-      if (b) {
-        var left = s.scrollHeight - s.clientHeight - s.scrollTop, o = Math.max(0, Math.min(1, left / (b.offsetHeight || 1)));
-        bot.current.style.setProperty('--ps-bot-fade', o.toFixed(3));
-      }
+      /* the bars have no colour while they cover nothing (owner): the header's fades in over the first 24 px of scroll, the bottom one
+         (this page's bar, or the tab bar around it) fades out over the last stretch of scroll, as tall as the bar — both follow the scroll */
+      var root = s.parentNode, host = PS.pageOf(root), f = fade.current;
+      var t = Math.max(0, Math.min(1, s.scrollTop / 24)).toFixed(3);
+      if (t !== f.t) { f.t = t; root.style.setProperty('--ps-top-fade', t); }
+      var b = (bot.current && bot.current.firstElementChild) || host.querySelector('.ps-nav');
+      var left = s.scrollHeight - s.clientHeight - s.scrollTop, o = Math.max(0, Math.min(1, left / ((b && b.offsetHeight) || 108))).toFixed(3);
+      if (o !== f.o) { f.o = o; host.style.setProperty('--ps-bot-fade', o); }
       if (p.onScroll) p.onScroll(s);
     }, [p.onScroll]);
     R.useEffect(function () {
@@ -91,39 +97,38 @@
       p.bottom ? h('div', { ref: bot, style: { display: 'contents' } }, p.bottom) : null,
       p.overlay || null);
   };
-  /* Cover: a layer over the whole screen it is used in — a page that is still loading, or that failed. It hides the content and the
-     bottom bar; the header's buttons stay (as on the Loading page). open · tone page | white (the fallback page) · children.
-     It is there at once and leaves on LEAVE. Use it anywhere inside a PS.Screen. */
+  /* Cover: a layer over the page it is used in — a page that is still loading, or that failed. Use it anywhere inside a PS.Screen.
+     Loading (default) is the whole screen and nothing else (owner): it covers the header, the bottom bar and the tab bar too.
+     chrome: keep the header and the tab bar (a failed page: the way back stays) — it then covers the content and the bottom bar only.
+     open · tone page | white (the fallback page) · chrome · children. It is there at once and leaves on LEAVE. */
   var ScreenCtx = R.createContext(null);
   PS.Cover = function Cover(p) {
-    var el = R.useContext(ScreenCtx);
+    var el = R.useContext(ScreenCtx), host = el && !p.chrome ? PS.pageOf(el) : el;
     R.useLayoutEffect(function () {
       if (!el) return;
       el.classList.toggle('is-covered', !!p.open);
       return function () { el.classList.remove('is-covered'); };
     }, [el, p.open]);
-    if (!el) return null;
-    return window.ReactDOM.createPortal(h(AP, { initial: false }, p.open ? h(m.div, { key: 'cover', className: PS.cx('ps-cover', p.tone === 'white' && 'ps-cover--white'),
-      exit: { opacity: 0, transition: PS.MT.LEAVE } }, p.children) : null), el);
+    if (!host) return null;
+    return window.ReactDOM.createPortal(h(AP, { initial: false }, p.open ? h(m.div, { key: 'cover', className: PS.cx('ps-cover', !p.chrome && 'ps-cover--full', p.tone === 'white' && 'ps-cover--white'),
+      exit: { opacity: 0, transition: PS.MT.LEAVE } }, p.children) : null), host);
   };
 
   /* Pages: one page at a time, pushed in from the right (dir 1), popped back (dir -1) or swapped in place (dir 0);
-     dir 2: the new page rises from the bottom over the old one, like a sheet (a keypad); dir -2: it goes back down.
-     dir 3 / -3: the new page is there at once, see-through, and draws its own way in (a card growing into it); going back it stays on top while it closes itself.
+     dir 2: the new page rises from the bottom over the old one — the Withdraw demo's loan screen: in on the Smooth spring;
+     dir -2: it goes back down in 0.3 s on (0.4, 0, 1, 1), as there.
      Push / pop ride the PeraSure Smooth spring (the page underneath moves a quarter as far); a swap crossfades on
      ENTER / LEAVE. A page that is leaving no longer takes taps. id: the page's key · dir · children: the page */
   var PAGE = {
     enter: function (d) {
       if (d === 2) return { x: '0%', y: '100%', opacity: 1, zIndex: 2 };
-      if (d === 3) return { x: '0%', y: '0%', opacity: 1, zIndex: 2 };
-      if (d === -2 || d === -3) return { x: '0%', y: '0%', opacity: 1, zIndex: 0 };
+      if (d === -2) return { x: '0%', y: '0%', opacity: 1, zIndex: 0 };
       return d ? { x: d > 0 ? '100%' : '-25%', y: '0%', opacity: 1, zIndex: d > 0 ? 2 : 0 } : { y: '0%', opacity: 0, zIndex: 1 };
     },
     center: function (d) { return d ? { x: '0%', y: '0%', opacity: 1, zIndex: 1, transition: PS.MT.SPRING_PCT } : { x: '0%', y: '0%', opacity: 1, zIndex: 1, transition: { opacity: PS.MT.ENTER } }; },
     exit: function (d) {
-      if (d === 2 || d === 3) return { opacity: 0.999, zIndex: 0, transition: { duration: d === 3 ? 0.8 : 0.56 } };   /* stays where it is while the new page covers it */
-      if (d === -3) return { opacity: 0.999, zIndex: 2, transition: { duration: 0.8 } };          /* stays on top while it closes itself */
-      if (d === -2) return { y: '100%', zIndex: 2, transition: PS.MT.SPRING_PCT };
+      if (d === 2) return { opacity: 0.999, zIndex: 0, transition: { duration: 0.56 } };          /* stays where it is while the new page covers it */
+      if (d === -2) return { y: '100%', zIndex: 2, transition: { duration: 0.3, ease: [0.4, 0, 1, 1] } };   /* withdraw's sheet exit */
       return d ? { x: d > 0 ? '-25%' : '100%', zIndex: d > 0 ? 0 : 2, transition: PS.MT.SPRING_PCT } : { opacity: 0, zIndex: 0, transition: PS.MT.LEAVE };
     }
   };

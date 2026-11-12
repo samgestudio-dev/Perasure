@@ -144,7 +144,7 @@
 
     { id: 'fx', title: 'Motion pieces', items: [
       { name: 'OrderSubmit', desc: 'The loan request being sent: the coin spins while three lines take turns, then lands on the tick (the Order submit demo).', props: 'lines · submitMs · holdMs · onDone',
-        states: [['Play', function () { return h(Replay, null, function () { return frame(260, h('div', { style: { position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' } }, h(PS.OrderSubmit, { onDone: noop }))); }); }]] },
+        states: [['Play', function () { return h(Replay, null, function () { return frame(340, h(PS.OrderSubmit, { onDone: noop })); }); }]] },
       { name: 'OtpSheet', desc: '"Verify it’s you" → "Enter code" in one sheet that changes height (the OTP sheet morph demo). The test code is typed for you.', props: 'open · phone · outcome ok | wrong | fail · auto · onClose · onVerified · onChange',
         states: [['Open it', live(false, function (v, set) { return frame(460, [h('div', { key: 'b', style: { padding: 24 } }, h(PS.Button, { block: true, onClick: function () { set(true); } }, 'Confirm')),
           h(PS.OtpSheet, { key: 's', open: v, phone: '091****6789', outcome: 'ok', onClose: function () { set(false); }, onVerified: function () { set(false); }, onChange: noop })]); })]] }] }

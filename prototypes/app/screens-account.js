@@ -61,7 +61,7 @@
     return h(PS.Screen, { colTop: 172, colBottom: 48, top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), title: 'Credit history', right: APP.tune(), solid: true, extraHeight: 56,
       extra: h('div', { className: 'app-ptabs' }, h(PS.Tabs, { id: 'app-credit', split: true, value: tab, onChange: s[1], items: [{ id: 'adj', label: 'Credit adjustments' }, { id: 'act', label: 'Borrowing activity' }] })) } },
       h(APP.Loaded, { k: 'credit', rise: false }, h(PS.Crossfade, { k: tab, rise: true, className: none ? null : 'app-stack-12' },
-        none ? h(PS.EmptyState, { title: 'No limit history yet', body: 'Complete your profile check and link your e-wallet to activate your revolving credit limit.', style: { marginTop: 112 } })
+        none ? h(PS.EmptyState, { title: 'No limit history yet', body: 'Complete your profile check and link your e-wallet to activate your revolving credit limit.', page: true })
         : rows.map(function (r, i) { return h(PS.ActivityItem, Object.assign({ key: i, date: 'Jun 24, 2026, 06:10', note: tab === 'act' ? 'Available:' : 'Total credit:', noteValue: '₱5,000' }, r)); }))));
   });
 
@@ -173,7 +173,7 @@
       h(APP.Loaded, { k: 'inbox', rise: false }, h(PS.Crossfade, { k: tab + shown.length, rise: true, className: shown.length ? 'app-stack-12' : null }, shown.length ? shown.map(function (x) {
           return h(PS.InboxItem, { key: x.id, kind: x.kind, time: x.time, unread: x.unread, title: x.title, body: x.body, onOpen: function () { open(x); } }); }).concat(
           h('p', { key: 'end', className: 'ps-t-caption-xs ps-c-placeholder', style: { textAlign: 'center' } }, 'You have reached the end.'))
-        : h(PS.EmptyState, { title: empty[0], body: empty[1], style: { marginTop: 112 } }))));
+        : h(PS.EmptyState, { title: empty[0], body: empty[1], page: true }))));
   });
   APP.screen('message', function Message(p) {
     var x = p.params.msg;
@@ -188,7 +188,7 @@
   function groups(list) { var out = []; list.forEach(function (x) { if (x.date || !out.length) out.push({ date: x.date, rows: [] }); out[out.length - 1].rows.push(x); }); return out; }
   APP.screen('history', function History() {
     var none = APP.S.user !== 'approved' && APP.S.user !== 'hold' && APP.S.user !== 'expired';
-    return h(APP.Page, { title: 'Loan history', load: 'history' }, none ? h(PS.EmptyState, { title: 'No loan history yet', body: 'Your loan records will appear here once you apply.', style: { marginTop: 112 } })
+    return h(APP.Page, { title: 'Loan history', load: 'history' }, none ? h(PS.EmptyState, { title: 'No loan history yet', body: 'Your loan records will appear here once you apply.', page: true })
       : h('div', { className: 'app-stack-20' }, groups(HIST).map(function (g, gi) {
           return h('div', { key: gi, className: 'app-stack-8' }, h('p', { className: 'app-seclabel app-seclabel--in8' }, g.date), h('div', { className: 'app-stack-12' }, g.rows.map(function (x) {
             return h(PS.HistoryRow, { key: x.id, amount: x.amount, state: x.state, label: x.label, onClick: x.state === 'action' ? function () { APP.set({ loan: 'failed' }); APP.go('order'); } : x.state === 'review' ? go('order') : go('loan-record', { item: x }) });

@@ -80,9 +80,11 @@
     return h(AP, { initial: false, mode: 'popLayout' }, h(m.div, Object.assign({ key: p.k, className: p.className, style: p.style }, PS.fade(MT.Y.block)), p.children));
   };
 
-  /* EmptyState: picture + title + one line · art (file in assets/art; the default, 'empty-box', plays the Empty box animation) · title · body · children (a button) */
+  /* EmptyState: picture + title + one line · art (file in assets/art; the default, 'empty-box', plays the Empty box animation) · title · body · children (a button)
+     page: it is all a page shows (first thing in the page's column) — it then sits where a loading page's coin and Order submit sit: the picture's
+     middle on the coin's, a little above the middle of the screen, so loading → empty reads as one place (owner). Without it, place it yourself. */
   PS.EmptyState = function EmptyState(p) {
-    return h('div', { className: PS.cx('ps-empty', p.className), style: p.style },
+    return h('div', { className: PS.cx('ps-empty', p.page && 'ps-empty--page', p.className), style: p.style },
       !p.art || p.art === 'empty-box' ? h(PS.Anim, { name: 'empty-box', size: 80 }) : h(PS.Art, { name: p.art, size: 80 }),
       h('div', null, h('p', { className: 'ps-t-title-sm ps-c-tertiary' }, p.title), p.body ? h('p', { className: 'ps-t-body-md ps-c-placeholder' }, p.body) : null), p.children);
   };

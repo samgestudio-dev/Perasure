@@ -13,9 +13,9 @@
       if (!ok) { setSwapped(false); return; }
       if (PS.reduce || !api.current) { setSwapped(true); return; }
       var a = api.current, off = function () { try { a.removeEventListener('loopComplete', done); } catch (e) {} }, done = function () { off(); setSwapped(true); };
-      a.addEventListener('loopComplete', done);                       /* the loop finishes its turn before the success part starts */
-      var t = setTimeout(done, 1900);
-      return function () { clearTimeout(t); off(); };   /* the item may already be destroyed */
+      a.addEventListener('loopComplete', done);                       /* the loop finishes its turn before the success part starts — no deadline (Order submit) */
+      var start = a.playCount || 0, t = setInterval(function () { if (!a.isLoaded || (a.playCount || 0) > start) done(); }, 120);   /* a turn's end the event missed */
+      return function () { clearInterval(t); off(); };   /* the item may already be destroyed */
     }, [ok]);
     var st = { width: size, height: size, margin: -inset };
     return h('span', { className: 'ps-coin', style: { width: box, height: box } },
@@ -27,9 +27,12 @@
     var w = p.width || 84;
     return h(PS.Lottie, { src: PS.asset('lottie/loading-dots.json'), width: w, height: Math.round(w * 22 / 84), viewBox: '50 130 425 180', className: 'ps-dots' });
   };
-  /* Loader: coin + dots at the Loading page's sizes (a 50 px coin, dots 84 × 22, 12 px apart), centred in its box (a page that is loading) · label (optional line under it) · fill (covers the screen) */
+  /* Loader: coin + dots at the Loading page's sizes (a 50 px coin, dots 84 × 22, 12 px apart), centred in its box · label (optional line under it)
+     fill: a whole screen that is loading — the coin and the dots sit exactly where Order submit's coin and text sit (.ps-stage: centred, a little above the middle) */
   PS.Loader = function Loader(p) {
-    return h('div', { className: PS.cx('ps-loader', p.fill && 'ps-loader--fill', p.className), style: p.style, role: 'status', 'aria-label': p.label || 'Loading' },
+    if (p.fill) return h('div', { className: PS.cx('ps-loader ps-stage ps-loader--fill', p.className), style: p.style, role: 'status', 'aria-label': p.label || 'Loading' },
+      h('span', { className: 'ps-stage__icon' }, h(PS.Coin, { size: 50, inset: 7 })), h('div', { className: 'ps-stage__text' }, h(PS.Dots, { width: 84 })));
+    return h('div', { className: PS.cx('ps-loader', p.className), style: p.style, role: 'status', 'aria-label': p.label || 'Loading' },
       h(PS.Coin, { size: 50, inset: 7 }), h(PS.Dots, { width: 84 }), p.label ? h('p', { className: 'ps-t-body-md ps-c-tertiary' }, p.label) : null);
   };
   /* Busy: the small three-dot pulse inside a button that is waiting */

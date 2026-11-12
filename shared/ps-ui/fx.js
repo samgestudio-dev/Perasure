@@ -5,48 +5,69 @@
   'use strict';
   var R = window.React, PS = window.PS, h = R.createElement, m = PS.m, AP = PS.AP, MT = PS.MT;
 
-  /* ---- Letters: a line whose letters rise in one after another (Order submit): 560 ms each, 16 ms apart, 12 px, 5 px blur;
-     out: the whole line rises 10 px and fades in 400 ms. dots: the trailing "…" keeps looping while the line waits. */
-  var IN = 'cubic-bezier(0.34, 0.02, 0.2, 1)', OUT = 'cubic-bezier(0.4, 0.05, 0.6, 0.4)';
-  function Letters(p) {
-    var ref = R.useRef(null);
-    R.useEffect(function () {
-      var el = ref.current; if (!el || PS.reduce || !el.animate) return;
-      var ls = el.querySelectorAll('.ps-osub__l');
-      for (var i = 0; i < ls.length; i++) ls[i].animate([{ opacity: 0, transform: 'translateY(12px)', filter: 'blur(5px)' }, { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' }],
-        { duration: 560, delay: i * 16, easing: IN, fill: 'both' });
-    }, []);
-    R.useEffect(function () {
-      var el = ref.current; if (!p.out || !el || PS.reduce || !el.animate) return;
-      el.animate([{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(-10px)' }], { duration: 400, easing: OUT, fill: 'both' });
-    }, [p.out]);
-    var text = p.text, dots = p.dots && /(…|\.\.\.)$/.test(text); if (dots) text = text.replace(/(…|\.\.\.)$/, '');
-    var n = 0, words = text.split(' ').map(function (w, wi, all) {
-      return h('span', { key: wi, className: 'ps-osub__w' }, w.split('').map(function (c) { return h('span', { key: n++, className: 'ps-osub__l' }, c); }),
-        wi < all.length - 1 ? ' ' : dots ? h('span', { className: 'ps-osub__dots ps-osub__l', 'aria-hidden': true }, h('i', null, '.'), h('i', null, '.'), h('i', null, '.')) : null);
-    });
-    return h('p', { ref: ref, className: 'ps-osub__line ps-t-title-md', style: p.out && PS.reduce ? { opacity: 0 } : null }, words);
-  }
-  /* OrderSubmit: the loan request being sent — the coin spins while three lines take turns, then lands on the tick.
-     lines (three texts) · submitMs (how long the request takes, 3000) · holdMs (1500) · onDone. Shown full-screen (PS.Overlay). */
+  /* ---- OrderSubmit: the loan request being sent — exactly the Order submit demo (prototypes/order-submit), same numbers and rules:
+     · three lines take turns; each letter rises in (560 ms, 16 ms apart, 12 px, 5 px blur, four keyframes) and rises out the same way
+       (400 ms, 10 px) — letter by letter both ways;
+     · line 1 holds 1500 ms; line 2 ("…" as three dots that keep counting) holds for the request, 3000 ms; 120 ms between lines;
+     · the coin starts changing to the tick halfway through the last line's entrance, but only at the end of its turn (no deadline);
+     · it is over — onDone — only when the last line has come in and held 1500 ms AND the tick has finished playing. Never earlier:
+       the page that follows (home) waits for the animation.
+     lines (three texts) · holdMs (1500) · submitMs (3000) · onDone. Fills its box (use inside PS.Overlay). */
+  var IN = 'cubic-bezier(0.34, 0.02, 0.2, 1)', OUT = 'cubic-bezier(0.4, 0.05, 0.6, 0.4)', IN_MS = 560, OUT_MS = 400, STAGGER = 16, GAP = 120, RISE = 12, EXIT = 10, BLUR = 5;
   PS.OrderSubmit = function OrderSubmit(p) {
     var lines = p.lines || ['Submitting your loan request…', 'Confirming your loan details…', 'Your loan request has been submitted.'];
-    var s = R.useState({ i: 0, out: false }), st = s[0], set = s[1], ok = R.useState(false), done = R.useRef(p.onDone); done.current = p.onDone;
+    var s = R.useState(0), step = s[0], ok = R.useState(false), ref = R.useRef(null), done = R.useRef(p.onDone), fin = R.useRef({ text: false, coin: false, sent: false });
+    done.current = p.onDone;
+    function text(i) { return i === 1 ? lines[1].replace(/(…|\.\.\.)$/, '...') : lines[i]; }
+    function tail(i) { return STAGGER * Math.max(0, text(i).replace(/ /g, '').length - 1); }
+    function finish() { var f = fin.current; if (f.text && f.coin && !f.sent) { f.sent = true; if (done.current) done.current(); } }
+    function letters() { return ref.current ? [].slice.call(ref.current.querySelectorAll('[data-i]')) : []; }
+    function animate(dir) {
+      var els = letters(); if (!els.length || PS.reduce || !els[0].animate) return;
+      var starts = dir === 'out' ? els.map(function (el) { return parseFloat(getComputedStyle(el).opacity) || 0; }) : null;   /* a dot may be mid-count */
+      els.forEach(function (el) { el.getAnimations().forEach(function (a) { a.cancel(); }); });
+      var soft = 'blur(' + BLUR + 'px)', sharp = 'blur(0px)';
+      els.forEach(function (el, k) {
+        var o = starts ? starts[k] : 1;
+        el.animate(dir === 'in' ? [
+          { transform: 'translateY(' + RISE + 'px)', filter: soft, opacity: 0, offset: 0 },
+          { transform: 'translateY(' + RISE * 0.42 + 'px)', filter: 'blur(' + BLUR * 0.5 + 'px)', opacity: 0.28, offset: 0.4 },
+          { transform: 'translateY(' + RISE * 0.12 + 'px)', filter: 'blur(' + BLUR * 0.16 + 'px)', opacity: 0.72, offset: 0.7 },
+          { transform: 'translateY(0)', filter: sharp, opacity: 1, offset: 1 }] : [
+          { transform: 'translateY(0)', filter: sharp, opacity: o, offset: 0 },
+          { transform: 'translateY(' + -EXIT * 0.2 + 'px)', filter: 'blur(' + BLUR * 0.3 + 'px)', opacity: o * 0.5, offset: 0.3 },
+          { transform: 'translateY(' + -EXIT * 0.5 + 'px)', filter: 'blur(' + BLUR * 0.7 + 'px)', opacity: o * 0.1, offset: 0.6 },
+          { transform: 'translateY(' + -EXIT + 'px)', filter: soft, opacity: 0, offset: 1 }],
+          { duration: dir === 'in' ? IN_MS : OUT_MS, easing: dir === 'in' ? IN : OUT, fill: 'both', delay: +el.getAttribute('data-i') * STAGGER });
+      });
+    }
+    function loopDots() {
+      if (PS.reduce || !ref.current) return;
+      [0.25, 0.5, 0.75].forEach(function (on, i) {
+        var el = ref.current.querySelector('[data-dot="' + (i + 1) + '"]'); if (!el || !el.animate) return;
+        el.animate([{ opacity: 0, offset: 0 }, { opacity: 0, offset: on }, { opacity: 1, offset: on + 0.0001 }, { opacity: 1, offset: 1 }], { duration: 2000, iterations: Infinity, easing: 'linear' });
+      });
+    }
+    R.useLayoutEffect(function () { animate('in'); }, [step]);
     R.useEffect(function () {
-      var hold = p.holdMs || 1500, sub = p.submitMs || 3000, gap = 120, ts = [], at = 0;
+      var hold = p.holdMs == null ? 1500 : p.holdMs, sub = p.submitMs == null ? 3000 : p.submitMs, ts = [], at = 0;
       function later(fn, ms) { ts.push(setTimeout(fn, ms)); }
-      var inMs = function (t) { return 560 + t.length * 16; };
-      at = inMs(lines[0]) * 0.6 + hold; later(function () { set({ i: 0, out: true }); }, at);
-      at += 400 + gap; later(function () { set({ i: 1, out: false }); }, at);
-      at = Math.max(at + inMs(lines[1]) * 0.6 + hold, sub); later(function () { set({ i: 1, out: true }); }, at);
-      at += 400 + gap; later(function () { set({ i: 2, out: false }); }, at);
-      later(function () { ok[1](true); }, at + inMs(lines[2]) * 0.3);                 /* the tick lands half way through the last line */
-      later(function () { if (done.current) done.current(); }, at + inMs(lines[2]) * 0.6 + hold + 600);
+      at = IN_MS + tail(0) + hold; later(function () { animate('out'); }, at);
+      at += OUT_MS + tail(0) + GAP; later(function () { s[1](1); }, at);
+      later(loopDots, at + IN_MS + tail(1) + 40);
+      at += IN_MS + tail(1) + sub; later(function () { animate('out'); }, at);
+      at += OUT_MS + tail(1) + GAP; later(function () { s[1](2); }, at);
+      later(function () { ok[1](true); }, at + (IN_MS + tail(2)) / 2);
+      later(function () { fin.current.text = true; finish(); }, at + IN_MS + tail(2) + hold);
       return function () { ts.forEach(clearTimeout); };
     }, []);
-    return h('div', { className: 'ps-osub', role: 'status', 'aria-live': 'polite' },
-      h(PS.Coin, { size: 56, state: ok[0] ? 'success' : 'loading' }),
-      h('div', { className: 'ps-osub__text' }, h(Letters, { key: st.i, text: lines[st.i], out: st.out, dots: st.i === 1 })));
+    var n = 0, dot = 0, t = text(step), words = t.split(' ').map(function (w, wi, all) {
+      return h(R.Fragment, { key: wi }, h('span', { className: 'ps-osub__w' }, w.split('').map(function (c) {
+        return h('span', { key: n, className: 'ps-osub__l', 'data-i': n++, 'data-dot': step === 1 && c === '.' ? ++dot : 0 }, c); })), wi < all.length - 1 ? ' ' : null);
+    });
+    return h('div', { className: 'ps-stage ps-osub', role: 'status', 'aria-live': 'polite', 'aria-label': lines[step] },
+      h('span', { className: 'ps-stage__icon' }, h(PS.Coin, { size: 56, state: ok[0] ? 'success' : 'loading', onDone: function () { fin.current.coin = true; finish(); } })),
+      h('div', { className: 'ps-stage__text' }, h('p', { key: step, ref: ref, className: 'ps-osub__line', 'aria-hidden': true }, words)));
   };
 
   /* OtpSheet: "Verify it's you" → "Enter code" in one sheet that changes height (OTP sheet morph).

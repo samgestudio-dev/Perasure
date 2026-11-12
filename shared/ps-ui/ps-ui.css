@@ -83,6 +83,9 @@ html.ps-edge .ps-col { padding-top: calc(var(--ps-col-top, 116px) + var(--e)); p
    masked to a narrower band at the bar's outer edge, under the token veil. Blur off (html[data-blur="off"]): the token
    gradients only. The header bands run only while content is scrolled under it (.is-live). */
 .ps-pb { position: absolute; inset: 0; pointer-events: none; }
+/* no colour while a bar covers nothing: PS.Screen sets these from the scroll (header: 0 at the top; bottom: 0 at the end / on a page that doesn't scroll) */
+.ps-pb--top { opacity: var(--ps-top-fade, 1); }
+.ps-pb--bot { opacity: var(--ps-bot-fade, 1); }
 .ps-pb > i { position: absolute; inset: 0; display: block; }
 .ps-pb > i:nth-child(1) { -webkit-backdrop-filter: blur(calc(var(--blur-backdrop-bg) * 0.06)); backdrop-filter: blur(calc(var(--blur-backdrop-bg) * 0.06)); }
 .ps-pb > i:nth-child(2) { -webkit-backdrop-filter: blur(calc(var(--blur-backdrop-bg) * 0.14)); backdrop-filter: blur(calc(var(--blur-backdrop-bg) * 0.14)); }
@@ -104,15 +107,17 @@ html.ps-edge .ps-col { padding-top: calc(var(--ps-col-top, 116px) + var(--e)); p
 .ps-top:not(.is-live) .ps-pb > i:not(.ps-veil) { display: none; }
 html[data-blur="off"] .ps-pb > i:not(.ps-veil) { display: none; }
 html[data-blur="off"] .ps-pb--top > .ps-veil { background: linear-gradient(180deg, var(--color-gradient-subtle-80) 0%, var(--color-gradient-subtle-40) 70%, var(--color-gradient-subtle-0) 100%); }
-html[data-blur="off"] .ps-pb--bot > .ps-veil { background: linear-gradient(180deg, var(--color-gradient-default-0) 0%, var(--color-gradient-default-60) 40%, var(--color-gradient-default-80) 100%); opacity: var(--ps-bot-fade, 1); }
+html[data-blur="off"] .ps-pb--bot > .ps-veil { background: linear-gradient(180deg, var(--color-gradient-default-0) 0%, var(--color-gradient-default-60) 40%, var(--color-gradient-default-80) 100%); }
 html[data-blur="off"] .ps-pb--secondary > .ps-veil { background: linear-gradient(180deg, rgba(var(--ps-secondary-bottom), 0) 0%, rgba(var(--ps-secondary-bottom), 0.6) 40%, rgba(var(--ps-secondary-bottom), 0.8) 100%); }
 
 /* ---- header (Header Action Container, 116 px) ---- */
 .ps-top { position: absolute; left: 0; top: 0; width: 100%; height: var(--ps-top-h, 116px); z-index: 7; pointer-events: none; }
-/* Cover: a loading or failed page — over the content and the bottom bar (5), under the header (7) so its buttons stay */
+/* Cover: a failed page — over the content and the bottom bar (5), under the header (7) so the way back stays.
+   --full: a loading page — the whole screen and nothing else: over the header and the tab bar too */
 .ps-cover { position: absolute; inset: 0; z-index: 6; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--color-surface-page-default);
   transition: background-color 0.15s ease; }
 .ps-cover--white { background: var(--color-surface-card-default); }
+.ps-cover--full { z-index: 8; }
 .ps-cover__in { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .ps-top__extra { transition: opacity 0.2s ease; }
 .ps-screen.is-covered .ps-top__extra { opacity: 0; pointer-events: none; }
@@ -400,6 +405,8 @@ button.ps-ticket { display: block; width: 100%; text-align: left; }
 .ps-list { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); }
 .ps-empty { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-lg); padding: 0 var(--spacing-gap-lg); text-align: center; }
 .ps-empty > div { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); }
+/* a page that only has an empty state: the 80 px picture is centred where the loader's coin is (frame middle − 56 px; see .ps-stage) */
+.ps-empty--page { margin-top: calc(var(--ph, 740px) / 2 - 96px - var(--ps-col-top, 116px) - var(--e, 0px)); }
 .ps-crow { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-padding-sm); width: 100%; text-align: left; }
 .ps-crow__main { flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--spacing-gap-md); }
 .ps-crow__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--spacing-gap-xs); }
@@ -522,7 +529,7 @@ button.ps-ticket { display: block; width: 100%; text-align: left; }
 .ps-lottie > svg { display: block; overflow: visible; }
 .ps-coin { position: relative; display: block; flex: none; }
 .ps-loader { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--spacing-gap-md); padding: var(--spacing-padding-5xl) 0; }
-.ps-loader--fill { position: absolute; inset: 0; padding: 0; }
+.ps-loader--fill { padding: 40px var(--spacing-padding-3xl) 52px; gap: var(--spacing-gap-md); }   /* with .ps-stage */
 .ps-busy { display: inline-flex; align-items: center; gap: var(--spacing-gap-xs); height: 20px; }
 .ps-busy > i { width: 6px; height: 6px; border-radius: var(--radius-full); background: currentColor; opacity: 0.35; animation: ps-busy 0.9s ease-in-out infinite; }
 .ps-busy > i:nth-child(2) { animation-delay: 0.15s; } .ps-busy > i:nth-child(3) { animation-delay: 0.3s; }
@@ -626,16 +633,17 @@ textarea.ps-field__value { white-space: normal; }
 .ps-upload__mark { position: absolute; right: 6px; bottom: 6px; display: flex; background: var(--color-surface-card-default); border-radius: var(--radius-full); }
 
 /* ======================================================================================= motion pieces (fx.js) */
-.ps-osub { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-lg); width: 100%; padding: 0 var(--spacing-padding-3xl); }
-.ps-osub__text { position: relative; width: 100%; max-width: 296px; min-height: 56px; }
-.ps-osub__line { text-align: center; font-weight: var(--font-weight-medium); color: var(--color-text-brand-default); }
-.ps-osub__w { display: inline-block; white-space: pre; }
-.ps-osub__l { display: inline-block; white-space: pre; will-change: transform, opacity, filter; }
-.ps-osub__dots > i { font-style: normal; animation: ps-osub-dot 1.2s steps(1, end) infinite; }
-.ps-osub__dots > i:nth-child(1) { animation-name: ps-osub-dot1; } .ps-osub__dots > i:nth-child(2) { animation-name: ps-osub-dot2; }
-@keyframes ps-osub-dot1 { 0% { opacity: 0; } 25%, 100% { opacity: 1; } }
-@keyframes ps-osub-dot2 { 0%, 25% { opacity: 0; } 50%, 100% { opacity: 1; } }
-@keyframes ps-osub-dot { 0%, 50% { opacity: 0; } 75%, 100% { opacity: 1; } }
+/* Stage: where a full-screen loader and Order submit sit — the same place for both (owner): the icon in a 56 px box, 12 px,
+   then an 88 px box with the dots / the text at its top; the icon and the first line together sit a little above the middle of the screen (56 px, as in the Order submit demo) */
+.ps-stage { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--spacing-gap-md); padding: 40px var(--spacing-padding-3xl) 52px; }   /* 40: the frame's strip above the screen */
+.ps-stage__icon { flex: none; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; }
+.ps-stage__text { height: 88px; width: 100%; display: flex; align-items: flex-start; justify-content: center; }
+.ps-stage__text > .ps-dots { margin-top: 3px; }   /* the dots (22) centred on where the first line of text (28) sits */
+.ps-osub { background: var(--color-surface-page-light); }
+.ps-osub__line { max-width: 296px; text-align: center; text-wrap: pretty; color: var(--color-text-brand-default);
+  font: var(--font-weight-medium) var(--font-size-title-md)/var(--font-line-height-title-md) var(--font-family-title); }
+.ps-osub__w { display: inline-block; white-space: nowrap; }
+.ps-osub__l { display: inline-block; white-space: pre; will-change: transform, filter, opacity; }
 /* OTP sheet (app file 52:8916 / 52:9579): card 344 wide, 16 px padding and gaps; phone row 48, code boxes 60, status box 44 */
 .ps-otps { gap: var(--spacing-gap-lg) !important; }
 .ps-otps__top { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); }

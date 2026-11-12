@@ -28,7 +28,7 @@
         h(PS.ScamStrip, { key: 's', onClick: function () { APP.open('scams', {}); } }, 'Beware of scams. Contact in-app customer service to verify transaction requests from outside the app.'),
         late.length ? h('div', { key: 'l', className: 'app-stack-8' }, h('p', { className: 'app-seclabel ps-c-negative' }, 'OVERDUE'), h('div', { className: 'app-stack-12' }, late.map(card))) : null,
         soon.length ? h('div', { key: 'u', className: 'app-stack-8' }, h('p', { className: 'app-seclabel' }, 'UPCOMING'), h('div', { className: 'app-stack-12' }, soon.map(card))) : null]
-      : h(PS.EmptyState, { title: 'Nothing to repay right now', body: 'Your upcoming repayments will appear here.', style: { marginTop: 161 } }));
+      : h(PS.EmptyState, { title: 'Nothing to repay right now', body: 'Your upcoming repayments will appear here.', page: true }));
     return h(PS.Screen, { colBottom: list.length ? 196 : 120, top: { left: h(PS.Glass, { round: false }, 'Payment'), right: [APP.tune(), h(PS.Glass, { key: 'h', icon: 'headset', label: 'Contact us', onClick: APP.support })] },
       overlay: list.length && APP.signedIn() ? h('div', { className: 'app-paybar' }, h(PS.PayBar, { total: total, disabled: !total, onPay: function () { startPay(total); } })) : null }, body);
   };

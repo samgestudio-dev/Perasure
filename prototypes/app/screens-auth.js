@@ -99,6 +99,6 @@
 
   /* a page that isn't built yet: says so, never a dead end */
   APP.screen('missing', function Missing() {
-    return h(APP.Page, { title: '' }, h(PS.EmptyState, { title: 'This page isn’t in the test app yet', body: 'It’s on the list. Go back to keep going.', style: { marginTop: 112 } }));
+    return h(APP.Page, { title: '' }, h(PS.EmptyState, { title: 'This page isn’t in the test app yet', body: 'It’s on the list. Go back to keep going.', page: true }));
   });
 })();

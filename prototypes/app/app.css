@@ -19,8 +19,8 @@ html.ps-edge .app-bot-consent { padding-bottom: calc(var(--sb) + var(--spacing-p
 .app-otp__more { display: flex; flex-direction: column; gap: var(--spacing-gap-md); margin-top: var(--spacing-gap-md); text-align: center; }
 .app-otp__resend { display: flex; justify-content: flex-end; margin-top: var(--spacing-gap-xs); }
 .app-permhead { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-md); margin-bottom: var(--spacing-gap-md); }
-/* the fallback page (Figma 52:10976): the block starts 224 px down, like the empty states; its button is 264 wide */
-.app-fallback { position: absolute; left: 0; top: 224px; width: 100%; padding: var(--spacing-padding-xl) var(--spacing-padding-5xl) 0; }
+/* the fallback page (Figma 52:10976): its picture sits where the loader's coin was (as every full-page empty state); its button is 264 wide */
+.app-fallback { position: absolute; left: 0; top: calc(50% - 116px); width: 100%; padding: var(--spacing-padding-xl) var(--spacing-padding-5xl) 0; }
 .app-fallback > .ps-btn { width: 100%; }
 .app-ptabs { padding: 0 var(--spacing-page-x-sm) var(--spacing-padding-xl); }
 .app-seclabel.app-seclabel--in8 { padding: 0 var(--spacing-padding-sm); }
@@ -38,12 +38,6 @@ html.ps-edge .app-bot-consent { padding-bottom: calc(var(--sb) + var(--spacing-p
 .app-amount__sheet { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-between; gap: var(--spacing-gap-md); padding: 0 var(--spacing-padding-2xl) var(--spacing-padding-3xl);
   background: var(--color-surface-card-default); border-radius: var(--radius-xl) var(--radius-xl) 0 0; box-shadow: var(--shadow-over); }
 html.ps-edge .app-amount__sheet { padding-bottom: calc(var(--sb) + var(--spacing-padding-xl)); }
-/* opened from the home card (morph): the sheet's white box is a layer of its own that grows out of the card; a veil brings the page in */
-.app-amount__sheet.is-bare { position: relative; z-index: 1; background: none; box-shadow: none; }
-.app-morph__veil { position: absolute; inset: 0; background: var(--color-surface-page-default); pointer-events: none; }
-.app-morph { position: absolute; overflow: hidden; pointer-events: none; box-shadow: var(--shadow-over); will-change: left, top, width, height, opacity; }
-.app-morph > i { position: absolute; inset: 0; background: var(--color-surface-card-default); }
-.app-morph > i + i { background: var(--color-surface-card-brand); }
 .app-amount__top { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); padding: var(--spacing-padding-3xl) 0; }
 /* the amount as it is typed (Figma 52:12744): ₱ 28 Inter, digits 48 / 44 Satoshi, what is not typed yet in the disabled colour */
 .app-amount__num { display: flex; align-items: flex-end; height: 44px; font-family: var(--ps-font-num); font-weight: var(--font-weight-bold); font-variant-numeric: tabular-nums; }
@@ -92,8 +86,8 @@ html.ps-edge .app-paybar { height: calc(162px + var(--sb)); }
 .app-scams__page > div { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); padding: 0 var(--spacing-padding-lg); min-height: 92px; }
 .app-account > .ps-profile { margin-bottom: var(--spacing-gap-md); }
 .app-guest { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-3xl); }
-/* Payment when not signed in (Figma 52:7683): a text block 167 px under the header, then a 264 px button */
-.app-guestpay { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-xl); margin-top: 167px; padding: var(--spacing-padding-xl) 0 0; text-align: center; }
+/* Payment when not signed in (Figma 52:7683): a text block, then a 264 px button — at the height of a loading page's coin and dots, like the empty states */
+.app-guestpay { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-xl); margin-top: calc(var(--ph, 740px) / 2 - 88px - var(--ps-col-top, 116px) - var(--e, 0px)); padding: var(--spacing-padding-xl) 0 0; text-align: center; }
 .app-guestpay > div { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); }
 .app-guestpay > .ps-btn { width: 264px; }
 .app-confirm { gap: var(--spacing-gap-2xl) !important; }

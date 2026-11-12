@@ -26,11 +26,10 @@ window.APP = (function () {
 
   /* ---- navigation: a stack of pages; the tab pages are one entry ('tabs') ---- */
   function entry(name, params, how) { return { name: name, key: 'k' + uid++, params: params || {}, how: how }; }
-  /* go: push a page from the right; how 'rise': it comes up from the bottom like a sheet (and goes back down);
-     how 'morph': the page draws its own way in over the old one and back (the amount keypad growing out of the home card) */
-  function go(name, params, how) { set({ stack: S.stack.concat([entry(name, params, how)]), dir: how === 'rise' ? 2 : how === 'morph' ? 3 : 1, tip: null }); }
+  /* go: push a page from the right; how 'rise': it comes up from the bottom like a sheet (and goes back down) */
+  function go(name, params, how) { set({ stack: S.stack.concat([entry(name, params, how)]), dir: how === 'rise' ? 2 : 1, tip: null }); }
   function swap(name, params, dir) { set({ stack: S.stack.slice(0, -1).concat([entry(name, params)]), dir: dir == null ? 0 : dir, tip: null }); }
-  function back(n) { if (S.stack.length > 1) set({ stack: S.stack.slice(0, -(n || 1)), dir: ({ rise: -2, morph: -3 })[S.stack[S.stack.length - 1].how] || -1, tip: null }); }
+  function back(n) { if (S.stack.length > 1) set({ stack: S.stack.slice(0, -(n || 1)), dir: S.stack[S.stack.length - 1].how === 'rise' ? -2 : -1, tip: null }); }
   function home(tab, dir) { set({ stack: [entry('tabs')], tab: tab || 'home', dir: dir == null ? -1 : dir, tip: null, sheet: null }); }
   function open(name, params) { set({ sheet: { name: name, params: params || {} }, tip: null }); }
   function close() { set({ sheet: null }); }
@@ -59,13 +58,13 @@ window.APP = (function () {
     }, [st.state, st.n]);
     return { state: st.state, retry: function () { setSt({ state: 'loading', ms: rnd(500, 1100) * K, n: st.n + 1 }); } };
   }
-  /* Loaded: a page's content once its data is in. Until then the Loading page covers the whole screen (the header's buttons stay);
-     when it fails, the fallback page ("Something went wrong") does. Content that was waited for rises in piece by piece.
+  /* Loaded: a page's content once its data is in. Until then the Loading page is the whole screen and nothing else (no header, no bars);
+     when it fails, the fallback page ("Something went wrong") shows under the header, so the way back stays. Content that was waited for rises in piece by piece.
      k (what is loaded) · className (of the box around the content: its children are the pieces) · rise false (the content brings its own entrance) */
   function Loaded(p) {
     var l = useLoad(p.k), err = l.state === 'error', waited = R.useRef(l.state !== 'ready');
     return h(R.Fragment, null,
-      h(PS.Cover, { open: l.state !== 'ready', tone: err ? 'white' : 'page' }, h(PS.Crossfade, { k: l.state, className: 'ps-cover__in' }, err
+      h(PS.Cover, { open: l.state !== 'ready', tone: err ? 'white' : 'page', chrome: err }, h(PS.Crossfade, { k: l.state, className: 'ps-cover__in' }, err
         ? h(PS.EmptyState, { title: 'Something went wrong', className: 'app-fallback' }, h(PS.Button, { onClick: l.retry }, 'Try again'))
         : h(PS.Loader, { fill: true }))),
       l.state === 'ready' ? h(PS.RiseCtx.Provider, { value: !waited.current }, h(PS.Rise, { className: p.className, off: !waited.current || p.rise === false }, p.children)) : null);
@@ -101,7 +100,7 @@ window.APP = (function () {
         onVerified: function () { var cb = S.otp && S.otp.then; set({ otp: null }); if (cb) cb(); } }),
       h(PS.Overlay, { open: S.submitting }, S.submitting ? h(PS.OrderSubmit, { onDone: function () { var cb = S.submitting.then; set({ submitting: false }); if (cb) cb(); } }) : null),
       S.intro ? h(PS.CreditLimitIntro, { data: { old: CS.credit.total - CS.credit.temporary, new: CS.credit.total, inc: CS.credit.temporary, exp: '2026-11-20' }, onDone: function () { set({ intro: false }); } }) : null,
-      h(PS.Overlay, { open: S.busy, tone: 'glass' }, h(PS.Loader)),
+      h(PS.Overlay, { open: S.busy }, h(PS.Loader, { fill: true })),
       h(PS.Tooltip, { open: !!S.tip, anchor: S.tip ? S.tip.anchor : null, width: S.tip ? S.tip.width : null, text: S.tip ? S.tip.text : '', onClose: function () { set({ tip: null }); } }),
       h(PS.Toast, { msg: S.toast, bottom: top.name === 'tabs' ? 112 : 124 }));
   }

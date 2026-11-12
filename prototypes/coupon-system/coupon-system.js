@@ -187,7 +187,7 @@
         return h(PS.CouponTicket, { key: c.id, value: c.value, label: c.label, rule: c.rule, ruleLong: c.long, meta: c.meta, expiresAt: ctab === 'use' ? c.expiresAt : null,
           best: ctab === 'use' && bestD === c, state: ctab === 'use' ? 'default' : ctab, action: ctab === 'use' ? 'use' : 'none',
           onUse: function () { openLoan(c.id); }, onRule: function (el) { showRule(c, el); } });
-      })) : h(PS.EmptyState, { title: empty[0], body: empty[1], style: { marginTop: 112 } });
+      })) : h(PS.EmptyState, { title: empty[0], body: empty[1], page: true });
       return h(PS.Screen, { key: 'coupons', colTop: 174, colBottom: 48,
         top: { left: h(PS.Back, { onClick: back }), title: 'Coupons', right: tune, solid: true, extraHeight: 58,
           extra: h('div', { className: 'cs-ctabs' }, h(PS.Tabs, { id: 'cs-centre', value: ctab, onChange: function (t) { setTip(null); setCtab(t); },
