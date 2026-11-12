@@ -4,7 +4,8 @@ Figma: PeraSure design system, section `10594:45373` (Coupon center), with the l
 `10676:30203`, keep-coupon sheets `10712:55111 / 55543 / 55892`, repayment plan `10722:58508`, home `10730:58631` /
 `10747:59920` and account `10750:63340`.
 
-Built only from the shared components in [`shared/ps-ui`](../../shared/README.md). This folder holds just the flow
+Built only from the shared components in [`shared/ps-ui`](../../shared/README.md). The page is responsive: it fills the
+phone's width (check at 360, 390 and 430 px), nothing is scaled. This folder holds just the flow
 (`coupon-system.js`) and the sample data and coupon rules (`data.js`).
 
 ## Flow

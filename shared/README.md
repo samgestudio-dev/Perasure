@@ -64,7 +64,7 @@ rule in `CLAUDE.md` asks.
 | `coupon.js` | `CouponArt`, `Countdown`, `CouponTicket` (default, selected, used, expired, unavailable), `Tabs`, `Crossfade`, `EmptyState`, `CouponRow`, `Summary`, `CouponPicker`, `Decision` |
 | `loan.js` | `Slider`, `AmountCard`, `CouponsSection`, `OrderDetails`, `ProtectionCard`, `MethodCard`, `Agreement` (`nudge`: withdraw's ripple), `RepaymentPlan` |
 | `account.js` | `Profile`, `CreditLimitCard`, `Menu`, `Social` |
-| `phone-fit.js` | phone fitting (same as the withdraw / co-maker demos): sets `--vh --ph --ftop --e --sb` |
+| `phone-fit.js` | responsive phone page: viewport = device width at scale 1 (never scaled), iOS 26 edge to edge; sets `--vh --ph --ftop --e --sb` |
 | `tune.js`, `tune.css` | the prototype Tune panel, configured per page (`PSTune.setup`) |
 | `assets/icons/` | one-colour icons, drawn as masks (`PS.Icon`) so their colour is a token |
 | `assets/art/`, `assets/logos/` | full-colour pictures: coupon illustrations, empty box, ticket mask, laurels, logos |
@@ -74,6 +74,8 @@ drawn (a coupon with no `best`, a summary with no `newLimit`, an order row whose
 
 ## Rules for changing components
 
+- **Responsive, never scaled.** Pages are laid out at the phone's own width and fill it with the 16 px page margins
+  (360–430 px phones, up to 600 px on a desktop). No fixed 360 px widths; fixed sizes only where Figma fixes them.
 - **Tokens only.** Colours, spacing, radii, type, shadows and blur come from `tokens/tokens.css`. A value with no
   token goes once into `:root` of `ps-ui.css` as `--ps-*`, with a note saying so.
 - **Configurable, not copied.** Anything that differs between screens (copy, amounts, states, which parts show) is a
@@ -88,6 +90,8 @@ drawn (a coupon with no `best`, a summary with no `newLimit`, an order row whose
   - press: `PS.press()` — 60 ms, scale 0.985 (buttons, cards) / 0.92 (icon buttons);
   - a state change that doesn't move anything (selected ticket, check, term pill, tab label) changes colour only, in 150 ms;
   - **numbers that follow the slider never animate** (amounts, savings, totals just update);
+  - when something other than the finger moves the slider (a coupon changes the limit, "Keep coupon" sets the amount),
+    the knob, fill and amount glide there on the Smooth spring — the amount counts in slider steps;
   - a page or sheet that is leaving takes no taps, so nothing blocks the next tap.
   Motion (`m.*`, strict `LazyMotion` with `domMax`) comes from `PS.Shell`; `MotionConfig reducedMotion="user"`.
 - **Coupon pictures** (`PS.CouponArt`): from 40 px up the Figma version with the green badge, its shadow and the white

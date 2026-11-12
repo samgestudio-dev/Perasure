@@ -2,7 +2,8 @@
    Every colour, space, radius, font and shadow comes from the design tokens (tokens/tokens.css, linked before this file).
    A value with no token is written once below, as a --ps-* variable with a note, so it is easy to find and replace.
    Class names start with ps- so a demo's own CSS never collides with them.
-   Sizes are the Figma ones at the 360 px design width (PeraSure design system, file OBsvf42AiRapcRrasD7KNm). */
+   Sizes are the Figma ones (PeraSure design system, file OBsvf42AiRapcRrasD7KNm, designed at 360 px wide). Layouts are
+   responsive: they fill the phone's width with the 16 px page margins and are never scaled (phone-fit.js). */
 
 :root {
   --ps-shade-30: rgba(0, 1, 40, 0.3);        /* Figma: the shadow colour at 30% (credit card track, Withdraw button) — no token */
@@ -60,16 +61,16 @@ html.ps-phone body { -webkit-user-select: none; user-select: none; -webkit-touch
 input, textarea { -webkit-user-select: text; user-select: text; }
 html.ps-edge, html.ps-edge body { height: auto; min-height: 0; }
 .ps-wrap { height: var(--vh, 100vh); overflow: hidden; display: flex; flex-direction: column; align-items: center; }
-/* the frame is the design: 360 wide, the 40 px status-bar mock above the visible top */
-.ps-frame { position: relative; width: 360px; height: var(--ph, 740px); margin-top: -40px; flex: none; overflow: hidden;
+/* the frame is the screen: the phone's full width (at most 600 px on a desktop), the 40 px status-bar mock above the visible top */
+.ps-frame { position: relative; width: 100%; max-width: 600px; height: var(--ph, 740px); margin-top: -40px; flex: none; overflow: hidden;
   background: var(--color-surface-page-default); isolation: isolate; }
 html.ps-edge .ps-frame { margin-top: var(--ftop); overflow: visible; }
 
 /* ---- pages (PS.Pages) and a screen: its own scroller, header and bottom bar ---- */
-.ps-page { position: absolute; left: 0; top: 0; width: 360px; height: 100%; }
-.ps-screen { position: absolute; left: 0; top: 0; width: 360px; height: 100%; background: var(--color-surface-page-default); overflow: hidden; }
+.ps-page { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+.ps-screen { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: var(--color-surface-page-default); overflow: hidden; }
 html.ps-edge .ps-screen { top: calc(-1 * var(--e)); height: calc(100% + var(--e)); }
-.ps-screen__tint { position: absolute; left: 0; top: 0; width: 360px; height: 426px; pointer-events: none;
+.ps-screen__tint { position: absolute; left: 0; top: 0; width: 100%; height: 426px; pointer-events: none;
   background: linear-gradient(180deg, var(--color-positive-100) 0%, color-mix(in srgb, var(--color-positive-100) 0%, transparent) 100%); }
 .ps-scroll { position: absolute; inset: 0; overflow-x: hidden; overflow-y: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
 .ps-scroll::-webkit-scrollbar { width: 0; height: 0; }
@@ -107,7 +108,7 @@ html[data-blur="off"] .ps-pb--bot > .ps-veil { background: linear-gradient(180de
 html[data-blur="off"] .ps-pb--secondary > .ps-veil { background: linear-gradient(180deg, rgba(var(--ps-secondary-bottom), 0) 0%, rgba(var(--ps-secondary-bottom), 0.6) 40%, rgba(var(--ps-secondary-bottom), 0.8) 100%); }
 
 /* ---- header (Header Action Container, 116 px) ---- */
-.ps-top { position: absolute; left: 0; top: 0; width: 360px; height: var(--ps-top-h, 116px); z-index: 5; pointer-events: none; }
+.ps-top { position: absolute; left: 0; top: 0; width: 100%; height: var(--ps-top-h, 116px); z-index: 5; pointer-events: none; }
 html.ps-edge .ps-top { height: calc(var(--ps-top-h, 116px) + var(--e)); }
 .ps-top--solid { background: var(--color-surface-page-default); }
 .ps-top--solid .ps-pb { display: none; }
@@ -122,13 +123,13 @@ html.ps-edge .ps-top__row { top: calc(56px + var(--e)); }
 html.ps-edge .ps-top__extra { top: calc(116px + var(--e)); }
 
 /* ---- bottom bar (Bottom Nav Action Container) ---- */
-.ps-bot { position: absolute; left: 0; bottom: 0; width: 360px; min-height: 108px; z-index: 5;
+.ps-bot { position: absolute; left: 0; bottom: 0; width: 100%; min-height: 108px; z-index: 5;
   padding: var(--spacing-padding-3xl) var(--spacing-padding-5xl) var(--spacing-padding-xl); display: flex; flex-direction: column; gap: var(--spacing-gap-xs); }
 html.ps-edge .ps-bot { padding-bottom: calc(var(--sb) + var(--spacing-padding-xl)); }
 .ps-bot > :not(.ps-pb) { position: relative; }
 
 /* ---- navigator (tab bar) ---- */
-.ps-nav { position: absolute; left: 0; bottom: 0; width: 360px; z-index: 5;
+.ps-nav { position: absolute; left: 0; bottom: 0; width: 100%; z-index: 5;
   padding: var(--spacing-section-md) var(--spacing-padding-xl) var(--spacing-section-lg); }
 html.ps-edge .ps-nav { padding-bottom: calc(var(--sb) + var(--spacing-section-lg)); }
 .ps-nav__bar { position: relative; display: flex; gap: var(--spacing-gap-md); padding: var(--spacing-padding-xs); border-radius: var(--radius-full);
@@ -247,7 +248,7 @@ html.ps-edge .ps-toast { bottom: calc(var(--ps-toast-bottom, 120px) + var(--sb))
 .ps-tabs__pill { position: absolute; inset: 0; border-radius: var(--radius-full); background: var(--color-surface-card-brand); }
 
 /* ---- sheet ---- */
-.ps-layer { position: absolute; left: 0; top: 0; width: 360px; height: 100%; z-index: 20; pointer-events: none; }
+.ps-layer { position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 20; pointer-events: none; }
 html.ps-edge .ps-layer { top: calc(-1 * var(--e)); height: calc(100% + var(--e)); }
 .ps-layer > * { pointer-events: auto; }
 .ps-scrim { position: absolute; inset: 0; background: var(--ps-scrim); }
@@ -357,7 +358,9 @@ html.ps-edge .ps-sheet--plain { padding-bottom: calc(var(--sb) + var(--spacing-p
 .ps-ticket { position: relative; height: 116px; flex: none; }
 .ps-ticket { transition: filter 0.15s ease; filter: drop-shadow(0 0 1px transparent) drop-shadow(0 4px 6px transparent); }
 .ps-ticket--shadow, .ps-ticket.is-on { filter: drop-shadow(0 0 1px var(--color-shadow-default-1)) drop-shadow(0 4px 6px var(--color-shadow-default-2)); }
-.ps-ticket__shape, .ps-ticket__in { position: absolute; inset: 0; -webkit-mask: url("assets/art/ticket-mask.svg") center / 100% 100% no-repeat; mask: url("assets/art/ticket-mask.svg") center / 100% 100% no-repeat; }
+.ps-ticket__shape, .ps-ticket__in { position: absolute; inset: 0; border-radius: var(--radius-md); overflow: hidden;
+  -webkit-mask: radial-gradient(circle at left 50%, transparent 11.6px, #000 12.2px) left / 51% 100% no-repeat, radial-gradient(circle at right 50%, transparent 11.6px, #000 12.2px) right / 51% 100% no-repeat;
+  mask: radial-gradient(circle at left 50%, transparent 11.6px, #000 12.2px) left / 51% 100% no-repeat, radial-gradient(circle at right 50%, transparent 11.6px, #000 12.2px) right / 51% 100% no-repeat; }
 .ps-ticket__shape { background: var(--color-neutral-0); }
 .ps-ticket__bar { position: absolute; left: 0; top: 0; bottom: 0; width: 16px; background: var(--color-icon-brand-default); opacity: 0; transition: opacity 0.15s ease; }
 .ps-ticket.is-on .ps-ticket__bar { opacity: 1; }
@@ -415,10 +418,11 @@ button.ps-ticket { display: block; width: 100%; text-align: left; }
 .ps-amountcard__amt .ps-amount { font-size: 32px; line-height: 40px; letter-spacing: -0.005em; }
 .ps-amountcard__edit { height: 28px; display: flex; align-items: flex-end; color: var(--color-icon-brand-default); }
 .ps-slider { position: relative; height: 25px; margin-top: var(--spacing-gap-sm); }
-.ps-slider__track { position: absolute; left: 0; right: 0; bottom: 6px; height: 8px; border-radius: var(--radius-full); background: var(--color-surface-inset-default); }
-.ps-slider__fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: var(--radius-full); background: var(--color-icon-brand-light); }
-.ps-slider__knob { position: absolute; bottom: 1px; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%; background: var(--color-icon-brand-light);
-  border: 3px solid var(--color-neutral-0); box-shadow: var(--shadow-focus); pointer-events: none; }
+.ps-slider__track { position: absolute; left: 0; right: 0; bottom: 6px; height: 8px; border-radius: var(--radius-full); background: var(--color-surface-inset-default); overflow: hidden; isolation: isolate; }
+.ps-slider__fill { position: absolute; inset: 0; border-radius: var(--radius-full); background: var(--color-icon-brand-light); will-change: transform; }
+.ps-slider__rail { position: absolute; left: 0; bottom: 1px; width: 0; height: 18px; pointer-events: none; will-change: transform; }
+.ps-slider__knob { position: absolute; left: -9px; top: 0; width: 18px; height: 18px; border-radius: 50%; background: var(--color-icon-brand-light);
+  border: 3px solid var(--color-neutral-0); box-shadow: var(--shadow-focus); }
 .ps-slider input { position: absolute; left: -9px; right: -9px; top: -6px; bottom: -8px; width: calc(100% + 18px); margin: 0; opacity: 0; cursor: pointer; touch-action: pan-y; }
 .ps-slider__ends { display: flex; justify-content: space-between; align-items: center; margin-top: 2px;
   font: var(--font-weight-bold) var(--font-size-caption-sm)/1.25 var(--font-family-body); color: var(--color-text-placeholder); }

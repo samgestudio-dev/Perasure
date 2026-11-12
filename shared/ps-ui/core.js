@@ -22,6 +22,8 @@
   var MT = PS.MT = {
     /* geometry (sheets, pages, pills): withdraw's Smooth spring, settles within 0.378 px — 95 % at ≈ 290 ms, rest ≈ 560 ms */
     SPRING: { type: 'spring', stiffness: 240, damping: 30, mass: 1, restDelta: 0.378, restSpeed: 3.78 },
+    /* the same spring for values in % (a page or sheet moving by its own size): rests within 0.05 % */
+    SPRING_PCT: { type: 'spring', stiffness: 240, damping: 30, mass: 1, restDelta: 0.05, restSpeed: 0.5 },
     EASE_IN: EASE_IN,
     ENTER: { duration: 0.30, delay: 0.07, ease: EASE_IN },     /* what comes in: rises from below, 3 px blur → sharp */
     LEAVE: { duration: 0.15, ease: [0.4, 0, 1, 1] },           /* what goes: rises out, sharp → 3 px blur */

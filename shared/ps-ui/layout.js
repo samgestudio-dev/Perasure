@@ -4,7 +4,7 @@
   'use strict';
   var R = window.React, M = window.Motion, PS = window.PS, h = R.createElement, m = PS.m, AP = PS.AP;
 
-  /* Shell: Motion (LazyMotion domMax, strict) + the 360 px frame. Everything of a phone page goes inside. */
+  /* Shell: Motion (LazyMotion domMax, strict) + the frame (the phone's full width). Everything of a phone page goes inside. */
   PS.Shell = function Shell(p) {
     return h(M.LazyMotion, { features: M.domMax, strict: true },
       h(M.MotionConfig, { reducedMotion: 'user' },
@@ -13,6 +13,7 @@
   PS.mount = function (App, el) { window.ReactDOM.createRoot(el || document.getElementById('root')).render(h(App)); };
 
   /* a rect relative to the frame (for tooltips placed next to what was tapped) */
+  PS.frameWidth = function (el) { var f = (el && el.closest && el.closest('.ps-frame')) || document.querySelector('.ps-frame'); return f ? f.clientWidth : window.innerWidth; };
   PS.frameRect = function (el) {
     var f = el.closest('.ps-frame'), a = el.getBoundingClientRect(), b = f ? f.getBoundingClientRect() : { left: 0, top: 0 };
     return { left: a.left - b.left, top: a.top - b.top, right: a.right - b.left, bottom: a.bottom - b.top, width: a.width, height: a.height };
@@ -94,9 +95,9 @@
      Push / pop ride the PeraSure Smooth spring (the page underneath moves a quarter as far); a swap crossfades on
      ENTER / LEAVE. A page that is leaving no longer takes taps. id: the page's key · dir · children: the page */
   var PAGE = {
-    enter: function (d) { return d ? { x: d > 0 ? 360 : -90, opacity: 1, zIndex: d > 0 ? 2 : 0 } : { opacity: 0, zIndex: 1 }; },
-    center: function (d) { return d ? { x: 0, opacity: 1, zIndex: 1, transition: PS.MT.SPRING } : { x: 0, opacity: 1, zIndex: 1, transition: { opacity: PS.MT.ENTER } }; },
-    exit: function (d) { return d ? { x: d > 0 ? -90 : 360, zIndex: d > 0 ? 0 : 2, transition: PS.MT.SPRING } : { opacity: 0, zIndex: 0, transition: PS.MT.LEAVE }; }
+    enter: function (d) { return d ? { x: d > 0 ? '100%' : '-25%', opacity: 1, zIndex: d > 0 ? 2 : 0 } : { opacity: 0, zIndex: 1 }; },
+    center: function (d) { return d ? { x: '0%', opacity: 1, zIndex: 1, transition: PS.MT.SPRING_PCT } : { x: '0%', opacity: 1, zIndex: 1, transition: { opacity: PS.MT.ENTER } }; },
+    exit: function (d) { return d ? { x: d > 0 ? '-25%' : '100%', zIndex: d > 0 ? 0 : 2, transition: PS.MT.SPRING_PCT } : { opacity: 0, zIndex: 0, transition: PS.MT.LEAVE }; }
   };
   function PageBox(p) {
     var present = M.useIsPresent();
@@ -115,7 +116,7 @@
     return h('div', { className: 'ps-layer', role: 'dialog', 'aria-modal': true, 'aria-label': p.label, style: present ? null : { pointerEvents: 'none' } },
       scrim ? h(m.div, { className: 'ps-scrim', initial: { opacity: 0 }, animate: { opacity: 1, transition: { duration: 0.2 } }, exit: { opacity: 0, transition: PS.MT.LEAVE }, onClick: p.onClose })
             : h('div', { className: 'ps-scrim ps-scrim--clear', onClick: p.onClose }),
-      h(m.div, { className: PS.cx('ps-sheet', 'ps-sheet--' + kind, p.className), initial: { y: '100%' }, animate: { y: 0 }, exit: { y: '100%' }, transition: PS.MT.SPRING,
+      h(m.div, { className: PS.cx('ps-sheet', 'ps-sheet--' + kind, p.className), initial: { y: '100%' }, animate: { y: '0%' }, exit: { y: '100%' }, transition: PS.MT.SPRING_PCT,
         drag: 'y', dragListener: false, dragControls: controls, dragConstraints: { top: 0, bottom: 0 }, dragElastic: { top: 0, bottom: 0.6 },
         dragTransition: { bounceStiffness: 240, bounceDamping: 30 },
         onDragEnd: function (e, i) { if (i.offset.y > 96 || i.velocity.y > 640) p.onClose(); } },

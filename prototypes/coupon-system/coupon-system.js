@@ -135,7 +135,7 @@
     }
 
     function showRule(c, el) {
-      var r = PS.frameRect(el), x = Math.max(16, Math.min(360 - 16 - 248, r.left - 8));
+      var r = PS.frameRect(el), x = Math.max(16, Math.min(PS.frameWidth(el) - 16 - 248, r.left - 8));
       setTip({ text: c.rule, at: { x: x, y: r.bottom + 8 } });
     }
 
