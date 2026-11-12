@@ -3,7 +3,7 @@
  "source": {
   "figmaFile": "Document",
   "fileKey": "OBsvf42AiRapcRrasD7KNm",
-  "exportedAt": "2026-11-02T09:22:00.382Z",
+  "exportedAt": "2026-11-12T09:37:12.508Z",
   "exportedBy": null,
   "via": "mcp"
  },
@@ -4168,7 +4168,7 @@
      "name": "Color/Surface/Elevated/Glass",
      "type": "COLOR",
      "value": {
-      "alias": "Color/Alpha/White/60",
+      "alias": "Color/Alpha/White/80",
       "collection": "Primitive"
      },
      "scopes": [
@@ -7266,16 +7266,38 @@
      {
       "type": "DROP_SHADOW",
       "visible": true,
-      "radius": 24,
+      "radius": 12,
       "boundVariables": {
-       "color": "Color/Shadow/Backdrop",
-       "radius": "Blur/Backdrop/shadow"
+       "color": "Color/Shadow/Default/2",
+       "radius": "Blur/Shadow/default/2"
       },
       "color": {
        "r": 0,
        "g": 0.00392,
        "b": 0.15686,
        "a": 0.08
+      },
+      "offset": {
+       "x": 0,
+       "y": 0
+      },
+      "spread": 0,
+      "blendMode": "NORMAL",
+      "showShadowBehindNode": false
+     },
+     {
+      "type": "DROP_SHADOW",
+      "visible": true,
+      "radius": 2,
+      "boundVariables": {
+       "color": "Color/Shadow/Default/1",
+       "radius": "Blur/Shadow/default/1"
+      },
+      "color": {
+       "r": 0,
+       "g": 0.00392,
+       "b": 0.15686,
+       "a": 0.16
       },
       "offset": {
        "x": 0,
