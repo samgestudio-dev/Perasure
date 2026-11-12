@@ -38,6 +38,12 @@ html.ps-edge .app-bot-consent { padding-bottom: calc(var(--sb) + var(--spacing-p
 .app-amount__sheet { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-between; gap: var(--spacing-gap-md); padding: 0 var(--spacing-padding-2xl) var(--spacing-padding-3xl);
   background: var(--color-surface-card-default); border-radius: var(--radius-xl) var(--radius-xl) 0 0; box-shadow: var(--shadow-over); }
 html.ps-edge .app-amount__sheet { padding-bottom: calc(var(--sb) + var(--spacing-padding-xl)); }
+/* opened from the home card (morph): the sheet's white box is a layer of its own that grows out of the card; a veil brings the page in */
+.app-amount__sheet.is-bare { position: relative; z-index: 1; background: none; box-shadow: none; }
+.app-morph__veil { position: absolute; inset: 0; background: var(--color-surface-page-default); pointer-events: none; }
+.app-morph { position: absolute; overflow: hidden; pointer-events: none; box-shadow: var(--shadow-over); will-change: left, top, width, height, opacity; }
+.app-morph > i { position: absolute; inset: 0; background: var(--color-surface-card-default); }
+.app-morph > i + i { background: var(--color-surface-card-brand); }
 .app-amount__top { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); padding: var(--spacing-padding-3xl) 0; }
 /* the amount as it is typed (Figma 52:12744): ₱ 28 Inter, digits 48 / 44 Satoshi, what is not typed yet in the disabled colour */
 .app-amount__num { display: flex; align-items: flex-end; height: 44px; font-family: var(--ps-font-num); font-weight: var(--font-weight-bold); font-variant-numeric: tabular-nums; }

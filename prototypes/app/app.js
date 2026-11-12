@@ -26,10 +26,11 @@ window.APP = (function () {
 
   /* ---- navigation: a stack of pages; the tab pages are one entry ('tabs') ---- */
   function entry(name, params, how) { return { name: name, key: 'k' + uid++, params: params || {}, how: how }; }
-  /* go: push a page from the right; how 'rise': it comes up from the bottom like a sheet (and goes back down) */
-  function go(name, params, how) { set({ stack: S.stack.concat([entry(name, params, how)]), dir: how === 'rise' ? 2 : 1, tip: null }); }
+  /* go: push a page from the right; how 'rise': it comes up from the bottom like a sheet (and goes back down);
+     how 'morph': the page draws its own way in over the old one and back (the amount keypad growing out of the home card) */
+  function go(name, params, how) { set({ stack: S.stack.concat([entry(name, params, how)]), dir: how === 'rise' ? 2 : how === 'morph' ? 3 : 1, tip: null }); }
   function swap(name, params, dir) { set({ stack: S.stack.slice(0, -1).concat([entry(name, params)]), dir: dir == null ? 0 : dir, tip: null }); }
-  function back(n) { if (S.stack.length > 1) set({ stack: S.stack.slice(0, -(n || 1)), dir: S.stack[S.stack.length - 1].how === 'rise' ? -2 : -1, tip: null }); }
+  function back(n) { if (S.stack.length > 1) set({ stack: S.stack.slice(0, -(n || 1)), dir: ({ rise: -2, morph: -3 })[S.stack[S.stack.length - 1].how] || -1, tip: null }); }
   function home(tab, dir) { set({ stack: [entry('tabs')], tab: tab || 'home', dir: dir == null ? -1 : dir, tip: null, sheet: null }); }
   function open(name, params) { set({ sheet: { name: name, params: params || {} }, tip: null }); }
   function close() { set({ sheet: null }); }

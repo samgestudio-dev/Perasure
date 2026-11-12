@@ -40,7 +40,10 @@ often instant; actions wait 0.25–1 s and show the loader only when it's long e
   Figma 52:10976) fills it the same way. `APP.Loaded` does both with `PS.Cover`. `?fast=1` skips every wait (for checking a screen).
 - **What was waited for rises in** piece by piece (`PS.Rise`: 0.34 s each, 40 ms apart); a page seen before is there at once. Lists
   that replace each other (tabs) and the content of a sheet rise in the same way; home's cards do the first time it shows.
-- **The amount keypad rises from the bottom** like a sheet (`APP.go(name, params, 'rise')`) and goes back down; typed digits rise in.
+- **Withdraw on the home card:** the card grows into the keypad's sheet and closes back into it (the card morph: one progress on the
+  Smooth spring; the box's colour goes blue → white as two flat layers; the page comes in behind it; what is in the sheet rises in once
+  there is room and leaves first on the way back). From the pencil on the loan page the keypad **rises from the bottom** like a sheet
+  (`APP.go(name, params, 'rise')`) and goes back down. Typed digits rise in.
 - **Tooltips place themselves** (`APP.tipAt(element, text, width)`): 8 px under what was tapped, centred on it, or with their edge
   16 px past it when it is near a side; never outside the 16 px margins; above when there is no room below.
 
@@ -61,5 +64,5 @@ coupons section; sample numbers and names; stills replaced by their animations; 
 ## Not in yet
 
 Application details (ID, details check, basic information, trusted contact, selfie, loan estimate), add documents, FAQs, phone
-number change, withdrawal account change with face check — these routes show a "not in the test app yet" page. The home card →
-keypad → loan card morph of the Withdraw demo is not rebuilt yet (the keypad rises from the bottom instead).
+number change, withdrawal account change with face check — these routes show a "not in the test app yet" page. The keypad's
+amount does not travel into the loan card yet (keypad → loan detail is a page push); the Withdraw demo's travelling amount is the reference.
