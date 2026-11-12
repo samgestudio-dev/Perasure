@@ -18,13 +18,29 @@
 <script src="vendor/react-dom@18.3.1/react-dom.production.min.js"></script>
 <script src="vendor/motion@14.4.0/motion-react.js"></script>
 <script src="vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
-<script src="assets/playground-ui.js?v=202611060431"></script>
-<script src="animations/animations.js?v=202611060431"></script>
+<script src="assets/playground-ui.js?v=202611121016"></script>
+<script src="animations/animations.js?v=202611121016"></script>
 <script>
 /* ---- Prototype registry (the "Prototypes" tab) -----------------------------------------
    To add a prototype: put its files in prototypes/<slug>/ and add one entry below.
    The first variant is the recommended one. Animations live in animations/animations.js. */
 var DEMOS = [
+  {
+    title: 'Coupon system',
+    tag: 'Coupons',
+    desc: 'Coupons from home and account to the coupon centre and into a loan: pick coupons in a sheet with a live total, and a “Keep your coupon?” card when a new amount or term takes one off.',
+    variants: [
+      { name: 'Standard', note: 'Built from the shared components. Tune: progressive blur, and how many coupons you have (six, one, none)', href: 'prototypes/coupon-system/index.html' }
+    ]
+  },
+  {
+    title: 'PeraSure components',
+    tag: 'Library',
+    desc: 'Every shared component (cards, coupons, loan, account, bars, sheets) with its states and props. Update a component once and every prototype built on it follows.',
+    variants: [
+      { name: 'Gallery', note: 'Tap the chips to switch states; props are listed next to each component', href: 'shared/gallery.html' }
+    ]
+  },
   {
     title: 'Change co-maker',
     tag: 'Loan',

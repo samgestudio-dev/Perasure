@@ -29,6 +29,10 @@ index.html                 picker ("Playground"): "Prototypes" tab (DEMOS array)
 assets/playground-ui.js    shared Material UI theme + icons for the picker and the player (window.PG)
 assets/fonts/              the app's fonts (Hanken Grotesk, Inter, Satoshi 500/700) + fonts.css — shared by all prototypes
 prototypes/_template/index.html  starting point for a new prototype (links the shared fonts and libraries); not on the picker
+shared/ps-ui/              PeraSure UI components (React, configurable): ps-ui.css (tokens only), core.js, layout.js, home.js,
+                           coupon.js, loan.js, account.js, phone-fit.js, tune.js/.css, assets/ — see "Shared components"
+shared/gallery.html        live gallery of every shared component and its states (on the picker as "PeraSure components")
+shared/README.md           how to use the components, files, rules for changing them
 prototypes/<slug>/index.html    main / recommended variant of a demo
 prototypes/<slug>/<variant>.html  other variants of the same demo (optional)
 animations/animations.js       Lottie registry (LOTTIES array) — shared by the picker and the player
@@ -51,7 +55,8 @@ README.md                  human-facing summary + demo / animation tables
 
 ## Adding a demo
 
-1. Put the demo's file(s) in `prototypes/<slug>/` — for a new one, start from a copy of `prototypes/_template/index.html`. The recommended variant is `index.html` (exception:
+1. Put the demo's file(s) in `prototypes/<slug>/` — for a new one, start from a copy of `prototypes/_template/index.html`
+   (for a PeraSure app screen, from `prototypes/coupon-system/index.html`, built on the shared components). The recommended variant is `index.html` (exception:
    `credit-limit-coins` is split into `baked/` — the deliverable, `baked/baked-heap.html` + its css/js/`baked.json`, plus the
    `baked-shockwave.html` variant (same data and css, own js) — and
    `physics-tuner/` — the engineering file for tuning the coin paths and baking them, never shipped; the top-level
@@ -74,7 +79,8 @@ README.md                  human-facing summary + demo / animation tables
    - Link to the file explicitly (`.../index.html`), not the folder — folder links break when the repo is opened locally.
    - Newest demo goes at the top of the array unless the owner says otherwise. Order set by the owner (keep it, in the
      `DEMOS` array and the README table): Credit limit increase, Withdraw fund flow, Order submit, OTP sheet morph,
-     Loading page, Landing page (website).
+     Loading page, Landing page (website). Newer ones sit above them, newest first; "PeraSure components" (the gallery)
+     stays right after Coupon system.
    - Only edit the `DEMOS` array for a normal addition; don't restyle the picker unless asked.
    - The picker and the player are React + Material UI 5 (browser builds in `vendor/`, no JSX, no build step;
      `PG.h` = `React.createElement`). Style through the theme in `assets/playground-ui.js`, not per page.
@@ -118,6 +124,22 @@ README.md                  human-facing summary + demo / animation tables
    the GSAP module's inline SVG and rebuild the `.lottie` (see the Customer service bubble).
 7. Renderer: lottie-web SVG (`vendor/lottie-web@5.12.2/lottie_svg.min.js`). Don't switch to the canvas
    renderer — it mis-renders the masks in Doc verify and Safe transaction.
+
+## Shared components (`shared/ps-ui`)
+
+PeraSure app screens are built from shared, configurable React components (owner's rule): the look lives in
+`shared/ps-ui` once, a prototype passes its data and states as props, so updating a component updates every prototype
+built on it. Details and the head block to copy: `shared/README.md`; reference prototype: `prototypes/coupon-system/`.
+
+- A new prototype of an app screen uses the components (and adds what's missing to `shared/ps-ui`, not to the page).
+  Older prototypes keep their own code until the owner asks to move them over; never edit them to adopt it unasked.
+- Granularity (owner: "functional cards and states as components"): atoms (amount, button, tag, chip, check, icon),
+  bars (top / bottom / navigator), sheets, and each functional card (credit card, payment card, home coupons, coupon
+  ticket, coupon row, amount card, order details, protection, method, profile, credit limit, menu…). Every state is a
+  prop (`state`, `on`, `tone`, `variant`) and is shown in `shared/gallery.html` — add new states there too.
+- Styles only from the tokens; a value with no token goes into `:root` of `ps-ui.css` as `--ps-*` with a note.
+- Renaming / removing a prop or class: update every prototype using it in the same commit (`grep -rl "PS\.<Name>"`).
+- Links to these files carry `?v=<stamp>`; `python3 tools/stamp.py` updates them (prototypes and the gallery).
 
 ## Withdraw: the two credit states of the Credit limit intro
 

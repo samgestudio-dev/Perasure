@@ -9,6 +9,8 @@ Phone-first motion prototypes, served with GitHub Pages.
 
 | Demo | Variants |
 | --- | --- |
+| Coupon system | [Standard](prototypes/coupon-system/index.html) (home / account → coupon centre → apply a loan with coupons; Tune: blur, six / one / no coupons) · [guide](prototypes/coupon-system/README.md) |
+| PeraSure components | [Gallery](shared/gallery.html) (every shared component with its states and props) · [docs](shared/README.md) |
 | Change co-maker | [Standard](prototypes/co-maker-change/index.html) (Change → card morphs into the form; Cancel / Save morph back) · [guide](prototypes/co-maker-change/README.md) |
 | Credit limit increase | [Baked heap](prototypes/credit-limit-coins/baked/baked-heap.html) (deliverable) · [Baked heap + shockwave](prototypes/credit-limit-coins/baked/baked-shockwave.html) (variant) · [Physics tuner](prototypes/credit-limit-coins/physics-tuner/physics-tuner.html) (engineering file for tuning, not shipped) · [integration guide](prototypes/credit-limit-coins/README.md) |
 | Withdraw fund flow | [Standard](prototypes/withdraw-fund-flow/index.html) (Tune: gradient blur, card amounts, motion feel) · [Credit limit increase · credit unused](prototypes/withdraw-fund-flow/with-credit-limit.html) (the Credit limit animation first, closing in to the home card; the available amount carries over) · [Credit limit increase · credit partly used](prototypes/withdraw-fund-flow/with-credit-limit-used.html) (the total credit goes up and lands on "Total credit"; the available amount counts up) · [guide](prototypes/withdraw-fund-flow/README.md) |
@@ -52,6 +54,15 @@ changed in each version, dated, with the impact on code). Each version is tagged
 export with the Figma plugin and upload into `tokens/inbox`, or ask Claude. Not shown on the picker. See
 [tokens/README.md](tokens/README.md).
 
+## Shared components
+
+`shared/ps-ui/` holds the PeraSure screens' building blocks as configurable React components — header and bottom
+bars, tab bar, sheets, home cards, coupon tickets, the loan page cards, account rows and more — styled only with the
+design tokens. A prototype puts them together with its own data; change a component once and every prototype built on
+it changes with it. Live gallery: [`shared/gallery.html`](shared/gallery.html) · docs and props:
+[`shared/README.md`](shared/README.md). The Coupon system demo is the first one built this way; older demos keep
+their own code for now.
+
 ## Shared libraries
 
 `vendor/` holds pinned copies so demos don't depend on a CDN: lottie-web 5.12.2, GSAP 3.15.0 (core +
@@ -80,6 +91,8 @@ Easiest: give the demo's HTML file to Claude and say "add this to the motion dem
 By hand:
 
 1. Copy `prototypes/_template/` to `prototypes/<name>/` (it already links the fonts and libraries), with the main version as `index.html`.
+   For a PeraSure app screen, start from `prototypes/coupon-system/index.html` instead and build it from the shared
+   components (`shared/ps-ui/`).
 2. Open the root `index.html`, find the `DEMOS` list near the bottom and copy an entry:
    title, a one-line description, and one line per variant (the first one is shown as recommended).
 3. Add a row to the table above, commit to `main` and push. The live site updates in about a minute.

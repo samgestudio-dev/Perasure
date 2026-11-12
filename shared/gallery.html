@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+/* phones: the 360 px components plus 16 px gutters fill the screen */
+if (matchMedia('(pointer: coarse)').matches) document.querySelector('meta[name=viewport]').setAttribute('content', 'width=392');
+</script>
+<meta name="format-detection" content="telephone=no">
+<title>PeraSure components</title>
+<!-- Live gallery of the shared PeraSure components (shared/ps-ui): every component, its states and props.
+     Change a component in shared/ps-ui and this page and every prototype built on it change with it. Docs: shared/README.md -->
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="ps-ui/ps-ui.css?v=202611121016">
+<style>
+  html, body { background: var(--color-surface-page-heavy); }
+  .g-page { max-width: 1120px; margin: 0 auto; padding: 0 16px 64px; }
+  .g-head { position: sticky; top: 0; z-index: 50; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 16px 0 12px; background: linear-gradient(180deg, var(--color-surface-page-heavy) 80%, transparent); }
+  .g-nav, .g-chips, .g-row { display: flex; gap: 8px; align-items: center; }
+  .g-nav { flex-wrap: wrap; }
+  .g-chips { flex-wrap: wrap; margin-top: 4px; }
+  .g-chip { padding: 6px 12px; border-radius: var(--radius-full); background: var(--color-surface-card-default); color: var(--color-text-secondary);
+    font: var(--font-weight-semi-bold) var(--font-size-label-sm)/var(--font-line-height-label-sm) var(--font-family-label); box-shadow: var(--shadow-default); white-space: nowrap; }
+  .g-chip.is-on { background: var(--color-surface-card-brand); color: var(--color-text-inverse); }
+  .g-group { padding-top: 24px; scroll-margin-top: 96px; }
+  .g-group > h2 { margin: 8px 0 12px; }
+  .g-entry { display: flex; flex-wrap: wrap; gap: 16px 32px; padding: 20px; margin-bottom: 16px; border-radius: var(--radius-xl); background: var(--color-surface-card-default); scroll-margin-top: 96px; }
+  .g-info { flex: 1 1 280px; display: flex; flex-direction: column; gap: 8px; }
+  .g-props { color: var(--color-text-tertiary); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; word-break: break-word; }
+  .g-props b { font-family: var(--font-family-body); color: var(--color-text-secondary); }
+  .g-stage { flex: none; width: 360px; padding: 16px; margin: -4px; border-radius: var(--radius-lg, 20px); background: var(--color-surface-page-default); }
+  .g-frame { position: relative; width: 360px; margin: -16px; overflow: hidden; border-radius: inherit; background: var(--color-surface-page-default); isolation: isolate; }
+  .g-center { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+  @media (max-width: 440px) { .g-page { padding: 0 16px 48px; } .g-entry { padding: 16px 0 0; background: none; } .g-stage { margin: 0 -16px; border-radius: 0; width: 360px; } }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="../vendor/react@18.3.1/react.production.min.js"></script>
+<script src="../vendor/react-dom@18.3.1/react-dom.production.min.js"></script>
+<script src="../vendor/motion@14.4.0/motion-react.js"></script>
+<script src="ps-ui/core.js?v=202611121016"></script>
+<script src="ps-ui/layout.js?v=202611121016"></script>
+<script src="ps-ui/coupon.js?v=202611121016"></script>
+<script src="ps-ui/home.js?v=202611121016"></script>
+<script src="ps-ui/loan.js?v=202611121016"></script>
+<script src="ps-ui/account.js?v=202611121016"></script>
+<script src="gallery.js?v=202611121016"></script>
+</body>
+</html>
