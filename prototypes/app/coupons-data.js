@@ -6,8 +6,19 @@ window.CS = (function () {
   var money = function (n, d) { return window.PS.money(n, d); };
   var NOW = Date.now(), HOUR = 3600e3;
 
-  var credit = { available: 45000, total: 50000, temporary: 10000, temporaryUntil: 'Nov 20' };
-  var loan = { min: 500, step: 100, terms: [4, 6, 8], term: 6, days: 15, interest: 0.015, fee: 0.005, start: new Date(2026, 10, 12) };
+  /* ---- The numbers of this test app: every screen reads them from here, so they always agree (owner). In the app they come from the backend.
+     limit: the long-term credit limit · used: what is borrowed and not yet repaid — the one loan of Tune → "Loan" (no loan: nothing used) ·
+     temporary: the temporary credit (a limit increase with an end date; Tune → "Temporary credit" turns it off) · temporaryUntil…: its end
+     date, one value in three spellings. Ordering in the app takes the amount out of the available credit (take()).
+     A limit-increase coupon is something else: it raises what one loan may borrow (see `coupons` below, kind 'limit'), not the credit. ---- */
+  var TUNE = window.PS_TUNE || {};
+  var NUM = { limit: 40000, used: String(TUNE.loan || 'active') === 'none' ? 0 : 5000, temporary: String(TUNE.temp) === '0' ? 0 : 10000, temporaryUntil: 'Nov 20', temporaryUntilLong: 'Nov 20, 2026', temporaryUntilISO: '2026-11-20' };
+  /* what follows from them: total credit = limit + temporary · available = total − used */
+  var credit = { limit: NUM.limit, used: NUM.used, temporary: NUM.temporary, total: NUM.limit + NUM.temporary, available: NUM.limit + NUM.temporary - NUM.used,
+    temporaryUntil: NUM.temporaryUntil, temporaryUntilLong: NUM.temporaryUntilLong, temporaryUntilISO: NUM.temporaryUntilISO };
+  /* take: a loan was ordered — its amount is used credit from now on (a limit coupon can let one loan go past the credit: none is left then) */
+  function take(amount) { credit.used += amount; credit.available = Math.max(0, credit.total - credit.used); }
+  var loan = { min: 500, step: 100, terms: [4, 6, 8], term: 6, days: 15, interest: 0.015, fee: 0.005, penalty: 0.05, grace: 3, start: new Date(2026, 10, 12) };
   var user = { initials: 'SG', name: 'Sam Ge', verified: true };
   var payment = { amount: 800, due: 'Dec 27, 2026', badge: 'Due in 45 days' };
   var today = 'Nov 12, 2026';
@@ -26,7 +37,7 @@ window.CS = (function () {
     { id: 'l2', kind: 'limit', type: 'limit', add: 2000, value: '+₱2,000', name: '+₱2,000 credit limit', label: 'Credit limit increase', min: 20000, terms: [4, 6, 8], until: 'Dec 31, 2026' }
   ];
   var USED = [
-    { id: 'u1', type: 'percent', value: '25% OFF', label: 'First-payment interest', rule: 'Any amount · 4 / 6 / 8 terms', meta: 'Used on Oct 24, 2026' },
+    { id: 'u1', type: 'percent', value: '25% OFF', label: 'First-payment interest', rule: 'Any amount · 4 / 6 / 8 terms', meta: 'Used on Oct 24, 2026' },   /* on the current loan: its date is set below */
     { id: 'u2', type: 'percent', value: '20% OFF', label: 'Interest on all payments', rule: 'Borrow ₱6,000 or more · 6 / 8 terms', meta: 'Used on Sep 30, 2026' },
     { id: 'u3', type: 'limit', value: '+₱5,000', label: 'Credit limit increase', rule: 'Borrow ₱6,000 or more · 4 / 6 / 8 terms', meta: 'Used on Sep 30, 2026' }
   ];
@@ -73,6 +84,27 @@ window.CS = (function () {
     }
     return out;
   }
+  /* ---- the current loan: the one whose principal is the used credit. The home payment card, the Payment tab, the payment detail, the loan
+     application page, the credit history and the messages all read it, so they speak of the same loan.
+     Tune → Loan: repaying (taken 10 days ago: first payment in 5 days) · overdue (taken 18 days ago: the first payment is 3 days late, the last
+     day without a penalty) · in review / transfer failed (applied today). It used the 25% first-payment coupon (u1 in "used"). ---- */
+  function fmt(d, long) { return d.toLocaleDateString('en-US', { month: long ? 'long' : 'short', day: 'numeric', year: 'numeric' }); }
+  var current = (function () {
+    if (!NUM.used) return null;
+    var st = String(TUNE.loan || 'active'), DAY = 864e5, term = 4, amount = NUM.used, ago = st === 'overdue' ? 18 : st === 'active' ? 10 : 0;
+    var start = new Date(loan.start.getTime() - ago * DAY), c = calc(amount, term, ALL[0], null), dues = [];
+    for (var k = 1; k <= term; k++) {
+      var d = new Date(start.getTime() + k * loan.days * DAY), left = Math.round((d - loan.start) / DAY), late = left < 0 ? -left : 0, off = k === 1 ? c.save : 0;
+      dues.push({ id: 'p' + k, month: d.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(), day: ('0' + d.getDate()).slice(-2), amount: round2(c.per - off),
+        late: late, penalty: late > loan.grace ? round2(c.principal * loan.penalty) : 0, due: fmt(d, true), dueShort: fmt(d), loanDate: fmt(start, true),
+        interest: round2(c.interest - off), fee: c.fee, coupon: off, badge: late ? null : left ? 'Due in ' + left + ' day' + (left === 1 ? '' : 's') : 'Due today' });
+    }
+    return { state: st, amount: amount, term: term, date: fmt(start), ago: ago, per: c.per, first: dues[0].amount, dues: dues,
+      /* what a late payment costs, and from when (the day after the days without a penalty) */
+      penalty: round2(c.principal * loan.penalty), penaltyDate: fmt(new Date(loan.start.getTime() + DAY)).replace(/, \d{4}$/, '') };
+  })();
+  if (current) USED[0].meta = 'Used on ' + current.date;
+
   /* the coupon of a kind that does the most for this loan */
   function best(list, kind, amount, term) {
     var top = null, topV = 0;
@@ -91,6 +123,6 @@ window.CS = (function () {
     if (String(set) === '1') return ALL.filter(function (c) { return c.id === 'l5'; });
     return ALL.slice();
   }
-  return { credit: credit, loan: loan, user: user, payment: payment, today: today, coupons: coupons, used: USED, expired: EXPIRED,
+  return { credit: credit, take: take, current: current, loan: loan, user: user, payment: payment, today: today, coupons: coupons, used: USED, expired: EXPIRED,
     fits: fits, why: why, calc: calc, schedule: schedule, best: best, short: short, termsText: termsText, minText: minText, date: date };
 })();

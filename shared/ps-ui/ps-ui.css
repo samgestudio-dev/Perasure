@@ -313,7 +313,7 @@ html.ps-edge .ps-sheet--plain { padding-bottom: calc(var(--sb) + var(--spacing-p
 .ps-credit__bar { position: relative; display: flex; height: 8px; border-radius: var(--radius-full); background: var(--ps-shade-30); overflow: hidden; isolation: isolate; margin-top: var(--spacing-gap-sm); }
 .ps-credit__bar i { display: block; height: 8px; border-radius: 0 var(--radius-full) var(--radius-full) 0; }
 .ps-credit__bar i:first-child { background: var(--color-icon-inverse); box-shadow: var(--shadow-focus); z-index: 2; margin-right: -4px; }
-.ps-credit__bar i:last-child { background: var(--color-icon-positive-light); box-shadow: var(--shadow-default); z-index: 1; }
+.ps-credit__bar i + i { background: var(--color-icon-positive-light); box-shadow: var(--shadow-default); z-index: 1; }
 .ps-credit .ps-btn--shade { position: relative; width: 100%; }
 
 .ps-payment { gap: var(--spacing-gap-md); }
@@ -405,7 +405,7 @@ button.ps-ticket { display: block; width: 100%; text-align: left; }
 .ps-list { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); }
 .ps-empty { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-lg); padding: 0 var(--spacing-gap-lg); text-align: center; }
 .ps-empty > div { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); }
-/* a page that only has an empty state: the 80 px picture is centred where the loader's coin is (frame middle − 56 px; see .ps-stage) */
+/* a page that only has an empty state: the 80 px picture is centred where Order submit's coin is (frame middle − 56 px; see .ps-stage) */
 .ps-empty--page { margin-top: calc(var(--ph, 740px) / 2 - 96px - var(--ps-col-top, 116px) - var(--e, 0px)); }
 .ps-crow { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-padding-sm); width: 100%; text-align: left; }
 .ps-crow__main { flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--spacing-gap-md); }
@@ -528,8 +528,8 @@ button.ps-ticket { display: block; width: 100%; text-align: left; }
 .ps-lottie { display: block; flex: none; }
 .ps-lottie > svg { display: block; overflow: visible; }
 .ps-coin { position: relative; display: block; flex: none; }
-.ps-loader { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--spacing-gap-md); padding: var(--spacing-padding-5xl) 0; }
-.ps-loader--fill { padding: 40px var(--spacing-padding-3xl) 52px; gap: var(--spacing-gap-md); }   /* with .ps-stage */
+.ps-loader { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--spacing-gap-lg); padding: var(--spacing-padding-5xl) 0; }
+.ps-loader--fill { position: absolute; inset: 0; padding: 40px 0 0; }   /* a whole screen: in its very middle (40: the frame's strip above the screen) */
 .ps-busy { display: inline-flex; align-items: center; gap: var(--spacing-gap-xs); height: 20px; }
 .ps-busy > i { width: 6px; height: 6px; border-radius: var(--radius-full); background: currentColor; opacity: 0.35; animation: ps-busy 0.9s ease-in-out infinite; }
 .ps-busy > i:nth-child(2) { animation-delay: 0.15s; } .ps-busy > i:nth-child(3) { animation-delay: 0.3s; }
@@ -636,9 +636,8 @@ textarea.ps-field__value { white-space: normal; }
 /* Stage: where a full-screen loader and Order submit sit — the same place for both (owner): the icon in a 56 px box, 12 px,
    then an 88 px box with the dots / the text at its top; the icon and the first line together sit a little above the middle of the screen (56 px, as in the Order submit demo) */
 .ps-stage { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--spacing-gap-md); padding: 40px var(--spacing-padding-3xl) 52px; }   /* 40: the frame's strip above the screen */
-.ps-stage__icon { flex: none; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; }
+.ps-stage__icon { flex: none; width: 88px; height: 88px; display: flex; align-items: center; justify-content: center; }
 .ps-stage__text { height: 88px; width: 100%; display: flex; align-items: flex-start; justify-content: center; }
-.ps-stage__text > .ps-dots { margin-top: 3px; }   /* the dots (22) centred on where the first line of text (28) sits */
 .ps-osub { background: var(--color-surface-page-light); }
 .ps-osub__line { max-width: 296px; text-align: center; text-wrap: pretty; color: var(--color-text-brand-default);
   font: var(--font-weight-medium) var(--font-size-title-md)/var(--font-line-height-title-md) var(--font-family-title); }
@@ -655,7 +654,9 @@ textarea.ps-field__value { white-space: normal; }
 .ps-otps__phone > span:nth-child(2) { flex: 1 1 0; }
 .ps-otps__phone .ps-link { font: var(--font-weight-semi-bold) var(--font-size-label-md)/var(--font-line-height-label-md) var(--font-family-body); }
 .ps-otps__err { height: 44px; display: flex; align-items: center; padding: var(--spacing-padding-md); border-radius: var(--radius-sm); background: var(--color-surface-card-negative-subtle); color: var(--color-text-negative-default); }
-.ps-climit { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; z-index: 45; background: var(--color-surface-page-default); }
+/* the Credit limit increase over a page (the Withdraw demo's #wdIntro): the dark of its screen; above everything in the page it is in */
+.ps-climit { position: absolute; inset: 0; z-index: 100; overflow: hidden; background: #0d1620; }
+.ps-climit > iframe { display: block; width: 100%; height: 100%; border: 0; background: #0d1620; }
 
 /* ======================================================================================= home states (status.js) — app file section Home */
 .ps-tag--negative { background: var(--color-negative-200); color: var(--color-text-negative-heavy);

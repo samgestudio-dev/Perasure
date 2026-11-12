@@ -123,6 +123,7 @@
     APP.set({ otp: { then: function () {
       APP.set({ submitting: { then: function () {
         var spent = [D, Lm].filter(Boolean);
+        CS.take(l.amount);                                  /* the amount is used credit from now on: home, the hub and the history follow */
         APP.set({ used: spent.map(function (c) { return { id: 'u-' + c.id, type: c.type, value: c.value, label: c.label, rule: c.rule, meta: 'Used on ' + CS.today }; }).concat(APP.S.used),
           coupons: APP.S.coupons.filter(function (c) { return spent.indexOf(c) < 0; }), loan: 'reviewing',
           order: { amount: l.amount, term: l.term, first: C.per, date: CS.today, method: APP.S.method } });
@@ -251,7 +252,7 @@
 
   /* ---- your loan application: in review, or the transfer failed ---- */
   APP.screen('order', function Order() {
-    var S = APP.use(), o = S.order || { amount: 2000, term: 4, first: 1234.5, date: 'Jul 5, 2026', method: S.method }, failed = S.loan === 'failed';
+    var S = APP.use(), cur = CS.current, o = S.order || (cur ? { amount: cur.amount, term: cur.term, first: cur.first, date: cur.date, method: S.method } : { amount: 2000, term: 4, first: 1234.5, date: CS.today, method: S.method }), failed = S.loan === 'failed';
     return h(APP.Page, { title: 'Your loan application', load: 'order', bottom: failed ? h(PS.BottomBar, null, h(PS.Button, { block: true, onClick: function () { APP.go('method'); } }, 'Change withdrawal method')) : null },
       h('div', { className: 'app-order__head' }, h('p', { className: 'app-order__label' }, 'You applied for a loan'), h(PS.Amount, { value: o.amount, className: 'app-order__amount' })),
       h(PS.Card, { variant: 'outline', className: 'app-order__status' }, h('span', { className: PS.cx('ps-tile', failed && 'is-negative') }, h(PS.Icon, { name: failed ? 'alert-circle' : 'history', size: 20, color: 'inverse' })),

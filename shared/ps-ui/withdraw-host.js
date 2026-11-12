@@ -7,7 +7,9 @@
 
    What a host page may set (everything else is the demo's):
      PS.loadWithdraw()            → Promise of the sheet component (class)
-     <Sheet ref scale initialAmount host={{ max, blocks, onState, onConfirm, onNudge }} />      (render it from a memo'd parent: see opt())
+     <Sheet ref scale initialAmount availableAmount totalBalance temporaryAmount temporaryValidTill
+            host={{ max, blocks, onState, onConfirm, onNudge, heroEl }} />      (render it from a memo'd parent: see opt())
+            host.heroEl: an element to draw the demo's home card in (then call sheet.forceUpdate()); its Withdraw pill opens the sheet
             host.blocks(sheet) → [nodes]   the confirm blocks (default: the demo's own) — they enter exactly as the demo's blocks do
             host.onState(next, prev, sheet) · host.onConfirm(sheet) · host.onNudge(sheet) (Confirm tapped before the agreement is ticked)
      sheet.open()  · sheet.close()  · sheet.state { screen 'home' | 'loan', phase 'enter' | 'confirm', amt (hundreds, as text), term, agree }
@@ -33,18 +35,28 @@
       if (src.split(p[0]).length !== 2) { console.warn('[withdraw-host] the demo changed: could not find', p[0]); return; }
       src = src.replace(p[0], p[1]);
     });
+    /* the home card's pictures are named relative to the demo's own page */
+    src = src.split("'assets/").join("'" + url('assets/'));
     return src;
   }
 
   /* DCLogic: the base class the demo's code expects from the Claude Design runtime — state is merged at once (the demo relies on that,
      and also assigns this.state itself for its partial re-rendering), then the component is drawn again. React must never put an older
-     state back when a parent re-renders, so `state` is kept here and React's own assignments of the object it knows are ignored. */
+     state back: after every render it remembers the state object of that moment and assigns it again at the next update, by which time
+     the demo may have moved on. So `state` is kept here, every object that has been replaced is remembered, and an assignment of one of
+     those (only React does that; the demo always assigns a new object) is ignored. */
   class DCLogic extends R.Component {
     get state() { return this._st; }
-    set state(v) { if (this._st === undefined) { this._st = v; this._known = v; } else if (v !== this._known) this._st = v; }
+    set state(v) {
+      if (v === this._st) return;
+      if (!this._old) this._old = new WeakSet();
+      if (v && this._old.has(v)) return;
+      if (this._st) this._old.add(this._st);
+      this._st = v;
+    }
     setState(update, cb) {
       var patch = typeof update === 'function' ? update(this._st) : update;
-      if (patch) this._st = Object.assign({}, this._st, patch);
+      if (patch) this.state = Object.assign({}, this._st, patch);
       this.forceUpdate(cb);
     }
   }
@@ -119,9 +131,12 @@
       render() {
         var v = this.renderVals();
         /* the demo's home-card slot stays mounted (empty): the demo's partial re-rendering needs both slots */
-        return h(R.Fragment, null, h('div', { 'aria-hidden': true, style: { display: 'none' } }, v.hero), v.loan);
+        var el = this.opt('heroEl');
+        return h(R.Fragment, null, el ? window.ReactDOM.createPortal(v.hero, el) : h('div', { 'aria-hidden': true, style: { display: 'none' } }, v.hero), v.loan);
       }
-      _renderHero() { return null; }      /* the slot is there; the demo's home card itself is not needed (the host page has its own) */
+      /* the demo's home card: drawn into the element the host gives (host.heroEl) — the same card the Credit limit increase closes into
+         (introExit) and whose Withdraw pill opens the sheet; with no element the slot stays mounted, empty */
+      _renderHero() { return this.opt('heroEl') ? super._renderHero() : null; }
     };
   }
 

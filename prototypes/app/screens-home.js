@@ -8,7 +8,7 @@
   /* the three tab pages share one stack entry; the pill glides between them */
   APP.screen('tabs', function Tabs() {
     var S = APP.use(), Tab = APP.tabs[S.tab] || APP.tabs.home;
-    return h('div', { className: 'app-tabs' },
+    return h('div', { className: PS.cx('app-tabs', S.intro === 'play' && 'is-intro') },
       h(PS.Pages, { id: S.tab, dir: 0 }, h(Tab, null)),
       h(PS.Navigator, { id: 'app-nav', value: S.tab, onChange: function (t) { APP.set({ tab: t, tip: null }); },
         tabs: [{ id: 'home', label: 'Home', icon: 'nav-home' }, { id: 'payment', label: 'Payment', icon: 'nav-payment' }, { id: 'account', label: 'Account', icon: 'nav-account' }] }));
@@ -35,9 +35,9 @@
     return [APP.tune(), h(PS.HomeActions, { key: 'a', actions: list })];
   }
   function paymentCard(S) {
-    if (S.loan === 'overdue') { var o = AD.overdue; return h(PS.PaymentCard, { key: 'pay', amount: o.amount, was: o.was, due: o.due, badge: o.badge, overdue: true, onPay: pay,
+    if (S.repay === 'overdue') { var o = AD.overdue; return h(PS.PaymentCard, { key: 'pay', amount: o.amount, was: o.was, due: o.due, badge: o.badge, overdue: true, onPay: pay,
       notice: { title: o.notice.title, body: o.notice.body, onHelp: showPenalty } }); }
-    if (S.loan === 'active' || S.user === 'hold') { var p = AD.payment; return h(PS.PaymentCard, { key: 'pay', amount: p.amount, was: p.was, due: p.due, badge: p.badge, onPay: pay }); }
+    if (AD.payment && (S.repay === 'active' || S.user === 'hold')) { var p = AD.payment; return h(PS.PaymentCard, { key: 'pay', amount: p.amount, was: p.was, due: p.due, badge: p.badge, onPay: pay }); }
     return null;
   }
   function notice() { return h(PS.Notice, { key: 'notice', onClick: function () { APP.open('scams', { then: null }); } }, 'All PeraSure transactions happen in the app. Never send money through third parties.'); }
@@ -70,13 +70,47 @@
           cond: c.terms.length === CS.loan.terms.length ? 'Any term' : CS.termsText(c.terms).replace(/^./, function (x) { return x.toUpperCase(); }) };
       });
       var update = S.loan === 'reviewing' || S.loan === 'failed';
-      body = [h(PS.CreditCard, { key: 'credit', available: credit.available, total: credit.total, temporary: credit.temporary, temporaryUntil: credit.temporaryUntil,
-          onWithdraw: function () { APP.borrow(); }, onInfo: function (e) { APP.tipAt(e.currentTarget, 'Your available amount is what you can borrow today. It goes back up as you repay.'); } }),
+      var tip = 'Your available amount is what you can borrow today. It goes back up as you repay.' +
+        (credit.temporary ? ' ' + money(credit.temporary, 0) + ' of your total credit is temporary credit, valid until ' + credit.temporaryUntilLong + '.' : '');
+      /* the Withdraw demo's own card (the one its motion works on) — it always has a temporary-credit line, so with no temporary credit
+         (Tune) the shared component is used, as with ?card=ps */
+      body = [APP.wd && APP.wd.heroReady() && credit.temporary > 0 && !APP.q.get('card')
+          ? h(APP.WdHero, { key: 'credit', onInfo: function (el) { APP.tipAt(el, tip); } })
+          : h(PS.CreditCard, { key: 'credit', available: credit.available, total: credit.total, temporary: credit.temporary, temporaryUntil: credit.temporaryUntil,
+              onWithdraw: function () { APP.borrow(); }, onInfo: function (e) { APP.tipAt(e.currentTarget, tip); } }),
         update ? h(PS.Strip, { key: 'upd', icon: 'info', title: 'You have updates on your loan', sub: 'Tap to view the latest status', count: 1, onClick: function () { APP.go('order'); } }) : null,
         paymentCard(S),
         h(PS.HomeCoupons, { key: 'coupons', coupons: cards, onOpen: function () { APP.go('coupons'); } }), more()].concat(trust());
     }
     var first = R.useRef(!opened); opened = true;   /* the first time home shows (after the splash) its cards rise in */
-    return h(PS.Screen, { colBottom: 120, rise: first.current, top: { left: h(PS.Brand), right: actions(S) } }, body);
+    /* the Credit limit increase plays over home, then closes into the card — the Withdraw demo's own exit (introExit) when its card is the
+       one on this page; the demo's code finds the page around the card by these names: .ps-home-in (the cards), .ps-tabbar, the logo row */
+    var c = credit, usedMode = c.total - c.available > 0.5;
+    var intro = S.intro ? h(PS.CreditLimitIntro, { mode: usedMode ? 'total' : 'available',
+      data: usedMode ? { old: c.total - c.temporary, new: c.total, inc: c.temporary, exp: c.temporaryUntilISO } : { old: c.available - c.temporary, new: c.available, inc: c.temporary, exp: c.temporaryUntilISO },
+      exit: function (o) {
+        if (!window.__wdIntroExit || !document.querySelector('.app-wdhero [data-wd-amount]')) return false;
+        var bar = document.querySelector('.app-tabs .ps-nav__bar'), row = document.querySelector('.app-tabs .ps-top__row');
+        if (bar) bar.classList.add('ps-tabbar');
+        if (row && !row.querySelector('img[alt="PeraSure"]')) { var sp = document.createElement('span'), im = document.createElement('img'); im.alt = 'PeraSure'; sp.hidden = true; sp.appendChild(im); row.appendChild(sp); }
+        /* on a frame wider than 360 the card is scaled (k): the demo measures on screen and moves the amount in the card's own px, so the
+           place and size the travelling number starts from are given in those px (the number still starts exactly on the big one) */
+        var k = APP.wd.heroK || 1, amt = document.querySelector('.app-wdhero [data-wd-amount]');
+        if (o.src && Math.abs(k - 1) > 0.001 && amt && amt.children[1]) {
+          var p0 = amt.children[0].getBoundingClientRect(), p1 = amt.children[1].getBoundingClientRect(), cx = (p0.left + p1.right) / 2, cy = (p0.top + p0.bottom) / 2;
+          o.src = Object.assign({}, o.src, { x: cx + (o.src.x - cx) / k, y: cy + (o.src.y - cy) / k, size: o.src.size ? o.src.size / k : o.src.size });
+        }
+        /* …and the demo lifts the card above the closing box by z-index: a scaled box is a layer of its own, so it is lifted with it until the end */
+        var inn = document.querySelector('.app-wdhero__in');
+        if (inn && Math.abs(k - 1) > 0.001) {
+          var done0 = o.done; inn.style.position = 'relative'; inn.style.zIndex = '101';
+          o = Object.assign({}, o, { done: function () { inn.style.position = ''; inn.style.zIndex = ''; if (done0) done0.apply(null, arguments); } });
+        }
+        var ran = window.__wdIntroExit(o);
+        if (ran) APP.set({ intro: 'out' });               /* the tab bar may show again: the exit has taken hold of it */
+        return ran;
+      },
+      onDone: function () { APP.set({ intro: false }); } }) : null;
+    return h(PS.Screen, { colBottom: 120, className: 'ps-home-in', rise: first.current && !S.intro, overlay: intro, top: { left: h(PS.Brand), right: actions(S) } }, body);
   };
 })();

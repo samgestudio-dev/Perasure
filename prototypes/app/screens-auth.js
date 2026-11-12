@@ -2,14 +2,14 @@
    52:3838 Sending code, 52:3846 Permission, 52:3866 Opening). */
 (function () {
   'use strict';
-  var R = window.React, PS = window.PS, APP = window.APP, AD = window.AD, h = R.createElement, m = PS.m, T = APP.T;
+  var R = window.React, PS = window.PS, APP = window.APP, AD = window.AD, CS = window.CS, h = R.createElement, m = PS.m, T = APP.T;
 
   /* Opening: the splash while the app starts; then the Credit limit increase (Tune) and home */
   APP.screen('opening', function Opening() {
     R.useEffect(function () {
       var t = setTimeout(function () {
         var deep = APP.q.get('page');
-        if (T.intro && +T.intro && APP.S.user === 'approved') APP.set({ intro: true });
+        if (T.intro && +T.intro && APP.S.user === 'approved' && CS.credit.temporary > 0) APP.set({ intro: 'play' });
         APP.home(deep === 'payment' || deep === 'account' ? deep : 'home', 0);
         if (deep && APP.screens[deep]) APP.go(deep);
       }, APP.q.get('page') ? 60 : APP.rnd(900, 1500));

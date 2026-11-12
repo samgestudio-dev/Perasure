@@ -51,7 +51,7 @@
       h(PS.Divider),
       h('div', { className: 'ps-payment__foot' },
         h('div', { className: 'ps-payment__due' }, h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, 'Due date'), due),
-        h(PS.Button, { size: 'sm', onClick: p.onPay }, p.payLabel || 'Pay ' + PS.money(p.amount, 0) + ' now')));
+        h(PS.Button, { size: 'sm', onClick: p.onPay }, p.payLabel || 'Pay ' + PS.money(p.amount, p.amount % 1 ? 2 : 0) + ' now')));
   };
 
   /* HomeCoupons: "Coupons for your next loan" (Figma 10750:62557 two, 10750:61878 one) · coupons [{ type: percent | amount | limit,

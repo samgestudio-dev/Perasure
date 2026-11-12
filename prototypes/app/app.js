@@ -13,7 +13,9 @@ window.APP = (function () {
   var S = {
     stack: [{ name: 'opening', key: 'k0', params: {} }], dir: 0, tab: 'home',
     sheet: null, tip: null, toast: null, busy: false, otp: null, submitting: false, intro: false,
-    user: T.user || 'approved', loan: T.loan || 'active', seenScam: false, rated: false,
+    user: T.user || 'approved', loan: T.loan || 'active',
+    repay: CS.current && /^(active|overdue)$/.test(CS.current.state) ? CS.current.state : null,   /* the loan being repaid: it stays when another one is ordered */
+    seenScam: false, rated: false,
     coupons: CS.coupons(T.coupons == null ? '6' : T.coupons), used: CS.used,
     inbox: null, method: { kind: 'wallet', id: 'gcash', name: 'GCash', last4: '4057' }, order: null, phone: '9171236789'
   };
@@ -100,10 +102,10 @@ window.APP = (function () {
         onChange: function () { set({ otp: null }); go('phone-old'); },
         onVerified: function () { var cb = S.otp && S.otp.then; set({ otp: null }); if (cb) cb(); } }),
       h(PS.Overlay, { open: S.submitting }, S.submitting ? h(PS.OrderSubmit, { onDone: function () { var cb = S.submitting.then; set({ submitting: false }); if (cb) cb(); } }) : null),
-      S.intro ? h(PS.CreditLimitIntro, { data: { old: CS.credit.total - CS.credit.temporary, new: CS.credit.total, inc: CS.credit.temporary, exp: '2026-11-20' }, onDone: function () { set({ intro: false }); } }) : null,
       h(PS.Overlay, { open: S.busy }, h(PS.Loader, { fill: true })),
       h(PS.Tooltip, { open: !!S.tip, anchor: S.tip ? S.tip.anchor : null, width: S.tip ? S.tip.width : null, text: S.tip ? S.tip.text : '', onClose: function () { set({ tip: null }); } }),
-      h(PS.Toast, { msg: S.toast, bottom: top.name === 'tabs' ? 112 : 124 }));
+      /* the toast sits just above what is at the bottom of the screen (owner: not high up); over the Withdraw sheet that is its Confirm button */
+      h(PS.Toast, { msg: S.toast, bottom: 'auto', above: S.wd && S.stack.length <= S.wd ? Math.round(76 * ((document.querySelector('.ps-frame') || {}).clientWidth || 360) / 360) : 0 }));
   }
   function maskPhone(p) { return '0' + p.slice(0, 2) + '****' + p.slice(-4); }
 

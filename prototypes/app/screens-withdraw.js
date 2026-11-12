@@ -12,11 +12,15 @@
 
   /* the sheet itself: drawn once and left alone (see withdraw-host.js → opt) */
   var Stable = R.memo(function Stable(p) {
-    return h(p.K, { key: p.gen, ref: p.host.ref, scale: p.scale, host: p.host });
+    return h(p.K, Object.assign({ key: p.gen, ref: p.host.ref, scale: p.scale, host: p.host }, p.credit));
   });
 
   APP.WithdrawHost = function WithdrawHost() {
     var S = APP.use(), k = R.useState(null), K = k[0], box = R.useRef(null), sc = R.useState(1), gen = R.useState(0), idle = R.useRef(0);
+    /* the numbers on the demo's home card: the app's (they change when a loan is ordered — the sheet is made again then, see reset) */
+    var CARD = R.useMemo(function () {
+      return { availableAmount: CREDIT.available, totalBalance: CREDIT.total, temporaryAmount: CREDIT.temporary, temporaryValidTill: String(CREDIT.temporaryUntil || '').replace(/,? ?\d{4}$/, '') };
+    }, [gen[0]]);
     var host = R.useRef(null); if (!host.current) host.current = { sheet: null, nudge: 0, ref: function (s) { host.current.sheet = s; } };
     var H = host.current;
     R.useEffect(function () {
@@ -31,14 +35,22 @@
     APP.wd = {
       sheet: function () { return H.sheet; },
       /* open(withId): the amount entry; a coupon asked for ("Use") is put on the loan once the amount and the term are chosen */
-      open: function (withId) { var s = H.sheet; if (!s || !s.ready()) return false; H.withId = withId || null; APP.set({ L: null, lastRow: {}, wd: APP.S.stack.length }); s.open(); return true; },
+      open: function (withId) { var s = H.sheet; if (!s || !s.ready()) return false; s.open(); H.withId = withId || null; return true; },
+      /* the demo's home card, for the home page (APP.WdHero) — the card the Credit limit increase closes into, exactly as in the demo;
+         setHero(el) tells the sheet where to draw it (heroReady stays true while the sheet is made again after an order) */
+      heroReady: function () { return !!APP.S.wdReady; },
+      setHero: function (el) { if (H.heroEl === el) return; H.heroEl = el; if (H.sheet) H.sheet.forceUpdate(); },
+      /* a home page that leaves gives the card up only if a newer home page hasn't taken it (two exist while one slides over the other) */
+      dropHero: function (el) { if (H.heroEl === el) APP.wd.setHero(null); },
       reset: function () { APP.set({ wd: 0 }); gen[1](function (g) { return g + 1; }); }     /* gone at once (behind Order submit) */
     };
     /* the most that can be borrowed: before a term is picked, with the biggest limit coupon; after, with the one in use */
     var lims = S.coupons.filter(function (c) { return c.kind === 'limit'; }), inUse = S.L && lims.filter(function (c) { return c.id === S.L.lim; })[0];
     H.max = S.L ? CREDIT.available + (inUse ? inUse.add : 0) : CREDIT.available + lims.reduce(function (a, c) { return Math.max(a, c.add); }, 0);
     H.onState = function (next, prev) {
+      if (next.fm && next.MT && !APP.S.wdReady) APP.set({ wdReady: true });               /* the demo's code is ready: home can show its card */
       if (next.screen !== prev.screen && next.screen === 'home') APP.set({ wd: 0 });
+      if (next.screen === 'loan' && prev.screen !== 'loan') { H.withId = null; APP.set({ L: null, lastRow: {}, wd: APP.S.stack.length }); }   /* opened (APP.borrow, or the card's own Withdraw) */
       if (next.phase === 'confirm' && prev.phase !== 'confirm') {                      /* a term was picked: this is the loan now */
         var amount = Math.min(pesos(next), H.max), l = APP.freshLoan(amount, next.term, null), c = H.withId && S.coupons.filter(function (x) { return x.id === H.withId; })[0];
         if (c) {                                                                        /* the coupon that was tapped, when it fits what was chosen */
@@ -66,9 +78,26 @@
     var open = !!S.wd, under = open && S.stack.length > S.wd;      /* a page opened from the sheet (withdrawal method) shows in its place */
     return h(R.Fragment, null,
       h('div', { ref: box, className: 'app-wd', style: { transform: 'scale(' + sc[0] + ')', visibility: under ? 'hidden' : 'visible' } },
-        K ? h(Stable, { K: K, gen: gen[0], scale: sc[0], host: H }) : null),
+        K ? h(Stable, { K: K, gen: gen[0], scale: sc[0], host: H, credit: CARD }) : null),
       open && !under ? h('div', { className: 'app-wd__tune' }, APP.tune()) : null);
   };
+  /* WdHero: the home page's credit card when the demo's own card can be used (APP.wd.heroReady()) — the card the demo's motion works on.
+     The demo draws it 328 wide (a 360 screen); on a wider frame it is scaled to the column, like the sheet (k = column / 328). */
+  APP.WdHero = function WdHero(p) {
+    var out = R.useRef(null), ref = R.useRef(null);
+    R.useLayoutEffect(function () {
+      var el = ref.current, o = out.current, ro = null;
+      function fit() { var k = o.clientWidth / 328; el.style.transform = Math.abs(k - 1) < 0.001 ? '' : 'scale(' + k + ')'; o.style.height = el.offsetHeight ? Math.round(el.offsetHeight * k * 100) / 100 + 'px' : ''; APP.wd.heroK = k; }
+      APP.wd.setHero(el); fit();
+      if (window.ResizeObserver) { ro = new ResizeObserver(fit); ro.observe(el); ro.observe(o); }
+      return function () { if (ro) ro.disconnect(); APP.wd.dropHero(el); };
+    }, []);
+    return h('div', { ref: out, className: 'app-wdhero' }, h('div', { ref: ref, className: 'app-wdhero__in', onClick: function (e) {
+      var info = ref.current.querySelector('img[src*="icon-info-circle"]');
+      if (info && p.onInfo && info.parentNode.contains(e.target)) p.onInfo(info.parentNode);
+    } }));
+  };
+
   /* borrow: every way into ordering starts at the amount entry (owner) — the home card, the credit limit hub, a coupon's "Use", "Go to borrow" */
   APP.borrow = function (withId) {
     if (APP.wd && APP.wd.open(withId)) return;

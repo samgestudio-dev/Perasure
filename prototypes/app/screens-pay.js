@@ -3,9 +3,9 @@
    52:7763 methods, 52:7693 transfer, 52:7714 app, 52:7733 QR code. */
 (function () {
   'use strict';
-  var R = window.React, PS = window.PS, APP = window.APP, AD = window.AD, h = R.createElement, m = PS.m, money = PS.money;
+  var R = window.React, PS = window.PS, APP = window.APP, AD = window.AD, CS = window.CS, h = R.createElement, m = PS.m, money = PS.money;
 
-  function dues(S) { return S.loan === 'overdue' ? AD.dues : S.loan === 'active' ? AD.dues.slice(1) : []; }
+  function dues(S) { return S.repay ? AD.dues : []; }      /* the current loan's payments that are still to make */
   function startPay(total) {
     var next = function () { APP.open('paymethods', { total: total }); };
     if (!APP.S.seenScam) APP.open('scams', { then: next }); else next();
@@ -18,7 +18,7 @@
     var late = list.filter(function (d) { return d.late; }), soon = list.filter(function (d) { return !d.late; }), body;
     function card(d) {
       return h(PS.Installment, { key: d.id, month: d.month, day: d.day, amount: d.amount + (d.penalty || 0), tone: d.late ? 'negative' : 'brand', on: sel.indexOf(d.id) >= 0, onToggle: function () { toggle(d.id); },
-        sub: d.late ? 'Overdue ' + d.late + ' days' : d.badge, note: d.late ? 'Includes ' + money(d.penalty) + ' penalty' : 'No penalty for 3 days after the due date', noteIcon: d.late ? 'info' : 'order',
+        sub: d.late ? 'Overdue ' + d.late + ' days' : d.badge, note: d.penalty ? 'Includes ' + money(d.penalty) + ' penalty' : d.late >= CS.loan.grace ? 'No penalty if you pay today' : 'No penalty for 3 days after the due date', noteIcon: d.late ? 'info' : 'order',
         onDetail: function () { APP.open('paydetail', { id: d.id }); } });
     }
     if (!APP.signedIn()) body = h('div', { className: 'app-guestpay' },
@@ -77,14 +77,14 @@
 
   /* The pay page: the amount, then the way to pay it (app, reference number, or QR code) */
   APP.screen('pay', function Pay(p) {
-    var mt = p.params.method || { name: 'GCash', kind: 'app' }, total = p.params.total || 2000, how;
+    var mt = p.params.method || { name: 'GCash', kind: 'app' }, d0 = AD.dues[0], total = p.params.total || (d0 ? d0.amount : 2000), how;
     function copy() { APP.say('Copied ' + money(total) + '.'); }
     if (mt.kind === 'app') how = [h(PS.Button, { key: 'b', block: true, onClick: function () { APP.say(mt.name + ' opens outside the test app.'); } }, 'Open ' + mt.name), h(PS.PayTimer, { key: 't' })];
     else if (mt.kind === 'qr') how = [h('p', { key: 'n', className: 'ps-t-caption-sm ps-repay__note' }, 'Refresh the page to get a new code when this one expires.'),
       h(PS.QrPanel, { key: 'q', merchant: 'Payso', onSave: function () { APP.say('Saved the QR code to your photos.'); } }), h(PS.PayTimer, { key: 't' })];
     else how = h(PS.InsetRows, { rows: [{ label: 'Payment No.', value: AD.payNo }, { label: 'Sender’s name', value: AD.user.name }] });
     return h(APP.Page, { title: 'Payment', load: 'pay-' + mt.kind },
-      h(PS.Section, { label: 'TOTAL REPAYMENT' }, h(PS.RepayCard, { amount: total, due: 'December 12, 2026', onCopy: copy }, how)),
+      h(PS.Section, { label: 'TOTAL REPAYMENT' }, h(PS.RepayCard, { amount: total, due: d0 ? d0.due : 'December 12, 2026', onCopy: copy }, how)),
       h(PS.Accordion, { title: (mt.kind === 'transfer' ? 'Payment' : 'Repayment') + ' example (' + mt.name + ')', open: mt.kind === 'app' },
         '1. Open the ' + mt.name + ' app and tap "Pay Bills".\n2. Select "Loans" and find "PeraSure".\n3. Enter the exact amount and your payment number.\n4. Confirm the payment.'));
   });

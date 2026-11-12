@@ -66,7 +66,7 @@
         return h('span', { key: n, className: 'ps-osub__l', 'data-i': n++, 'data-dot': step === 1 && c === '.' ? ++dot : 0 }, c); })), wi < all.length - 1 ? ' ' : null);
     });
     return h('div', { className: 'ps-stage ps-osub', role: 'status', 'aria-live': 'polite', 'aria-label': lines[step] },
-      h('span', { className: 'ps-stage__icon' }, h(PS.Coin, { size: 56, state: ok[0] ? 'success' : 'loading', onDone: function () { fin.current.coin = true; finish(); } })),
+      h('span', { className: 'ps-stage__icon' }, h(PS.Coin, { size: 88, state: ok[0] ? 'success' : 'loading', onDone: function () { fin.current.coin = true; finish(); } })),
       h('div', { className: 'ps-stage__text' }, h('p', { key: step, ref: ref, className: 'ps-osub__line', 'aria-hidden': true }, words)));
   };
 
@@ -133,18 +133,46 @@
     return h(PS.Sheet, { open: p.open, kind: 'card', label: 'Verify it’s you', onClose: p.onClose, className: 'ps-otps' }, p.open ? h(OtpBody, p) : null);
   };
 
-  /* CreditLimitIntro: the Credit limit increase animation (coins, new limit), played over the page before home shows.
-     data { old, new, inc, exp } · onDone. Hosts the shipped page (prototypes/credit-limit-coins/baked) and hides its Replay button. */
+  /* CreditLimitIntro: the Credit limit increase animation (coins, new limit) over a page, then its way out — as in the Withdraw demo
+     (prototypes/withdraw-fund-flow/intro.js, the same steps and numbers): the shipped page (prototypes/credit-limit-coins/baked) plays in a
+     frame; 3 s after it ends (a tap skips the wait) it leaves. How it leaves belongs to the page under it:
+     exit(o) → true when the page runs the exit itself (the Withdraw demo's introExit: the screen closes into the home card) — o is what
+     intro.js hands over: { box, iframe, src (the big number: element, centre, size, colour), mode, done }. Otherwise, and with reduced
+     motion, it fades out in 0.3 s.
+     data { old, new, inc, exp } · mode 'available' | 'total' (which number the screen shows going up) · exit · onDone · holdMs (3000) */
   PS.CreditLimitIntro = function CreditLimitIntro(p) {
-    var d = p.data || {}, done = R.useRef(p.onDone); done.current = p.onDone;
+    var d = p.data || {}, box = R.useRef(null), fr = R.useRef(null), cb = R.useRef(p); cb.current = p;
     R.useEffect(function () {
-      function on(e) { if (e.data && e.data.type === 'creditlimit:done' && done.current) done.current(); }
+      var doneAt = 0, leaving = false, hold = 0, safety = 0, dead = false;
+      function finish() { if (!dead && cb.current.onDone) cb.current.onDone(); }
+      function go() {
+        if (dead) return;
+        var b = box.current, f = fr.current, P = cb.current;
+        if (!PS.reduce && P.exit) {
+          var src = null;
+          try {
+            var d0 = f.contentDocument, a0 = d0 && d0.getElementById('amount');
+            if (a0) { var fr0 = f.getBoundingClientRect(), ar0 = a0.getBoundingClientRect(), cs0 = f.contentWindow.getComputedStyle(a0), rgb = (cs0.color.match(/\d+/g) || [255, 255, 255]).slice(0, 3);
+              src = { el: a0, x: fr0.left + ar0.left + ar0.width / 2, y: fr0.top + ar0.top + ar0.height / 2, size: parseFloat(cs0.fontSize),
+                color: '#' + rgb.map(function (v) { return ('0' + (+v).toString(16)).slice(-2); }).join('') }; }
+          } catch (e) {}
+          if (P.exit({ box: b, iframe: f, src: src, mode: P.mode || 'available', done: finish })) return;
+        }
+        if (!b.animate) { finish(); return; }
+        b.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, easing: 'linear', fill: 'forwards' }).finished.then(finish, finish);
+      }
+      function leave() { if (leaving || dead) return; leaving = true; clearTimeout(hold); requestAnimationFrame(function () { requestAnimationFrame(go); }); }
+      function on(e) { if (e.data && e.data.type === 'creditlimit:done' && !doneAt) { doneAt = performance.now(); hold = setTimeout(leave, cb.current.holdMs == null ? 3000 : cb.current.holdMs); } }
       window.addEventListener('message', on);
-      var t = setTimeout(function () { if (done.current) done.current(); }, 9000);          /* never leaves the user stuck behind it */
-      return function () { window.removeEventListener('message', on); clearTimeout(t); };
+      safety = setTimeout(function () { if (!doneAt) leave(); }, 12000);                    /* never stuck behind it */
+      var f = fr.current, loaded = function () {
+        try { var doc = f.contentDocument, st = doc.createElement('style'); st.textContent = '#replay{visibility:hidden!important}'; doc.head.appendChild(st);
+          doc.addEventListener('click', function () { if (doneAt) leave(); }, true); } catch (x) {}
+      };
+      f.addEventListener('load', loaded);
+      return function () { dead = true; window.removeEventListener('message', on); clearTimeout(hold); clearTimeout(safety); f.removeEventListener('load', loaded); };
     }, []);
     var src = PS.root + 'prototypes/credit-limit-coins/baked/baked-heap.html?old=' + (d.old || 30000) + '&new=' + (d.new || 40000) + '&inc=' + (d.inc || 10000) + (d.exp ? '&exp=' + encodeURIComponent(d.exp) : '');
-    return h('iframe', { className: 'ps-climit', src: src, title: 'Credit limit increase',
-      onLoad: function (e) { try { var st = e.target.contentDocument.createElement('style'); st.textContent = '#replay{display:none!important}'; e.target.contentDocument.head.appendChild(st); } catch (x) {} } });
+    return h('div', { ref: box, className: 'ps-climit' }, h('iframe', { ref: fr, src: src, title: 'Credit limit increase', allow: 'autoplay' }));
   };
 })();

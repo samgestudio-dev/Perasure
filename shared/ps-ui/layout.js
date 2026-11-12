@@ -197,9 +197,25 @@
     return h(m.button, Object.assign({ type: 'button', className: 'ps-tune-btn', onClick: window.PSTune.open }, PS.press()), 'Tune');
   };
 
-  /* Toast: a short message above the bottom bar · msg (null hides) · bottom (px above the frame bottom, 120) */
+  /* Toast: a short message above the bottom bar · msg (null hides) · bottom: px above the frame bottom (120), or 'auto' — it places
+     itself (owner: low, close to what is at the bottom): 12 px above the tab bar, the bottom bar's button or the pay bar of the page on
+     top, and 24 px above the screen edge when nothing is there · above: px of something at the bottom the page can't know by its class */
+  PS.toastBottom = function (frame, above) {
+    var fr = frame.getBoundingClientRect(), top = null, edge = document.documentElement.classList.contains('ps-edge') ? (window.__PS_SB || 0) : 0;
+    [].forEach.call(frame.querySelectorAll('.ps-nav__bar, .ps-bot > :not(.ps-pb), .ps-paybar'), function (el) {
+      var r = el.getBoundingClientRect();
+      if (!r.height || r.top > fr.bottom || r.bottom < fr.bottom - 200 || el.closest('.ps-sheet') || getComputedStyle(el).visibility === 'hidden') return;
+      if (top == null || r.top < top) top = r.top;
+    });
+    var h0 = top == null ? 0 : fr.bottom - top;
+    if (above) h0 = Math.max(h0, above + edge);
+    return Math.round(h0 ? h0 + 12 : 24 + edge);
+  };
   PS.Toast = function Toast(p) {
-    return h(AP, null, p.msg ? h(m.div, Object.assign({ key: p.msg, className: 'ps-toast ps-bubble ps-t-body-md', role: 'status', style: p.bottom ? { '--ps-toast-bottom': p.bottom + 'px' } : null }, PS.fade(PS.MT.Y.block)), p.msg) : null);
+    var auto = p.bottom === 'auto';
+    return h(AP, null, p.msg ? h(m.div, Object.assign({ key: p.msg, className: 'ps-toast ps-bubble ps-t-body-md', role: 'status',
+      ref: auto ? function (el) { if (el && el.offsetParent) el.style.bottom = PS.toastBottom(el.offsetParent, p.above) + 'px'; } : null,
+      style: !auto && p.bottom ? { '--ps-toast-bottom': p.bottom + 'px' } : null }, PS.fade(PS.MT.Y.block)), p.msg) : null);
   };
   /* useToast: [msg, show(text, ms)] */
   PS.useToast = function () {

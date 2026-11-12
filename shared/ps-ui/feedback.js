@@ -27,13 +27,12 @@
     var w = p.width || 84;
     return h(PS.Lottie, { src: PS.asset('lottie/loading-dots.json'), width: w, height: Math.round(w * 22 / 84), viewBox: '50 130 425 180', className: 'ps-dots' });
   };
-  /* Loader: coin + dots at the Loading page's sizes (a 50 px coin, dots 84 × 22, 12 px apart), centred in its box · label (optional line under it)
-     fill: a whole screen that is loading — the coin and the dots sit exactly where Order submit's coin and text sit (.ps-stage: centred, a little above the middle) */
+  /* Loader: the Loading page's coin + dots, drawn larger than there (owner: 50 px read too small in the app): an 88 px coin (its picture hangs
+     12 px outside its box, as 7 does at 50), dots 128 × 34, 16 px apart, centred in its box · label (optional line under it)
+     fill: a whole screen that is loading — the coin and the dots sit in the very middle of the screen (owner) */
   PS.Loader = function Loader(p) {
-    if (p.fill) return h('div', { className: PS.cx('ps-loader ps-stage ps-loader--fill', p.className), style: p.style, role: 'status', 'aria-label': p.label || 'Loading' },
-      h('span', { className: 'ps-stage__icon' }, h(PS.Coin, { size: 50, inset: 7 })), h('div', { className: 'ps-stage__text' }, h(PS.Dots, { width: 84 })));
-    return h('div', { className: PS.cx('ps-loader', p.className), style: p.style, role: 'status', 'aria-label': p.label || 'Loading' },
-      h(PS.Coin, { size: 50, inset: 7 }), h(PS.Dots, { width: 84 }), p.label ? h('p', { className: 'ps-t-body-md ps-c-tertiary' }, p.label) : null);
+    return h('div', { className: PS.cx('ps-loader', p.fill && 'ps-loader--fill', p.className), style: p.style, role: 'status', 'aria-label': p.label || 'Loading' },
+      h(PS.Coin, { size: 88, inset: 12 }), h(PS.Dots, { width: 128 }), p.label ? h('p', { className: 'ps-t-body-md ps-c-tertiary' }, p.label) : null);
   };
   /* Busy: the small three-dot pulse inside a button that is waiting */
   PS.Busy = function Busy() { return h('span', { className: 'ps-busy', role: 'status', 'aria-label': 'Loading' }, h('i'), h('i'), h('i')); };

@@ -3,6 +3,7 @@
 window.AD = (function () {
   'use strict';
   var money = function (n, d) { return window.PS.money(n, d); };
+  var CS = window.CS, cur = CS.current, due = cur ? cur.dues : [], d0 = due[0];
   return {
     user: { initials: 'SG', name: 'Sam Ge', verified: true },
     /* what the home page says in each account state (Tune → Account) */
@@ -11,7 +12,7 @@ window.AD = (function () {
       docs: { title: 'Help us review your application', body: 'Add documents that show your job or income. Clear, complete documents may improve your chances of approval.', timer: '47h 57m 10s' },
       declined: { title: 'Application wasn’t approved', body: 'We can’t offer you a credit limit right now. You can apply again after 30 days.', ask: 'Have a question about the result? Chat with support!' },
       expired: { title: 'Credit limit expired', body: 'Your limit expired on September 20, 2026. Reapply to get a new one.' },
-      hold: { title: 'Credit unlocking soon', body: 'To keep your account safe, we’ve paused your ₱10,000 limit for now. You can withdraw again from October 15, 2026.', ask: 'Have a question about the hold? Chat with support!' }
+      hold: { title: 'Credit unlocking soon', body: 'To keep your account safe, we’ve paused your ' + money(CS.credit.limit, 0) + ' limit for now. You can withdraw again from November 27, 2026.', ask: 'Have a question about the hold? Chat with support!' }
     },
     hero: { label: 'You may qualify for up to', amount: 50000, tagline: 'Simple, Fast, Made for You.', action: 'Check your limit',
       stats: [{ value: '<0.3%', label: 'Daily rate' }, { value: '91-180d', label: 'Terms' }, { value: '3 mins', label: 'Approval' }] },
@@ -21,15 +22,12 @@ window.AD = (function () {
       { title: 'High Limit, Long Terms', text: '"A lifesaver for emergencies—high initial amount, fair fees, and flexible repayment terms. 5 stars!"', name: 'Angela R.' }],
     offer: { logo: 'loadcash', name: 'LoadCash', tag: 'Best match', label: 'Max amount', value: '₱50,000', rows: [{ label: 'Max term', value: '180 days' }] },
     banners: [{ id: 'b1', title: 'Invite a friend', body: 'You both get a coupon when they take their first loan.' }, { id: 'b2', title: 'Pay early, save more', body: 'See how early payments lower your interest.' }],
-    /* repayments (Tune → Loan: Repaying / Overdue) */
-    payment: { amount: 800, was: null, due: 'Oct 24, 2026', badge: 'Due in 45 days' },
-    overdue: { amount: 800, was: null, due: 'Oct 24, 2026', badge: 'Overdue · 3 days', penalty: 50,
-      notice: { title: 'Last day to pay without a penalty', body: 'Pay by 11:59 PM today to avoid a ₱50.00 penalty on Jan 19.' } },
+    /* repayments (Tune → Loan: Repaying / Overdue): the current loan's payments (coupons-data.js → current), so they agree with the used credit */
+    payment: d0 ? { amount: d0.amount, was: null, due: d0.dueShort, badge: d0.badge || 'Overdue · ' + d0.late + ' days' } : null,
+    overdue: d0 ? { amount: d0.amount + d0.penalty, was: null, due: d0.dueShort, badge: 'Overdue · ' + d0.late + ' days', penalty: cur.penalty,
+      notice: { title: 'Last day to pay without a penalty', body: 'Pay by 11:59 PM today to avoid a ' + money(cur.penalty) + ' penalty on ' + cur.penaltyDate + '.' } } : null,
     penalties: [['Days 1-3', 'No penalty, but your payment is overdue.'], ['Day 4', '5% of the unpaid principal for each installment.'], ['Every 30 days', 'Another 5% on the principal that’s still unpaid.']],
-    dues: [
-      { id: 'p1', month: 'JAN', day: '15', amount: 2000, late: 18, penalty: 50, due: 'January 15, 2026', loanDate: 'July 5, 2026', interest: 30, fee: 50, coupon: 0 },
-      { id: 'p2', month: 'JUL', day: '20', amount: 1234.5, due: 'July 20, 2026', loanDate: 'July 5, 2026', interest: 18.5, fee: 0, coupon: 12, badge: 'Due in 45 days' },
-      { id: 'p3', month: 'AUG', day: '04', amount: 1234.5, due: 'August 4, 2026', loanDate: 'July 5, 2026', interest: 18.5, fee: 0, coupon: 0, badge: 'Due in 60 days' }],
+    dues: due,
     payNo: 'PH0000351234567',
     /* where the money goes */
     wallets: [{ id: 'maya', name: 'Maya', note: 'Supports ₱50k+ loans' }, { id: 'gcash', name: 'GCash', note: 'Supports ₱50k+ loans' }, { id: 'coins', name: 'Coins.ph', note: 'Supports ₱50k+ loans' },

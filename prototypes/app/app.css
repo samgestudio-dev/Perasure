@@ -1,5 +1,6 @@
 /* PeraSure app — only where this prototype places shared pieces (the look lives in shared/ps-ui/ps-ui.css) */
 .app-tabs { position: absolute; inset: 0; }
+.app-tabs.is-intro > .ps-nav { visibility: hidden; }   /* while the Credit limit increase plays over home (it is full screen) */
 .app-opening { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: var(--color-surface-page-heavy); }
 .app-center { display: flex; align-items: center; justify-content: center; padding: 0 34px var(--spacing-padding-xl); }
 .app-sending { width: 100%; max-width: 292px; align-items: center; gap: 0; padding: var(--spacing-padding-xl) var(--spacing-padding-lg); text-align: center; border-radius: var(--radius-xl); }
@@ -40,6 +41,8 @@ html.ps-edge .app-bot-consent { padding-bottom: calc(var(--sb) + var(--spacing-p
 html.ps-edge .app-amount__sheet { padding-bottom: calc(var(--sb) + var(--spacing-padding-xl)); }
 /* the Withdraw demo's loan screen (screens-withdraw.js): drawn 360 wide from the frame's top-left corner and scaled to the frame; over the pages, under the sheets */
 .app-wd { position: absolute; left: 0; top: 0; width: 360px; height: 0; transform-origin: 0 0; z-index: 10; }
+.app-wdhero { min-height: 196px; }   /* the demo's home card is drawn in here: 328 wide, scaled to the column on a wider frame */
+.app-wdhero__in { width: 328px; transform-origin: 0 0; }
 .app-wd .ps-sb { visibility: hidden; }   /* the demo's drawn status bar: hidden on a phone there too */
 .app-wd__tune { position: absolute; right: var(--spacing-padding-lg); top: 56px; z-index: 11; height: 40px; display: flex; align-items: center; }
 html.ps-edge .app-wd__tune { top: calc(56px + var(--e)); }

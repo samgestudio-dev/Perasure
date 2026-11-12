@@ -53,16 +53,30 @@
         { title: 'Use loans responsibly', body: 'Regular and responsible borrowing and repayment can help build a better credit profile.' },
         { title: 'Keep your information complete', body: 'Accurate profile and reference information helps us assess your eligibility.' }] }));
   });
-  var ACT = [{ icon: 'money-in', tone: 'positive', title: 'Repayment completed', sub: 'Available credit was restored', amount: '+ ₱5,000', up: true }, { icon: 'money-out', title: 'Loan approved', sub: '₱5,000 was used for this loan', amount: '- ₱5,000' }];
-  var ADJ = [{ title: 'Documents verified', sub: 'You added documents and a reference contact, which unlocked the next credit tier', amount: '+ ₱5,000', up: true }, { title: 'ID verified', sub: 'You passed the government ID check and the face scan', amount: '+ ₱5,000', up: true }];
+  /* credit history, written from the app's numbers (CS.credit, CS.current) so it agrees with the cards: each line says what the credit was
+     after it, on its own date. The story: ID check and documents in September (the limit), a first loan of ₱3,000 taken and repaid in
+     October, the temporary credit added on Nov 6, and the current loan (its date follows Tune → Loan).
+     K0: the numbers the app opened with; a loan ordered since then (S.order) is one more line on top */
+  var K0 = Object.assign({}, CS.credit), CUR = CS.current, m0 = function (n) { return money(n, 0); }, HELD = CUR && !/^(active|overdue)$/.test(CUR.state);
+  var CUR_AFTER = CUR ? (HELD ? K0.total : K0.limit) - CUR.amount : 0;      /* a loan taken before Nov 6 was taken before the temporary credit */
+  var ACT0 = (CUR ? [{ icon: 'money-out', title: HELD ? 'Loan in review' : 'Loan approved', sub: m0(CUR.amount) + (HELD ? ' is held for this loan' : ' was used for this loan'), amount: '- ' + m0(CUR.amount),
+      date: CUR.date + (HELD ? ', 09:30' : ', 14:05'), nv: m0(CUR_AFTER) }] : []).concat([
+    { icon: 'money-in', tone: 'positive', title: 'Repayment completed', sub: 'Available credit was restored', amount: '+ ' + m0(3000), up: true, date: 'Oct 18, 2026, 10:42', nv: m0(K0.limit) },
+    { icon: 'money-out', title: 'Loan approved', sub: m0(3000) + ' was used for this loan', amount: '- ' + m0(3000), date: 'Oct 3, 2026, 16:20', nv: m0(K0.limit - 3000) }]);
+  function acts(S) {
+    return (S.order ? [{ icon: 'money-out', title: 'Loan in review', sub: m0(S.order.amount) + ' is held for this loan', amount: '- ' + m0(S.order.amount), date: CS.today + ', 09:30', nv: m0(CS.credit.available) }] : []).concat(ACT0);
+  }
+  var ADJ = (K0.temporary ? [{ title: 'Temporary credit added', sub: 'Valid until ' + K0.temporaryUntilLong + '. It is part of your total credit until then', amount: '+ ' + m0(K0.temporary), up: true, date: 'Nov 6, 2026, 08:00', nv: m0(K0.total) }] : []).concat([
+    { title: 'Documents verified', sub: 'You added documents and a reference contact, which unlocked the next credit tier', amount: '+ ' + m0(5000), up: true, date: 'Sep 24, 2026, 06:10', nv: m0(K0.limit) },
+    { title: 'ID verified', sub: 'You passed the government ID check and the face scan', amount: '+ ' + m0(K0.limit - 5000), up: true, date: 'Sep 20, 2026, 11:15', nv: m0(K0.limit - 5000) }]);
   APP.screen('credit', function Credit(p) {
     var s = R.useState(p.params.tab || 'adj'), tab = s[0], S = APP.S, none = S.loan === 'none' && S.user !== 'approved';
-    var rows = tab === 'act' ? [ACT[0], ACT[1], ACT[0], ACT[1], ACT[0]] : ADJ;
+    var rows = tab === 'act' ? acts(S) : ADJ;
     return h(PS.Screen, { colTop: 172, colBottom: 48, top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), title: 'Credit history', right: APP.tune(), solid: true, extraHeight: 56,
       extra: h('div', { className: 'app-ptabs' }, h(PS.Tabs, { id: 'app-credit', split: true, value: tab, onChange: s[1], items: [{ id: 'adj', label: 'Credit adjustments' }, { id: 'act', label: 'Borrowing activity' }] })) } },
       h(APP.Loaded, { k: 'credit', rise: false }, h(PS.Crossfade, { k: tab, rise: true, className: none ? null : 'app-stack-12' },
         none ? h(PS.EmptyState, { title: 'No limit history yet', body: 'Complete your profile check and link your e-wallet to activate your revolving credit limit.', page: true })
-        : rows.map(function (r, i) { return h(PS.ActivityItem, Object.assign({ key: i, date: 'Jun 24, 2026, 06:10', note: tab === 'act' ? 'Available:' : 'Total credit:', noteValue: '₱5,000' }, r)); }))));
+        : rows.map(function (r, i) { return h(PS.ActivityItem, Object.assign({ key: i, note: tab === 'act' ? 'Available:' : 'Total credit:', noteValue: r.nv }, r)); }))));
   });
 
   /* ---- contact us ---- */
@@ -155,9 +169,12 @@
   /* ---- inbox ---- */
   function INBOX() {
     if (T.inbox === 'empty') return [];
-    var list = [{ id: 'm1', kind: 'System notification', time: '21h ago', title: 'Your credit limit is ready', body: 'You’ve been approved for a revolving credit limit of ₱50,000. You can choose how much to borrow based on your available credit. As you repay on time, your available credit goes up.', cta: 'Go to borrow' },
-      { id: 'm2', kind: 'Reminder', time: '2d ago', title: 'Your ₱3,000.00 loan has been sent', body: 'We’ve sent ₱3,000.00 to your GCash ending in 4057. Your first payment is due on Jul 20, 2026.' },
-      { id: 'm3', kind: 'Reminder', time: '5d ago', title: 'You have a new coupon', body: '25% off first-payment interest on your next loan. Use it before Nov 13, 2026.' }];
+    /* newest first; the amounts and dates are the app's (CS.credit, CS.current): the coupon, the loan once it has been sent (repaying / overdue),
+       and the limit from when the documents were verified (Sep 24) */
+    var cur = CS.current, mt = APP.S.method, list = [{ id: 'm3', kind: 'Reminder', time: '5d ago', title: 'You have a new coupon', body: '25% off first-payment interest on your next loan. Use it before Nov 13, 2026.' }];
+    if (cur && APP.S.repay) list.push({ id: 'm2', kind: 'Reminder', time: cur.ago + 'd ago', title: 'Your ' + money(cur.amount) + ' loan has been sent',
+      body: 'We’ve sent ' + money(cur.amount) + ' to your ' + mt.name + ' ending in ' + mt.last4 + '. Your first payment is due on ' + cur.dues[0].dueShort + '.' });
+    list.push({ id: 'm1', kind: 'System notification', time: '49d ago', title: 'Your credit limit is ready', body: 'You’ve been approved for a revolving credit limit of ' + money(CS.credit.limit, 0) + '. You can choose how much to borrow based on your available credit. As you repay on time, your available credit goes up.', cta: 'Go to borrow' });
     return list.map(function (x) { return Object.assign({ unread: T.inbox !== 'read' }, x); });
   }
   APP.screen('inbox', function Inbox() {

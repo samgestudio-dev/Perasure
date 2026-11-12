@@ -66,13 +66,13 @@ rule in `CLAUDE.md` asks.
 | `coupon.js` | `CouponArt`, `Countdown`, `CouponTicket` (default, selected, used, expired, unavailable), `Tabs`, `Crossfade` (`rise`), `EmptyState`, `CouponRow`, `Summary`, `CouponPicker`, `Decision` |
 | `loan.js` | `Slider`, `AmountCard`, `CouponsSection`, `OrderDetails`, `ProtectionCard`, `MethodCard`, `Agreement` (`nudge`: withdraw's ripple), `RepaymentPlan` |
 | `account.js` | `Profile`, `CreditLimitCard`, `Menu`, `Social` |
-| `feedback.js` | `Coin` (Coins loading: loop → success), `Dots`, `Loader` (the Loading page), `Busy`, `StatusBox`, `Notice`, `Result`, `Overlay` |
+| `feedback.js` | `Coin` (Coins loading: loop → success), `Dots`, `Loader` (the Loading page's coin + dots, larger; `fill`: in the very middle of a whole screen), `Busy`, `StatusBox`, `Notice`, `Result`, `Overlay` |
 | `form.js` | `Field` (typing box, also a picker row), `PhoneField`, `OtpBoxes`, `ContactMethods`, `Keypad`, `Segmented`, `SelectBar`, `Search`, `Consent`, `UploadTile` |
 | `status.js` | home states: `StateCard`, `Strip`, `DotTitle`, `OfferCard`, `Banners`, `Hero`, `Reviews`, `PermissionCard` |
 | `pay.js` | `ScamStrip`, `Installment`, `PayBar`, `RepayCard`, `InsetRows`, `PayTimer`, `QrPanel`, `Accordion`, `MethodPicker`, `Pager` |
 | `list.js` | `LinkList`, `Facts`, `ActivityItem`, `InboxItem`, `HistoryRow`, `HubCard`, `Tiles`, `Tips` |
-| `fx.js` | the earlier demos' motion as components: `OrderSubmit`, `OtpSheet`, `CreditLimitIntro` (hosts the shipped page) |
-| `withdraw-host.js` | `PS.loadWithdraw()`: the Withdraw demo's loan screen (slide up, amount entry, morph into the order card) run from the demo's own code, with the host page's limit, confirm blocks and Confirm action |
+| `fx.js` | the earlier demos' motion as components: `OrderSubmit`, `OtpSheet`, `CreditLimitIntro` (hosts the shipped page; `exit` hands the closing to the page, as the demo's intro.js does) |
+| `withdraw-host.js` | `PS.loadWithdraw()`: the Withdraw demo's loan screen (slide up, amount entry, morph into the order card) run from the demo's own code, with the host page's limit, confirm blocks and Confirm action; `host.heroEl`: also the demo's home card, drawn where the host says |
 | `phone-fit.js` | responsive phone page, iOS 26 edge to edge; fit mode cap (default, ≤ 1.1×) / fit (1:1) / scale (old 360 zoom), from `window.PS_FIT` or Tune (`fit`, `zoom`); sets `--vh --ph --ftop --e --sb` |
 | `tune.js`, `tune.css` | the prototype Tune panel, configured per page (`PSTune.setup`) |
 | `assets/icons/` | one-colour icons exported from Figma, drawn as masks (`PS.Icon`) so their colour is a token (an icon's own opacity is set where it is used) |
