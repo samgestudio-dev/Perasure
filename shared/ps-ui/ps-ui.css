@@ -470,7 +470,7 @@ button.ps-ticket { display: block; width: 100%; text-align: left; }
 .ps-decide__close { align-self: flex-end; }
 .ps-decide__body { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-md); width: 100%; padding-bottom: var(--spacing-padding-xl); }
 .ps-decide__text { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); padding: 0 var(--spacing-padding-lg); text-align: center; margin-top: var(--spacing-gap-lg); }
-.ps-decide__facts { display: flex; justify-content: space-between; gap: var(--spacing-gap-md); width: 100%; padding: var(--spacing-gap-sm) var(--spacing-gap-md); border-radius: var(--radius-xl);
+.ps-decide__facts { display: flex; justify-content: space-between; gap: var(--spacing-gap-md); width: 100%; padding: var(--spacing-padding-sm) var(--spacing-padding-lg); border-radius: var(--radius-xl);
   background: var(--color-surface-inset-default); white-space: nowrap; }
 .ps-decide__facts > div { display: flex; flex-direction: column; gap: var(--spacing-gap-xs); }
 .ps-decide__facts > div:last-child { align-items: flex-end; }
