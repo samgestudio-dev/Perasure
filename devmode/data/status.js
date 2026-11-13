@@ -3,6 +3,10 @@
    pages / components: { id: { status, since: iteration id, note } }; anything not listed has `default`. */
 window.DM_STATUS = {
   default: { status: 'ready', since: 'v1.0' },
-  pages: {},
-  components: {}
+  pages: {
+    home: { status: 'changed', since: 'v1-20261113-n1' }
+  },
+  components: {
+    'APP.WdHero': { status: 'changed', since: 'v1-20261113-n1' }
+  }
 };

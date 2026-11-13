@@ -22,7 +22,9 @@ html.ps-edge .app-fab { bottom: calc(var(--spacing-padding-5xl) + var(--sb)); }
 
 /* ---- the Withdraw demo's loan screen (screens-withdraw.js): laid out as wide as the frame from its top-left corner; over the pages, under the sheets ---- */
 .app-wd { position: absolute; left: 0; top: 0; width: 100%; height: 0; z-index: 10; }
-.app-wdhero { min-height: 12.25rem; }   /* the demo's home card is drawn in here */
+/* the demo's home card is drawn in here. The card is the Withdraw demo's own, sized in px (it follows the screen fit, not the text size
+   or the rem factor), so the space kept for it is px too: in rem it grew with the text and left a gap under the card at 130 % and above */
+.app-wdhero { min-height: 196px; }
 /* while the Withdraw sheet covers the whole screen (the demo marks the frame .ps-covered), the tabs' blur bands under it are not drawn —
    as the demo does with its own home's (withdraw.css): a blur no one sees still costs the GPU a pass while the sheet moves */
 .ps-covered .app-tabs .ps-pb > i:not(.ps-veil) { display: none; }
