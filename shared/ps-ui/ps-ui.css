@@ -291,7 +291,7 @@ html.ps-edge .ps-layer { top: calc(-1 * var(--e)); height: calc(100% + var(--e))
 .ps-scrim { position: absolute; inset: 0; background: var(--ps-scrim); }
 .ps-scrim--clear { background: none; }
 .ps-sheet { position: absolute; display: flex; flex-direction: column; }
-.ps-sheet__grab { position: absolute; left: 50%; top: 0.5rem; width: 2.375rem; height: 0.375rem; margin-left: -1.1875rem; border-radius: var(--radius-full);
+.ps-sheet__grab { position: absolute; z-index: 4; left: 50%; top: 0.5rem; width: 2.375rem; height: 0.375rem; margin-left: -1.1875rem; border-radius: var(--radius-full);   /* always the top layer (owner) */
   background: var(--color-neutral-950); opacity: var(--layer-opacity-subtle); }
 .ps-sheet__drag { position: absolute; left: 0; right: 0; top: 0; height: 1.75rem; z-index: 3; touch-action: none; }
 .ps-sheet--page { left: 0; right: 0; top: calc(40px + 4.75rem); bottom: 0; background: var(--color-surface-inset-default); border-radius: var(--radius-xl) var(--radius-xl) 0 0;
@@ -503,6 +503,9 @@ html.ps-text-big .ps-kv > :last-child { min-width: 0; white-space: normal; text-
 .ps-agree b { font-weight: var(--font-weight-medium); color: var(--color-text-link-light); }
 .ps-plan { display: flex; flex-direction: column; gap: 0.3125rem; max-height: 17.5rem; overflow-y: auto; overflow-x: hidden; padding: var(--spacing-padding-xl) var(--spacing-padding-lg);
   border-radius: var(--radius-xl); background: var(--color-surface-inset-default); scrollbar-width: none; }
+.ps-plan::before { content: ''; position: sticky; top: calc(-1 * var(--spacing-padding-xl)); z-index: 1; flex: none; height: var(--spacing-padding-xl); pointer-events: none;
+  margin: calc(-1 * var(--spacing-padding-xl)) calc(-1 * var(--spacing-padding-lg)) -0.3125rem;   /* sits in the top padding; the -5 takes back the list's gap */
+  background: linear-gradient(180deg, var(--color-surface-inset-default) 0%, var(--ps-inset-0) 100%); }   /* the coupon picker's veil: rows scrolled up fade out under the top edge (it takes no room) */
 .ps-plan::-webkit-scrollbar { width: 0; }
 .ps-plan__item { flex: none; display: flex; gap: var(--spacing-16); min-height: 3.5rem; padding-right: var(--spacing-gap-md); }
 .ps-plan__rail { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-8); padding-top: 0.375rem; }

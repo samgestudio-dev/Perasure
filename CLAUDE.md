@@ -222,6 +222,8 @@ rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), buil
 - **Temporary credit is used first** (owner): the card's temporary amount is what is left of it (`CS.credit.temporaryLeft`). The amount entry's
   maximum is the available credit; a limit coupon raises it only on the order page, once ticked.
 - **Default shadow** on home's blue card, payment card and updates strip (owner). Coupon pictures are Figma's SVG exports (`PS.CouponArt`).
+- **Sheets** (owner): every sheet whose content scrolls has the coupon picker's veil at its top (the sheet's own colour, 80 % → 0, behind
+  the search / tabs), so what scrolls up fades out; the drag handle is always the top layer.
 - **Bars have no colour while they cover nothing** (owner): the header's veil appears as content scrolls under it, the bottom / tab bar's goes
   when the scroll reaches the end; both fade with the scroll (`PS.Screen`).
 - **Tooltips place themselves** (owner, DS 9137:25806): `APP.tipAt(element, text)` / `PS.Tooltip{anchor}` — a corner covers what was tapped and

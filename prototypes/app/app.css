@@ -65,12 +65,13 @@ html.ps-edge .app-wd__tune { top: calc(56px + var(--e)); }
 .ps-sheet--page.app-pm { top: calc(40px + 0.5rem); background: var(--color-surface-elevated-default); border-radius: var(--radius-xxl) var(--radius-xxl) 0 0; box-shadow: var(--shadow-over); }
 html.ps-edge .ps-sheet--page.app-pm { top: calc(40px + 0.5rem + var(--e)); }
 .app-pm__head { position: absolute; left: 0; right: 0; top: 0; z-index: 2; height: 5.5rem; display: flex; align-items: center; gap: var(--spacing-gap-md); padding: var(--spacing-padding-3xl) var(--spacing-padding-lg) var(--spacing-padding-lg);
-  border-radius: var(--radius-xxl) var(--radius-xxl) 0 0; background: var(--gradient-top-nav-filled); }
+  border-radius: var(--radius-xxl) var(--radius-xxl) 0 0; background: linear-gradient(180deg, color-mix(in srgb, var(--color-surface-elevated-default) 80%, transparent) 0%, color-mix(in srgb, var(--color-surface-elevated-default) 0%, transparent) 100%); }   /* the coupon picker's veil, in this sheet's white */
 .app-pm__head .ps-search { flex: 1 1 auto; }
 .app-pm__body { position: absolute; inset: 0; overflow-y: auto; scrollbar-width: none; padding: 5.5rem 0 3rem; }
 .app-pm__body::-webkit-scrollbar { width: 0; }
 html.ps-edge .app-pm__body { padding-bottom: calc(3rem + var(--sb)); }
-.app-banks__head { position: absolute; left: 0; right: 0; top: 0; z-index: 2; display: flex; align-items: center; gap: var(--spacing-gap-md); padding: var(--spacing-padding-3xl) var(--spacing-padding-lg) var(--spacing-gap-sm); }   /* Figma 52:7763: search 276 at 16, 32; close 12 after it */
+.app-banks__head { position: absolute; left: 0; right: 0; top: 0; z-index: 2; display: flex; align-items: center; gap: var(--spacing-gap-md); padding: var(--spacing-padding-3xl) var(--spacing-padding-lg) var(--spacing-gap-sm);
+  background: linear-gradient(180deg, var(--ps-inset-80) 0%, var(--ps-inset-0) 100%); }   /* the coupon picker's top veil: what scrolls up fades under the search */   /* Figma 52:7763: search 276 at 16, 32; close 12 after it */
 .app-banks__body { position: absolute; inset: 0; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; gap: var(--spacing-gap-lg); padding: 5.5rem var(--spacing-padding-md) 3rem; }
 .app-banks__body--flush { padding-left: 0; padding-right: 0; }
 .app-banks__group { gap: var(--spacing-gap-lg); padding: var(--spacing-padding-lg); }   /* rows 52 apart (Figma 52:8428) */
