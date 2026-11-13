@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="text-scale" content="scale"><!-- Chrome / Android WebView: the phone's text size reaches the root font size (shared/ps-ui/phone-fit.js) -->
+<meta name="format-detection" content="telephone=no">
+<title>First application · PeraSure</title>
+<!-- First application — a new customer from log in to a ready credit limit (Figma: Perasure handoff nG5SHtAxW2TD782mHr3eeX, section 13485:21324).
+     Nothing is re-made: the screens are the PeraSure app's own (prototypes/app, loaded from there), so a change in the app shows here too.
+     flow.js only sets the path through them: where it starts, the step it skips and how it ends. -->
+<script src="../../shared/ps-ui/tune.js?v=202611130843"></script>
+<link rel="stylesheet" href="../../shared/ps-ui/tune.css?v=202611130843">
+<script>
+PSTune.setup({ key: 'perasure.first-application.tune',
+  note: 'A new customer’s first visit, on the app’s own screens: log in with a code, the home before there’s a limit, the application, then the credit limit. A change starts the flow again from log in.',
+  settings: [
+    { key: 'fill', label: 'Application forms', options: [['empty', 'Empty, as in Figma (you fill them in)'], ['sample', 'Filled in with sample details']], def: 'empty' },
+    { key: 'after', label: 'After Submit', options: [['ready', 'In review, then the credit limit is ready'], ['review', 'Stays in review']], def: 'ready' },
+    { key: 'otp', label: 'Verification code', options: [['ok', 'Correct'], ['wrong', 'Wrong first'], ['fail', 'SMS fails first']], def: 'ok' },
+    { key: 'kyc', label: 'ID check', options: [['pass', 'Passes'], ['inuse', 'ID already in use'], ['failed', 'Fails']], def: 'pass' },
+    { key: 'selfie', label: 'Selfie check', options: [['pass', 'Passes'], ['fail', 'Fails first']], def: 'pass' },
+    { key: 'temp', label: 'Temporary credit on the new limit (₱10,000 until Nov 20)', options: [[0, 'Off'], [1, 'On']], def: 0 },
+    { key: 'net', label: 'Network', options: [['normal', 'Normal'], ['slow', 'Slow'], ['error', 'Fails once']], def: 'normal' },
+    { key: 'blur', label: 'Progressive blur (header and bottom bars)', options: [[0, 'Off'], [1, 'On']], def: 0 },
+    { key: 'fit', label: 'Screen fit (the layout always fills the width)', options: [['cap', 'Capped zoom (up to 1.15×)'], ['rem', 'Capped zoom · rem'], ['fit', '1:1 (true size)'], ['scale', 'Full zoom (scaled to the screen)']], def: 'cap' },
+    { key: 'text', label: 'Text size (System: the phone’s setting)', options: [[0, 'System'], [85, '85%'], [100, '100%'], [115, '115%'], [130, '130%'], [150, '150%'], [200, '200%']], def: 0 }
+  ] });
+/* fixed for this flow (not in Tune): it starts logged out, with no loan; the app's own defaults for the rest */
+Object.assign(window.PS_TUNE, { user: 'guest', loan: 'none', coupons: '6', intro: 0, inbox: 'unread', rating: 0 });
+window.PS_FIT = { max: 1.15, text: true };
+</script>
+<script src="../../shared/ps-ui/phone-fit.js?v=202611130843"></script>
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<link rel="stylesheet" href="../../tokens-rem/tokens-rem.css?v=202611130843">
+<link rel="stylesheet" href="../../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../../vendor/react-wheel-picker@1.2.3/style.css">
+<link rel="preload" href="../../assets/fonts/hanken-grotesk-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../assets/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../assets/fonts/satoshi-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../../shared/ps-ui/ps-ui.css?v=202611130843">
+<link rel="stylesheet" href="../app/app.css?v=202611130843">
+</head>
+<body>
+<div id="root"></div>
+<script src="../../vendor/react@18.3.1/react.production.min.js"></script>
+<script src="../../vendor/react-dom@18.3.1/react-dom.production.min.js"></script>
+<script src="../../vendor/react-wheel-picker@1.2.3/react-wheel-picker.js"></script>
+<script src="../../vendor/motion@14.4.0/motion-react.js"></script>
+<script src="../../shared/ps-ui/core.js?v=202611130843"></script>
+<script src="../../shared/ps-ui/layout.js?v=202611130843"></script>
+<script src="../../shared/ps-ui/feedback.js?v=202611130843"></script>
+<script src="../../shared/ps-ui/form.js?v=202611130843"></script>
+<script src="../../shared/ps-ui/coupon.js?v=202611130843"></script>
+<script src="../../shared/ps-ui/home.js?v=202611130843"></script>
+<script src="../../shared/ps-ui/loan.js?v=202611130843"></script>
+<script src="../../shared/ps-ui/account.js?v=202611130843"></script>
+<script src="../../shared/ps-ui/status.js?v=202611130843"></script>
+<script src="../../shared/ps-ui/pay.js?v=202611130843"></script>
+<script src="../../shared/ps-ui/list.js?v=202611130843"></script>
+<script src="../../shared/ps-ui/fx.js?v=202611130843"></script>
+<script src="../../shared/ps-ui/apply.js?v=202611130843"></script>
+<script src="../../shared/ps-ui/withdraw-host.js?v=202611130843"></script>
+<!-- the app itself: its data, shell and screens, as they are in prototypes/app -->
+<script src="../app/coupons-data.js?v=202611130843"></script>
+<script src="../app/data.js?v=202611130843"></script>
+<script src="../app/app.js?v=202611130843"></script>
+<script src="../app/screens-auth.js?v=202611130843"></script>
+<script src="../app/screens-home.js?v=202611130843"></script>
+<script src="../app/screens-loan.js?v=202611130843"></script>
+<script src="../app/screens-withdraw.js?v=202611130843"></script>
+<script src="../app/screens-pay.js?v=202611130843"></script>
+<script src="../app/screens-account.js?v=202611130843"></script>
+<script src="../app/ph-places.js?v=202611130843"></script>
+<script src="../app/screens-kyc.js?v=202611130843"></script>
+<script src="../app/screens-help.js?v=202611130843"></script>
+<!-- this demo's path through them -->
+<script src="flow.js?v=202611130843"></script>
+<script>APP.start();</script>
+</body>
+</html>

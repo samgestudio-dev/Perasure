@@ -266,6 +266,9 @@ rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), buil
   is laid over its frame (Figma | app | difference) and corrected before it counts as done. `prototypes/app/README.md` lists what has
   been compared.
 - Links: `?page=<screen>` opens a screen directly, `?auto=0` stops the app typing codes and moving on by itself.
+- **Demos that run the app's screens** (owner: "the app has the content, give me the flow"): a flow demo loads `prototypes/app/*.js` as they are and
+  sets only its path in its own `flow.js` (wrapping `APP.go` / `swap` / `set`) — e.g. `prototypes/first-application/`. The names it relies on are
+  listed at the top of its `flow.js`; when you rename an app screen, a user state or a form key, update those demos in the same commit.
 
 ## PeraSure Dev Mode (`devmode/`)
 

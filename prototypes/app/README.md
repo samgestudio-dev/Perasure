@@ -195,6 +195,12 @@ pixel against the screen it came from: `apply.js` (`PageHead`, `PageHero`, `IdCa
 `spaced`). Sheets that need their own padding take a class from ps-ui.css: `ps-idres`, `ps-confirm`, `ps-rating`, `ps-scams`,
 `ps-sheet--white`, `ps-sheet--inset`.
 
+## Demos built on these screens
+
+- **First application** (`prototypes/first-application/`): log in → code → home before a limit → the application → Submit → in review →
+  credit limit ready. It loads this folder's files unchanged and sets only the path (`flow.js`, which lists the screen names, user states and
+  form keys it relies on — keep them, or update it in the same commit).
+
 ## Not in yet
 
 The withdrawal account change with its face check (换绑卡流程) shows a "not in the test app yet" page. The `amount` and `loan` pages

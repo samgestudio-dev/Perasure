@@ -9,6 +9,7 @@ Phone-first motion prototypes, served with GitHub Pages.
 
 | Demo | Variants |
 | --- | --- |
+| First application | [Standard](prototypes/first-application/index.html) (log in → code → home before a limit → the application → Submit → credit limit ready, on the app's own screens; Tune: forms empty / filled in, after Submit, code / ID / selfie outcomes) · [guide](prototypes/first-application/README.md) |
 | PeraSure app | [Test app](prototypes/app/index.html) (the whole app as a test environment: every account and loan state in Tune, made-up loading; in progress) · [guide](prototypes/app/README.md) |
 | Coupon system | [Standard](prototypes/coupon-system/index.html) (home / account → coupon centre → apply a loan with coupons; Tune: blur, six / one / no coupons) · [guide](prototypes/coupon-system/README.md) |
 | PeraSure Dev Mode | [Desktop](devmode/index.html) (every page and shared component, inspected like Figma Dev Mode: specs, tokens, code, iterations, version compare) · [guide](devmode/README.md) · [MCP for AI tools](devmode/mcp/README.md) · [component docs](shared/README.md) |
