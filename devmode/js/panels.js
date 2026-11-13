@@ -69,7 +69,7 @@
     if (c) {
       items.push(h(DM.ExtLink, { key: 'src', icon: 'code', title: t('res.source'), sub: c.file + ' · L' + c.line + '–' + c.end, href: DM.gh(c.file, c.line, c.end, v) }));
       if (c.css && c.css.length) { var a = c.css[0].line, b = c.css[c.css.length - 1].end; items.push(h(DM.ExtLink, { key: 'css', icon: 'code', title: 'CSS · ps-ui.css', sub: c.css.length + ' rules · L' + a + '–' + b, href: DM.gh('shared/ps-ui/ps-ui.css', a, b, v) })); }
-      (c.figma || []).forEach(function (f, i) { items.push(h(DM.ExtLink, { key: 'f' + i, icon: 'figma', title: t('res.figma') + ' · ' + f.id, sub: f.file === 'OBsvf42AiRapcRrasD7KNm' ? t('res.ds') : t('res.app'), href: DM.figmaUrl(f) })); });
+      (c.figma || []).forEach(function (f, i) { items.push(h(DM.ExtLink, { key: 'f' + i, icon: 'figma', title: (f.component ? t('res.dsComp') + ' · ' + f.name : t('res.figma') + ' · ' + f.id), sub: (f.file === 'OBsvf42AiRapcRrasD7KNm' ? t('res.ds') : t('res.app')) + (f.component ? ' · ' + f.id : ''), href: DM.figmaUrl(f) })); });
     }
     if (pg) {
       items.push(h(DM.ExtLink, { key: 'pg', icon: 'page', title: t('res.page'), sub: pg.file + ' · L' + pg.line + '–' + pg.end, href: DM.gh(pg.file, pg.line, pg.end, v) }));
@@ -249,12 +249,13 @@
     var showPage = (!node || pageNode) && !p.compName && p.page;
     var kind = compName && !pageNode ? 'components' : 'pages', id = kind === 'components' ? compName : p.page && p.page.id;
     var body;
-    if (p.tab === 'history' && id) body = h(History, { kind: kind, id: id, version: p.version, onVersion: p.onVersion, onCompare: p.onCompare });
+    if (p.tab === 'notes' && p.notes) body = h(DM.NotesPanel, p.notes);
+    else if (p.tab === 'history' && id) body = h(History, { kind: kind, id: id, version: p.version, onVersion: p.onVersion, onCompare: p.onCompare });
     else if (showPage) body = h(PageInspect, p);
     else if (compName && !pageNode) body = h(CompInspect, Object.assign({}, p, { node: node && !pageNode ? node : null, compName: compName }));
     else body = h(DM.Empty, { icon: 'cursor' }, t('select.hint'));
     return h('aside', { className: 'dm-right' },
-      h(DM.Tabs, { items: [{ id: 'inspect', label: t('tab.inspect') }, { id: 'history', label: t('tab.history') }], value: p.tab, onChange: p.onTab }),
+      h(DM.Tabs, { items: [{ id: 'inspect', label: t('tab.inspect') }, { id: 'notes', label: t('tab.notes'), count: p.notes && p.notes.notes.length ? p.notes.notes.length : null }, { id: 'history', label: t('tab.history') }], value: p.tab, onChange: p.onTab }),
       h('div', { className: 'dm-panel', key: (compName || '') + '|' + (p.page && p.page.id) + '|' + p.tab }, body));
   };
 })();

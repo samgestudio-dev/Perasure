@@ -95,7 +95,7 @@
   DM.overlayHTML = function (o) {
     var out = [], labels = [], z = o.z, frame = R4(0, 0, o.w, o.h);
     var sameAsSel = o.hover && o.sel && o.hover.path === o.sel.path;
-    if (!o.alt) { var focus = o.hover || o.sel; if (focus && focus.kind !== 'page' && focus.kind !== 'tab') spacing(o, focus, out, labels); }
+    if (!o.alt && o.mode !== 'annotate') { var focus = o.hover || o.sel; if (focus && focus.kind !== 'page' && focus.kind !== 'tab') spacing(o, focus, out, labels); }
     var clamp = function (r) { return r ? R4(Math.max(0, r.left), Math.max(0, r.top), Math.min(o.w, r.right), Math.min(o.h, r.bottom)) : r; };
     var hr = o.hover && !sameAsSel ? I.rect(o.hover) : null, sr = o.sel ? I.rect(o.sel) : null, top = [];
     var isPage = function (n) { return n.kind === 'page' || n.kind === 'tab'; };
@@ -108,6 +108,12 @@
       if (target !== frame) top.push(rectBox('dm-o-target', clamp(target), z));
       measure(sr, target, z, out, labels);
     }
+    /* notes: numbered pins on their layers (the hovered note's layer outlined) */
+    (o.notes || []).forEach(function (n, i) {
+      var pt = DM.notePoint(o.T, n); if (!pt) return;
+      if (o.activeNote === n.i) { var ar = I.rect(pt.node); if (ar) top.push(rectBox('dm-o-target is-note', clamp(ar), z)); }
+      labels.push('<b class="dm-o-pin' + (o.activeNote === n.i ? ' is-on' : '') + ' is-' + (n.k || 'ui') + '" style="left:' + pt.x * z + 'px;top:' + pt.y * z + 'px">' + (i + 1) + '</b>');
+    });
     return '<div class="dm-o-clip" style="width:' + o.w * z + 'px;height:' + o.h * z + 'px">' + out.join('') + '</div>' + top.join('') + labels.join('');
   };
 
@@ -125,6 +131,20 @@
     var pr = R.useRef(p); pr.current = p;
     var zr = R.useRef(z); zr.current = z;
     var dr = R.useRef(dev); dr.current = dev;
+    /* design QA: the developers' screenshot over (or beside) the demo — overlay with opacity, difference, side by side; arrows nudge it */
+    var qaS = R.useState(null), qa = qaS[0], qaRef = R.useRef(null); qaRef.current = qa;
+    function setQa(patch) { qaS[1](function (q) { return patch === null ? null : Object.assign({}, q || { mode: 'diff', opacity: 50, dx: 0, dy: 0 }, patch); }); }
+    function qaFile(f) {
+      if (!f || !/^image\//.test(f.type)) return;
+      var rd = new FileReader();
+      rd.onload = function () { var im = new Image(); im.onload = function () { setQa({ img: rd.result, w: im.naturalWidth, h: im.naturalHeight, name: f.name || 'screenshot', dx: 0, dy: 0 }); }; im.src = rd.result; };
+      rd.readAsDataURL(f);
+    }
+    R.useEffect(function () {
+      if (!qa) return;
+      var paste = function (e) { var it = Array.prototype.filter.call((e.clipboardData && e.clipboardData.items) || [], function (x) { return /^image\//.test(x.type); })[0]; if (it) { e.preventDefault(); qaFile(it.getAsFile()); } };
+      window.addEventListener('paste', paste); return function () { window.removeEventListener('paste', paste); };
+    }, [!!qa]);
 
     /* fit the frame to the space the canvas has */
     R.useLayoutEffect(function () {
@@ -161,11 +181,12 @@
     function keys(e, inFrame) {
       var P = pr.current;
       if (e.key === 'Alt') { setAlt(true); e.preventDefault(); return; }
-      if (editable(e.target) && (inFrame ? P.mode !== 'inspect' : true)) return;
+      if (editable(e.target) && (inFrame ? P.mode === 'interact' : true)) return;
       if (e.metaKey || e.ctrlKey) return;
       var k = e.key.toLowerCase();
       if (k === 'i' && !e.shiftKey) { P.onMode && P.onMode('inspect'); return; }
       if (k === 'p' && !e.shiftKey) { P.onMode && P.onMode('interact'); return; }
+      if (k === 'n' && !e.shiftKey && P.onAnnotate) { P.onMode && P.onMode(P.mode === 'annotate' ? 'inspect' : 'annotate'); return; }
       if (P.mode !== 'inspect') return;
       var T = st.T, n = P.sel ? I.resolve(T, P.sel) : null;
       if (e.key === 'Escape') { P.onSelect(null); e.preventDefault(); }
@@ -178,15 +199,30 @@
     function pick(e, click) {
       var T = st.T; if (!T) return;
       var el = e.target; if (el && el.nodeType !== 1) el = el.parentElement;
-      var n = (e.metaKey || e.ctrlKey) ? I.elementNode(T, el) : I.nodeFor(T, el);
+      var ann = pr.current.mode === 'annotate';
+      var n = (e.metaKey || e.ctrlKey || ann) ? I.elementNode(T, el) || I.nodeFor(T, el) : I.nodeFor(T, el);
+      if (click && ann) { annotate(e, n); return; }
       if (click) { pr.current.onSelect(n ? n.path : null); return; }
       setHover(n);
     }
+    /* the screen point of a spot in the frame */
+    function screenOf(x, y) { var f = frameRef.current, b = f ? f.getBoundingClientRect() : { left: 0, top: 0 }; return { x: b.left + x * zr.current, y: b.top + y * zr.current }; }
+    DM._notePos = function (n) { var pt = st.T && DM.notePoint(st.T, n); return pt ? screenOf(pt.x, pt.y) : { x: window.innerWidth / 2, y: 200 }; };
+    function annotate(e, n) {
+      var P = pr.current, T = st.T, hitR = 12 / zr.current;
+      /* a click on a pin edits that note */
+      var hit = (P.notes || []).filter(function (x) { var pt = DM.notePoint(T, x); return pt && Math.abs(pt.x - e.clientX) <= hitR && Math.abs(pt.y - e.clientY) <= hitR; })[0];
+      if (hit) { var sp = screenOf(e.clientX, e.clientY); P.onEditNote(hit, sp.x, sp.y); return; }
+      if (!n) return;
+      var r = I.rect(n); if (!r) return;
+      var s2 = screenOf(e.clientX, e.clientY);
+      P.onAnnotate({ p: n.path, x: Math.max(0, Math.min(1, (e.clientX - r.left) / (r.width || 1))), y: Math.max(0, Math.min(1, (e.clientY - r.top) / (r.height || 1))), sx: s2.x, sy: s2.y });
+    }
     function bind(win) {
-      var block = function (e) { if (pr.current.mode !== 'inspect') return; e.preventDefault(); e.stopImmediatePropagation(); };
+      var block = function (e) { if (pr.current.mode === 'interact') return; e.preventDefault(); e.stopImmediatePropagation(); };
       ['pointerdown', 'pointerup', 'mousedown', 'mouseup', 'touchstart', 'touchend', 'dblclick', 'contextmenu', 'auxclick', 'submit'].forEach(function (t) { win.addEventListener(t, block, true); });
-      win.addEventListener('click', function (e) { if (pr.current.mode !== 'inspect') return; e.preventDefault(); e.stopImmediatePropagation(); pick(e, true); }, true);
-      win.addEventListener('mousemove', function (e) { setAlt(e.altKey); if (pr.current.mode === 'inspect') pick(e, false); }, true);
+      win.addEventListener('click', function (e) { if (pr.current.mode === 'interact') return; e.preventDefault(); e.stopImmediatePropagation(); pick(e, true); }, true);
+      win.addEventListener('mousemove', function (e) { setAlt(e.altKey); if (pr.current.mode !== 'interact') pick(e, false); }, true);
       win.document.documentElement.addEventListener('mouseleave', function () { setHover(null); });
       win.addEventListener('keydown', function (e) { keys(e, true); }, true);
       win.addEventListener('keyup', function (e) { if (e.key === 'Alt') setAlt(false); }, true);
@@ -209,8 +245,11 @@
         var needWd = js && /APP\.borrow/.test(js), n = 0;
         (function run() {
           if (frameRef.current && frameRef.current.contentWindow !== win) return;
-          var wd = false; try { var sh = win.APP.wd && win.APP.wd.sheet(); wd = !!(sh && sh.ready && sh.ready()); } catch (e) {}
-          if (needWd && !wd && ++n < 120) { setTimeout(run, 50); return; }
+          var wd = false, opening = false;
+          try { var sh = win.APP.wd && win.APP.wd.sheet(); wd = !!(sh && sh.ready && sh.ready()); } catch (e) {}
+          /* the opening screen hands over with APP.home(), which would close a sheet opened before it */
+          try { opening = pr.current.app !== false && win.APP.S.stack.some(function (e) { return e.name === 'opening'; }); } catch (e) {}
+          if (((needWd && !wd) || opening) && ++n < 160) { setTimeout(run, 50); return; }
           if (js) { try { win.eval(js); } catch (e) { console.warn('[devmode] page script failed', e); } }
           setTimeout(function () { refresh(true); setLoading(false); }, js ? (needWd ? 900 : 500) : 250);
         })();
@@ -223,29 +262,35 @@
       var raf;
       (function loop() {
         var ov = ovRef.current, P = pr.current, html = '';
-        if (ov && st.T && st.win && P.mode === 'inspect') {
+        if (ov && st.T && st.win && P.mode !== 'interact') {
           try {
-            var hv = st.hover || (P.extHover ? I.resolve(st.T, P.extHover) : null);
-            html = DM.overlayHTML({ win: st.win, T: st.T, hover: hv, sel: P.sel ? I.resolve(st.T, P.sel) : null, alt: st.alt, z: zr.current, w: dr.current.w, h: dr.current.h });
+            var hv = st.hover || (P.extHover ? I.resolve(st.T, P.extHover) : null), ann = P.mode === 'annotate';
+            html = DM.overlayHTML({ win: st.win, T: st.T, hover: hv, sel: ann || !P.sel ? null : I.resolve(st.T, P.sel), alt: st.alt && !ann, z: zr.current, w: dr.current.w, h: dr.current.h,
+              mode: P.mode, notes: P.notes, activeNote: P.activeNote });
           } catch (e) { html = ''; }
         }
         if (ov && html !== st.html) { ov.innerHTML = html; st.html = html; }
         raf = requestAnimationFrame(loop);
       })();
-      var kd = function (e) { if (e.target && e.target.closest && e.target.closest('input, textarea, select, .dm-modal')) { if (e.key === 'Alt') setAlt(true); return; } keys(e, false); };
+      var kd = function (e) {
+        if (e.target && e.target.closest && e.target.closest('input, textarea, select, .dm-modal')) { if (e.key === 'Alt') setAlt(true); return; }
+        var q = qaRef.current, mv = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+        if (q && q.img && mv) { e.preventDefault(); var k = e.shiftKey ? 10 : 1; setQa({ dx: q.dx + mv[0] * k, dy: q.dy + mv[1] * k }); return; }
+        keys(e, false);
+      };
       var ku = function (e) { if (e.key === 'Alt') setAlt(false); };
       var bl = function () { setAlt(false); };
       window.addEventListener('keydown', kd); window.addEventListener('keyup', ku); window.addEventListener('blur', bl);
       return function () { cancelAnimationFrame(raf); window.removeEventListener('keydown', kd); window.removeEventListener('keyup', ku); window.removeEventListener('blur', bl); };
     }, []);
-    R.useEffect(function () { if (p.mode !== 'inspect') setHover(null); }, [p.mode]);
+    R.useEffect(function () { if (p.mode === 'interact') setHover(null); }, [p.mode]);
 
     var zoomTo = function (v) { p.onZoom && p.onZoom(v === 'fit' ? 'fit' : Math.max(0.25, Math.min(3, Math.round(v * 100) / 100))); };
     var canvasWheel = function (e) { if (e.ctrlKey || e.metaKey) { e.preventDefault(); zoomTo(z * (e.deltaY < 0 ? 1.1 : 1 / 1.1)); } };
     var t = DM.t;
 
     return h('div', { className: 'dm-center', ref: centerRef },
-      h('div', { className: 'dm-canvas', onWheel: canvasWheel },
+      h('div', { className: 'dm-canvas', onWheel: canvasWheel, onDragOver: function (e) { if (qa) e.preventDefault(); }, onDrop: function (e) { if (!qa) return; e.preventDefault(); qaFile(e.dataTransfer.files[0]); } },
         h('div', { className: 'dm-canvas__inner' },
           h('div', { ref: headRef },
             h('div', { className: 'dm-framehead' }, h(DM.Icon, { name: p.kind === 'sheet' ? 'sheet' : p.kind === 'component' ? 'component' : 'frame', size: 14 }),
@@ -256,14 +301,30 @@
           h('div', { className: 'dm-framebox', style: { width: dev.w * z, height: dev.h * z } },
             h('div', { className: DM.cx('dm-frame', loading && 'is-loading'), style: { width: dev.w, height: dev.h, transform: 'scale(' + z + ')' } },
               p.src ? h('iframe', { key: p.src + '|' + (p.js || '') + '|' + dev.id + '|' + (p.reloadKey || 0), ref: frameRef, src: p.src, width: dev.w, height: dev.h, title: p.title, onLoad: onLoad }) : null),
+            qa && qa.img && qa.mode !== 'side' ? h('div', { className: 'dm-qa', style: { width: dev.w * z, height: dev.h * z } },
+              h('img', { src: qa.img, alt: '', style: { width: dev.w * z, left: qa.dx * z, top: qa.dy * z, opacity: qa.mode === 'overlay' ? qa.opacity / 100 : 1, mixBlendMode: qa.mode === 'diff' ? 'difference' : 'normal' } })) : null,
+            qa && qa.img && qa.mode === 'side' ? h('div', { className: 'dm-qa is-side', style: { left: dev.w * z + 28, width: dev.w * z, height: dev.h * z } },
+              h('span', { className: 'dm-qa__label' }, t('qa.impl')), h('img', { src: qa.img, alt: '', style: { width: dev.w * z, left: qa.dx * z, top: qa.dy * z } })) : null,
+            qa && !qa.img ? h('label', { className: 'dm-qa__drop', style: { width: dev.w * z, height: dev.h * z } }, h(DM.Icon, { name: 'image', size: 22 }), h('span', null, t('qa.drop')),
+              h('input', { type: 'file', accept: 'image/*', onChange: function (e) { qaFile(e.target.files[0]); } })) : null,
             h('div', { className: 'dm-ov', ref: ovRef, style: { width: dev.w * z, height: dev.h * z } }),
             loading ? h('div', { className: 'dm-loading', style: { width: dev.w * z, height: dev.h * z } }, h('span', null, t('loading'))) : null))),
       p.banner || null,
-      p.hintless ? null : h('div', { className: 'dm-hint' }, p.mode === 'inspect' ? t('hint.inspect') : t('hint.interact')),
+      qa ? h('div', { className: 'dm-qabar' },
+        h('b', null, t('qa.title')),
+        h('label', { className: 'dm-btn is-outline dm-qabar__file' }, h(DM.Icon, { name: 'image', size: 14 }), qa.img ? qa.name : t('qa.choose'), h('input', { type: 'file', accept: 'image/*', onChange: function (e) { qaFile(e.target.files[0]); } })),
+        qa.img ? h(R.Fragment, null,
+          h('div', { className: 'dm-seg is-sm' }, [['diff', t('qa.diff')], ['overlay', t('qa.overlay')], ['side', t('qa.side')]].map(function (x) { return h('button', { key: x[0], type: 'button', className: qa.mode === x[0] ? 'is-on' : '', onClick: function () { setQa({ mode: x[0] }); } }, x[1]); })),
+          qa.mode === 'overlay' ? h('input', { type: 'range', min: 0, max: 100, value: qa.opacity, className: 'dm-qabar__range', onChange: function (e) { setQa({ opacity: +e.target.value }); } }) : null,
+          h('span', { className: 'dm-qabar__xy' }, 'x', h('input', { type: 'number', value: qa.dx, onChange: function (e) { setQa({ dx: +e.target.value || 0 }); } }), 'y', h('input', { type: 'number', value: qa.dy, onChange: function (e) { setQa({ dy: +e.target.value || 0 }); } })),
+          h('span', { className: 'dm-qabar__note', title: t('qa.hint') }, t('qa.hintShort'))) : null,
+        h('button', { type: 'button', className: 'dm-iconbtn', title: t('qa.close'), onClick: function () { setQa(null); } }, h(DM.Icon, { name: 'close', size: 14 }))) : null,
+      p.hintless || qa ? null : h('div', { className: 'dm-hint' }, p.mode === 'inspect' ? t('hint.inspect') : p.mode === 'annotate' ? t('hint.annotate') : t('hint.interact')),
       h('div', { className: 'dm-toolbar' },
         h('div', { className: 'dm-seg' },
           h('button', { type: 'button', className: p.mode === 'inspect' ? 'is-on' : '', title: t('mode.inspect') + ' (I)', onClick: function () { p.onMode('inspect'); } }, h(DM.Icon, { name: 'cursor', size: 14 }), t('mode.inspect')),
-          h('button', { type: 'button', className: p.mode === 'interact' ? 'is-on' : '', title: t('mode.interact') + ' (P)', onClick: function () { p.onMode('interact'); } }, h(DM.Icon, { name: 'play', size: 13 }), t('mode.interact'))),
+          h('button', { type: 'button', className: p.mode === 'interact' ? 'is-on' : '', title: t('mode.interact') + ' (P)', onClick: function () { p.onMode('interact'); } }, h(DM.Icon, { name: 'play', size: 13 }), t('mode.interact')),
+          p.onAnnotate ? h('button', { type: 'button', className: p.mode === 'annotate' ? 'is-on' : '', title: t('mode.annotate') + ' (N)', onClick: function () { p.onMode('annotate'); } }, h(DM.Icon, { name: 'pin', size: 13 }), t('mode.annotate')) : null),
         h('span', { className: 'dm-toolbar__sep' }),
         h('label', { className: 'dm-select', title: t('device') },
           h('select', { value: dev.id, onChange: function (e) { p.onDevice(e.target.value); } }, DM.DEVICES.map(function (d) { return h('option', { key: d.id, value: d.id }, d.name); })),
@@ -273,6 +334,8 @@
         h('span', { className: 'dm-zoom' }, Math.round(z * 100) + '%'),
         h('button', { type: 'button', className: 'dm-iconbtn', title: '+', onClick: function () { zoomTo(z * 1.25); } }, h(DM.Icon, { name: 'plus', size: 14 })),
         h('button', { type: 'button', className: DM.cx('dm-btn', (p.zoom === 'fit' || !p.zoom) && 'is-on'), onClick: function () { zoomTo('fit'); } }, h(DM.Icon, { name: 'fit', size: 14 }), t('zoom.fit')),
+        h('span', { className: 'dm-toolbar__sep' }),
+        p.app !== undefined || true ? h('button', { type: 'button', className: DM.cx('dm-btn', qa && 'is-on'), title: t('qa.tip'), onClick: function () { setQa(qa ? null : {}); } }, h(DM.Icon, { name: 'image', size: 14 }), t('qa.button')) : null,
         h('span', { className: 'dm-toolbar__sep' }),
         h('button', { type: 'button', className: 'dm-iconbtn', title: t('reload'), onClick: function () { p.onReload && p.onReload(); } }, h(DM.Icon, { name: 'replay', size: 14 }))));
   };

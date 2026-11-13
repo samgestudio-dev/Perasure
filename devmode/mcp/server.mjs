@@ -19,7 +19,7 @@ import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import { execFileSync } from 'node:child_process';
 
-const VERSION = '1.0.0';
+const VERSION = '1.1.0';
 const NAME = 'perasure-devmode';
 const SITE = (process.env.PERASURE_DEVMODE_URL || 'https://samgestudio-dev.github.io/Perasure/').replace(/\/?$/, '/');
 const REPO = 'samgestudio-dev/Perasure';
@@ -30,6 +30,7 @@ const LOCAL = (() => {
   return null;
 })();
 const DEVICES = { 360: [360, 780], 390: [390, 844], 430: [430, 932] };
+const RAW_VISUAL = `https://raw.githubusercontent.com/${'samgestudio-dev/Perasure'}/devmode-visual/`;
 const log = (...a) => process.stderr.write('[' + NAME + '] ' + a.join(' ') + '\n');
 
 /* ---------------------------------------------------------------- reading files (local clone, or the live site) */
@@ -303,6 +304,7 @@ async function openTarget(a) {
   const b = await browser(), page = await b.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: a.scale || 2 });
   await page.goto(url, { waitUntil: 'load', timeout: 30000 });
   await page.waitForFunction(app ? () => !!(window.APP && window.APP.S && window.PS) : () => !!(window.PS && document.getElementById('root').children.length), null, { timeout: 20000 });
+  if (app) await page.waitForFunction(() => !window.APP.S.stack.some(e => e.name === 'opening'), null, { timeout: 8000 }).catch(() => {});
   if (js) {
     if (/APP\.borrow/.test(js)) await page.waitForFunction(() => { try { const s = window.APP.wd && window.APP.wd.sheet(); return !!(s && s.ready && s.ready()); } catch (e) { return false; } }, null, { timeout: 10000 }).catch(() => {});
     await page.evaluate(js);
@@ -349,12 +351,12 @@ const TOOLS = [
         '', `## Components (${comps.length}) by file\n${Object.entries(files).map(([f, n]) => `- shared/ps-ui/${f}: ${n}`).join('\n')}`,
         '', `## Statuses\nDefault: ${STATUS[D.status.default?.status] || 'Ready for dev'}; ${changed} marked Changed (see get_status).`,
         '', '## How to use',
-        '- A Dev Mode link pasted by the user → resolve_devmode_link.',
+        '- A Dev Mode link pasted by the user → resolve_devmode_link; a Figma link → find_by_figma.',
         '- Build or update a component → get_component (description, props, usage examples, source, CSS as written, tokens with values, motion, assets, history).',
         '- A screen → get_page (how to open it, its source, its components).',
-        '- What changed → get_changes / get_iteration; what to build → get_status.',
+        '- What changed → get_changes / get_iteration (recorded) and get_visual_changes (found by the visual check, not recorded yet); what to build → get_status.',
         '- Token values → get_tokens; motion values → get_motion.',
-        '- Seeing it → get_screenshot; exact measured sizes and spacing → get_live_specs (both need Playwright).',
+        '- Seeing it → get_screenshot; exact measured sizes and spacing → get_live_specs; checking an implementation against the demo → qa_compare (these need Playwright).',
         '- The code is React 18 without JSX (h = React.createElement) and Motion (Framer Motion); keep the token names when porting to another stack.'
       ].join('\n');
     } },
@@ -365,6 +367,23 @@ const TOOLS = [
       const D = await data(), hash = String(url).split('#')[1] || String(url), H = {};
       hash.split('&').forEach(kv => { if (!kv) return; const i = kv.indexOf('='); H[decodeURIComponent(i < 0 ? kv : kv.slice(0, i))] = i < 0 ? '' : decodeURIComponent(kv.slice(i + 1)); });
       const ver = H.ver || null, out = [];
+      /* notes made in Dev Mode's Annotate mode travel in the link: a task list, one item per pin */
+      if (H.notes) {
+        let o = null; try { o = JSON.parse(Buffer.from(H.notes.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8')); } catch {}
+        if (o && Array.isArray(o.n)) {
+          const ix = await indexAt(ver), m = /^([pc]):(.+):(\d+)$/.exec(o.w || ''), TYPES = { ui: 'UI', motion: 'Motion', copy: 'Copy', bug: 'Bug' };
+          let where = o.w;
+          if (m && m[1] === 'p') { const p = findPage(D, m[2]); const st = p && p.states ? p.states[+m[3]] : null; where = p ? `page ${p.en} (${p.name}) \`${p.id}\`${st ? ', state ' + m[3] + ' ' + (st.en || st.name) : ''}` : o.w; }
+          else if (m) where = `component PS.${m[2]}, gallery state ${m[3]}`;
+          out.push(`# Notes from Dev Mode — ${o.n.length} on ${where}`, 'Each note points at a layer (component path; after "|" the child-index path of an element inside it). Work through them in order.', '');
+          o.n.forEach((n, i) => {
+            const cut = n.p.indexOf('|'), comp = (cut < 0 ? n.p : n.p.slice(0, cut)).split('>').pop().replace(/#\d+$/, ''), c = ix.components[comp];
+            out.push(`${i + 1}. **[${TYPES[n.k] || 'UI'}]** ${n.t}`, `   Layer: \`${n.p}\` — ${c ? `PS.${comp} (\`${c.file}\`:${c.line}; get_component "${comp}")` : comp}${cut >= 0 ? ', an element inside it' : ''}`);
+          });
+          out.push('', m && m[1] === 'p' ? `Page details: get_page("${m[2]}"${+m[3] ? ', state ' + m[3] : ''}). Measured specs of a noted layer: get_live_specs with page and the layer path (needs Playwright).` : '');
+          return out.join('\n');
+        }
+      }
       if (H.cmp) { const [a, b] = H.cmp.split('..'); out.push(`The link opens a comparison ${a} → ${b}.\n`); out.push(await changesText(a, b)); }
       if (H.v === 'iterations') return out.concat(await iterationText(H.it)).join('\n');
       if (H.v === 'tokens') return out.concat(`The link opens the Tokens view${H.cat ? ' (' + H.cat + ')' : ''}. Use get_tokens to read them.`).join('\n');
@@ -452,6 +471,34 @@ const TOOLS = [
       }
       return out.join('\n');
     } },
+  { name: 'find_by_figma', title: 'Find the code of a Figma node',
+    description: 'Given a Figma link (or node id) from a design or a ticket, the shared components (PS.*) and app pages built from that node — from the Figma nodes named in the components\' comments and the design-system components matched in devmode/data/figma-links.js.',
+    inputSchema: S({ url: { type: 'string', description: 'A figma.com link with node-id, or a node id like 3152:1405' }, version: verP }, ['url']),
+    run: async ({ url, version }) => {
+      const m = /node-id=([0-9]+)(?:-|%3A|:)([0-9]+)/i.exec(url) || /^\s*([0-9]+)[:-]([0-9]+)\s*$/.exec(url);
+      if (!m) throw new Error('no node id in that link (it needs ?node-id=…)');
+      const id = m[1] + ':' + m[2], fm = /figma\.com\/(?:design|file|proto)\/([0-9a-zA-Z]{10,})/.exec(url), file = fm ? fm[1] : null;
+      const D = await data(), ix = await indexAt(version), hit = f => f.id === id && (!file || f.file === file);
+      const comps = Object.values(ix.components).filter(c => (c.figma || []).some(hit)), pgs = Object.values(ix.pages || {}).filter(pg => (pg.figma || []).some(hit));
+      if (!comps.length && !pgs.length) return `Nothing in the code is linked to Figma node ${id}${file ? ' in ' + file : ''} yet. Try search with the layer's name, or list_components.`;
+      return [`# Figma node ${id} is built as`, ...comps.map(c => `- PS.${c.name} — \`${c.file}\`:${c.line} — ${firstLine(c.doc)} (get_component "${c.name}")`),
+        ...pgs.map(pg => { const p = findPage(D, pg.id); return `- page ${p ? p.en + ' (' + p.name + ') `' + p.id + '`' : pg.id} — \`${pg.file}\`:${pg.line} (get_page "${p ? p.id : pg.id}")`; })].join('\n');
+    } },
+  { name: 'get_visual_changes', title: 'Unrecorded visual changes',
+    description: 'The latest visual check: every page state and component state of the code now, compared pixel by pixel with the latest recorded iteration — what changed but is not recorded yet, where it starts (components) and a before | after | difference picture link. Use it to see what a recent push changed.',
+    inputSchema: S({}),
+    run: async () => {
+      let r = null, src = RAW_VISUAL;
+      const local = LOCAL && path.join(LOCAL, 'devmode-visual-out', 'report.json');
+      if (local && fs.existsSync(local)) { r = JSON.parse(fs.readFileSync(local, 'utf8')); src = 'local run (devmode-visual-out/)'; }
+      else { const x = await fetch(RAW_VISUAL + 'report.json?t=' + Math.floor(Date.now() / 60000)); if (!x.ok) return 'No visual check report yet: the "Dev Mode visual check" workflow makes one after a push (tools/devmode-visual.mjs).'; r = await x.json(); }
+      const n = r.changed.length + r.added.length;
+      return [`# Unrecorded changes — against ${r.against}`, `Checked ${r.at}${r.commit ? ' at commit ' + r.commit.slice(0, 7) : ''} · ${r.items} renders · source: ${src}`, `Dev Mode: ${dm('v=iterations&it=pending')}`,
+        n ? `${r.changed.length} changed, ${r.added.length} new, ${r.failed.length} could not render.` : 'Nothing changed since the latest iteration.',
+        r.summary && r.summary.components.length ? `Components involved: ${r.summary.components.map(c => (/^APP\./.test(c) ? c : 'PS.' + c)).join(', ')}` : '',
+        ...r.changed.map(c => `- ${c.kind} **${c.label}** — ${(c.ratio * 100).toFixed(2)}% of pixels; starts at: ${(c.components || []).join(', ') || '—'}; box ${c.box.join('×')}${c.unsteady ? ' (moving parts left out)' : ''}\n  picture (before | after | difference): ${src === RAW_VISUAL ? RAW_VISUAL + c.image : c.image}`),
+        ...r.added.map(c => `- new ${c.kind}: ${c.label}`), ...r.failed.map(c => `- could not render ${c.label}: ${c.error}`)].filter(Boolean).join('\n');
+    } },
   { name: 'search', title: 'Search',
     description: 'Search pages, components, tokens and iterations at once.',
     inputSchema: S({ query: { type: 'string' } }, ['query']),
@@ -482,6 +529,66 @@ const TOOLS = [
         }
         const png = await t.page.screenshot({ fullPage: !!a.fullPage });
         return [{ type: 'image', data: png.toString('base64'), mimeType: 'image/png' }, { type: 'text', text: `${t.label} · ${t.url}${note}` }];
+      } finally { await t.page.close(); }
+    } },
+  { name: 'qa_compare', title: 'Design QA: implementation vs demo (needs Playwright)',
+    description: 'Design QA for developers: compares a screenshot of your implementation (an image file on this computer, or a web URL Playwright can open) with the PeraSure demo of the same page / state or component state. Returns demo | implementation | difference pictures, how much differs, the regions that differ (CSS px) and the demo components there. The screenshot is scaled to the demo width; offsetY moves it (negative to skip a status bar). Needs Playwright.',
+    inputSchema: S({ page: { type: 'string', description: 'Demo page id (list_pages)' }, state: { type: 'integer' }, component: { type: 'string', description: 'Or a component: its gallery state is the reference' }, componentState: { type: 'integer' },
+      image: { type: 'string', description: 'Path to a PNG / JPG screenshot of the implementation (any scale; full width of the screen)' }, url: { type: 'string', description: 'Or the implementation\'s URL (web), shot at the same width' },
+      offsetX: { type: 'number' }, offsetY: { type: 'number', description: 'CSS px to move the implementation by (e.g. -24 to cut a 24 px status bar)' }, device: { type: 'string', enum: ['360', '390', '430'] }, version: verP,
+      tolerance: { type: 'integer', description: 'How far a colour channel may differ before a pixel counts (default 40)' } }),
+    run: async a => {
+      if (!a.image && !a.url) throw new Error('give image (a screenshot file of the implementation) or url');
+      const t = await openTarget({ ...a, page: a.component && !a.page ? undefined : (a.page || 'home'), component: a.page ? undefined : a.component, scale: 2 });
+      let implB64, implNote = '';
+      try {
+        const demo = await t.page.screenshot({ animations: 'disabled', caret: 'hide' });
+        const comps = await t.page.evaluate(() => { const I = window.DM.inspect, T = I.tree(window); return T.list.filter(n => n.kind === 'component').map(n => { const r = I.rect(n); return r && { name: n.name, r: [r.left, r.top, r.width, r.height] }; }).filter(Boolean); });
+        if (a.image) {
+          const f = a.image.replace(/^~(?=\/|\\|$)/, process.env.HOME || process.env.USERPROFILE || '~');
+          implB64 = (await fs.promises.readFile(path.resolve(f))).toString('base64'); implNote = path.basename(f);
+        } else {
+          const vp = t.page.viewportSize(), b = await browser(), ip = await b.newPage({ viewport: vp, deviceScaleFactor: 2 });
+          try { await ip.goto(a.url, { waitUntil: 'load', timeout: 30000 }); await ip.waitForTimeout(2000); implB64 = (await ip.screenshot({ animations: 'disabled', caret: 'hide' })).toString('base64'); implNote = a.url; } finally { await ip.close(); }
+        }
+        const r = await t.page.evaluate(async ([d, im, dx, dy, tol]) => {
+          const bmp = async (b64) => createImageBitmap(await (await fetch('data:image/*;base64,' + b64)).blob());
+          const D = await bmp(d), M = await bmp(im), W = D.width, H = D.height, k = W / M.width, S2 = W / window.innerWidth;
+          const cd = new OffscreenCanvas(W, H), cm = new OffscreenCanvas(W, H), xd = cd.getContext('2d'), xm = cm.getContext('2d');
+          xd.drawImage(D, 0, 0); xm.fillStyle = '#fff'; xm.fillRect(0, 0, W, H); xm.drawImage(M, dx * S2, dy * S2, W, M.height * k);
+          const pd = xd.getImageData(0, 0, W, H).data, pm = xm.getImageData(0, 0, W, H).data, mask = new Uint8Array(W * H);
+          let n = 0;
+          for (let i = 0, p = 0; i < pd.length; i += 4, p++) if (Math.abs(pd[i] - pm[i]) > tol || Math.abs(pd[i + 1] - pm[i + 1]) > tol || Math.abs(pd[i + 2] - pm[i + 2]) > tol) { mask[p] = 1; n++; }
+          /* regions: 8 px cells that differ, joined with their neighbours */
+          const C = 8 * S2, gw = Math.ceil(W / C), gh = Math.ceil(H / C), cell = new Uint16Array(gw * gh);
+          for (let p = 0; p < mask.length; p++) if (mask[p]) cell[Math.floor((p / W | 0) / C) * gw + Math.floor((p % W) / C)]++;
+          const on = c => cell[c] > C * C * 0.04, seen = new Uint8Array(gw * gh), regions = [];
+          for (let c = 0; c < cell.length; c++) {
+            if (!on(c) || seen[c]) continue;
+            let x0 = gw, y0 = gh, x1 = 0, y1 = 0, px = 0; const st = [c]; seen[c] = 1;
+            while (st.length) { const q = st.pop(), x = q % gw, y = q / gw | 0; px += cell[q]; if (x < x0) x0 = x; if (y < y0) y0 = y; if (x > x1) x1 = x; if (y > y1) y1 = y;
+              [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(([ax, ay]) => { const X = x + ax, Y = y + ay, nq = Y * gw + X; if (X >= 0 && Y >= 0 && X < gw && Y < gh && !seen[nq] && on(nq)) { seen[nq] = 1; st.push(nq); } }); }
+            regions.push({ box: [x0 * 8, y0 * 8, (x1 - x0 + 1) * 8, (y1 - y0 + 1) * 8], px });
+          }
+          regions.sort((p, q) => q.px - p.px);
+          const out = new OffscreenCanvas(W * 3 + 32, H), xo = out.getContext('2d');
+          xo.fillStyle = '#e6e6e6'; xo.fillRect(0, 0, out.width, H); xo.drawImage(cd, 0, 0); xo.drawImage(cm, W + 16, 0);
+          xo.globalAlpha = 0.3; xo.drawImage(cd, 2 * W + 32, 0); xo.globalAlpha = 1;
+          const di = xo.getImageData(2 * W + 32, 0, W, H);
+          for (let p = 0; p < mask.length; p++) if (mask[p]) { di.data[p * 4] = 242; di.data[p * 4 + 1] = 72; di.data[p * 4 + 2] = 34; di.data[p * 4 + 3] = 255; }
+          xo.putImageData(di, 2 * W + 32, 0);
+          xo.strokeStyle = '#9747ff'; xo.lineWidth = 2 * S2; xo.font = `${12 * S2}px sans-serif`; xo.fillStyle = '#9747ff';
+          regions.slice(0, 8).forEach((g, i) => { const [x, y, w, h] = g.box.map(v => v * S2); xo.strokeRect(2 * W + 32 + x, y, w, h); xo.fillText(String(i + 1), 2 * W + 32 + x + 3 * S2, y + 13 * S2); });
+          const blob = await out.convertToBlob({ type: 'image/png' }), buf = new Uint8Array(await blob.arrayBuffer());
+          let s = ''; for (let i = 0; i < buf.length; i += 0x8000) s += String.fromCharCode.apply(null, buf.subarray(i, i + 0x8000));
+          return { ratio: n / (W * H), regions: regions.slice(0, 8), image: btoa(s), implW: M.width, implH: M.height };
+        }, [demo.toString('base64'), implB64, a.offsetX || 0, a.offsetY || 0, a.tolerance || 40]);
+        const where = box => { const [x, y, w, h] = box, cx = x + w / 2, cy = y + h / 2; const hit = comps.filter(c => cx >= c.r[0] && cx <= c.r[0] + c.r[2] && cy >= c.r[1] && cy <= c.r[1] + c.r[3]).sort((p, q) => p.r[2] * p.r[3] - q.r[2] * q.r[3]); return [...new Set(hit.map(c => c.name))].slice(0, 3); };
+        const text = [`# Design QA — ${t.label}`, `Demo: ${t.url}`, `Implementation: ${implNote} (${r.implW}×${r.implH}, scaled to the demo width${a.offsetY || a.offsetX ? `, moved ${a.offsetX || 0}, ${a.offsetY || 0} px` : ''})`,
+          `${(r.ratio * 100).toFixed(2)}% of pixels differ (tolerance ${a.tolerance || 40}). Picture: demo | implementation | difference (numbered regions).`,
+          r.regions.length ? '\n## Regions that differ (CSS px: x, y, w, h)\n' + r.regions.map((g, i) => `${i + 1}. ${g.box.join(', ')} — demo components there: ${where(g.box).map(n => (/^APP\./.test(n) ? n : 'PS.' + n)).join(', ') || '—'}`).join('\n') : '\nNo differing regions: it matches the demo.',
+          '\nIf everything is off by the same few pixels, the screenshot is shifted (a status bar): try offsetY. For exact values of a component, use get_live_specs or get_component.'].join('\n');
+        return [{ type: 'image', data: r.image, mimeType: 'image/png' }, { type: 'text', text }];
       } finally { await t.page.close(); }
     } },
   { name: 'get_live_specs', title: 'Live measurements (needs Playwright)',
@@ -555,7 +662,7 @@ async function updateNote() {
 
 /* ---------------------------------------------------------------- MCP over stdio */
 const INSTRUCTIONS = 'PeraSure Dev Mode: the PeraSure app\'s pages and shared React components (PS.*) with code, CSS as written, design tokens, motion values, Figma nodes, statuses and iteration history. '
-  + 'When the user pastes a Dev Mode link (…/devmode/index.html#…), call resolve_devmode_link. For a component call get_component; for a screen get_page; for what changed get_changes. '
+  + 'When the user pastes a Dev Mode link (…/devmode/index.html#…), call resolve_devmode_link; for a Figma link, find_by_figma. For a component call get_component; for a screen get_page; for what changed get_changes. '
   + 'Values come from design tokens (CSS custom properties); keep the token names when implementing. get_screenshot and get_live_specs need Playwright on the computer.';
 const PROTOCOLS = ['2025-06-18', '2025-03-26', '2024-11-05'];
 function send(o) { process.stdout.write(JSON.stringify(o) + '\n'); }

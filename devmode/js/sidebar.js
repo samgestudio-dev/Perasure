@@ -61,12 +61,15 @@
     });
   }
   function IterList(p) {
-    return DM.iterations().map(function (it, i) {
+    var vis = DM.useVisual ? DM.useVisual() : null, pend = vis && !vis.none ? vis.changed.length + vis.added.length : 0;
+    var top = h(Row, { key: '__pending', on: p.iter === 'pending', icon: 'eye', name: t('vis.title'), sub: vis && !vis.none ? t('vis.against', { v: vis.against }) : t('loading'),
+      right: vis && !vis.none ? h('span', { className: 'dm-chip ' + (pend ? 'is-edit' : 'is-add') }, pend || '✓') : null, onClick: function () { p.onIter('pending'); } });
+    return [top].concat(DM.iterations().map(function (it, i) {
       var ui = (it.changes || []).filter(function (c) { return c.type === 'ui'; }).length, mo = (it.changes || []).length - ui;
       return h(Row, { key: it.id, on: p.iter === it.id, icon: 'history', name: it.label, sub: it.date + ' · ' + DM.tx(it.title),
         right: h('span', { className: 'dm-row__chips' }, ui ? h('span', { className: 'dm-chip is-ui' }, ui) : null, mo ? h('span', { className: 'dm-chip is-motion' }, mo) : null, i === 0 ? h('span', { className: 'dm-chip' }, t('version.latest')) : null),
         onClick: function () { p.onIter(it.id); } });
-    });
+    }));
   }
   function TokenCats(p) {
     var cats = p.tokens ? p.tokens.cats : [];
@@ -103,17 +106,30 @@
       }) : h(DM.Empty, { icon: 'layers' }, t('layers.empty'))));
   }
 
+  /* a Figma link in the search: what it is built as */
+  function FigmaResults(p) {
+    var fig = p.fig, r = DM.figmaFind(DM.IDX(), fig), byCode = {};
+    Object.keys(window.DM_PAGES.byId).forEach(function (k) { var x = window.DM_PAGES.byId[k]; byCode[x.code] = byCode[x.code] || x; });
+    var any = r.comps.length || r.pages.length;
+    return h('div', { className: 'dm-group is-open' },
+      h('div', { className: 'dm-fighead' }, h(DM.Icon, { name: 'figma', size: 14 }), t('fig.node', { id: fig.id })),
+      r.comps.map(function (c) { return h(Row, { key: 'c' + c.name, icon: 'component', comp: true, name: 'PS.' + c.name, sub: c.file.split('/').pop() + ':' + c.line, onClick: function () { p.onComp(c.name); } }); }),
+      r.pages.map(function (pg) { var reg = byCode[pg.id]; return reg ? h(Row, { key: 'p' + pg.id, icon: 'frame', name: DM.pageName(reg), sub: reg.code, onClick: function () { p.onPage(reg.id); } }) : null; }),
+      any ? null : h(DM.Empty, { icon: 'figma' }, t('fig.none')));
+  }
+
   /* p: view, onView, q, onQ, page, onPage, comp, onComp, iter, onIter, cat, onCat, tokens, T, sel, onSelect, hover, onHoverLayer */
   DM.Left = function Left(p) {
     var v = p.view;
     var tabs = [{ id: 'pages', label: t('nav.pages') }, { id: 'components', label: t('nav.components') }, { id: 'tokens', label: t('nav.tokens') }, { id: 'iterations', label: t('nav.iterations') }];
     var withLayers = v === 'pages' || v === 'components';
-    var list = v === 'pages' ? h(PagesList, p) : v === 'components' ? h(CompList, p) : v === 'iterations' ? h(IterList, p) : h(TokenCats, p);
+    var fig = (v === 'pages' || v === 'components') && DM.parseFigma(p.q);
+    var list = fig ? h(FigmaResults, Object.assign({}, p, { fig: fig })) : v === 'pages' ? h(PagesList, p) : v === 'components' ? h(CompList, p) : v === 'iterations' ? h(IterList, p) : h(TokenCats, p);
     var searchable = v === 'pages' || v === 'components';
     return h('aside', { className: 'dm-left' },
       h(DM.Tabs, { items: tabs, value: v, onChange: p.onView }),
       searchable ? h('label', { className: 'dm-search' }, h(DM.Icon, { name: 'search', size: 14 }),
-        h('input', { value: p.q || '', placeholder: t(v === 'pages' ? 'search.pages' : 'search.components'), onChange: function (e) { p.onQ(e.target.value); }, onKeyDown: function (e) { if (e.key === 'Escape') p.onQ(''); } })) : null,
+        h('input', { value: p.q || '', placeholder: t(v === 'pages' ? 'search.pages' : 'search.components') + t('fig.orLink'), onChange: function (e) { p.onQ(e.target.value); }, onKeyDown: function (e) { if (e.key === 'Escape') p.onQ(''); } })) : null,
       withLayers ? h('div', { className: 'dm-split' }, h('div', { className: 'dm-scroll' }, list),
         h(Layers, { T: p.T, sel: p.sel, hover: p.hover, onSelect: p.onSelect, onHover: p.onHoverLayer }))
         : h('div', { className: 'dm-scroll' }, list));

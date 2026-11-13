@@ -48,7 +48,7 @@ Settings (environment): `PERASURE_SOURCE=remote` always reads the live site; `PE
 | Tool | What it gives |
 |---|---|
 | `get_overview` | versions, page sections, component files, statuses, how to use the tools |
-| `resolve_devmode_link` | everything behind a Dev Mode link (page, selected layer, component, version, comparison) — what **Copy for AI** sends |
+| `resolve_devmode_link` | everything behind a Dev Mode link (page, selected layer, component, version, comparison, notes from Annotate) — what **Copy for AI** sends |
 | `list_pages` / `get_page` | pages and sheets; how to open one (link + script), its states, source code, components, Figma, history |
 | `list_components` / `get_component` | shared components; description, props, states, usage examples (the gallery entry), source, CSS as written, tokens with values, motion, assets, Figma, pages, history (`sections` to ask for less) |
 | `get_component_code` | just the JS source and CSS rules, at a version |
@@ -56,8 +56,11 @@ Settings (environment): `PERASURE_SOURCE=remote` always reads the live site; `PE
 | `get_motion` | `PS.MT`: springs, tweens, press, rises, menus — with their rules |
 | `list_iterations` / `get_iteration` / `get_changes` | the iteration record; what changed between two versions, by component and page |
 | `get_status` | Ready for dev / Changed / Completed |
+| `get_visual_changes` | the latest visual check: what changed since the latest iteration but isn't recorded, where it starts, picture links |
+| `find_by_figma` | a Figma link (or node id) → the PS components and pages built from it |
 | `search` | pages, components, tokens and iterations at once |
 | `get_screenshot` | PNG of a page (state) or a component state; can outline a component (needs Playwright) |
+| `qa_compare` | design QA: your implementation's screenshot (file) or URL vs the demo — demo · implementation · difference picture, differing regions and the components there (needs Playwright) |
 | `get_live_specs` | a component measured as it renders: size, padding and gaps with the token the CSS uses, radius, fill, stroke, shadow, text, the layers inside, matching CSS rules (needs Playwright) |
 
 Every tool takes `version` (an iteration id) where it makes sense: older versions are read from their git tag `devmode-<id>` or

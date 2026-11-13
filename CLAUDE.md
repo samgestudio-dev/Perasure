@@ -70,6 +70,7 @@ tokens-rem/                the same length tokens in rem (tokens-rem.css), MADE 
 tools/figma-tokens/        Figma side of the token pipeline: core.js (export + digest) and the export plugin
 .github/workflows/tokens.yml  applies exports dropped in tokens/inbox/, tags tokens-v<version>, checks generated files
 .github/workflows/devmode.yml tags each Dev Mode snapshot's commit devmode-<id>
+.github/workflows/devmode-visual.yml  the Dev Mode visual check on every push (tools/devmode-visual.mjs) → branch devmode-visual
 vendor/<lib>@<version>/    pinned libraries: lottie-web, gsap (+ plugins; esm/ = ES modules), react, react-dom, mui-material,
                            motion (motion-react.js = React API, motion.js = vanilla; both set window.Motion), matter-js,
                            react-wheel-picker (the package's dist/index.js unchanged in a small wrapper → window.WheelPicker; + style.css)
@@ -286,6 +287,15 @@ at the version's tag), Figma nodes, statuses, the iteration record and version c
 - **The platform's own look is not PeraSure's** (owner): PeraSure tokens are data inside it (Inspect, the Tokens tab), never its styling.
   It is bilingual (中 / EN, every text in `devmode/js/i18n.js`, data as `{ zh, en }`) and has light and dark themes.
 - Don't read `tokens/tokens.css` into context for it: the Tokens tab parses the file in the browser.
+- **Unrecorded changes** (owner wanted a Chromatic-like check): `tools/devmode-visual.mjs diff` renders every page state and component
+  state from the latest iteration's snapshot and from the code now and compares pixels (steady renders: fixed clock and random numbers,
+  finished entrances, Lottie on a fixed frame, self-moving parts rendered twice and left out). `.github/workflows/devmode-visual.yml`
+  runs it on every push and publishes the report to the branch `devmode-visual` (Dev Mode → Iterations → Unrecorded changes; MCP
+  `get_visual_changes`). Use it before recording an iteration (skill `perasure-iteration-log`); a new page or state in `pages.js` must
+  render steadily (check with `--filter <id>` twice).
+- **Annotate, QA, Figma links** (owner): notes pinned on layers travel in links (`devmode/js/notes.js`); QA lays the developers'
+  screenshot over the demo (canvas); design-system components matched to PS components live in `devmode/data/figma-links.js` (only
+  clear one-to-one matches). Writing links into the shared Figma file needs the owner's go-ahead (Code Connect needs an Organization plan).
 - **MCP for developers' AI** (owner): `devmode/mcp/server.mjs` (one file, no dependencies, stdio; guide `devmode/mcp/README.md`) reads the
   same data files, `shared/ps-ui`, the gallery entries and `tokens/tokens.css`, and injects `devmode/js/inspector.js` for live measurements.
   When a data format, a page's opening (`pages.js`) or the inspector changes, update the server in the same commit and raise its `VERSION`;

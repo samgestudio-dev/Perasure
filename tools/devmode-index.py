@@ -222,6 +222,15 @@ def main():
         c['gallery'] = g['entry'] if g else None
         c['states'] = g['states'] if g else []
         c['galleryProps'] = g['props'] if g else ''
+    # design-system components matched to PS components (devmode/data/figma-links.js) join the Figma nodes from the comments
+    links = os.path.join(ROOT, 'devmode', 'data', 'figma-links.js')
+    if not os.path.exists(links):
+        links = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'devmode', 'data', 'figma-links.js')
+    if os.path.exists(links):
+        for fid, fname, ps in re.findall(r"\['(\d+:\d+)',\s*'([^']*)',\s*'(\w+)'\]", read(links)):
+            c = comps.get(ps)
+            if c is not None and not any(f['id'] == fid for f in c['figma']):
+                c['figma'].append({'file': DS_FILE, 'id': fid, 'url': 'https://www.figma.com/design/%s/?node-id=%s' % (DS_FILE, fid.replace(':', '-')), 'name': fname, 'component': True})
     pg = pages(comps)
     data = {'generated': time.strftime('%Y-%m-%d %H:%M'), 'figmaFiles': {'ds': DS_FILE, 'app': APP_FILE}, 'components': comps, 'pages': pg,
             'gallery': {k: v['entry'] for k, v in gal.items()}}

@@ -113,3 +113,63 @@
         })))) : null));
   };
 })();
+
+/* ---- unrecorded changes: the visual check (tools/devmode-visual.mjs, published by the Dev Mode visual check workflow) ---- */
+(function () {
+  'use strict';
+  var DM = window.DM, h = DM.h, R = DM.R, t = function (k, v) { return DM.t(k, v); };
+  /* the report lives on the branch devmode-visual; ?visual=<folder> reads another one (a local run of the tool) */
+  var RAW = new URLSearchParams(location.search).get('visual') || 'https://raw.githubusercontent.com/samgestudio-dev/Perasure/devmode-visual/';
+  DM.VISUAL = RAW;
+  var vp = null;
+  DM.loadVisual = function () {
+    if (!vp) vp = fetch(RAW + 'report.json?t=' + Math.floor(Date.now() / 60000), { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).catch(function () { return null; });
+    return vp;
+  };
+  DM.useVisual = function () {
+    var s = R.useState(null);
+    R.useEffect(function () { var on = true; DM.loadVisual().then(function (r) { if (on) s[1](r || { none: true }); }); return function () { on = false; }; }, []);
+    return s[0];
+  };
+  function ago(iso) {
+    var m = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+    return m < 1 ? t('vis.now') : m < 60 ? t('vis.min', { n: m }) : m < 1440 ? t('vis.hour', { n: Math.round(m / 60) }) : t('vis.day', { n: Math.round(m / 1440) });
+  }
+  function Item(p) {
+    var c = p.c, pg = c.page ? window.DM_PAGES.byId[c.page] : null;
+    return h('div', { className: 'dm-vis' },
+      h('div', { className: 'dm-vis__head' },
+        h('span', { className: 'dm-chip ' + (c.kind === 'page' ? '' : 'is-comp') }, h(DM.Icon, { name: c.kind === 'page' ? 'frame' : 'component', size: 12 }), c.kind === 'page' ? t('page') : t('component')),
+        h('b', null, DM.lang === 'en' ? c.label : c.labelZh || c.label),
+        c.ratio != null ? h('span', { className: 'dm-vis__ratio' }, t('vis.ratio', { n: (c.ratio * 100).toFixed(c.ratio < 0.01 ? 2 : 1) })) : null,
+        h('span', { style: { flex: 1 } }),
+        pg ? h('button', { type: 'button', className: 'dm-btn is-outline', onClick: function () { p.onPage(pg.id, c.state); } }, h(DM.Icon, { name: 'eye', size: 13 }), t('vis.open')) : null),
+      c.image ? h('a', { href: RAW + c.image, target: '_blank', rel: 'noopener', className: 'dm-vis__img' },
+        h('img', { src: RAW + c.image + '?t=' + encodeURIComponent(p.at || ''), alt: '', loading: 'lazy' }),
+        h('div', { className: 'dm-vis__cap' }, h('span', null, t('cmp.before') + ' · ' + p.against), h('span', null, t('cmp.after')), h('span', null, t('vis.diff')))) : null,
+      (c.components || []).length ? h('div', { className: 'dm-change__targets' }, h('span', { className: 'dm-vis__where' }, c.kind === 'page' ? t('vis.where') : t('vis.comps')),
+        c.components.map(function (n) { return /^APP\./.test(n) ? h('span', { key: n, className: 'dm-chip' }, n) : h('button', { key: n, type: 'button', className: 'dm-chip is-link is-comp', onClick: function () { p.onComp(n); } }, h(DM.Icon, { name: 'instance', size: 11 }), n); })) : null,
+      c.error ? h('div', { className: 'dm-note' }, c.error) : null);
+  }
+  DM.VisualView = function VisualView(p) {
+    var r = DM.useVisual();
+    if (!r) return h('div', { className: 'dm-docview' }, h(DM.Empty, null, t('loading')));
+    var head = h(R.Fragment, null, h('h1', null, t('vis.title')), h('p', { className: 'dm-docview__sub' }, t('vis.sub')));
+    if (r.none) return h('div', { className: 'dm-docview' }, h('div', { className: 'dm-docview__inner' }, head, h('div', { className: 'dm-card dm-gap' }, h('div', { className: 'dm-card__pad dm-prose' }, t('vis.noReport')))));
+    var n = r.changed.length + r.added.length;
+    return h('div', { className: 'dm-docview' }, h('div', { className: 'dm-docview__inner' }, head,
+      h('div', { className: 'dm-itermeta' },
+        h('span', { className: 'dm-chip' }, h(DM.Icon, { name: 'history', size: 12 }), t('vis.against', { v: r.against })),
+        h('span', { className: 'dm-chip' }, t('vis.checked', { t: ago(r.at) })),
+        r.commit ? h('a', { className: 'dm-chip is-link', href: DM.REPO + '/commit/' + r.commit, target: '_blank', rel: 'noopener' }, h(DM.Icon, { name: 'code', size: 12 }), r.commit.slice(0, 7)) : null,
+        h('span', { className: 'dm-chip' }, t('vis.renders', { n: r.items })),
+        h('span', { className: 'dm-chip ' + (n ? 'is-edit' : 'is-add') }, n ? t('vis.count', { n: n }) : t('vis.clean'))),
+      n ? h('div', { className: 'dm-note dm-gap' }, t('vis.howRecord')) : null,
+      r.summary && r.summary.components.length ? h(R.Fragment, null, h('h2', null, t('vis.compsTitle')), h('div', { className: 'dm-change__targets' }, r.summary.components.map(function (c) {
+        return /^APP\./.test(c) ? h('span', { key: c, className: 'dm-chip' }, c) : h('button', { key: c, type: 'button', className: 'dm-chip is-link is-comp', onClick: function () { p.onComp(c); } }, h(DM.Icon, { name: 'instance', size: 11 }), c);
+      }))) : null,
+      r.changed.length ? h(R.Fragment, null, h('h2', null, t('vis.changed') + ' · ' + r.changed.length), r.changed.map(function (c) { return h(Item, { key: c.id, c: c, against: r.against, at: r.at, onPage: p.onPage, onComp: p.onComp }); })) : null,
+      r.added.length ? h(R.Fragment, null, h('h2', null, t('vis.added') + ' · ' + r.added.length), r.added.map(function (c) { return h(Item, { key: c.id, c: c, against: r.against, at: r.at, onPage: p.onPage, onComp: p.onComp }); })) : null,
+      r.failed.length ? h(R.Fragment, null, h('h2', null, t('vis.failed') + ' · ' + r.failed.length), r.failed.map(function (c) { return h(Item, { key: c.id, c: c, against: r.against, at: r.at, onPage: p.onPage, onComp: p.onComp }); })) : null));
+  };
+})();

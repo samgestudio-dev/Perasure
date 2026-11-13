@@ -75,8 +75,10 @@
         if (!ok) { if (++n < 300) setTimeout(wait, 50); return; }
         var needWd = p.js && /APP\.borrow/.test(p.js), m = 0;
         (function run() {
-          var wd = false; try { var sh = win.APP.wd && win.APP.wd.sheet(); wd = !!(sh && sh.ready && sh.ready()); } catch (e) {}
-          if (needWd && !wd && ++m < 120) { setTimeout(run, 50); return; }
+          var wd = false, opening = false;
+          try { var sh = win.APP.wd && win.APP.wd.sheet(); wd = !!(sh && sh.ready && sh.ready()); } catch (e) {}
+          try { opening = p.app !== false && win.APP.S.stack.some(function (e) { return e.name === 'opening'; }); } catch (e) {}
+          if (((needWd && !wd) || opening) && ++m < 160) { setTimeout(run, 50); return; }
           if (p.js) { try { win.eval(p.js); } catch (e) { console.warn('[devmode] page script failed', e); } }
           p.onReady(win);
         })();

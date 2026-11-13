@@ -55,6 +55,9 @@
     type: 'M3 4V3h10v1M8 3v10M6 13h4',
     shadow: 'M3 3h8v8H3zM5 13h8V5',
     more: 'M4 8h.01M8 8h.01M12 8h.01',
+    image: 'M2.5 3.5h11v9h-11zM2.5 10.5l3-3 3 3 2-2 3 3M10.5 6.5a1 1 0 100-2 1 1 0 000 2z',
+    pin: 'M8 14s-4.5-4.2-4.5-7.5a4.5 4.5 0 019 0C12.5 9.8 8 14 8 14zM8 8.2a1.7 1.7 0 100-3.4 1.7 1.7 0 000 3.4z',
+    pen: 'M10.5 3l2.5 2.5L6 12.5 3 13l.5-3zM9.3 4.2l2.5 2.5',
     spark: 'M8 2.5l1.3 3.2L12.5 7 9.3 8.3 8 11.5 6.7 8.3 3.5 7l3.2-1.3zM12.5 11l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z'
   };
   DM.Icon = function Icon(p) {
@@ -74,6 +77,20 @@
   DM.ref = function (id) { return !id || id === DM.latest().id ? 'main' : 'devmode-' + id; };
   DM.gh = function (file, a, b, id) { return DM.REPO + '/blob/' + DM.ref(id) + '/' + file + (a ? '#L' + a + (b && b !== a ? '-L' + b : '') : ''); };
   DM.figmaUrl = function (n) { return n.url || ('https://www.figma.com/design/' + (n.file || 'OBsvf42AiRapcRrasD7KNm') + '/?node-id=' + String(n.id).replace(':', '-')); };
+  /* a Figma link (or a node id) → the components and pages that name that node (index: comments + data/figma-links.js) */
+  DM.parseFigma = function (q) {
+    q = String(q || '').trim();
+    var m = /node-id=([0-9]+)(?:-|%3A|:)([0-9]+)/i.exec(q) || (/^([0-9]+)[:-]([0-9]+)$/.exec(q));
+    if (!m) return null;
+    var f = /figma\.com\/(?:design|file|proto)\/([0-9a-zA-Z]{10,})/.exec(q);
+    return { id: m[1] + ':' + m[2], file: f ? f[1] : null };
+  };
+  DM.figmaFind = function (ix, fig) {
+    var comps = [], pages = [];
+    Object.keys(ix.components).forEach(function (n) { var c = ix.components[n]; if ((c.figma || []).some(function (f) { return f.id === fig.id && (!fig.file || f.file === fig.file); })) comps.push(c); });
+    Object.keys(ix.pages || {}).forEach(function (k) { var pg = ix.pages[k]; if ((pg.figma || []).some(function (f) { return f.id === fig.id && (!fig.file || f.file === fig.file); })) pages.push(pg); });
+    return { comps: comps, pages: pages };
+  };
   DM.jiraUrl = function (j) { return j ? (j.url || DM.JIRA + j.key) : null; };
 
   /* the iterations that changed a page or a component (newest first), and the last one ('v1.0' when none did) */

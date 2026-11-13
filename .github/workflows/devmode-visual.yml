@@ -1,0 +1,51 @@
+# PeraSure Dev Mode visual check (after Chromatic): on every push that can change how the app looks, render every page state and
+# component state from the latest iteration's snapshot and from the code now, compare the pixels (tools/devmode-visual.mjs), and
+# publish the report with before | after | difference pictures to the branch devmode-visual (replaced each time, no history).
+# Dev Mode shows it under Iterations → Unrecorded changes; the MCP server's get_visual_changes reads it. Recording an iteration
+# (a new snapshot) brings it back to zero.
+name: Dev Mode visual check
+
+on:
+  push:
+    branches: [main]
+    paths: ['prototypes/app/**', 'prototypes/withdraw-fund-flow/**', 'prototypes/credit-limit-coins/baked/**', 'shared/**', 'tokens/**',
+            'tokens-rem/**', 'animations/**', 'assets/fonts/**', 'devmode/data/**', 'devmode/snapshots/**', 'tools/devmode-visual.mjs']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: devmode-visual
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Playwright and Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.63.0
+          npx playwright install --with-deps chromium
+
+      - name: Compare with the latest iteration
+        run: node tools/devmode-visual.mjs diff --out out --jobs 4
+
+      - name: Publish the report (branch devmode-visual)
+        run: |
+          cd out
+          echo "Visual check of ${GITHUB_SHA} — read by PeraSure Dev Mode (Iterations → Unrecorded changes)." > README.md
+          git init -q -b devmode-visual
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Visual check of ${GITHUB_SHA::7}"
+          git push -q -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" devmode-visual
+          node -e "const r=require('./report.json');console.log(r.changed.length+' changed, '+r.added.length+' new, '+r.failed.length+' failed')" >> "$GITHUB_STEP_SUMMARY"

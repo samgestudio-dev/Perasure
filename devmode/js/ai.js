@@ -8,7 +8,7 @@
 
   /* the live link of what is open now (also when Dev Mode runs from a local copy) */
   DM.liveLink = function () {
-    var hs = (location.hash || '').replace(/^#/, '').split('&').filter(function (kv) { return kv && !/^(ai|tab)=/.test(kv); }).join('&');
+    var hs = (location.hash || '').replace(/^#/, '').split('&').filter(function (kv) { return kv && !/^(ai|tab|notes)=/.test(kv); }).join('&');
     return SITE + 'devmode/index.html' + (hs ? '#' + hs : '');
   };
   DM.copyForAI = function (what) {

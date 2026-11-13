@@ -8,7 +8,8 @@ description: Record a PeraSure iteration in PeraSure Dev Mode — every new requ
 PeraSure Dev Mode (`devmode/` in the Playground repo, `samgestudio-dev/Perasure`) shows designers what changed in each iteration
 and lets developers pull the code of exactly that version. It only knows what is recorded here, so **every change to an app page, a
 shared component or a motion is recorded in the same piece of work** (owner's rule). Pure fixes to Dev Mode itself, docs or tooling
-are not iterations.
+are not iterations. A change made without recording it (another session, a quick fix) shows up in Dev Mode under Iterations →
+Unrecorded changes (the visual check runs on every push): record those too when the owner asks.
 
 ## Names and versions (owner)
 
@@ -25,6 +26,10 @@ are not iterations.
 2. **Make the change** the usual way (components first: `perasure-components`). Keep a note of what changed: which pages (ids in
    `devmode/data/pages.js`), which components (`PS.<Name>` without `PS.`), UI or motion, added / edited / removed, and the values before →
    after (a colour, a spacing token, a spring, a duration) — read them from the code you changed, not from memory.
+   Then **let the visual check find everything that changed**: `node tools/devmode-visual.mjs diff` (Playwright; ~5 min, or
+   `--filter 'home|PaymentCard'` while working) renders every page state and component state from the latest iteration's snapshot and
+   from the code now, and lists what differs and where it starts (components), with before | after | difference pictures in
+   `devmode-visual-out/`. Record every real change it lists; anything you didn't mean to change is a bug to fix before recording.
 3. **A new page or state** of the app goes into `devmode/data/pages.js` (its section, `q` / `page` / `tab` / `js`, both names). A new
    component needs its gallery entry (`shared/gallery.js` / `gallery-app.js`) — that is where Dev Mode gets its states.
 4. **The entry**, at the top of `devmode/data/iterations.js` (format in the file's header comment):
@@ -41,7 +46,8 @@ are not iterations.
    an older version's code to that tag; check the tag exists a minute after the push (`git ls-remote --tags origin devmode-<id>`).
 9. **Check in Dev Mode** (desktop viewport, `devmode/index.html`): the version menu lists the new label; Iterations shows the entry;
    the changed page / component's History tab lists it; Compare (previous → new) shows both frames and the changes with properties
-   and code before → after. No console errors. Give the owner the Dev Mode link with the iteration open
+   and code before → after; a few minutes after the push, Iterations → Unrecorded changes (the *Dev Mode visual check* workflow) is
+   back to zero. No console errors. Give the owner the Dev Mode link with the iteration open
    (`devmode/index.html#v=iterations&it=<id>`).
 
 ## Don'ts
