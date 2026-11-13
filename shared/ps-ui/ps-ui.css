@@ -953,10 +953,11 @@ button.ps-ff__box { cursor: pointer; touch-action: manipulation; }
 .ps-date__steps { display: flex; justify-content: space-between; margin-top: calc(var(--spacing-gap-md) - var(--spacing-gap-xl)); }   /* 12 under the head, 20 above the days */
 .ps-date__step { flex: 1 1 0; min-width: 0; display: flex; align-items: center; justify-content: center; gap: var(--spacing-gap-md); min-height: 1.375rem; }
 .ps-date__step > button:not(.ps-date__label) { width: 1.5rem; height: 1.5rem; margin: -0.25rem; display: flex; align-items: center; justify-content: center; touch-action: manipulation; }
+.ps-date__step > button:disabled { opacity: 0.35; }   /* nothing further that way */
 .ps-date__label { flex: 0 1 5rem; min-width: 0; color: var(--color-text-primary); text-align: center; touch-action: manipulation; transition: color 0.15s ease; }
 .ps-date__body { position: relative; height: 18.375rem; }   /* week row 14 + 16 + six rows of 24 with 24 between */
 .ps-date__view { position: absolute; inset: 0; }
-.ps-date__cal { display: flex; flex-direction: column; justify-content: center; height: 100%; gap: var(--spacing-gap-lg); }   /* a month of 4 or 5 weeks sits in the middle of the space (six weeks fill it, as in Figma) */
+.ps-date__cal { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); touch-action: pan-y; }   /* six rows of days, always (owner); sideways swipes are ours */
 .ps-date__week, .ps-date__grid { display: grid; grid-template-columns: repeat(7, 1.5rem); justify-content: space-between; padding: 0 var(--spacing-padding-lg); }   /* Figma: 24 px cells, space between, 16 in */
 .ps-date__week { color: var(--color-neutral-200); text-align: center; white-space: nowrap; }
 .ps-date__week > span { display: flex; justify-content: center; }

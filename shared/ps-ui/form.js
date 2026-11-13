@@ -276,7 +276,7 @@
 
   /* DatePicker: the content of the "Select date" card (DS 7628:14113 · 5900:9854 · 5900:9592): Glass back / tick, the month and year steppers
      (‹ December › ‹ 2026 ›), then the month's days — the chosen one on a brand circle (36). Tapping the month or the year swaps the days for a wheel
-     with Cancel / Confirm. Days outside min … max are shown faded and can't be picked. The body keeps one height (six weeks) so nothing jumps; a month of fewer weeks sits in its middle.
+     with Cancel / Confirm. Days outside min … max are shown faded and can't be picked. The days are always six rows (owner), so the weekday row and the card never move.
      value { y, m, d } (m from 0) · min · max ({ y, m, d }) · onConfirm(value) · onCancel · title */
   var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   var WEEK = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -290,42 +290,51 @@
     var s2 = R.useState('date'), mode = s2[0], setMode = s2[1], s3 = R.useState(null), wheel = s3[0], setWheel = s3[1];
     function moveTo(y, m) { var t = Math.max(min.y * 12 + min.m, Math.min(max.y * 12 + max.m, y * 12 + m)), ny = Math.floor(t / 12), nm = t % 12;
       setV(clamp({ y: ny, m: nm, d: Math.min(v.d, new Date(ny, nm + 1, 0).getDate()) })); }
-    function shift(dm) { var t = view.y * 12 + view.m + dm; if (t < min.y * 12 + min.m || t > max.y * 12 + max.m) return; moveTo(Math.floor(t / 12), t % 12); }
-    /* the month wheel lists only months that can be picked: a range of up to 12 months runs straight across the year (December 2026, January 2027…),
-       a longer one shows the year on show's months (all 12 loop) */
-    var t0 = min.y * 12 + min.m, t1 = max.y * 12 + max.m, across = t1 - t0 < 12;
-    function openWheel(which) { setWheel(which === 'month' ? (across ? view.y * 12 + view.m : view.m) : view.y); setMode(which); }
+    /* the ‹ › arrows switch at once, on the days and on an open wheel alike: a step past the range lands on its first / last month
+       (the year arrow from January 2027 goes to November 2026); at the very end the arrow is greyed out */
+    function shift(dm) {
+      var cur = view.y * 12 + view.m, t = Math.max(t0, Math.min(t1, cur + dm)); if (t === cur) return;
+      moveTo(Math.floor(t / 12), t % 12);
+      if (mode === 'month') setWheel(t % 12); else if (mode === 'year') setWheel(Math.floor(t / 12));
+    }
+    var sw = R.useRef(null);   /* a sideways swipe on the days changes the month too */
+    function swipeStart(e) { sw.current = { x: e.clientX, y: e.clientY }; }
+    function swipeEnd(e) { var o = sw.current; sw.current = null; if (!o) return; var dx = e.clientX - o.x, dy = e.clientY - o.y;
+      if (Math.abs(dx) > PS.px(40) && Math.abs(dx) > Math.abs(dy) * 1.5) shift(dx < 0 ? 1 : -1); }
+    /* the month wheel lists the months of the year on show that can be picked, by name only (owner); the year changes on its own wheel / arrows */
+    var t0 = min.y * 12 + min.m, t1 = max.y * 12 + max.m;
+    function openWheel(which) { setWheel(which === 'month' ? view.m : view.y); setMode(which); }
     function closeWheel(ok) {
-      if (ok && wheel != null) { if (mode === 'month') { if (across) moveTo(Math.floor(wheel / 12), wheel % 12); else moveTo(view.y, wheel); } else moveTo(wheel, view.m); }
+      if (ok && wheel != null) { if (mode === 'month') moveTo(view.y, wheel); else moveTo(wheel, view.m); }
       setMode('date');
     }
     function done() { if (mode !== 'date') { closeWheel(true); return; } p.onConfirm(v); }
     function back() { if (mode !== 'date') { closeWheel(false); return; } if (p.onCancel) p.onCancel(); }
     function stepper(label, which, dm) {
       return h('span', { className: 'ps-date__step' },
-        h(m.button, Object.assign({ type: 'button', 'aria-label': 'Previous ' + which, onClick: function () { shift(-dm); } }, PS.press(true)), h(PS.Icon, { name: 'chevron-right', size: 16, color: 'var(--color-stroke-brand-strong)', style: { transform: 'scaleX(-1)' } })),   /* DS: the same Chevron Right, turned */
+        h(m.button, Object.assign({ type: 'button', 'aria-label': 'Previous ' + which, disabled: atStart, onClick: function () { shift(-dm); } }, atStart ? null : PS.press(true)), h(PS.Icon, { name: 'chevron-right', size: 16, color: 'var(--color-stroke-brand-strong)', style: { transform: 'scaleX(-1)' } })),   /* DS: the same Chevron Right, turned */
         h('button', { type: 'button', className: PS.cx('ps-date__label ps-t-section-md-light', mode === which && 'is-on'), 'aria-label': 'Choose the ' + which, onClick: function () { if (mode === which) closeWheel(false); else openWheel(which); } },
           h(PS.Swap, { k: label, y: MT.Y.digit, block: true }, h('span', null, label))),
-        h(m.button, Object.assign({ type: 'button', 'aria-label': 'Next ' + which, onClick: function () { shift(dm); } }, PS.press(true)), h(PS.Icon, { name: 'chevron-right', size: 16, color: 'var(--color-stroke-brand-strong)' })));
+        h(m.button, Object.assign({ type: 'button', 'aria-label': 'Next ' + which, disabled: atEnd, onClick: function () { shift(dm); } }, atEnd ? null : PS.press(true)), h(PS.Icon, { name: 'chevron-right', size: 16, color: 'var(--color-stroke-brand-strong)' })));
     }
+    var atStart = view.y * 12 + view.m <= t0, atEnd = view.y * 12 + view.m >= t1;
     var body;
     if (mode === 'date') {
       var first = new Date(view.y, view.m, 1).getDay(), days = new Date(view.y, view.m + 1, 0).getDate(), cells = [];
-      for (var i = 0, n = Math.ceil((first + days) / 7) * 7; i < n; i++) {   /* only the weeks the month has */
+      for (var i = 0; i < 42; i++) {   /* always six rows (owner): the weekday row never moves */
         var d = i - first + 1, inMonth = d >= 1 && d <= days, k = inMonth ? key({ y: view.y, m: view.m, d: d }) : 0, off = inMonth && (k < key(min) || k > key(max)), on = inMonth && k === key(v);
         cells.push(inMonth ? h('button', { key: i, type: 'button', disabled: off, 'aria-pressed': on, className: PS.cx('ps-date__day ps-t-body-md-em', on && 'is-on', off && 'is-off'),
           onClick: (function (dd) { return function () { setV({ y: view.y, m: view.m, d: dd }); }; })(d) }, h('i'), h('span', null, d)) : h('span', { key: i, className: 'ps-date__day is-empty' }));
       }
-      body = h('div', { className: 'ps-date__cal' },
-        h(m.div, { layout: 'position', transition: { layout: MT.SPRING }, className: 'ps-date__week ps-t-caption-xs' }, WEEK.map(function (w) { return h('span', { key: w }, w); })),   /* glides when a month has fewer weeks */
+      body = h('div', { className: 'ps-date__cal', onPointerDown: swipeStart, onPointerUp: swipeEnd, onPointerCancel: function () { sw.current = null; } },
+        h('div', { className: 'ps-date__week ps-t-caption-xs' }, WEEK.map(function (w) { return h('span', { key: w }, w); })),
         h(PS.Crossfade, { k: view.y + '-' + view.m, className: 'ps-date__grid' }, cells));
     } else {
       var opts = [];
       if (mode === 'year') for (var y = min.y; y <= max.y; y++) opts.push({ value: y, label: String(y) });
-      else if (across) for (var t = t0; t <= t1; t++) opts.push({ value: t, label: MONTHS[t % 12] + (min.y !== max.y ? ' ' + Math.floor(t / 12) : '') });
       else MONTHS.forEach(function (n, j) { if (!((view.y === min.y && j < min.m) || (view.y === max.y && j > max.m))) opts.push({ value: j, label: n }); });
       body = h('div', { className: 'ps-date__pick' },
-        h(PS.Wheel, { key: mode, options: opts, value: wheel, onChange: setWheel, infinite: mode === 'month' && !across && opts.length === 12 }),
+        h(PS.Wheel, { key: mode, options: opts, value: wheel, onChange: setWheel, infinite: mode === 'month' && opts.length === 12 }),
         h('div', { className: 'ps-date__acts' }, h(PS.Button, { variant: 'glass', size: 'sm', onClick: function () { closeWheel(false); } }, 'Cancel'), h(PS.Button, { variant: 'glass', size: 'sm', onClick: function () { closeWheel(true); } }, 'Confirm')));
     }
     return h('div', { className: 'ps-date' },

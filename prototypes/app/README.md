@@ -101,7 +101,8 @@ often instant; actions wait 0.25–1 s and show the loader only when it's long e
 - **The selfie** (DS 5561:7329 / 7501 / 7411): while it uploads only the circle stays — a turning dashed brand ring with "Uploading";
   a failed check shows the red mark and "Failed", and the button becomes Try again.
 - **Lists open where you tap** (owner), like an iPhone menu: centred on the finger, 8 px from the page's sides at most.
-- **Date wheels** list only dates that can be picked; for a payday (the next two months) the month wheel runs November 2026 → January 2027.
+- **Dates**: the month wheel lists only the months of the year on show that can be picked (names only); the ‹ › arrows switch month / year at
+  once and a sideways swipe on the days changes the month; the days are always six rows.
 - **Animations in a carousel** play only on the card on screen, from the start each time it is swiped to ("Protect yourself from scams").
 - **Fonts as Figma marks them** (owner): Satoshi only where the Figma node is Satoshi; amounts Figma sets in Inter or Hanken stay so.
 
