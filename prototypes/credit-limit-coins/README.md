@@ -1,5 +1,9 @@
 # Credit limit increase animation: integration guide
 
+> **For AI agents — components first (owner's rule):** a new component or feature is created in the component library
+> (`shared/ps-ui`, with its states in `shared/gallery.html`) first, then this page uses it directly; a change to a piece is made in
+> the component, never patched from the page. See the `perasure-components` skill and `CLAUDE.md` → "Components first".
+
 **Deliverable: `baked/`.** `physics-tuner/` is an engineering file, used only to tune the coin paths; it is not shipped.
 
 > **Why two:** the Physics tuner is for tuning the animation's paths (the coins are simulated live with a physics

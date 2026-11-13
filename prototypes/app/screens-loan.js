@@ -49,25 +49,8 @@
     }
     var shown = typed ? PS.num(amount, 0).slice(0, -2) : '';   /* the comma sits where it will in the whole amount: 12,5|00 */
     return h(PS.Screen, { tint: true, colBottom: 0, className: 'app-amount',   /* the amount entry: not a secondary page (owner) */ top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), title: 'Apply a loan', right: APP.tune() } },
-      h('div', { className: 'app-amount__sheet' },
-        h('div', { className: 'app-amount__top' },
-          h('p', { className: 'ps-t-body-md-em ps-c-secondary' }, 'Disbursement amount'),
-          h('div', { className: 'app-amount__num', 'aria-live': 'polite', 'aria-label': money(amount) },
-            h('span', { className: 'app-amount__cur' }, '₱'),
-            h('span', { className: 'app-amount__typed' }, h(PS.AP, { initial: false, mode: 'popLayout' }, shown.split('').map(function (c, i) {   /* a typed digit rises in; a deleted one fades */
-              return h(m.span, { key: i + c, initial: { opacity: 0, y: PS.MT.Y.digit, filter: 'blur(' + PS.MT.BLUR + 'px)' }, animate: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.2, ease: PS.MT.EASE_IN } },
-                exit: { opacity: 0, transition: { duration: 0.08 } } }, c);
-            }))), h('span', { className: 'app-amount__caret', 'aria-hidden': true }),
-            h('span', { className: 'app-amount__rest' }, '00'), h('span', { className: 'app-amount__dec' }, '.00')),
-          h(PS.Swap, { k: err ? 'e' : 'r', block: true }, h('span', { className: PS.cx('ps-t-body-md', err ? 'ps-c-negative' : 'ps-c-placeholder') },
-            err ? 'Enter an amount from ' + money(LOAN.min, 0) + ' to ' + money(max, 0) + '.' : 'Flexible amounts from ' + money(LOAN.min, 0) + '–' + money(max, 0)))),
-        h('div', { className: 'app-amount__pad' },
-          h('div', { className: 'app-stack-8' }, h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, 'Choose a loan term to continue'),
-            h('div', { className: 'ps-terms', role: 'radiogroup', 'aria-label': 'Loan term' }, LOAN.terms.map(function (t) {
-              var on = cur && cur.term === t;
-              return h(m.button, Object.assign({ key: t, type: 'button', role: 'radio', 'aria-checked': !!on, className: PS.cx('ps-term', on && 'is-on'), onClick: function () { pick(t); } }, PS.press()), t + ' terms');
-            }))),
-          h(PS.Divider), h(PS.Keypad, { onKey: key, cascade: true }))));
+      h(PS.AmountEntry, { typed: shown, amount: amount, terms: LOAN.terms, term: cur && cur.term, onTerm: pick, onKey: key,
+        error: err ? 'Enter an amount from ' + money(LOAN.min, 0) + ' to ' + money(max, 0) + '.' : null, hint: 'Flexible amounts from ' + money(LOAN.min, 0) + '–' + money(max, 0) }));
   });
 
   /* ---- a change of amount or term that takes a coupon off asks whether to keep it ---- */
@@ -222,18 +205,14 @@
       h(PS.Field, { label: st.kind === 'wallet' ? 'Mobile number' : 'Account number', value: st.acct, placeholder: 'Enter your ' + (st.kind === 'wallet' ? 'mobile' : 'account') + ' number', inputMode: 'numeric', clear: true, error: st.err,
         onChange: function (v) { set({ acct: v.replace(/[^\d]/g, '').slice(0, 16), err: null }); } }));
   });
-  APP.sheet('banks', { kind: 'page', label: 'Choose your bank', className: 'app-banks', render: function Banks() {
+  APP.sheet('banks', { kind: 'page', label: 'Choose your bank', render: function Banks() {
     var s = R.useState(''), q = s[0], setQ = s[1], groups = {}, keys;
     AD.banks.filter(function (b) { return b[1].toLowerCase().indexOf(q.trim().toLowerCase()) >= 0; }).forEach(function (b) { var k = b[1].charAt(0).toUpperCase(); (groups[k] = groups[k] || []).push(b); });
     keys = Object.keys(groups).sort();
-    return h(R.Fragment, null,
-      h('div', { className: 'app-banks__head' }, h(PS.Search, { value: q, onChange: setQ, placeholder: 'Search bank name' }), h(PS.Close, { onClick: APP.close })),
-      h('div', { className: 'app-banks__body' }, keys.length ? keys.map(function (k) {
-        return h(PS.Card, { key: k, className: 'app-banks__group' }, h('p', { className: 'ps-t-caption-xs ps-c-tertiary' }, k), groups[k].map(function (b, i) {
-          return h(R.Fragment, { key: b[0] }, i ? h(PS.Divider) : null, h(m.button, Object.assign({ type: 'button', className: 'app-banks__row ps-t-body-md-em', onClick: function () { APP.set({ pickedBank: b, sheet: null }); } }, PS.press()),
-            h('img', { src: PS.asset('logos/pay-' + b[0] + '.png'), alt: '', className: 'app-banks__logo' }), b[1]));
-        }));
-      }) : h(PS.EmptyState, { title: 'No matching banks found', body: 'Check the spelling or try another name.', style: { marginTop: '4.5rem' } })));
+    return h(PS.SearchSheet, { value: q, onChange: setQ, placeholder: 'Search bank name', onClose: APP.close },
+      keys.length ? h(PS.BankList, { groups: keys.map(function (k) { return { title: k, items: groups[k].map(function (b) { return { id: b[0], name: b[1], logo: PS.asset('logos/pay-' + b[0] + '.png'), b: b }; }) }; }),
+        onPick: function (it) { APP.set({ pickedBank: it.b, sheet: null }); } })
+        : h(PS.EmptyState, { title: 'No matching banks found', body: 'Check the spelling or try another name.', style: { marginTop: '4.5rem' } }));
   } });
 
   /* ---- coupon centre ---- */
@@ -255,10 +234,9 @@
   APP.screen('order', function Order() {
     var S = APP.use(), cur = CS.current, o = S.order || (cur ? { amount: cur.amount, term: cur.term, first: cur.first, date: cur.date, method: S.method } : { amount: 2000, term: 4, first: 1234.5, date: CS.today, method: S.method }), failed = S.loan === 'failed';
     return h(APP.Page, { title: 'Your loan application', load: 'order', bottom: failed ? h(PS.BottomBar, null, h(PS.Button, { block: true, onClick: function () { APP.go('method'); } }, 'Change withdrawal method')) : null },
-      h('div', { className: 'app-order__head' }, h('p', { className: 'app-order__label' }, 'You applied for a loan'), h(PS.Amount, { value: o.amount, className: 'app-order__amount' })),
-      h(PS.Card, { variant: 'outline', className: 'app-order__status' }, h('span', { className: PS.cx('ps-tile', failed && 'is-negative') }, h(PS.Icon, { name: failed ? 'alert-circle' : 'history', size: 20, color: 'inverse' })),
-        h('div', null, h('p', { className: 'ps-t-title-16' }, failed ? 'We couldn’t send your loan' : 'We’re reviewing your application'),
-          h('p', { className: 'ps-t-caption-sm ps-c-secondary' }, failed ? 'The transfer to your account didn’t go through. Change your withdrawal method to try again.' : 'Your loan is under review. We’ll let you know once we’re sending your money.'))),
+      h(PS.OrderHead, { label: 'You applied for a loan', amount: o.amount }),
+      h(PS.OrderStatus, { state: failed ? 'failed' : 'review', title: failed ? 'We couldn’t send your loan' : 'We’re reviewing your application',
+        body: failed ? 'The transfer to your account didn’t go through. Change your withdrawal method to try again.' : 'Your loan is under review. We’ll let you know once we’re sending your money.' }),
       h(PS.Section, { label: 'DETAILS' }, h(PS.Card, { className: 'ps-details' }, h(PS.Rows, { rows: [{ label: 'First payment', value: money(o.first) }, { label: 'Loan term', value: o.term + ' terms (' + LOAN.days + ' days / term)' },
         { label: 'Loan date', value: o.date }, { label: 'Withdrawal method', value: o.method.name + ' ending in ' + o.method.last4 }] }))));
   });

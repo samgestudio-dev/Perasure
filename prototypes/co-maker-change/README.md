@@ -1,5 +1,9 @@
 # Change co-maker
 
+> **For AI agents — components first (owner's rule):** a new component or feature is created in the component library
+> (`shared/ps-ui`, with its states in `shared/gallery.html`) first, then this page uses it directly; a change to a piece is made in
+> the component, never patched from the page. See the `perasure-components` skill and `CLAUDE.md` → "Components first".
+
 "Invite your co-maker" page: tapping **Change** turns the co-maker card into the "Change your co-maker" form; **Cancel**
 or **Save** turns it back. One page, one card — the two Figma frames are its two states.
 

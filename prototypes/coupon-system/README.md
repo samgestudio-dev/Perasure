@@ -1,5 +1,9 @@
 # Coupon system
 
+> **For AI agents — components first (owner's rule):** a new component or feature is created in the component library
+> (`shared/ps-ui`, with its states in `shared/gallery.html`) first, then this page uses it directly; a change to a piece is made in
+> the component, never patched from the page. See the `perasure-components` skill and `CLAUDE.md` → "Components first".
+
 Figma: PeraSure design system, section `10594:45373` (Coupon center), with the loan page `10656:51873`, coupon sheet
 `10676:30203`, keep-coupon sheets `10712:55111 / 55543 / 55892`, repayment plan `10722:58508`, home `10730:58631` /
 `10747:59920` and account `10750:63340`.

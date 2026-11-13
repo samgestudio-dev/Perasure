@@ -1,5 +1,9 @@
 # Withdraw fund flow
 
+> **For AI agents — components first (owner's rule):** a new component or feature is created in the component library
+> (`shared/ps-ui`, with its states in `shared/gallery.html`) first, then this page uses it directly; a change to a piece is made in
+> the component, never patched from the page. See the `perasure-components` skill and `CLAUDE.md` → "Components first".
+
 Home card → withdraw sheet → amount entry ⇄ order confirmation. Open `index.html` through a web server (GitHub Pages,
 or `python3 -m http.server` in the repo): the page code is fetched, so opening the file from disk does not work.
 

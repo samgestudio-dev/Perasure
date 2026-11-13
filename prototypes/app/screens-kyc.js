@@ -36,37 +36,10 @@
   }
   var req = function (msg) { return function (x) { return x == null || String(x).trim() === '' ? (msg || 'This field is required') : null; }; };
 
-  /* ---- the camera: the phone's own (getUserMedia); a still is drawn from the video. No camera (or no permission): a placeholder, and
-     the shutter still passes the step with a sample picture, so the flow can always be walked through ---- */
-  function useCamera(facing, on) {
-    var video = R.useRef(null), stream = R.useRef(null), st = R.useState('starting'), state = st[0];
-    R.useEffect(function () {
-      if (!on) return;
-      var dead = false, md = navigator.mediaDevices;
-      if (!md || !md.getUserMedia) { st[1]('none'); return; }
-      md.getUserMedia({ video: { facingMode: facing, width: { ideal: 1280 }, height: { ideal: 960 } }, audio: false }).then(function (s) {
-        if (dead) { s.getTracks().forEach(function (t) { t.stop(); }); return; }
-        stream.current = s; if (video.current) { video.current.srcObject = s; video.current.play().catch(function () {}); } st[1]('on');
-      }).catch(function () { if (!dead) st[1]('none'); });
-      return function () { dead = true; if (stream.current) stream.current.getTracks().forEach(function (t) { t.stop(); }); stream.current = null; };
-    }, [facing, on]);
-    function snap(fallback) {
-      var v = video.current;
-      if (state !== 'on' || !v || !v.videoWidth) return fallback;
-      var c = document.createElement('canvas'), w = Math.min(960, v.videoWidth), hh = Math.round(w * v.videoHeight / v.videoWidth);
-      c.width = w; c.height = hh; var g = c.getContext('2d');
-      if (facing === 'user') { g.translate(w, 0); g.scale(-1, 1); }   /* a selfie as the person saw it */
-      g.drawImage(v, 0, 0, w, hh); return c.toDataURL('image/jpeg', 0.85);
-    }
-    return { video: video, state: state, snap: snap };
-  }
-  function pickFile(accept, then, capture) {
-    var i = document.createElement('input'); i.type = 'file'; i.accept = accept; if (capture) i.setAttribute('capture', capture);   /* capture: the phone's camera opens */
-    i.onchange = function () { var f = i.files && i.files[0]; if (!f) return; if (!/^image\//.test(f.type)) { then(null, f); return; } var r = new FileReader(); r.onload = function () { then(r.result, f); }; r.readAsDataURL(f); };
-    i.click();
-  }
-
-  APP.useCamera = useCamera; APP.pickFile = pickFile;   /* also used by the phone change and the documents (screens-help.js) */
+  /* the camera and the file picker are shared (PS.useCamera, PS.pickFile in shared/ps-ui/apply.js): the phone's real camera — front for the
+     selfie, back for the ID; no camera (or no permission) still passes the step with a sample picture */
+  var useCamera = PS.useCamera, pickFile = PS.pickFile;
+  APP.useCamera = useCamera; APP.pickFile = pickFile;   /* the names the phone change and the documents use (screens-help.js) */
   /* the application is sent from the last step (the trusted contact): a first application has no loan to repay yet; someone reapplying keeps theirs */
   function sendApplication() {
     APP.run(function () { var first = APP.S.user === 'new' || APP.S.user === 'guest'; APP.set(Object.assign({ user: 'review', kyc: null }, first ? { repay: null } : null)); APP.home('home', 0);
@@ -75,36 +48,12 @@
   /* the way in: the loan estimate comes first (DS 9224:37691), then basic information, then the ID */
   APP.apply = function () { APP.go('kyc-estimate'); };
 
-  /* the ID camera (Figma 52:6602 / 52:6616; DS 5788:13914 / 5797:13982): the whole screen, laid out for an ID held sideways — the hint down
-     the left, the ID's box, the side (ID card mark + name, Text/Brand/Light) down the right, the shutter, a back button turned the same way */
+  /* the ID camera (Figma 52:6602 / 52:6616; DS 5788:13914): the whole screen, laid out for an ID held sideways (PS.IdCamera) */
   APP.screen('camera', function Camera(p) {
     var side = p.params.side || 'front', cam = useCamera('environment', true);
     function shoot() { var pic = cam.snap(PS.asset('art/id-' + side + '.png')), f = {}; f[side] = pic; setK(f); APP.back(); }
-    return h('div', { className: 'app-cam' },
-      h('video', { ref: cam.video, className: 'app-cam__video', playsInline: true, muted: true, autoPlay: true }),
-      h('div', { className: 'app-cam__frame' },
-        h('p', { className: 'app-cam__hint ps-t-caption-sm' }, 'Make sure every detail is clear and the whole ID fits in the box.'),
-        h('div', { className: 'app-cam__box' }, cam.state === 'none' ? h('span', { className: 'ps-t-caption-sm' }, 'The camera isn’t available here. Take the picture anyway to use a sample.') : null),
-        h('p', { className: 'app-cam__side ps-t-title-sm' }, h(PS.Icon, { name: 'id-card', size: 28, color: 'brand-light' }), side === 'front' ? 'Front side of your ID' : 'Back side of your ID')),
-      h(m.button, Object.assign({ type: 'button', className: 'app-cam__shutter', 'aria-label': 'Take the picture', onClick: shoot }, PS.press(true)), h('i')),
-      h(m.button, Object.assign({ type: 'button', className: 'app-cam__close', 'aria-label': 'Close the camera', onClick: function () { APP.back(); } }, PS.press(true)), h(PS.Icon, { name: 'chevron-left', size: 18, color: 'inverse' })));
+    return h(PS.IdCamera, { side: side, cam: cam, onShoot: shoot, onClose: function () { APP.back(); } });
   });
-
-  /* one side of the ID (Figma 52:6066 / 52:6134): the picture (the sample, or the photo taken: green ring and tick), its name, Camera / Album */
-  function IdSide(p) {
-    var pic = p.pic;
-    return h(PS.Card, { variant: 'outline', className: 'app-idside' },
-      h('p', { className: 'ps-t-section-sm' }, p.title),
-      h('div', { className: 'app-idside__box' },
-        h('div', { className: 'app-idside__row' },
-          h('span', { className: PS.cx('app-idside__pic', pic && 'is-done') }, h('img', { src: pic || PS.asset('art/id-' + p.side + '.png'), alt: '' }),
-            pic ? h(m.span, { className: 'app-idside__tick', initial: { scale: 0.6, opacity: 0 }, animate: { scale: 1, opacity: 1, transition: Object.assign({}, MT.SPRING, { restDelta: 0.001 }) } }, h(PS.Icon, { name: 'check', size: 12, color: 'inverse' })) : null),
-          h('span', { className: 'app-idside__text' }, h('span', { className: 'ps-t-section-md' }, p.name), h('span', { className: 'ps-t-caption-sm' }, pic ? 'Added. Retake it if it’s blurry.' : p.hint))),
-        h(PS.Divider),
-        h('div', { className: 'app-idside__btns' },
-          h(PS.Button, { variant: 'soft', size: 'sm', onClick: p.onCamera }, 'Camera'),
-          h(PS.Button, { variant: 'soft', size: 'sm', onClick: p.onAlbum }, 'Album'))));
-  }
 
   /* ---- 1. Verify your identity ---- */
   APP.screen('kyc-id', function KycId() {
@@ -122,38 +71,19 @@
       h(APP.Head, { title: 'Verify your identity', body: 'Choose an ID type and upload a clear photo.' }),
       h(PS.FormField, { label: 'ID type', value: k.type, placeholder: 'Select ID type', menu: { options: ID_TYPES, onPick: function (o) { setK({ type: o }); } } }),
       h(PS.AP, { initial: false }, k.type ? h(m.div, Object.assign({ key: 'sides', className: 'app-stack-20' }, PS.fade(MT.Y.block)),
-        h(IdSide, { side: 'front', title: 'Upload front side of ID', name: 'Front side of ID', hint: 'Show the side with your photo', pic: k.front,
+        h(PS.IdSideCard, { side: 'front', title: 'Upload front side of ID', name: 'Front side of ID', hint: 'Show the side with your photo', pic: k.front,
           onCamera: function () { APP.go('camera', { side: 'front' }); }, onAlbum: function () { album('front'); } }),
-        h(IdSide, { side: 'back', title: 'Upload back side of ID', name: 'Back side of ID', hint: 'Show the other side', pic: k.back,
+        h(PS.IdSideCard, { side: 'back', title: 'Upload back side of ID', name: 'Back side of ID', hint: 'Show the other side', pic: k.back,
           onCamera: function () { APP.go('camera', { side: 'back' }); }, onAlbum: function () { album('back'); } })) : null));
   });
-  /* the ID is already in use (DS 5908:10722) · the check failed (DS 5908:11000) */
-  function IdOpt(p) {
-    return h(m.button, Object.assign({ type: 'button', className: 'app-idres__opt', onClick: p.onClick }, PS.press()),
-      h('span', { className: 'ps-t-section-md-light ps-c-link' }, p.title), h('span', { className: 'ps-t-caption-xs ps-c-tertiary' }, p.sub));
-  }
-  APP.sheet('id-inuse', { kind: 'card', label: 'This ID is already in use', className: 'app-idres', render: function InUse() {
-    return h(R.Fragment, null,
-      h('div', { className: 'app-idres__top' }, h('img', { src: PS.asset('art/id-in-use.png'), alt: '', className: 'app-idres__art' }),
-        h('p', { className: 'ps-t-title-md' }, 'This ID is already in use'),
-        h('p', { className: 'ps-t-body-md ps-c-secondary' }, 'This ID is linked to another account. Choose what you’d like to do next.')),
-      h('div', { className: 'app-idres__opts' },
-        h(IdOpt, { title: 'Log in to your existing account', sub: 'Continue with your previous account', onClick: function () { APP.close(); APP.go('login'); } }),
-        h(IdOpt, { title: 'Can’t access that number', sub: 'Recover your account with a new phone number', onClick: function () { APP.close(); APP.go('phone-old'); } }),
-        h(m.button, Object.assign({ type: 'button', className: 'app-idres__other ps-t-section-sm-light ps-c-placeholder', onClick: function () { setK({ front: null, back: null, type: null }); APP.close(); } }, PS.press()), 'Use a different ID')));
+  /* the ID is already in use (DS 5908:10722) · the check failed (DS 5908:11000): PS.IdResult */
+  APP.sheet('id-inuse', { kind: 'card', label: 'This ID is already in use', className: 'ps-idres', render: function InUse() {
+    return h(PS.IdResult, { state: 'inuse', onLogin: function () { APP.close(); APP.go('login'); }, onRecover: function () { APP.close(); APP.go('phone-old'); },
+      onOther: function () { setK({ front: null, back: null, type: null }); APP.close(); } });
   } });
-  APP.sheet('id-failed', { kind: 'card', label: 'We couldn’t verify your ID', className: 'app-idres app-idres--failed', render: function Failed() {
-    var tips = [['Avoid false documents', 0], ['Avoid flash', 1], ['Avoid incomplete', 2], ['Avoid blurry', 3]];
-    return h(R.Fragment, null,
-      h('div', { className: 'app-sheethead app-sheethead--left app-idres__head' }, h('p', { className: 'ps-t-title-sm app-idres__title' }, h(PS.Icon, { name: 'warning-filled', size: 16, color: 'var(--color-icon-negative-light)' }), 'We couldn’t verify your ID'), h(PS.Close, { onClick: APP.close })),
-      h('p', { className: 'ps-t-body-md', style: { color: 'var(--color-text-negative-light)' } }, 'Repeated failures may affect your application, so check the photo carefully.'),
-      h('div', { className: 'app-idres__tips' }, tips.map(function (t) {
-        return h('div', { key: t[0] }, h('span', { className: 'app-idres__tip', style: { backgroundPosition: (t[1] % 2) * 100 + '% ' + Math.floor(t[1] / 2) * 100 + '%', backgroundImage: 'url("' + PS.asset('art/verify-failed.webp') + '")' } }), h('span', { className: 'ps-t-caption-sm ps-c-tertiary' }, t[0]));
-      })),
-      /* DS: "Try again" is the quiet one (Popover btn: Stroke/Subtle, Text/Disabled) — repeated tries count against the application */
-      h('div', { className: 'app-idres__acts' },
-        h(PS.Button, { variant: 'ghost', size: 'md', onClick: function () { setK({ front: null, back: null }); APP.close(); } }, 'Try again'),
-        h(PS.Button, { size: 'md', onClick: function () { APP.close(); APP.go('kyc-check', { manual: true }); } }, 'Enter manually')));
+  APP.sheet('id-failed', { kind: 'card', label: 'We couldn’t verify your ID', className: 'ps-idres', render: function Failed() {
+    return h(PS.IdResult, { state: 'failed', onClose: APP.close, onRetry: function () { setK({ front: null, back: null }); APP.close(); },
+      onManual: function () { APP.close(); APP.go('kyc-check', { manual: true }); } });
   } });
 
   /* ---- 2. Check the details (Figma 52:5203): what was read from the ID, to complete ---- */
@@ -196,16 +126,8 @@
     var hide = { animate: { opacity: busy ? 0 : 1, transition: busy ? MT.LEAVE : MT.ENTER }, style: { pointerEvents: busy ? 'none' : null } };   /* what leaves takes no taps */
     return h(APP.Page, { title: '', bottom: h(PS.BottomBar, null, h(m.div, Object.assign({ initial: false }, hide), h(PS.Button, { block: true, inactive: busy, onClick: take }, h(PS.Swap, { k: state === 'failed' ? 'a' : 'n' }, h('span', null, state === 'failed' ? 'Try again' : 'Next'))))) },
       h(m.div, Object.assign({ initial: false }, hide), h(APP.Head, { title: 'Take a selfie', body: 'Look straight ahead with a relaxed face. Use good lighting and remove glasses or hats.' })),
-      h('div', { className: PS.cx('app-selfie', 'is-' + state) },
-        h('div', { className: 'app-selfie__ring' },
-          h('video', { ref: cam.video, className: 'app-selfie__video', playsInline: true, muted: true, autoPlay: true, style: { visibility: state === 'live' ? 'visible' : 'hidden' } }),
-          h(PS.AP, null, busy ? h(m.svg, { key: 'ring', className: 'app-selfie__dash', viewBox: '0 0 200 200', 'aria-hidden': true, initial: { opacity: 0, rotate: 0 },
-              animate: { opacity: 1, rotate: PS.reduce ? 0 : 360, transition: { opacity: MT.ENTER, rotate: { duration: 8, ease: 'linear', repeat: Infinity } } }, exit: { opacity: 0, transition: MT.LEAVE } },
-            h('circle', { cx: 100, cy: 100, r: 90 })) : null),
-          h(PS.AP, null, busy ? h(m.span, Object.assign({ key: 'c', className: 'app-selfie__state is-brand' }, PS.fade(MT.Y.text)), h(PS.Icon, { name: 'upload-cloud', size: 26, color: 'brand-light' }), h('span', { className: 'ps-t-section-sm' }, 'Uploading'))
-            : state === 'failed' ? h(m.span, Object.assign({ key: 'f', className: 'app-selfie__state is-negative' }, PS.fade(MT.Y.text)), h(PS.Icon, { name: 'alert-filled', size: 26, color: 'var(--color-text-negative-default)' }), h('span', { className: 'ps-t-section-sm' }, 'Failed'))
-            : cam.state === 'none' ? h('span', { key: 'n', className: 'app-selfie__none ps-t-caption-sm' }, 'The camera isn’t available here. Tap Next to use a sample.') : null)),
-        h(m.div, Object.assign({ initial: false, className: 'app-selfie__tips' }, hide), h(PS.SelfieTips, { onMore: function (el) { APP.tipAt(el, 'Hold the phone at eye level, keep your whole face inside the circle and stay still while we take the photo.'); } }))));
+      h(PS.Selfie, { state: state, cam: cam },
+        h(m.div, Object.assign({ initial: false, className: 'ps-selfie__tips' }, hide), h(PS.SelfieTips, { onMore: function (el) { APP.tipAt(el, 'Hold the phone at eye level, keep your whole face inside the circle and stay still while we take the photo.'); } }))));
   });
 
   /* ---- 4. Basic information (Figma 52:5689 / 52:5717 / 52:5755 / 52:7023 / 52:7000) ---- */
@@ -217,11 +139,9 @@
       income: function (x) { return !x ? 'This field is required' : DIGITS.test(String(x).replace(/,/g, '')) ? null : 'Please enter numbers only'; } });
     var v = F.v, at = v.email.indexOf('@'), name = at < 0 ? v.email : v.email.slice(0, at), typed = at < 0 ? '' : v.email.slice(at + 1);
     var sugg = v.email && !EMAIL.test(v.email) ? DOMAINS.filter(function (d) { return d.indexOf(typed) === 0; }).map(function (d) { return name + '@' + d; }) : [];
-    var ms = R.useState(false), menu = ms[0];
-    function add(kind) {
-      ms[1](false);
+    function add(how) {
       if (v.files.length >= 3) { APP.say('You can add up to 3 files.'); return; }
-      pickFile(kind === 'files' ? 'image/*,application/pdf' : 'image/*', function (pic, f) {
+      pickFile(how === 'Choose from files' ? 'image/*,application/pdf' : 'image/*', function (pic, f) {
         F.set('files', v.files.concat([{ name: f.name, size: f.size, pic: pic }]));
       });
     }
@@ -241,27 +161,17 @@
         h(PS.FormField, { label: 'Next payday', value: fmtDate(v.payday), placeholder: 'Select your next payday', icon: 'calendar', error: F.err('payday'),
           onClick: function () { APP.open('date', { value: v.payday || plusDays(TODAY, 3), min: TODAY, max: plusDays(TODAY, 62), then: function (d) { F.set('payday', d); } }); } }),
         field('income', { label: 'Total monthly income (PHP)', placeholder: 'Enter your monthly income', inputMode: 'numeric', clear: true }),
-        h('div', { className: 'app-files' },
-          h('span', { className: 'ps-ff__label' }, 'Support documents (optional)'),
-          /* DS 9548:30951: each file on a white card (PS.FileRow), then the dashed "Add files" (with the hint only while there are none) */
-          v.files.map(function (f, i) {
-            return h('div', { key: f.name + i, className: 'app-files__item' }, h(PS.FileRow, { name: f.name, size: f.size, pic: f.pic, state: 'done',
-              onRemove: function () { F.set('files', v.files.filter(function (x, j) { return j !== i; })); } }));
-          }),
-          h('div', { className: 'app-files__add' },
-            h(m.button, Object.assign({ type: 'button', className: PS.cx('app-files__btn', v.files.length && 'has-files'), onClick: function () { ms[1](true); } }, PS.press()),
-              h('span', { className: 'ps-c-brand' }, h(PS.Icon, { name: 'add', size: 16, color: 'brand' }), h('span', null, 'Add files'), h('span', null, '(' + v.files.length + '/3)')),
-              v.files.length ? null : h('span', { className: 'ps-t-caption-xs ps-c-placeholder' }, 'Show us your job or income with payslips, bank or e-wallet statements, or a company ID.')),
-            h(PS.Popover, { open: menu, options: ['Take a photo', 'Choose from photos', 'Choose from files'], onClose: function () { ms[1](false); },
-              onPick: function (o) { add(o === 'Choose from files' ? 'files' : 'photos'); } })),
-          h('p', { className: 'app-files__note ps-t-caption-xs ps-c-placeholder' }, h(PS.Icon, { name: 'alert-circle', size: 12, color: 'placeholder' }), 'Supports JPG, JPEG, PNG and PDF.'))));
+        /* DS 9548:30951: each file on a white card, then the dashed "Add files" (with the hint only while there are none) */
+        h(PS.FileList, { label: 'Support documents (optional)', files: v.files, max: 3, onAdd: add, note: 'Supports JPG, JPEG, PNG and PDF.',
+          hint: 'Show us your job or income with payslips, bank or e-wallet statements, or a company ID.',
+          onRemove: function (i) { F.set('files', v.files.filter(function (x, j) { return j !== i; })); } })));
   });
 
   /* ---- 5. Add a trusted contact (Figma 52:5772) ---- */
   APP.screen('kyc-contact', function KycContact() {
     var F = useForm('contact', { name: '', mobile: '' }, { name: req(), mobile: function (x) { var c = String(x || '').replace(/[\s-]/g, ''); return !c ? 'This field is required' : MOBILE.test(c) ? null : 'Enter a mobile number like 0917 123 4567'; } });
     var v = F.v;
-    return h(APP.Page, { title: '', bottom: h(PS.BottomBar, { className: 'app-contact__bar' }, h('p', { className: 'app-contact__note ps-t-caption-xs ps-c-placeholder' }, 'SEC rules ask us for an emergency contact. We only call them if a payment is overdue and we can’t reach you.'),
+    return h(APP.Page, { title: '', bottom: h(PS.BottomBar, { note: 'SEC rules ask us for an emergency contact. We only call them if a payment is overdue and we can’t reach you.' },
         h(PS.Button, { block: true, inactive: !F.ok(), onClick: function () { F.submit(sendApplication); } }, 'Submit')) },
       h(APP.Head, { title: 'Add a trusted contact', body: 'We’ll only reach out to them if we can’t contact you. Adding one may also improve your approval chances.' }),
       h('div', { className: 'app-form app-form--12' },
@@ -275,15 +185,14 @@
     function apply() { APP.go('kyc-basic'); }
     return h(APP.Page, { title: '', bottom: h(PS.BottomBar, null, h(PS.Button, { block: true, onClick: apply }, 'Continue to apply')) },
       h(APP.Head, { title: 'Your loan estimate', body: 'Low rates, with costs you can see upfront. Explore an amount and repayment plan that work for you.' }),
-      h(PS.Accordion, { small: true, title: h('span', { className: 'app-remind' }, h('span', { className: 'ps-tile' }, h(PS.Icon, { name: 'heart', size: 20, color: 'inverse' })), 'A friendly reminder'), open: true },
+      h(PS.Accordion, { small: true, icon: 'heart', title: 'A friendly reminder', open: true },
         'Take a look at the estimated loan amounts and rates. If they work for you, continue to apply. We’ll review your details to work out your final offer.'),
-      h('div', { className: 'app-estimate' },
-        h(PS.AmountCard, { label: 'Estimated credit limit', amount: e.amount, min: 500, max: 50000, step: 100, terms: CS.loan.terms, term: e.term, termNote: CS.loan.days + ' days / term',
-          onAmount: function (a) { st[1]({ amount: a, term: e.term }); }, onCommit: function () {}, onTerm: function (t) { st[1]({ amount: e.amount, term: t }); } }),
-        /* one card with the amount card above (DS 9224:37691): a line after the terms, the rows, a line, the schedule link */
-        h(PS.Card, { className: 'app-estimate__rows' }, h(PS.Divider), h(PS.Rows, { rows: [{ label: 'Daily fee', value: money(C.daily) }, { label: 'First payment date', value: CS.date(1) }, { label: 'Per installment', value: money(C.per) }, { label: 'Total payment', value: money(C.total) }] }),
-          h(PS.Divider), h(PS.Link, { onClick: function () { APP.say('Your payment schedule shows once you apply.'); } }, 'View payment schedule')),
-        h('p', { className: 'ps-t-caption-xs ps-c-placeholder', style: { padding: '0 var(--spacing-padding-sm)', marginTop: 'var(--spacing-gap-sm)' } }, 'These are examples only. Approval and your final loan details depend on our review.')));
+      /* one card with the amount card above (DS 9224:37691): a line after the terms, the rows, a line, the schedule link */
+      h(PS.EstimateCard, { label: 'Estimated credit limit', amount: e.amount, min: 500, max: 50000, step: 100, terms: CS.loan.terms, term: e.term, termNote: CS.loan.days + ' days / term',
+        onAmount: function (a) { st[1]({ amount: a, term: e.term }); }, onTerm: function (t) { st[1]({ amount: e.amount, term: t }); },
+        rows: [{ label: 'Daily fee', value: money(C.daily) }, { label: 'First payment date', value: CS.date(1) }, { label: 'Per installment', value: money(C.per) }, { label: 'Total payment', value: money(C.total) }],
+        link: { label: 'View payment schedule', onClick: function () { APP.say('Your payment schedule shows once you apply.'); } },
+        note: 'These are examples only. Approval and your final loan details depend on our review.' }));
   });
 
   /* ---- the date sheet (DS 7628:14113 · 5900:9854 · 5900:9592): the shared date picker — the month's days, or a wheel for the month or the year ---- */
@@ -293,51 +202,8 @@
   } });
 
   /* ---- the address sheet (DS 5975:10755 · 5975:10704 · 5975:11304): search, or Region → Province → City on the Philippines' real list
-     (ph-places.js, PSA PSGC 2025-2Q). The tabs underline the step; City opens once a province is chosen. Search shows the matching cities,
-     provinces and regions in groups, the typed part in brand blue. The field gets "City, Province". ---- */
-  function placeIndex() {
-    if (placeIndex.v) return placeIndex.v;
-    var regions = (window.PH_PLACES || []).map(function (r) { return { name: r[0], provinces: r[1].map(function (p) { return { name: p[0], region: r[0], cities: p[1] }; }) }; });
-    var provinces = [], cities = [];
-    regions.forEach(function (r) { r.provinces.forEach(function (p) { p.r = r; provinces.push(p); p.cities.forEach(function (c) { cities.push({ name: c, p: p }); }); }); });
-    return (placeIndex.v = { regions: regions, provinces: provinces, cities: cities });
-  }
-  function hit(text, q) { return text.toLowerCase().indexOf(q) >= 0; }
-  APP.sheet('city', { kind: 'page', label: 'Select city and province', className: 'app-city', render: function City(p) {
-    var X = placeIndex(), q = R.useState(''), tab = R.useState('region'), sel = R.useState({}), k = q[0].trim().toLowerCase(), s = sel[0];
-    function choose(c, pv) { APP.close(); if (p.params.then) p.params.then(c + ', ' + pv.name); }
-    function pickRegion(r) { sel[1]({ region: r }); tab[1]('province'); }
-    function pickProvince(pv) { sel[1]({ region: pv.r, prov: pv }); tab[1]('city'); q[1](''); }
-    function row(key, title, sub, go, chevron) {
-      return h(m.button, Object.assign({ key: key, type: 'button', className: PS.cx('app-city__row', sub && 'has-sub'), onClick: go }, PS.press()),
-        h('span', { className: 'app-city__text' }, h('span', { className: 'ps-t-body-md' }, k ? marked(title, k) : title), sub ? h('span', { className: 'ps-t-caption-sm ps-c-tertiary' }, sub) : null),
-        chevron ? h(PS.Icon, { name: 'chevron-right', size: 16, color: 'tertiary' }) : null);
-    }
-    var body;
-    if (k) {
-      var cs = X.cities.filter(function (c) { return hit(c.name, k); }).slice(0, 40), ps = X.provinces.filter(function (pv) { return hit(pv.name, k); }).slice(0, 20), rs = X.regions.filter(function (r) { return hit(r.name, k); });
-      var groups = [['City', cs.map(function (c, i) { return row('c' + i, c.name, c.p.name + ', ' + c.p.region, function () { choose(c.name, c.p); }); })],
-        ['Province', ps.map(function (pv) { return row('p' + pv.name, pv.name, null, function () { pickProvince(pv); }, true); })],
-        ['Region', rs.map(function (r) { return row('r' + r.name, r.name, null, function () { q[1](''); pickRegion(r); }, true); })]].filter(function (g) { return g[1].length; });
-      var single = groups.length === 1;
-      body = groups.length ? groups.map(function (g) {
-        return h('div', { key: g[0], className: 'app-city__group' }, single ? null : h('p', { className: 'ps-ff__label' }, g[0]), h('div', { className: 'ps-card app-city__list' }, g[1]));
-      }) : h(PS.EmptyState, { title: 'No matching places', body: 'Check the spelling or try another name.', style: { marginTop: '4.5rem' } });
-    } else {
-      var R0 = s.region, P0 = s.prov, rows;
-      if (tab[0] === 'region') rows = X.regions.map(function (r) { return row(r.name, r.name, null, function () { pickRegion(r); }, true); });
-      else if (tab[0] === 'province') rows = (R0 || X.regions[0]).provinces.map(function (pv) { return row(pv.name, pv.name, null, function () { pickProvince(pv); }, true); });
-      else rows = (P0 || X.provinces[0]).cities.map(function (c) { var pv = P0 || X.provinces[0]; return row(c, c, pv.name + ', ' + pv.region, function () { choose(c, pv); }); });
-      body = h('div', { className: 'ps-card app-city__card' },
-        h(PS.LineTabs, { id: 'app-city', value: tab[0], onChange: tab[1], items: [{ id: 'region', label: 'Region' }, { id: 'province', label: 'Province', off: !R0 }, { id: 'city', label: 'City', off: !P0 }] }),
-        h(PS.Crossfade, { k: tab[0] + (R0 ? R0.name : '') + (P0 ? P0.name : ''), className: 'app-city__list' }, rows));
-    }
-    return h(R.Fragment, null,
-      h('div', { className: 'app-banks__head' }, h(PS.Search, { value: q[0], onChange: q[1], placeholder: 'Search city name' }), h(PS.Close, { onClick: APP.close })),
-      h('div', { className: 'app-banks__body' }, h(PS.Crossfade, { k: k ? 'q' : 'tabs', className: 'app-city__body' }, body)));
+     (ph-places.js, PSA PSGC 2025-2Q), PS.PlacePicker. The field gets "City, Province". ---- */
+  APP.sheet('city', { kind: 'page', label: 'Select city and province', render: function City(p) {
+    return h(PS.PlacePicker, { places: window.PH_PLACES, onClose: APP.close, onPick: function (c, pv) { APP.close(); if (p.params.then) p.params.then(c + ', ' + pv); } });
   } });
-  function marked(text, q) {
-    var i = text.toLowerCase().indexOf(q); if (i < 0) return text;
-    return [text.slice(0, i), h('span', { key: 'm', className: 'ps-c-brand' }, text.slice(i, i + q.length)), text.slice(i + q.length)];
-  }
 })();

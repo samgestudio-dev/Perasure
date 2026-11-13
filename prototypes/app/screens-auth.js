@@ -15,8 +15,7 @@
       }, APP.q.get('page') ? 60 : APP.rnd(900, 1500));
       return function () { clearTimeout(t); };
     }, []);
-    return h('div', { className: 'app-opening' }, h(m.img, { src: PS.asset('logos/perasure-mark.svg'), alt: 'PeraSure', style: { width: '4rem', height: '4rem' },
-      initial: { opacity: 0, scale: 0.9 }, animate: { opacity: 1, scale: 1, transition: PS.MT.ENTER } }));
+    return h(PS.Splash);
   });
 
   /* Login: phone number → we send a code */
@@ -28,21 +27,20 @@
       APP.set({ phone: phone }); APP.go('sending');
     }
     return h(PS.Screen, { secondary: true, colBottom: 180, top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), right: APP.tune() },
-      bottom: h(PS.BottomBar, { className: 'app-bot-consent' },
+      bottom: h(PS.BottomBar, { consent: true },
         h(PS.Consent, { on: agree, onToggle: function () { setAgree(!agree); } }, 'By continuing, you agree to our ', h('b', null, 'Terms of Service'), ' and ', h('b', null, 'Privacy & Data Collection Policy'), '.'),
         h(PS.Button, { block: true, onClick: submit }, 'Log in')) },
       h(APP.Head, { title: h(R.Fragment, null, 'Start your PeraSure', h('br'), 'journey'), body: 'Enter your phone number to get a verification code.' }),
       h('div', { className: 'app-stack-8' },
         h(PS.PhoneField, { value: phone, onChange: function (v) { setPhone(v); setErr(null); }, error: err }),
-        h('button', { type: 'button', className: 'app-ulink ps-t-section-sm', onClick: function () { APP.go('phone-old'); } }, 'No longer have access to old number?')));
+        h(PS.TextLink, { onClick: function () { APP.go('phone-old'); } }, 'No longer have access to old number?')));
   });
 
   /* Sending: the code is on its way (animation: Loading state OTP) */
   APP.screen('sending', function Sending(p) {   /* params (phone, then) are handed to the code page */
     R.useEffect(function () { if (!APP.auto) return; var t = setTimeout(function () { APP.swap('otp', p.params, 0); }, APP.rnd(1400, 2400)); return function () { clearTimeout(t); }; }, []);
     return h('div', { className: 'ps-screen app-center' },
-      h(PS.Card, { className: 'app-sending' }, h(PS.Anim, { name: 'loading-state-otp', size: 120 }),
-        h('div', null, h('p', { className: 'ps-t-title-md' }, 'Sending security code…'), h('p', { className: 'ps-t-body-md ps-c-tertiary' }, 'This may take a few seconds'))));
+      h(PS.SendingCard, { title: 'Sending security code…', body: 'This may take a few seconds' }));
   });
 
   /* OTP page: six boxes; another way to get the code; resend */
@@ -73,14 +71,9 @@
     var ph = p.params.phone || APP.S.phone;   /* a new number being confirmed (phone change), else the one logging in */
     return h(PS.Screen, { secondary: true, top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), right: APP.tune() } },
       h(APP.Head, { title: 'Verification code sent', body: h(R.Fragment, null, 'Enter the verification code sent to', h('br'), '+63 ••••••' + ph.slice(-4) + ' via ' + (WAYS.filter(function (w) { return w.id === st.way; })[0].label) + '.') }),
-      h('div', { className: 'app-otp' },
-        h(PS.OtpBoxes, { value: st.code, onChange: onCode, error: !!st.err, disabled: st.busy }),
-        h(PS.AP, { initial: false }, st.err ? h(m.p, Object.assign({ key: 'e', className: 'ps-t-caption-sm ps-c-negative app-otp__err' }, PS.fade(-4)), st.err) : null)),
-      h('div', { className: 'app-otp__more' },
-        h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, 'Didn’t receive the code? Try another verification method.'),
-        h(PS.ContactMethods, { items: WAYS, value: st.way, onChange: function (w) { set({ way: w, code: '', err: null, left: 59 }); APP.say('We sent a new code by ' + WAYS.filter(function (x) { return x.id === w; })[0].label + '.'); } })),
-      h('div', { className: 'app-otp__resend' }, h(PS.Button, { size: 'sm', disabled: st.left > 0, onClick: function () { set({ code: '', err: null, left: 59 }); APP.say('We sent you a new code.'); } },
-        h(PS.Swap, { k: st.left > 0 ? 'w' : 'g' }, h('span', null, st.left > 0 ? 'Resend code after ' + st.left + 's' : 'Resend code')))));
+      h(PS.OtpForm, { value: st.code, onChange: onCode, error: st.err, disabled: st.busy, ways: WAYS, way: st.way, left: st.left,
+        onWay: function (w) { set({ way: w, code: '', err: null, left: 59 }); APP.say('We sent a new code by ' + WAYS.filter(function (x) { return x.id === w; })[0].label + '.'); },
+        onResend: function () { set({ code: '', err: null, left: 59 }); APP.say('We sent you a new code.'); } }));
   });
 
   /* Permission: what we ask for and why, before the first use */
@@ -91,8 +84,7 @@
       bottom: h(PS.BottomBar, null,
         h(PS.Button, { block: true, onClick: done }, 'Agree and continue'),
         h(PS.Button, { variant: 'text', block: true, onClick: function () { APP.home('home', 1); } }, 'Not now')) },
-      h('div', { className: 'app-permhead' }, h(PS.Art, { name: 'permission', ext: 'png', size: 120 }),
-        h(APP.Head, { center: true, title: 'Why do we ask for these?', body: 'To create your personalized loan service, we need your consent to access your data.' })),
+      h(PS.PageHero, { art: 'permission', title: 'Why do we ask for these?', body: 'To create your personalized loan service, we need your consent to access your data.' }),
       h('div', { className: 'app-stack-8' }, AD.permissions.map(function (x) { return h(PS.PermissionCard, Object.assign({ key: x.title }, x)); })),
       h('div', { className: 'app-permfoot' }, h(PS.Consent, { on: agree, onToggle: function () { setAgree(!agree); } }, 'I agree to the ', h('b', null, 'Privacy & Data Collection Policy'), ' and let PeraSure use this data for my application.')));
   });

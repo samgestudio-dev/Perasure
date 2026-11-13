@@ -1,5 +1,9 @@
 # PeraSure app (test environment)
 
+> **For AI agents — components first (owner's rule):** a new component or feature is created in the component library
+> (`shared/ps-ui`, with its states in `shared/gallery.html`) first, then this page uses it directly; a change to a piece is made in
+> the component, never patched from the page. See the `perasure-components` skill and `CLAUDE.md` → "Components first".
+
 The whole app in one prototype. Figma: file `barda5NcnFzxG7CHtISKsW`, page `38:1137`, plus what the repo already had
 (coupon system, Order submit, OTP sheet, Loading page, Credit limit increase). Built on the shared components
 ([`shared/ps-ui`](../../shared/README.md)); this folder holds only the flows and the sample data.
@@ -176,6 +180,20 @@ sentence case for labels; text fields show the clear button, not a chevron (Figm
 six weeks; the trusted contact's button is Submit (it is the last step now); the selfie's failed button is Try again. Figma
 inconsistencies left as the system has them: the selfie frame's heading text is 320 wide (312 elsewhere), its "Failed" is Nunito Sans
 (the app uses Section-title/sm), the uploading ring's #F5F5F5 has no token (Neutral/50 is used).
+
+## Shared pieces and the gallery
+
+Every piece of the app's look is a shared component in `shared/ps-ui`, shown with its states in the
+[component gallery](../../shared/gallery.html) (owner: a new piece is made there first, then the page uses it). `app.css` only places
+shared pieces (stacks, gaps, the Withdraw demo's layer); nothing in it restyles a component. Moved out of the app, each checked pixel for
+pixel against the screen it came from: `apply.js` (`PageHead`, `PageHero`, `IdCamera`, `IdSideCard`, `Selfie`, `FaceCamera`, `IdResult`,
+`FileList`, `SearchSheet`, `BankList`, `PlacePicker`, `EstimateCard`, `Article`, `Feedback`, `RelatedLinks`), `layout.js` (`SheetHead`,
+`ButtonRow`, `Confirm`, `BottomBar` `note` / `consent`), `feedback.js` (`Splash`, `SendingCard`, `Fallback`), `form.js` (`OtpForm`,
+`ReasonList`), `loan.js` (`OrderHead`, `OrderStatus`, `PlanRows`, `AmountEntry`), `pay.js` (`PenaltyInfo`, `ScamTips`, `GuestPay`,
+`PayDock`, `Accordion` `icon`), `account.js` (`GuestProfile`, `AboutHead`, `FooterMark`, `RegCard`, `Message`, `Rating`), `list.js`
+(`Bullets`, `LinkList` `tall`), `core.js` (`TextLink`, `InfoButton`, `SectionLabel`, `Glass` `size: 'lg'`), `coupon.js` (`Tabs`
+`spaced`). Sheets that need their own padding take a class from ps-ui.css: `ps-idres`, `ps-confirm`, `ps-rating`, `ps-scams`,
+`ps-sheet--white`, `ps-sheet--inset`.
 
 ## Not in yet
 

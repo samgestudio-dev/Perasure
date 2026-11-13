@@ -167,4 +167,45 @@
           }))));
     }));
   };
+
+  /* OrderHead: the amount at the top of a loan page — a label over the amount in brand blue (32 / 40) · label · amount */
+  PS.OrderHead = function OrderHead(p) {
+    return h('div', { className: 'ps-ohead' }, h('p', { className: 'ps-ohead__label' }, p.label), h(PS.Amount, { value: p.amount, className: 'ps-ohead__amount' }));
+  };
+  /* OrderStatus: where a loan application stands, on the outlined card (Figma: 328 × 80) — a brand tile (red when it failed) and two lines
+     state review | failed · title · body */
+  PS.OrderStatus = function OrderStatus(p) {
+    var failed = p.state === 'failed';
+    return h(PS.Card, { variant: 'outline', className: 'ps-ostatus' }, h('span', { className: PS.cx('ps-tile', failed && 'is-negative') }, h(PS.Icon, { name: failed ? 'alert-circle' : 'history', size: 20, color: 'inverse' })),
+      h('div', null, h('p', { className: 'ps-t-title-16' }, p.title), h('p', { className: 'ps-t-caption-sm ps-c-secondary' }, p.body)));
+  };
+  /* PlanRows: a payment plan as separate white rows 2 px apart, the first and last rounded (Figma 52:9668) · rows [{ label, value }] */
+  PS.PlanRows = function PlanRows(p) {
+    return h('div', { className: 'ps-planrows' }, p.rows.map(function (r) { return h(PS.KV, { key: r.label, label: r.label, value: r.value }); }));
+  };
+  /* AmountEntry: the amount keypad page's white sheet (Figma 52:12744) — the amount as it is typed (₱ 28 Inter, digits 48 / 44 Satoshi, what is
+     not typed yet in the disabled colour, a blinking caret; a typed digit rises in, a deleted one fades), a line that turns red for an amount out
+     of range, the terms, the keypad. typed (the digits typed so far, with commas, '' for none) · amount (for screen readers) · label · hint
+     · error (text) · terms · term · onTerm(t) · onKey */
+  PS.AmountEntry = function AmountEntry(p) {
+    var shown = p.typed || '', AP = PS.AP;
+    return h('div', { className: 'ps-aentry' },
+      h('div', { className: 'ps-aentry__top' },
+        h('p', { className: 'ps-t-body-md-em ps-c-secondary' }, p.label || 'Disbursement amount'),
+        h('div', { className: 'ps-aentry__num', 'aria-live': 'polite', 'aria-label': PS.money(p.amount) },
+          h('span', { className: 'ps-aentry__cur' }, '₱'),
+          h('span', { className: 'ps-aentry__typed' }, h(AP, { initial: false, mode: 'popLayout' }, shown.split('').map(function (c, i) {
+            return h(m.span, { key: i + c, initial: { opacity: 0, y: MT.Y.digit, filter: 'blur(' + MT.BLUR + 'px)' }, animate: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.2, ease: MT.EASE_IN } },
+              exit: { opacity: 0, transition: { duration: 0.08 } } }, c);
+          }))), h('span', { className: 'ps-aentry__caret', 'aria-hidden': true }),
+          h('span', { className: 'ps-aentry__rest' }, '00'), h('span', { className: 'ps-aentry__dec' }, '.00')),
+        h(PS.Swap, { k: p.error ? 'e' : 'r', block: true }, h('span', { className: PS.cx('ps-t-body-md', p.error ? 'ps-c-negative' : 'ps-c-placeholder') }, p.error || p.hint))),
+      h('div', { className: 'ps-aentry__pad' },
+        h('div', { className: 'ps-aentry__terms' }, h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, 'Choose a loan term to continue'),
+          h('div', { className: 'ps-terms', role: 'radiogroup', 'aria-label': 'Loan term' }, p.terms.map(function (t) {
+            var on = p.term === t;
+            return h(m.button, Object.assign({ key: t, type: 'button', role: 'radio', 'aria-checked': !!on, className: PS.cx('ps-term', on && 'is-on'), onClick: function () { p.onTerm(t); } }, PS.press()), t + ' terms');
+          }))),
+        h(PS.Divider), h(PS.Keypad, { onKey: p.onKey, cascade: true })));
+  };
 })();

@@ -162,7 +162,7 @@
       var limit = Math.min(window.innerHeight, bot ? bot.getBoundingClientRect().top : window.innerHeight) - GAP;
       var below = limit - (ar.bottom + GAP), above = ar.top - GAP - Math.max(0, (screen.querySelector('.ps-pb--top') || { getBoundingClientRect: function () { return { bottom: 0 }; } }).getBoundingClientRect().bottom);
       var up = below < hh && above > below;
-      var at = p.at || (!p.block && Date.now() - TAP.t < 1000 ? TAP : null), left = null, ox = null, w = c.offsetWidth;
+      var at = p.at || (!p.block && Date.now() - TAP.t < 1000 ? TAP : null), left = null, ox = null, w = Math.ceil(parseFloat(getComputedStyle(c).width)) || c.offsetWidth;   /* rounded up: a width cut by a fraction of a pixel puts "…" on the longest row */
       if (at) {   /* centred on the tap; kept 8 from the page's sides */
         var fr = (c.closest('.ps-frame') || document.documentElement).getBoundingClientRect(), E = PS.px(POP_EDGE);
         var x = Math.max(fr.left + E, Math.min(fr.right - E - w, at.x - w / 2));
@@ -342,5 +342,28 @@
         h('p', { className: 'ps-t-section-md-light' }, p.title || 'Select date'), h(PS.Glass, { icon: 'check', label: 'Done', onClick: done })),
       h('div', { className: 'ps-date__steps' }, stepper(MONTHS[view.m], 'month', 1), stepper(String(view.y), 'year', 12)),
       h('div', { className: 'ps-date__body' }, h(PS.Crossfade, { k: mode === 'date' ? 'date' : 'wheel', className: 'ps-date__view' }, body)));
+  };
+
+  /* OtpForm: the code page's body — the six boxes and the error under them, another way to get the code, Resend (after a countdown).
+     value · onChange · error (text) · disabled (while it checks) · ways [{ id, icon, label }] · way · onWay(id) · left (seconds to wait) · onResend */
+  PS.OtpForm = function OtpForm(p) {
+    return h(R.Fragment, null,
+      h('div', { className: 'ps-otpform' },
+        h(PS.OtpBoxes, { value: p.value, onChange: p.onChange, error: !!p.error, disabled: p.disabled }),
+        h(AP, { initial: false }, p.error ? h(m.p, Object.assign({ key: 'e', className: 'ps-t-caption-sm ps-c-negative ps-otpform__err' }, PS.fade(-4)), p.error) : null)),
+      h('div', { className: 'ps-otpform__more' },
+        h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, 'Didn’t receive the code? Try another verification method.'),
+        h(PS.ContactMethods, { items: p.ways, value: p.way, onChange: p.onWay })),
+      h('div', { className: 'ps-otpform__resend' }, h(PS.Button, { size: 'sm', disabled: p.left > 0, onClick: p.onResend },
+        h(PS.Swap, { k: p.left > 0 ? 'w' : 'g' }, h('span', null, p.left > 0 ? 'Resend code after ' + p.left + 's' : 'Resend code')))));
+  };
+  /* ReasonList: a card of reasons with a radio each, then a box for more, 200 characters (delete the account, cancel a loan)
+     items · value (index, -1: none yet) · onChange(index) · text · onText */
+  PS.ReasonList = function ReasonList(p) {
+    return h(PS.Card, { className: 'ps-reasons' }, p.items.map(function (w, i) {
+      return h(R.Fragment, { key: i }, i ? h(PS.Divider) : null, h('button', { type: 'button', role: 'radio', 'aria-checked': p.value === i, className: 'ps-reason ps-t-title-14', onClick: function () { p.onChange(i); } },
+        h('span', null, w), h('span', { className: PS.cx('ps-radio', p.value === i && 'is-on') })));
+    }), h('div', { className: 'ps-reasons__more' }, h('textarea', { value: p.text, maxLength: 200, placeholder: 'Tell us more… (Optional)', 'aria-label': 'Tell us more', onChange: function (e) { p.onText(e.target.value); } }),
+      h('span', { className: 'ps-t-caption-xs ps-c-placeholder' }, (p.text || '').length + '/200 characters')));
   };
 })();

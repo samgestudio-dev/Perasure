@@ -61,9 +61,9 @@
   };
 
   /* Tabs: segmented control · items [{ id, label, count }] (count shown when set) · value · onChange(id) · glass (frosted, in sheets)
-     id (pill layout id). The pill glides on the Smooth spring; label colours change in 150 ms. */
+     split (separate pills) · spaced (with split: 16 between them) · id (pill layout id). The pill glides on the Smooth spring; label colours change in 150 ms. */
   PS.Tabs = function Tabs(p) {
-    return h('div', { className: PS.cx('ps-tabs', p.glass && 'ps-tabs--glass', p.split && 'ps-tabs--split', p.className), role: 'tablist' }, p.items.map(function (it) {
+    return h('div', { className: PS.cx('ps-tabs', p.glass && 'ps-tabs--glass', p.split && 'ps-tabs--split', p.spaced && 'ps-tabs--spaced', p.className), role: 'tablist' }, p.items.map(function (it) {
       var on = it.id === p.value;
       return h(m.button, Object.assign({ key: it.id, type: 'button', role: 'tab', 'aria-selected': on, className: PS.cx('ps-tabs__tab', on && 'is-on'),
         onClick: function () { if (!on && p.onChange) p.onChange(it.id); } }, PS.press()),

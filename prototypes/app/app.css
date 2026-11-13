@@ -1,47 +1,27 @@
-/* PeraSure app — only where this prototype places shared pieces (the look lives in shared/ps-ui/ps-ui.css) */
+/* PeraSure app — only where this prototype places shared pieces. Every look is a component in shared/ps-ui (ps-ui.css) and shown in
+   shared/gallery.html (owner: a new piece is made there first, then the page uses it). Nothing here restyles a component. */
 .app-tabs { position: absolute; inset: 0; }
 .app-tabs.is-intro > .ps-nav { visibility: hidden; }   /* while the Credit limit increase plays over home (it is full screen) */
-.app-opening { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: var(--color-surface-page-heavy); }
-.app-center { display: flex; align-items: center; justify-content: center; padding: 0 2.125rem var(--spacing-padding-xl); }
-.app-sending { width: 100%; max-width: 18.25rem; align-items: center; gap: 0; padding: var(--spacing-padding-xl) var(--spacing-padding-lg); text-align: center; border-radius: var(--radius-xl); }
-.app-sending > div { display: flex; flex-direction: column; gap: var(--spacing-gap-xs); }
-.app-head { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); padding: 0 var(--spacing-padding-sm); }
-.app-head--center { text-align: center; padding: 0; }
+.app-center { display: flex; align-items: center; justify-content: center; padding: 0 2.125rem var(--spacing-padding-xl); }   /* the sending card */
 .app-stack-8 { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); }
 .app-stack-12 { display: flex; flex-direction: column; gap: var(--spacing-gap-md); }
 .app-stack-16 { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); }
-.app-ulink { align-self: flex-start; padding: 0 var(--spacing-padding-sm); color: var(--color-text-link-default); text-decoration: underline; text-underline-offset: 0.125rem; }
-.app-bot-consent { gap: var(--spacing-gap-lg); padding-left: var(--spacing-padding-3xl); padding-right: var(--spacing-padding-3xl); padding-bottom: calc(var(--spacing-padding-xl) + var(--spacing-padding-sm)); }
-html.ps-edge .app-bot-consent { padding-bottom: calc(var(--sb) + var(--spacing-padding-xl)); }
-.app-bot-consent > .ps-btn { align-self: center; width: calc(100% - 2rem); }
-.app-otp { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); margin-top: var(--spacing-gap-xs); }
-.app-otp .ps-otp { justify-content: space-between; }
-.app-otp__err { padding: 0 var(--spacing-padding-sm); }
-.app-otp__more { display: flex; flex-direction: column; gap: var(--spacing-gap-md); margin-top: var(--spacing-gap-md); text-align: center; }
-.app-otp__resend { display: flex; justify-content: flex-end; margin-top: var(--spacing-gap-xs); }
-.app-permhead { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-md); margin-bottom: var(--spacing-gap-md); }
-/* the fallback page (Figma 52:10976): its picture sits where the loader's coin was (as every full-page empty state); its button is 264 wide */
-.app-fallback { position: absolute; left: 0; top: calc(50% - 7.25rem); width: 100%; padding: var(--spacing-padding-xl) var(--spacing-padding-5xl) 0; }
-.app-fallback > .ps-btn { width: 100%; }
-.app-ptabs { padding: 0 var(--spacing-page-x-sm) var(--spacing-padding-xl); }
-.app-seclabel.app-seclabel--in8 { padding: 0 var(--spacing-padding-sm); }
-.app-ptabs--16 .ps-tabs { gap: var(--spacing-gap-lg); }
-/* rating sheet (Figma 52:13419 / 13695 / 13922): picture, texts 16 in from the card, primary button + a text button */
-.app-rating { gap: 0 !important; }
-.app-rating__pages { display: grid; }   /* the steps stacked: as tall as the tallest */
-.app-rating__page { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: var(--spacing-gap-lg); padding-bottom: var(--spacing-padding-3xl); text-align: center; }
-.app-rating__page.is-ask { gap: var(--spacing-gap-sm); }
-.app-rating__page > div { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); padding: 0 var(--spacing-padding-lg); }
-.app-rating__acts { display: flex; flex-direction: column; }
-.app-rating__acts > .ps-btn--text { height: 3rem; }
-.app-ctabs { padding: var(--spacing-gap-2xs) var(--spacing-page-x-sm) var(--spacing-padding-lg); }
-/* amount keypad page: a white sheet from under the header to the bottom */
-.app-amount { padding-left: 0; padding-right: 0; }
-.app-amount__sheet { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-between; gap: var(--spacing-gap-md); padding: 0 var(--spacing-padding-2xl) var(--spacing-padding-3xl);
-  background: var(--color-surface-card-default); border-radius: var(--radius-xl) var(--radius-xl) 0 0; box-shadow: var(--shadow-over); }
-html.ps-edge .app-amount__sheet { padding-bottom: calc(var(--sb) + var(--spacing-padding-xl)); }
-/* the Withdraw demo's loan screen (screens-withdraw.js): drawn 360 wide from the frame's top-left corner and scaled to the frame; over the pages, under the sheets */
-.app-wd { position: absolute; left: 0; top: 0; width: 100%; height: 0; z-index: 10; }   /* the Withdraw demo, laid out as wide as the frame */
+.app-col, .app-stack-20 { display: flex; flex-direction: column; gap: var(--spacing-gap-xl); }
+.app-form { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); }
+.app-form--12 { gap: var(--spacing-gap-md); }
+.app-docs { position: relative; display: flex; flex-direction: column; gap: var(--spacing-gap-md); }   /* proof of income (DS 9473:27722) */
+.app-ptabs { padding: 0 var(--spacing-page-x-sm) var(--spacing-padding-xl); }   /* tabs under a header (inbox, credit history) */
+.app-ctabs { padding: var(--spacing-gap-2xs) var(--spacing-page-x-sm) var(--spacing-padding-lg); }   /* the coupon centre's tabs */
+.app-amount { padding-left: 0; padding-right: 0; }   /* the amount keypad page: PS.AmountEntry runs edge to edge */
+.app-account > .ps-profile { margin-bottom: var(--spacing-gap-md); }
+.app-permfoot { padding: 0 var(--spacing-padding-lg); }
+.app-date { padding-top: var(--spacing-padding-xl) !important; }   /* the date card: 20 at the top (DS 7628:14113), the handle over it */
+/* "Mark all read": a pill in the bottom right corner, 48 px up (Figma 52:10300) */
+.app-fab { position: absolute; right: var(--spacing-page-x-sm); bottom: var(--spacing-padding-5xl); z-index: 4; }
+html.ps-edge .app-fab { bottom: calc(var(--spacing-padding-5xl) + var(--sb)); }
+
+/* ---- the Withdraw demo's loan screen (screens-withdraw.js): laid out as wide as the frame from its top-left corner; over the pages, under the sheets ---- */
+.app-wd { position: absolute; left: 0; top: 0; width: 100%; height: 0; z-index: 10; }
 .app-wdhero { min-height: 12.25rem; }   /* the demo's home card is drawn in here */
 /* while the Withdraw sheet covers the whole screen (the demo marks the frame .ps-covered), the tabs' blur bands under it are not drawn —
    as the demo does with its own home's (withdraw.css): a blur no one sees still costs the GPU a pass while the sheet moves */
@@ -49,226 +29,3 @@ html.ps-edge .app-amount__sheet { padding-bottom: calc(var(--sb) + var(--spacing
 .app-wd .ps-sb { visibility: hidden; }   /* the demo's drawn status bar: hidden on a phone there too */
 .app-wd__tune { position: absolute; right: 16px; top: 56px; z-index: 11; height: 40px; display: flex; align-items: center; }
 html.ps-edge .app-wd__tune { top: calc(56px + var(--e)); }
-.app-amount__top { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); padding: var(--spacing-padding-3xl) 0; }
-/* the amount as it is typed (Figma 52:12744): ₱ 28 Inter, digits 48 / 44 Satoshi, what is not typed yet in the disabled colour */
-.app-amount__num { display: flex; align-items: flex-end; height: 2.75rem; font-family: var(--ps-font-num); font-weight: var(--font-weight-bold); }
-.app-amount__cur { font: var(--font-weight-medium) calc(1.75rem * var(--ps-tx, 1))/calc(1.75rem * var(--ps-tx, 1)) var(--font-family-body); color: var(--color-text-disabled); margin-right: var(--spacing-gap-sm); }
-.app-amount__typed { display: inline-flex; font-size: calc(3rem * var(--ps-tx, 1)); line-height: calc(2.75rem * var(--ps-tx, 1)); color: var(--color-text-primary); }
-.app-amount__typed > span { display: inline-block; }
-.app-amount__rest { font-size: calc(3rem * var(--ps-tx, 1)); line-height: calc(2.75rem * var(--ps-tx, 1)); color: var(--color-text-disabled); margin-left: var(--spacing-gap-2xs); }
-.app-amount__dec { font-size: calc(1.125rem * var(--ps-tx, 1)); line-height: calc(1.5rem * var(--ps-tx, 1)); color: var(--color-text-disabled); margin-left: var(--spacing-gap-xs); }
-.app-amount__caret { width: 0.125rem; height: 2.75rem; margin: 0 0.0625rem; background: var(--color-text-brand-default); animation: app-caret 1.06s steps(1, end) infinite; }
-@keyframes app-caret { 50% { opacity: 0; } }
-.app-amount__pad { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); }
-/* how to pay (Figma DS 7792:15391): the sheet starts 8 px under the status bar, white, radius 32, the over-shadow; its 88 px head (handle,
-   search 276 + close, 32 / 16 / 16) sits over the list on the top-nav veil; the rail and the list under it */
-.ps-sheet--page.app-pm { top: calc(40px + 0.5rem); background: var(--color-surface-elevated-default); border-radius: var(--radius-xxl) var(--radius-xxl) 0 0; box-shadow: var(--shadow-over); }
-html.ps-edge .ps-sheet--page.app-pm { top: calc(40px + 0.5rem + var(--e)); }
-.app-pm__head { position: absolute; left: 0; right: 0; top: 0; z-index: 2; height: 5.5rem; display: flex; align-items: center; gap: var(--spacing-gap-md); padding: var(--spacing-padding-3xl) var(--spacing-padding-lg) var(--spacing-padding-lg);
-  border-radius: var(--radius-xxl) var(--radius-xxl) 0 0; background: linear-gradient(180deg, color-mix(in srgb, var(--color-surface-elevated-default) 80%, transparent) 0%, color-mix(in srgb, var(--color-surface-elevated-default) 0%, transparent) 100%); }   /* the coupon picker's veil, in this sheet's white */
-.app-pm__head .ps-search { flex: 1 1 auto; }
-.app-pm__body { position: absolute; inset: 0; overflow-y: auto; scrollbar-width: none; padding: 5.5rem 0 3rem; }
-.app-pm__body::-webkit-scrollbar { width: 0; }
-html.ps-edge .app-pm__body { padding-bottom: calc(3rem + var(--sb)); }
-.app-banks__head { position: absolute; left: 0; right: 0; top: 0; z-index: 2; display: flex; align-items: center; gap: var(--spacing-gap-md); padding: var(--spacing-padding-3xl) var(--spacing-padding-lg) var(--spacing-gap-sm);
-  background: linear-gradient(180deg, var(--ps-inset-80) 0%, var(--ps-inset-0) 100%); }   /* the coupon picker's top veil: what scrolls up fades under the search */   /* Figma 52:7763: search 276 at 16, 32; close 12 after it */
-.app-banks__body { position: absolute; inset: 0; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; gap: var(--spacing-gap-lg); padding: 5.5rem var(--spacing-padding-md) 3rem; }
-.app-banks__body--flush { padding-left: 0; padding-right: 0; }
-.app-banks__group { gap: var(--spacing-gap-lg); padding: var(--spacing-padding-lg); }   /* rows 52 apart (Figma 52:8428) */
-.app-banks__group > p { margin-bottom: calc(-1 * var(--spacing-gap-xs)); }
-.app-banks__row > img { flex: none; width: 1.5rem; height: 1.5rem; border-radius: var(--radius-2xs, 0.25rem); object-fit: contain; }   /* payment logos are 24 (owner) */
-.app-banks__row { display: flex; align-items: center; gap: var(--spacing-gap-sm); width: 100%; text-align: left; min-height: 1.25rem; }
-.app-order__head { display: flex; flex-direction: column; gap: var(--spacing-gap-xs); padding: 0 var(--spacing-padding-sm); }
-.app-order__amount { font-size: calc(2rem * var(--ps-tx, 1)); line-height: calc(2.5rem * var(--ps-tx, 1)); color: var(--color-text-brand-default); }
-.app-order__label { font: var(--font-weight-regular) calc(1rem * var(--ps-tx, 1))/calc(1.5rem * var(--ps-tx, 1)) var(--font-family-title); color: var(--color-text-secondary); }
-.app-order__status { flex-direction: row; align-items: center; gap: var(--spacing-gap-lg); padding: 0.625rem 0.875rem; }   /* 12 / 16 with the 2 px ring (Figma: 328 × 80) */
-.app-order__status > div { flex: 1 1 0; display: flex; flex-direction: column; gap: var(--spacing-gap-2xs); }
-.app-amount .ps-term { height: 2.5625rem; }
-/* the penalty explainer (Figma 52:13180): 288 wide, title, rows with a 100 px label column 8 apart, a line, a footnote */
-.app-pen { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); }   /* Figma 10545:38381 */
-.app-pen__detail { display: flex; flex-direction: column; gap: var(--spacing-gap-md); }
-.app-pen__rows { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); }
-.app-pen__row { display: flex; }
-.app-pen__row > b { flex: none; width: 6.25rem; }
-.app-pen__row > span { flex: 1 1 0; min-width: 0; }
-.app-col, .app-stack-20 { display: flex; flex-direction: column; gap: var(--spacing-gap-xl); }
-.app-seclabel { padding: 0 var(--spacing-padding-md); font: var(--font-weight-regular) var(--font-size-caption-sm)/var(--font-line-height-caption-sm) var(--font-family-body); color: var(--color-text-tertiary); letter-spacing: 0.02em; }
-.app-seclabel.ps-c-negative { color: var(--color-text-negative-default); }
-/* the total above the tab bar (Figma 52:7925 "payment nav", 162 tall): one frosted panel with a rounded top that also sits behind the navigator */
-.app-paybar { position: absolute; left: 0; right: 0; bottom: 0; height: 10.125rem; padding-top: var(--spacing-padding-sm); z-index: 4; border-radius: var(--radius-xxl) var(--radius-xxl) 0 0;
-  background: var(--color-surface-elevated-glass); box-shadow: var(--shadow-over); -webkit-backdrop-filter: blur(var(--blur-backdrop-bg)); backdrop-filter: blur(var(--blur-backdrop-bg)); }
-html.ps-edge .app-paybar { height: calc(10.125rem + var(--sb)); }
-.app-sheet-tint { background: var(--color-surface-inset-default) !important; }
-.app-sheet-tint > .app-sheethead { margin-top: 0.6875rem; }   /* Figma payment detail: close at 27, title at 36, content at 83 */
-.app-sheethead { position: relative; display: flex; align-items: center; justify-content: center; min-height: 2.5rem; }
-.app-sheethead > .ps-close { position: absolute; right: 0; top: 0; }
-.app-sheethead--left { justify-content: flex-start; padding-right: 3rem; }
-.app-inline { display: inline-flex; align-items: center; gap: var(--spacing-gap-xs); }
-.app-scams { gap: var(--spacing-gap-2xl) !important; }
-.app-scams__page { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-sm); text-align: center; padding: var(--spacing-gap-sm) 0 0; }
-.app-scams__page > div { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); padding: 0 var(--spacing-padding-lg); min-height: 5.75rem; }
-.app-account > .ps-profile { margin-bottom: var(--spacing-gap-md); }
-.app-guest { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-3xl); }
-/* Payment when not signed in (Figma 52:7683): a text block, then a 264 px button — at the height of a loading page's coin and dots, like the empty states */
-.app-guestpay { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-xl); margin-top: calc(var(--ph, 740px) / 2 - 40px - 3rem - var(--ps-col-top, calc(40px + 4.75rem)) - var(--e, 0px)); padding: var(--spacing-padding-xl) 0 0; text-align: center; }
-.app-guestpay > div { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); }
-.app-guestpay > .ps-btn { width: 16.5rem; }
-.app-confirm { gap: var(--spacing-gap-2xl) !important; }
-.app-confirm__text { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); }
-.app-confirm__acts { display: flex; gap: 0.625rem; }
-.app-confirm__acts > .ps-btn { flex: 1 1 0; }
-.app-about { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-xs); padding: var(--spacing-padding-lg) 0 var(--spacing-padding-xl); }
-.app-about__logo { width: 4rem; height: 4rem; margin-bottom: var(--spacing-gap-md); border-radius: 1.1875rem; }   /* the app icon, 64 px (Figma 52:4640) */
-.app-about__logo > img { width: 2.5625rem; height: 2.5625rem; }
-.app-foot40 { display: flex; align-items: center; justify-content: center; gap: var(--spacing-gap-sm); margin-top: var(--spacing-gap-xl); color: var(--color-text-disabled); }
-.app-foot40 > span { display: inline-flex; align-items: center; gap: var(--spacing-gap-xs); font: var(--font-weight-semi-bold) calc(0.75rem * var(--ps-tx, 1))/calc(1rem * var(--ps-tx, 1)) var(--font-family-title); }
-.app-foot40 i { width: 0.875rem; height: 0.875rem; background: currentColor; -webkit-mask: url(../../shared/ps-ui/assets/logos/perasure-mark.svg) center / contain no-repeat; mask: url(../../shared/ps-ui/assets/logos/perasure-mark.svg) center / contain no-repeat; }
-.app-seccard { align-items: center; text-align: center; gap: var(--spacing-gap-xs); }
-.app-bir { gap: var(--spacing-gap-sm); }
-.app-bir > img { width: 100%; aspect-ratio: 296 / 91; object-fit: contain; }
-.app-reasons { gap: var(--spacing-gap-lg); padding: var(--spacing-padding-lg); }
-.app-reason { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-gap-md); width: 100%; min-height: 1.25rem; text-align: left; color: var(--color-text-primary); }
-.app-reasons__more { display: flex; flex-direction: column; align-items: flex-end; gap: var(--spacing-gap-xs); margin-top: calc(-1 * var(--spacing-gap-xs)); }
-.app-reasons__more > textarea { width: 100%; height: 9.25rem; padding: var(--spacing-padding-md); border: 0; outline: 0; resize: none; border-radius: var(--radius-sm); background: var(--color-surface-inset-default);
-  color: var(--color-text-primary); font: var(--font-weight-regular) var(--font-size-body-md)/var(--font-line-height-body-md) var(--font-family-body); }
-.app-reasons__more > textarea::placeholder { color: var(--color-text-placeholder); }
-.app-acts { display: flex; flex-direction: column; gap: var(--spacing-gap-xs); padding: var(--spacing-padding-sm) var(--spacing-padding-3xl) 0; }
-/* "Mark all read": a pill in the bottom right corner, 48 px up (Figma 52:10300) */
-.app-fab { position: absolute; right: var(--spacing-page-x-sm); bottom: var(--spacing-padding-5xl); z-index: 4; }
-html.ps-edge .app-fab { bottom: calc(var(--spacing-padding-5xl) + var(--sb)); }
-.app-fab > .ps-glass { height: 2.75rem; padding: 0 var(--spacing-padding-xl); }
-.app-msgmeta { display: flex; justify-content: space-between; padding: 0 var(--spacing-padding-md); }
-/* a payment plan as separate rows 2 px apart, the first and last rounded (Figma 52:9668) */
-.app-plan { display: flex; flex-direction: column; gap: var(--spacing-gap-2xs); border-radius: var(--radius-xl); overflow: hidden; }
-.app-plan > .ps-kv { height: 3.25rem; padding: 0 var(--spacing-padding-lg); background: var(--color-surface-card-default); }
-.app-plan > .ps-kv > :first-child { font-weight: var(--font-weight-regular); color: var(--color-text-secondary); }
-.app-know { gap: var(--spacing-gap-sm); }
-.app-know > p { display: flex; gap: var(--spacing-gap-sm); }
-.app-know > p > i { flex: none; width: 0.25rem; height: 0.25rem; margin-top: 0.5rem; border-radius: var(--radius-full); background: var(--color-icon-tertiary); }
-.app-permfoot { padding: 0 var(--spacing-padding-lg); }
-
-/* ---- applying for a credit limit (screens-kyc.js; Figma "Application Details") ---- */
-.app-form { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); }
-.app-form--12 { gap: var(--spacing-gap-md); }
-.app-idside { gap: var(--spacing-gap-lg); }
-.app-idside__box { position: relative; display: flex; flex-direction: column; gap: var(--spacing-gap-md); padding: var(--spacing-padding-md); border-radius: var(--radius-xs); }   /* DS 5583:4934: 12 to the content */
-.app-idside__box::before { content: ''; position: absolute; inset: 0; border: var(--stroke-width-medium) dashed var(--color-stroke-subtle); border-radius: inherit; pointer-events: none; }   /* the 1.5 dashed Stroke/Subtle line takes no room (phones round a 1.5 border) */
-.app-idside__box > .ps-divider { margin: -0.5px 0; }   /* Figma's line takes no height */
-.app-idside__row { display: flex; align-items: center; gap: var(--spacing-gap-md); }
-.app-idside__pic { position: relative; flex: none; width: 5.0625rem; height: 3.5rem; border-radius: var(--radius-xs); overflow: hidden; display: flex; align-items: center; justify-content: center; background: var(--color-surface-inset-default); }
-.app-idside__pic > img { width: 100%; height: 100%; object-fit: cover; }
-.app-idside__pic.is-done > img { filter: blur(1px); transform: scale(1.04); }   /* DS 6012:34214: the photo taken sits blurred under the tick (layer blur 2.1) */
-.app-idside__pic.is-done::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 var(--stroke-width-medium) var(--color-stroke-positive-default); pointer-events: none; }   /* the ring over the photo */
-.app-idside__tick { position: absolute; left: 50%; top: 50%; width: 1.25rem; height: 1.25rem; margin: -0.625rem 0 0 -0.625rem; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-full); background: var(--color-surface-icon-positive-default); }
-.app-idside__text { display: flex; flex-direction: column; gap: var(--spacing-gap-xs); min-width: 0; color: var(--color-text-secondary); }
-.app-idside__btns { display: flex; gap: var(--spacing-gap-md); }
-.app-idside__btns > .ps-btn { flex: 1 1 0; }
-.app-cam { position: absolute; inset: 0; background: #000; overflow: hidden; color: var(--color-text-inverse); }
-.app-cam__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-/* DS 5788:13914: one 336 × 382 group 144 under the 40 px status strip — hint (32) · 7 · box 259 × 382 · 10 · side (28)
-   (large text grows it, never past the screen's width or into the shutter) */
-.app-cam__frame { --h: min(23.875rem, calc(var(--ph, 100vh) - 40px - 9rem - 8.75rem - var(--e, 0px) - var(--sb, 0px)));
-  position: absolute; left: 50%; top: calc(40px + 9rem + var(--e, 0px)); width: min(21rem, calc(100% - 1.5rem)); height: var(--h); transform: translateX(-50%); }
-.app-cam__box { position: absolute; left: 2.4375rem; right: 2.375rem; top: 0; height: 100%; border: 2.5px solid var(--color-icon-inverse); border-radius: var(--radius-xs);   /* 2.5: no token */
-  box-shadow: 0 0 0 2000px rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; padding: var(--spacing-padding-lg); text-align: center; }
-.app-cam__hint, .app-cam__side { z-index: 1; }   /* above the box's dimmed surround */
-.app-cam__hint { position: absolute; left: 1rem; top: 50%; width: calc(var(--h) - 3.375rem); transform: translate(-50%, -50%) rotate(90deg); text-align: center; }
-.app-cam__side { position: absolute; left: calc(100% - 0.875rem); top: 50%; display: flex; align-items: center; gap: var(--spacing-gap-md); white-space: nowrap; transform: translate(-50%, -50%) rotate(90deg);
-  color: var(--color-text-brand-light); }
-.app-cam__shutter { position: absolute; left: 50%; bottom: calc(3.5rem + var(--sb, 0px)); width: 3.75rem; height: 3.75rem; margin-left: -1.875rem; border-radius: 50%; border: 3px solid var(--color-icon-inverse); display: flex; align-items: center; justify-content: center; }
-.app-cam__shutter > i { width: 3rem; height: 3rem; border-radius: 50%; background: var(--color-icon-inverse); }   /* 60: a 3 ring, 3, a 48 disc */
-.app-cam__close { position: absolute; right: 1rem; top: calc(40px + 1rem + var(--e, 0px)); width: 2.5rem; height: 2.5rem; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center;
-  background: color-mix(in srgb, var(--color-icon-inverse) 10%, transparent); touch-action: manipulation; }   /* DS: white at 10 % */
-.app-cam__close > .ps-icon { transform: rotate(90deg); }   /* the back chevron turned with the layout */
-.app-idres { padding-bottom: var(--spacing-24); gap: var(--spacing-gap-lg); }   /* DS 5908:10722 / 5908:11000: 16 16 24, 16 between blocks */
-.app-idres__top { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-sm); text-align: center; padding-top: var(--spacing-gap-lg); }
-.app-idres__art { width: 6.25rem; height: 6.25rem; margin-bottom: var(--spacing-gap-xs); }   /* 100, 12 to the title */
-.app-idres__opts { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); }
-.app-idres__opt { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--spacing-gap-xs); min-height: 3.5rem; padding: var(--spacing-gap-sm) var(--spacing-padding-lg); text-align: center;
-  border-radius: var(--radius-xl); background: var(--color-surface-card-default); box-shadow: inset 0 0 0 var(--stroke-width-default) var(--color-stroke-subtle); }
-.app-idres__other { align-self: center; min-height: 1.25rem; }
-.app-idres__head { align-items: flex-end; }   /* the title sits at the bottom of the 40 row the close button makes */
-.app-idres__title { display: flex; align-items: center; gap: var(--spacing-gap-sm); }
-.app-idres--failed > p { margin-top: calc(var(--spacing-gap-sm) - var(--spacing-gap-lg)); }   /* 8 under the title */
-.app-idres__tips { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-gap-sm); padding: var(--spacing-padding-lg); border-radius: var(--radius-md); background: var(--color-surface-inset-default); text-align: center; }
-.app-idres__tips > div { display: flex; flex-direction: column; gap: var(--spacing-gap-xs); }
-.app-idres__tip { display: block; aspect-ratio: 136 / 91; border-radius: var(--radius-xs); background-size: 200% 200%; background-color: var(--color-neutral-800); }
-.app-idres__acts { display: flex; gap: 0.625rem; } .app-idres__acts > .ps-btn { flex: 1 1 0; }
-.app-idres__acts > .ps-btn { height: auto; min-height: 2.75rem; white-space: normal; text-align: center; }   /* large text wraps instead of running out */   /* DS: 10 between (no token) */
-.app-selfie { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-lg); }
-.app-selfie__ring { position: relative; width: 12.5rem; height: 12.5rem; margin: 2.4375rem 0 2.5rem; border-radius: 50%; padding: 0.5rem; background: var(--color-neutral-150); transition: background-color 0.15s ease; }
-.app-selfie.is-failed .app-selfie__ring { background: var(--color-negative-50); box-shadow: inset 0 0 0 0.1875rem var(--color-stroke-negative-subtle); }   /* DS 5561:7411: Negative/50, 3 inside Stroke/Negative/Subtle */
-.app-selfie.is-checking .app-selfie__ring { background: var(--color-neutral-50); }   /* DS 5561:7501: #F5F5F5 (no token: the nearest, Neutral/50) */
-.app-selfie__dash { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.app-selfie__dash > circle { fill: none; stroke: var(--color-stroke-brand-default); stroke-width: 8; stroke-dasharray: 4 4; }   /* 8 wide, dash 4, 6 inside the circle */
-.app-selfie__tips { width: 100%; }
-.app-selfie__video { position: absolute; inset: 0.5rem; width: 11.5rem; height: 11.5rem; border-radius: 50%; object-fit: cover; background: #000; transform: scaleX(-1); }
-img.app-selfie__video { transform: none; }
-.app-selfie__state { position: absolute; inset: 0.5rem; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--spacing-gap-2xs); }   /* DS: the 26 mark, 2, the word (Section-title/sm) */
-.app-selfie__state.is-brand { color: var(--color-text-brand-light); } .app-selfie__state.is-negative { color: var(--color-text-negative-default); }
-.app-selfie__none { position: absolute; inset: 0.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 1.75rem; text-align: center; color: var(--color-text-inverse); }
-.app-files { position: relative; display: flex; flex-direction: column; gap: var(--spacing-gap-sm); }
-.app-files__item { padding: var(--spacing-gap-md) var(--spacing-padding-lg); border-radius: var(--radius-lg); background: var(--color-surface-card-default); }
-.app-files__add { position: relative; }
-.app-files__btn { width: 100%; display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-xs); padding: var(--spacing-gap-md) var(--spacing-padding-3xl); border-radius: var(--radius-lg);
-  border: var(--stroke-width-strong) dashed var(--color-stroke-subtle); background: var(--color-surface-card-default); text-align: center; }   /* DS: 2 px, dash 4 */
-.app-files__btn.has-files { padding-left: var(--spacing-padding-lg); padding-right: var(--spacing-padding-lg); }
-.app-files__btn > span:first-child { display: inline-flex; align-items: center; gap: var(--spacing-gap-sm); font: var(--font-weight-medium) var(--font-size-label-md)/var(--font-line-height-label-md) var(--font-family-label); }
-.app-files__note { display: flex; align-items: center; gap: var(--spacing-gap-xs); padding: 0 var(--spacing-padding-sm); }
-.app-contact__note { text-align: center; margin: 0 calc(var(--spacing-24) - var(--spacing-padding-5xl)) calc(1.375rem - var(--spacing-gap-xs)); }
-/* DS 5561:7317: the note runs 24 from the edges (wider than the button) and sits 22 above it; the button keeps the 28 under it that a
-   one-button bar has (its 108 height) */
-html:not(.ps-edge) .app-contact__bar { padding-bottom: calc(var(--spacing-padding-xl) + var(--spacing-gap-sm)); }
-.app-remind { display: inline-flex; align-items: center; gap: var(--spacing-gap-sm); }   /* DS 9224:37691: tile 28, 8 to the title */
-.app-estimate { display: flex; flex-direction: column; }
-.app-estimate > .ps-amountcard { border-radius: var(--radius-xl) var(--radius-xl) 0 0; box-shadow: none; }
-.app-estimate__rows { border-radius: 0 0 var(--radius-xl) var(--radius-xl); gap: var(--spacing-gap-lg); padding-top: 0; }
-.app-date { padding-top: var(--spacing-padding-xl) !important; }   /* the date card: 20 at the top (DS 7628:14113), the handle over it */
-.app-city__body { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); }
-.app-city__card { padding: 0 var(--spacing-padding-lg); }   /* DS 5975:10755: the tabs and the list in one card */
-.app-city__card > .ps-ltabs { margin: 0 calc(-1 * var(--spacing-padding-lg)); }
-.app-city__list { padding: 0 var(--spacing-padding-lg); }
-.app-city__card .app-city__list { padding: 0; }
-.app-city__group { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); }
-.app-city__row { width: 100%; min-height: 3.75rem; display: flex; align-items: center; gap: var(--spacing-gap-md); padding: var(--spacing-padding-md) 0; text-align: left; color: var(--color-text-primary);
-  border-bottom: var(--stroke-width-default) solid var(--color-stroke-divider); touch-action: manipulation; }   /* 60 apart; with a second line 72 */
-.app-city__row.has-sub { min-height: 4.5rem; }
-.app-city__row:last-child { border-bottom: 0; }
-.app-city__text { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: var(--spacing-gap-2xs); }
-
-/* ---- help articles (DS 5453:4712) ---- */
-.app-faq__list .ps-linkrow { min-height: 1.375rem; }
-.app-faq__body { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); padding: 0 var(--spacing-padding-sm); }
-.app-faq__h { color: var(--color-text-primary); margin-bottom: calc(-1 * var(--spacing-gap-xs)); }
-.app-faq__ul { list-style: none; display: flex; flex-direction: column; }
-.app-faq__ul > li::before { content: '- '; }
-.app-faq__vote { display: flex; flex-direction: column; gap: var(--spacing-gap-md); margin-top: var(--spacing-gap-lg); padding: var(--spacing-padding-2xl) 0;
-  border-top: var(--stroke-width-default) solid var(--color-stroke-divider); border-bottom: var(--stroke-width-default) solid var(--color-stroke-divider); }   /* DS 5453:4947: full width, lines above and below, 24 · title · 12 · buttons · 24 */
-.app-faq__chips { display: flex; gap: var(--spacing-gap-md); }
-.app-faq__chip { display: flex; align-items: center; justify-content: center; width: 4.5rem; min-height: 2.75rem; padding: var(--spacing-gap-md) var(--spacing-padding-xl); border-radius: var(--radius-full); background: var(--color-action-bg-inverse); color: var(--color-text-primary); transition: background-color 0.15s ease, color 0.15s ease; touch-action: manipulation; }
-.app-faq__chip.is-on { background: var(--color-action-bg-primary-default); color: var(--color-text-inverse); }
-.app-faq__related { display: flex; flex-direction: column; padding: var(--spacing-padding-2xl) var(--spacing-padding-sm) 0; }
-.app-faq__related > p { padding-bottom: var(--spacing-gap-sm); }
-.app-faq__rel { display: block; width: 100%; padding: var(--spacing-padding-md) 0; text-align: left; color: var(--color-text-primary); border-top: var(--stroke-width-default) solid var(--color-stroke-subtle); touch-action: manipulation; }
-
-/* ---- the face camera (DS 8667:28313): black, an oval of 260 × 334, the hint under it ---- */
-.app-face { position: absolute; inset: 0; background: var(--color-neutral-950); color: var(--color-text-inverse); display: flex; flex-direction: column; align-items: center; }
-.app-face__top { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: calc(40px + 1rem) var(--spacing-padding-lg) 0; }   /* the header row of every page (56) */
-html.ps-edge .app-face { top: calc(-1 * var(--e)); height: calc(100% + var(--e)); }
-html.ps-edge .app-face__top { padding-top: calc(40px + 1rem + var(--e)); }
-.app-face__top > span { width: 2.5rem; }
-.app-face__back { background: var(--color-alpha-white-20) !important; color: var(--color-text-inverse); box-shadow: none !important; }
-.app-face__oval { position: relative; margin-top: 2.25rem; width: 16.25rem; height: 20.875rem; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; text-align: center; padding: 0 2.5rem;
-  box-shadow: inset 0 0 0 var(--stroke-width-strong) var(--color-icon-inverse); background: var(--color-neutral-950); }
-.app-face__oval > video, .app-face__oval > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); z-index: -0; }
-.app-face__oval > img { transform: none; }
-.app-face__oval::after { content: ''; position: absolute; inset: 0; border-radius: 50%; box-shadow: inset 0 0 0 var(--stroke-width-strong) var(--color-icon-inverse); pointer-events: none; }
-.app-face__hint { width: 100%; margin-top: 2rem; text-align: center; padding: 0 var(--spacing-padding-lg); }
-.app-face__bot { position: absolute; left: 0; right: 0; bottom: calc(var(--sb, 0px) + 5.75rem); height: 4rem; }   /* DS 8667:28313: the shutter's middle ≈ 124 above the bottom */
-.app-face__acts { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: var(--spacing-gap-md); padding: 0 var(--spacing-padding-lg); }
-.app-face__acts > .ps-btn { flex: 1 1 0; }
-.app-face__again { background: var(--color-alpha-white-20) !important; }
-.app-face__acts > .app-cam__shutter { position: relative; left: auto; bottom: auto; margin: 0; }
-
-/* ---- proof of income (DS 9473:27722) ---- */
-.app-docs { position: relative; display: flex; flex-direction: column; gap: var(--spacing-gap-md); }

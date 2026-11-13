@@ -53,13 +53,13 @@
       h('div', { className: 'ps-qr__code' }, h('img', { src: PS.asset('art/qr.png'), alt: 'QR code' })),
       h(PS.Button, { variant: 'inverse', size: 'md', className: 'ps-qr__save', onClick: p.onSave }, h(PS.Icon, { name: 'upload', size: 20 }), 'Save QR code'));
   };
-  /* Accordion: a card that opens · title · open (first state) · children */
+  /* Accordion: a card that opens · title · open (first state) · small (the 14 px quiet one, DS 9224:37691) · icon (a 28 px brand tile before the title) · children */
   /* (small: the application's reminder, DS 9224:37691 — 12 / 16 padding, the title in Label/md-light Neutral/600, the text in Caption/sm, 12 apart) */
   PS.Accordion = function Accordion(p) {
     var s = R.useState(!!p.open), open = s[0];
     return h(PS.Card, { className: PS.cx('ps-acc', p.small && 'ps-acc--small') },
       h(m.button, Object.assign({ type: 'button', className: 'ps-acc__head', 'aria-expanded': open, onClick: function () { s[1](!open); } }, PS.press()),
-        h('span', { className: p.small ? 'ps-t-label-md-light' : 'ps-t-body-md-em' }, p.title),
+        h('span', { className: p.small ? 'ps-t-label-md-light' : 'ps-t-body-md-em' }, p.icon ? h('span', { className: 'ps-acc__lead' }, h('span', { className: 'ps-tile' }, h(PS.Icon, { name: p.icon, size: 20, color: 'inverse' })), p.title) : p.title),
         h(m.span, { style: { display: 'flex' }, initial: false, animate: { rotate: open ? -90 : 90 }, transition: MT.SPRING }, h(PS.Icon, { name: 'chevron-right', size: 16, color: 'tertiary' }))),
       h(AP, { initial: false }, open ? h(m.div, { key: 'b', className: 'ps-acc__body', initial: { height: 0, opacity: 0 }, animate: { height: 'auto', opacity: 1, transition: { height: MT.SPRING, opacity: MT.ENTER } },
         exit: { height: 0, opacity: 0, transition: { height: MT.SPRING, opacity: MT.LEAVE } } }, h('div', { className: PS.cx('ps-acc__in ps-c-tertiary', p.small ? 'ps-t-caption-sm' : 'ps-t-body-md') }, p.children)) : null));
@@ -146,4 +146,38 @@
           p.pages.map(function (pg, i) { return h('div', { key: i, className: 'ps-carousel__page', 'aria-hidden': i !== p.index }, pg); }))),
       p.dots ? h(PS.Pager, { n: n, progress: prog }) : null);
   };
+
+  /* PenaltyInfo: how penalties work for an installment (Figma 10545:38381), the content of a big tooltip (width 288) — the title, the rules
+     (when: the first in brand, the others red; what: secondary) in a 100 px column, a line, a note · title · rows [[when, what]] · note */
+  PS.PenaltyInfo = function PenaltyInfo(p) {
+    return h('div', { className: 'ps-pen' }, h('p', { className: 'ps-t-section-sm', style: { whiteSpace: 'nowrap' } }, p.title || 'How penalties work for this installment'),
+      h('div', { className: 'ps-pen__detail' },
+        h('div', { className: 'ps-pen__rows' }, p.rows.map(function (r, i) {
+          return h('div', { key: i, className: 'ps-pen__row' }, h('b', { className: PS.cx('ps-t-label-sm', i ? 'ps-c-negative-heavy' : 'ps-c-brand') }, r[0]), h('span', { className: 'ps-t-caption-sm ps-c-secondary' }, r[1]));
+        })),
+        h(PS.Divider),
+        h('p', { className: 'ps-t-caption-xs ps-c-placeholder' }, p.note || 'We don’t charge penalties on penalties. Your due date doesn’t change.')));
+  };
+  /* ScamTips: "Protect yourself from scams" in a card sheet (className 'ps-scams') — cards swiped left / right or moved on with Next, the
+     sheet as tall as the tallest card, the dots following the swipe; only the card on show plays its animation, from the start each time (owner).
+     cards [{ anim, title, body }] · index · onIndex · onNext (on the last card: "I understand") · onClose */
+  PS.ScamTips = function ScamTips(p) {
+    var last = p.index === p.cards.length - 1;
+    return h(R.Fragment, null,
+      h(PS.SheetHead, { align: 'left', title: 'Protect yourself from scams', type: 'ps-t-section-md', onClose: p.onClose }),
+      h(PS.Carousel, { index: p.index, onIndex: p.onIndex, dots: true, pages: p.cards.map(function (c, k) {
+        return h('div', { key: k, className: 'ps-scam' }, h(PS.Anim, { name: c.anim, size: 100, active: k === p.index }),
+          h('div', null, h('p', { className: 'ps-t-section-md' }, c.title), h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, c.body)));
+      }) }),
+      h(PS.Button, { block: true, onClick: p.onNext }, h(PS.Swap, { k: last ? 'u' : 'n' }, h('span', null, last ? 'I understand' : 'Next'))));
+  };
+  /* GuestPay: Payment when not signed in (Figma 52:7683) — a text block, then a 264 px button, at the height of a loading page's coin · onLogin */
+  PS.GuestPay = function GuestPay(p) {
+    return h('div', { className: 'ps-guestpay' },
+      h('div', null, h('p', { className: 'ps-t-title-sm ps-c-tertiary' }, 'Keep track of your repayments'), h('p', { className: 'ps-t-body-md ps-c-placeholder' }, 'Sign up or log in to view your repayment schedule and due dates.')),
+      h(PS.Button, { size: 'md', onClick: p.onLogin }, 'Sign up or log in'));
+  };
+  /* PayDock: the frosted panel at the bottom of Payment (Figma 52:7925 "payment nav", 162 tall) — rounded top, it holds the PayBar and sits
+     behind the tab bar · children (the PayBar). Goes in the Screen's overlay. */
+  PS.PayDock = function PayDock(p) { return h('div', { className: 'ps-paydock' }, p.children); };
 })();

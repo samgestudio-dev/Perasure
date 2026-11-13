@@ -66,4 +66,20 @@
     return h(AP, null, p.open ? h(m.div, { key: 'o', className: PS.cx('ps-overlay', p.tone === 'glass' && 'ps-overlay--glass'),
       initial: { opacity: 0 }, animate: { opacity: 1, transition: { duration: 0.2 } }, exit: { opacity: 0, transition: PS.MT.LEAVE } }, p.children) : null);
   };
+
+  /* Splash: the app opening — the PeraSure mark in the middle of the page, growing in */
+  PS.Splash = function Splash() {
+    return h('div', { className: 'ps-splash' }, h(m.img, { src: PS.asset('logos/perasure-mark.svg'), alt: 'PeraSure', style: { width: '4rem', height: '4rem' },
+      initial: { opacity: 0, scale: 0.9 }, animate: { opacity: 1, scale: 1, transition: PS.MT.ENTER } }));
+  };
+  /* SendingCard: the code is on its way (animation: Loading state OTP) — a white card in the middle of the page · title · body */
+  PS.SendingCard = function SendingCard(p) {
+    return h(PS.Card, { className: 'ps-sending' }, h(PS.Anim, { name: 'loading-state-otp', size: 120 }),
+      h('div', null, h('p', { className: 'ps-t-title-md' }, p.title || 'Sending security code…'), h('p', { className: 'ps-t-body-md ps-c-tertiary' }, p.body || 'This may take a few seconds')));
+  };
+  /* Fallback: the page that failed to load (Figma 52:10976), inside PS.Cover tone white — its picture where the loader's coin was (as every
+     full-page empty state), a 264 px "Try again" · onRetry · title · body */
+  PS.Fallback = function Fallback(p) {
+    return h(PS.EmptyState, { title: p.title || 'Something went wrong', body: p.body, className: 'ps-fallback' }, h(PS.Button, { onClick: p.onRetry }, 'Try again'));
+  };
 })();

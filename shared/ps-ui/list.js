@@ -4,7 +4,7 @@
   'use strict';
   var R = window.React, PS = window.PS, h = R.createElement, m = PS.m;
 
-  /* LinkList: a card of rows that lead somewhere · title · items [{ id, label, icon (20), value, trail (icon instead of the chevron, e.g. 'link': opens outside the app; 'none': nothing), onClick }] · tone link (brand labels, regular) | plain (Hanken medium) */
+  /* LinkList: a card of rows that lead somewhere · tall (22 px rows: the help topics and articles, DS 5453:4712) · title · items [{ id, label, icon (20), value, trail (icon instead of the chevron, e.g. 'link': opens outside the app; 'none': nothing), onClick }] · tone link (brand labels, regular) | plain (Hanken medium) */
   PS.LinkList = function LinkList(p) {
     var out = [];
     p.items.forEach(function (it, i) {
@@ -13,7 +13,7 @@
         it.icon ? h(PS.Icon, { name: it.icon, size: 20, color: 'primary' }) : null, h('span', { className: 'ps-linkrow__label ps-t-title-14' }, it.label),
         it.value ? h('span', { className: 'ps-t-body-md-em ps-c-link' }, it.value) : it.trail === 'none' ? null : h(PS.Icon, { name: it.trail || 'chevron-right', size: 16, color: 'tertiary' })));
     });
-    return h(PS.Card, { className: PS.cx('ps-linklist', p.className) }, p.title ? h('p', { className: 'ps-t-section-sm' }, p.title) : null, out);
+    return h(PS.Card, { className: PS.cx('ps-linklist', p.tall && 'ps-linklist--tall', p.className) }, p.title ? h('p', { className: 'ps-t-section-sm' }, p.title) : null, out);
   };
   /* Facts: small label over its value, with dividers (SEC registration) · rows [{ label, value }] */
   PS.Facts = function Facts(p) {
@@ -80,5 +80,10 @@
       out.push(h('div', { key: i, className: 'ps-tip-row' }, h('b', null, i + 1), h('div', null, h('p', { className: 'ps-t-section-sm' }, t.title), h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, t.body))));
     });
     return h(PS.Card, { className: 'ps-tips' }, h('p', { className: 'ps-t-section-sm' }, p.title), out);
+  };
+
+  /* Bullets: a card of short points, each after a small grey dot (cancel a loan: "What you need to know") · items */
+  PS.Bullets = function Bullets(p) {
+    return h(PS.Card, { className: 'ps-bullets' }, p.items.map(function (k, i) { return h('p', { key: i, className: 'ps-t-body-md' }, h('i', null), k); }));
   };
 })();

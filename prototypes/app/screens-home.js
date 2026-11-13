@@ -17,13 +17,7 @@
   /* the penalty explainer (tooltip on the overdue card and in Payment detail) */
   /* the penalty explainer (Figma 10545:38381): title, the three rules (when in brand / red, what in secondary), a line, the note */
   APP.penaltyTip = function () {
-    return h('div', { className: 'app-pen' }, h('p', { className: 'ps-t-section-sm', style: { whiteSpace: 'nowrap' } }, 'How penalties work for this installment'),
-      h('div', { className: 'app-pen__detail' },
-        h('div', { className: 'app-pen__rows' }, AD.penalties.map(function (r, i) {
-          return h('div', { key: i, className: 'app-pen__row' }, h('b', { className: PS.cx('ps-t-label-sm', i ? 'ps-c-negative-heavy' : 'ps-c-brand') }, r[0]), h('span', { className: 'ps-t-caption-sm ps-c-secondary' }, r[1]));
-        })),
-        h(PS.Divider),
-        h('p', { className: 'ps-t-caption-xs ps-c-placeholder' }, 'We don’t charge penalties on penalties. Your due date doesn’t change.')));
+    return h(PS.PenaltyInfo, { rows: AD.penalties });
   };
   function showPenalty(el) {
     APP.tipAt(el, APP.penaltyTip(), 288, { big: true });

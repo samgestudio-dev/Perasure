@@ -66,16 +66,16 @@
       h(APP.Head, { center: true, title: 'Hi, how can we help?' }),
       h(PS.Search, { value: q, onChange: setQ, placeholder: 'Search help articles' }),
       h(PS.Crossfade, { k: hits ? 'q' + (hits.length ? 1 : 0) : 'topics' }, hits
-        ? (hits.length ? h(PS.LinkList, { className: 'app-faq__list', items: hits.map(function (a) { return { id: a.id, label: marked(a.q, k), onClick: function () { APP.go('faq', { id: a.id }); } }; }) })
+        ? (hits.length ? h(PS.LinkList, { tall: true, items: hits.map(function (a) { return { id: a.id, label: marked(a.q, k), onClick: function () { APP.go('faq', { id: a.id }); } }; }) })
           : h(PS.EmptyState, { title: 'No matching articles', body: 'Try other words, or contact us and we’ll help.', style: { marginTop: '3rem' } }))
-        : h(PS.LinkList, { className: 'app-faq__list', tone: 'link', title: 'Explore all topics', items: TOPICS.map(function (t) { return { id: t.id, label: t.title, onClick: function () { APP.go('faq-topic', { id: t.id }); } }; }) })));
+        : h(PS.LinkList, { tall: true, tone: 'link', title: 'Explore all topics', items: TOPICS.map(function (t) { return { id: t.id, label: t.title, onClick: function () { APP.go('faq-topic', { id: t.id }); } }; }) })));
   });
   /* a topic: its articles (DS 5453:4937) */
   APP.screen('faq-topic', function FaqTopic(p) {
     var t = topicOf(p.params.id) || TOPICS[0];
     return h(APP.Page, { title: '', load: 'faq-' + t.id },
       h(APP.Head, { title: t.title }),
-      h(PS.LinkList, { className: 'app-faq__list', items: ARTICLES.filter(function (a) { return a.topic === t.id; }).map(function (a) { return { id: a.id, label: a.q, onClick: function () { APP.go('faq', { id: a.id }); } }; }) }));
+      h(PS.LinkList, { tall: true, items: ARTICLES.filter(function (a) { return a.topic === t.id; }).map(function (a) { return { id: a.id, label: a.q, onClick: function () { APP.go('faq', { id: a.id }); } }; }) }));
   });
   /* an article (DS 5453:4947 · 6149:12701 · 6150:12923 · 6150:12975): the answer, "Was this article helpful?", then related articles */
   APP.screen('faq', function Faq(p) {
@@ -83,19 +83,9 @@
     var related = ARTICLES.filter(function (x) { return x.topic === a.topic && x.id !== a.id; });
     return h(APP.Page, { title: '', load: 'faq-a-' + a.id },
       h(APP.Head, { title: a.q }),
-      h('div', { className: 'app-faq__body' }, a.blocks.map(function (b, i) {
-        return b.h ? h('p', { key: i, className: 'ps-t-section-md app-faq__h' }, b.h)
-          : b.list ? h('ul', { key: i, className: 'ps-t-body-md ps-c-secondary app-faq__ul' }, b.list.map(function (x) { return h('li', { key: x }, x); }))
-          : h('p', { key: i, className: 'ps-t-body-md ps-c-secondary' }, b.p);
-      })),
-      h('div', { className: 'app-faq__vote' },
-        h(PS.Swap, { k: vote ? 'thanks' : 'ask', block: true }, h('p', { className: 'ps-t-title-sm' }, vote ? 'Thanks for letting us know' : 'Was this article helpful?')),
-        h('div', { className: 'app-faq__chips' }, ['Yes', 'No'].map(function (x) {
-          return h(m.button, Object.assign({ key: x, type: 'button', className: PS.cx('app-faq__chip ps-t-label-md', vote === x && 'is-on'), 'aria-pressed': vote === x,
-            onClick: function () { setVote(x); if (x === 'No') APP.say('Sorry this didn’t help. Contact us and we’ll find the answer with you.', 3200); } }, PS.press()), x);
-        }))),
-      related.length ? h('div', { className: 'app-faq__related' }, h('p', { className: 'ps-t-section-sm ps-c-tertiary' }, 'Related articles'),
-        related.map(function (x) { return h(m.button, Object.assign({ key: x.id, type: 'button', className: 'app-faq__rel ps-t-body-md-em', onClick: function () { APP.swap('faq', { id: x.id }, 0); } }, PS.press()), x.q); })) : null);
+      h(PS.Article, { blocks: a.blocks }),
+      h(PS.Feedback, { value: vote, onVote: function (x) { setVote(x); if (x === 'No') APP.say('Sorry this didn’t help. Contact us and we’ll find the answer with you.', 3200); } }),
+      related.length ? h(PS.RelatedLinks, { title: 'Related articles', items: related.map(function (x) { return { id: x.id, label: x.q, onClick: function () { APP.swap('faq', { id: x.id }, 0); } }; }) }) : null);
   });
 
   /* ---- changing the phone number (DS 8833:31439 → 8655:27420 → 8655:27434 → 8833:31280 → 8667:28313 → 8667:28329) ---- */
@@ -124,9 +114,7 @@
     var cam = APP.useCamera('user', true);
     return h(APP.Page, { title: 'PeraSure account', bottom: h(PS.BottomBar, null, h(PS.Button, { block: true, onClick: function () { APP.go('face', p.params); } }, 'Next')) },
       h(APP.Head, { title: 'Take a selfie', body: 'Look straight ahead with a relaxed face. Use good lighting and remove glasses or hats.' }),
-      h('div', { className: 'app-selfie is-live' },
-        h('div', { className: 'app-selfie__ring' }, h('video', { ref: cam.video, className: 'app-selfie__video', playsInline: true, muted: true, autoPlay: true }),
-          cam.state === 'none' ? h('span', { className: 'app-selfie__none ps-t-caption-sm' }, 'The camera isn’t available here. Tap Next to use a sample.') : null),
+      h(PS.Selfie, { state: 'live', cam: cam },
         h(PS.SelfieTips, { onMore: function (el) { APP.tipAt(el, 'Hold the phone at eye level, keep your whole face inside the circle and stay still while we take the photo.'); } })));
   });
   /* the face camera (DS 8667:28313 / 8667:28329): the whole screen, an oval; after the shutter, the photo with Take again / Next */
@@ -139,17 +127,7 @@
         APP.say('Your phone number is updated. Use +63 ••••••' + ph.slice(-4) + ' to log in from now on.', 3400);
       });
     }
-    return h('div', { className: 'app-face' },
-      h('div', { className: 'app-face__top' }, h(PS.Glass, { icon: 'chevron-left', label: 'Back', className: 'app-face__back', onClick: function () { APP.back(); } }),
-        h('p', { className: 'ps-t-section-md' }, 'Confirm your identity'), h('span')),
-      h('div', { className: 'app-face__oval' },
-        h('video', { ref: cam.video, playsInline: true, muted: true, autoPlay: true, style: { visibility: shot ? 'hidden' : 'visible' } }),
-        shot ? h(m.img, { src: shot, alt: '', initial: { opacity: 0 }, animate: { opacity: 1, transition: MT.ENTER } }) : null,
-        cam.state === 'none' && !shot ? h('span', { className: 'ps-t-caption-sm' }, 'The camera isn’t available here. Take the picture anyway to use a sample.') : null),
-      h(PS.Swap, { k: shot ? 'b' : 'a', block: true, className: 'app-face__hint' }, h('p', { className: 'ps-t-body-lg-em' }, shot ? 'Make sure your face and eyes are uncovered' : 'Keep your face within the oval')),
-      h('div', { className: 'app-face__bot' }, h(PS.Crossfade, { k: shot ? 'b' : 'a', className: 'app-face__acts' }, shot
-        ? [h(PS.Button, { key: 'a', variant: 'shade', className: 'app-face__again', onClick: function () { setShot(null); } }, 'Take again'), h(PS.Button, { key: 'n', variant: 'inverse', onClick: done }, 'Next')]
-        : h(m.button, Object.assign({ type: 'button', className: 'app-cam__shutter', 'aria-label': 'Take the picture', onClick: take }, PS.press(true)), h('i')))));
+    return h(PS.FaceCamera, { cam: cam, shot: shot, title: 'Confirm your identity', onBack: function () { APP.back(); }, onTake: take, onRetake: function () { setShot(null); }, onNext: done });
   });
 
   /* ---- proof of income (DS 9465:26742 · 9465:26861 · 9473:27722): five kinds of document; + (or Add files) opens Take a photo / Choose from
@@ -202,6 +180,6 @@
             files: (files[k.id] || []).map(function (f) { return Object.assign({}, f, { onRemove: function () { remove(k.id, f.id); }, onRetry: function () { upload(k.id, f.id); } }); }) });
         }),
         h(PS.Popover, { open: !!pick, anchor: anchor, options: PICK, label: 'Add a file', onPick: function (x) { add(pick, x); }, onClose: function () { setPick(null); } }),
-        h('p', { className: 'app-files__note ps-t-caption-xs ps-c-placeholder' }, h(PS.Icon, { name: 'alert-circle', size: 12, color: 'placeholder' }), 'Supports JPG, JPEG, PNG and PDF')));
+        h(PS.FileNote, null, 'Supports JPG, JPEG, PNG and PDF')));
   });
 })();

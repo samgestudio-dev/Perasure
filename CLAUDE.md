@@ -6,6 +6,14 @@ Phone-first motion prototypes for PeraSure, served by GitHub Pages from `main` /
 - Each demo is opened and tested on a real phone (iOS Safari and Android Chrome).
 - The owner is a designer; reply in plain language and keep the picker page tidy.
 
+## Components first (owner's rule — this repo and every PeraSure project)
+
+**A new component or feature is created in the component library first, then the page uses it directly.** Here the library is
+`shared/ps-ui` and its gallery `shared/gallery.html`: build the piece there (every state a prop, tokens only, rem), add its states to
+the gallery in the same commit, then use it from the page. A change to a piece (a colour, a spacing, a new state) is made in the
+component, never patched from a page — page CSS only places shared pieces, and never targets a component's classes. Skill:
+`perasure-components`.
+
 ## PeraSure skills (use them on every PeraSure task)
 
 `.claude/skills/` holds the PeraSure skills; Claude Code loads them from here, and they are also meant for any other
@@ -13,6 +21,8 @@ PeraSure-related project (fetch from `https://raw.githubusercontent.com/samgestu
 
 - **`perasure-tone-of-voice`** — the owner's tone of voice. All PeraSure copy (screens in prototypes included: titles,
   buttons, placeholders, errors, notes) follows it, in this repo and in any PeraSure-related project.
+- **`perasure-components`** — components first: a new piece of UI or feature is made in the component library (with its states
+  and a gallery entry) before any page uses it, and changes are made in the component. Every PeraSure project, every screen.
 - **`perasure-card-morph`** — the card morph motion of the withdraw fund flow and Change co-maker (a card or page turning
   into another state). Any new morph starts from its `example.html` + `engine.js` and keeps its rules, so the motion is
   the same everywhere. When a morph in a prototype is changed for the owner, update the skill too if the rule changed.
@@ -33,6 +43,7 @@ shared/ps-ui/              PeraSure UI components (React, configurable): ps-ui.c
                            coupon.js, loan.js, account.js, phone-fit.js, tune.js/.css, assets/ — see "Shared components"
                            + feedback.js (loaders, status, result), form.js (fields, OTP, keypad), status.js (home states), pay.js (repayments),
                            list.js (links, facts, activity, inbox, history, hub), fx.js (Order submit, OTP sheet, Credit limit intro),
+                           apply.js (page head, cameras, selfie, ID sides and result, documents, search sheets, address picker, estimate, help articles),
                            withdraw-host.js (runs the Withdraw demo's loan screen from the demo's own code)
 shared/gallery.html        live gallery of every shared component and its states (on the picker as "PeraSure components"; entries in gallery.js + gallery-app.js)
 shared/README.md           how to use the components, files, rules for changing them
@@ -53,7 +64,7 @@ vendor/<lib>@<version>/    pinned libraries: lottie-web, gsap (+ plugins; esm/ =
                            motion (motion-react.js = React API, motion.js = vanilla; both set window.Motion), matter-js,
                            react-wheel-picker (the package's dist/index.js unchanged in a small wrapper → window.WheelPicker; + style.css)
 README.md                  human-facing summary + demo / animation tables
-.claude/skills/            PeraSure skills: perasure-tone-of-voice (all copy), perasure-card-morph (morph motion: short SKILL.md,
+.claude/skills/            PeraSure skills: perasure-components (components first), perasure-tone-of-voice (all copy), perasure-card-morph (morph motion: short SKILL.md,
                            references/ read per branch, engine.js, example.html) — see "PeraSure skills"
 .nojekyll                  keep: Pages serves files as-is
 ```
@@ -138,7 +149,8 @@ PeraSure app screens are built from shared, configurable React components (owner
 `shared/ps-ui` once, a prototype passes its data and states as props, so updating a component updates every prototype
 built on it. Details and the head block to copy: `shared/README.md`; reference prototype: `prototypes/coupon-system/`.
 
-- A new prototype of an app screen uses the components (and adds what's missing to `shared/ps-ui`, not to the page).
+- A new prototype of an app screen uses the components, and anything missing is added to `shared/ps-ui` (and the gallery) first —
+  never built in the page (see "Components first" at the top).
   Older prototypes keep their own code until the owner asks to move them over; never edit them to adopt it unasked.
 - Granularity (owner: "functional cards and states as components"): atoms (amount, button, tag, chip, check, icon),
   bars (top / bottom / navigator), sheets, and each functional card (credit card, payment card, home coupons, coupon
@@ -170,6 +182,9 @@ rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), buil
 
 - **New work goes in here too.** When a new screen, flow or motion piece is added to the repo, add it to the app as well (a screen in
   `screens-*.js`, its states in Tune), so the app stays complete. Change co-maker and the landing page are not part of it.
+- **The gallery keeps up with the app** (owner): a card, sheet content or other piece of the app's look is a shared component (`shared/ps-ui`)
+  with its states in `shared/gallery.html`, added in the same commit as the screen that uses it — `app.css` / `screens-*.js` only place
+  shared pieces and hold the flow. A visual change to a piece is made in the component, so the gallery shows it too.
 - States that can't be reached by tapping are switched in Tune (account, loan, coupons, network, code / ID / selfie outcomes, inbox,
   rating). Also in Tune: Screen fit (default capped zoom 1.15×; "Capped zoom · rem" gives the same factor through the root font size), Text size
   (default: the phone's setting) and progressive blur (default off).

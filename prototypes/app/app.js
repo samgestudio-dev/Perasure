@@ -74,7 +74,7 @@ window.APP = (function () {
     var l = useLoad(p.k), err = l.state === 'error', waited = R.useRef(l.state !== 'ready');
     return h(R.Fragment, null,
       h(PS.Cover, { open: l.state !== 'ready', tone: err ? 'white' : 'page', chrome: err }, h(PS.Crossfade, { k: l.state, className: 'ps-cover__in' }, err
-        ? h(PS.EmptyState, { title: 'Something went wrong', className: 'app-fallback' }, h(PS.Button, { onClick: l.retry }, 'Try again'))
+        ? h(PS.Fallback, { onRetry: l.retry })
         : h(PS.Loader, { fill: true }))),
       l.state === 'ready' ? h(PS.RiseCtx.Provider, { value: !waited.current }, h(PS.Rise, { className: p.className, off: !waited.current || p.rise === false }, p.children)) : null);
   }
@@ -124,10 +124,8 @@ window.APP = (function () {
     return h(PS.Screen, { secondary: true, top: top, bottom: p.bottom, tint: p.tint, colTop: p.colTop, colBottom: p.colBottom == null ? (p.bottom ? 140 : 48) : p.colBottom, className: p.className, scrollRef: p.scrollRef },
       p.load ? h(Loaded, { k: p.load, className: 'app-col' }, p.children) : p.children);
   }
-  /* Head: a page's own big title + one line under it (24 / 32 and 14 / 20, inset 8 from the column) */
-  function Head(p) {
-    return h('div', { className: PS.cx('app-head', p.center && 'app-head--center') }, h('h1', { className: 'ps-t-title-lg' }, p.title), p.body ? h('p', { className: 'ps-t-body-md ps-c-secondary' }, p.body) : null);
-  }
+  /* Head: a page's own big title + one line under it — PS.PageHead (shared/ps-ui/apply.js) */
+  var Head = PS.PageHead;
   function signedIn() { return S.user !== 'guest'; }
   function support() { go('support'); }
 

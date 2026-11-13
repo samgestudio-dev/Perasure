@@ -40,9 +40,11 @@
       p.extra ? h('div', { className: 'ps-top__extra' }, p.extra) : null);
   };
 
-  /* BottomBar: the bottom action area (primary button, links) · secondary: #EBF0EF gradient (secondary pages, blur off) */
+  /* BottomBar: the bottom action area (primary button, links) · secondary: #EBF0EF gradient (secondary pages, blur off)
+     note: a small line over the button (DS 5561:7317) · consent: an agreement line (PS.Consent) over a slightly narrower button (Login) */
   PS.BottomBar = function BottomBar(p) {
-    return h('div', { className: PS.cx('ps-bot', p.className) }, h(PS.Bands, { pos: 'bot', secondary: p.secondary }), p.children);
+    return h('div', { className: PS.cx('ps-bot', p.note && 'ps-bot--note', p.consent && 'ps-bot--consent', p.className) }, h(PS.Bands, { pos: 'bot', secondary: p.secondary }),
+      p.note ? h('p', { className: 'ps-bot__note ps-t-caption-xs ps-c-placeholder' }, p.note) : null, p.children);
   };
 
   /* Navigator: the tab bar · tabs [{ id, label, icon }] · value · onChange(id). The pill glides between tabs. */
@@ -170,6 +172,23 @@
   /* SheetTitle: title + close button row of a plain sheet */
   PS.SheetTitle = function SheetTitle(p) {
     return h('div', { className: 'ps-sheet__titlebar' }, h('p', { className: 'ps-t-title-sm' }, p.children), h(PS.Close, { onClick: p.onClose }));
+  };
+  /* SheetHead: a card or plain sheet's title row with the close button in the 40 px corner (Figma payment detail · DS 5908:11000)
+     title · type (the title's text style, 'ps-t-title-sm') · align center | left · bottom (the title at the bottom of the 40 px row)
+     icon + iconColor (a 16 px mark before the title) · onClose · children (in place of title: e.g. a PS.Swap) */
+  PS.SheetHead = function SheetHead(p) {
+    return h('div', { className: PS.cx('ps-shead', p.align === 'left' && 'ps-shead--left', p.bottom && 'ps-shead--bottom', p.className) },
+      p.title != null ? h('p', { className: PS.cx(p.type || 'ps-t-title-sm', p.icon && 'ps-shead__title') }, p.icon ? h(PS.Icon, { name: p.icon, size: 16, color: p.iconColor }) : null, p.title) : p.children,
+      p.onClose ? h(PS.Close, { onClick: p.onClose }) : null);
+  };
+  /* ButtonRow: two buttons side by side, 10 apart (no token), as wide as each other; large text wraps inside them instead of running out */
+  PS.ButtonRow = function ButtonRow(p) { return h('div', { className: PS.cx('ps-btnrow', p.className) }, p.children); };
+  /* Confirm: a card sheet that asks before something happens (log out, delete the account) — title + close, the text, Cancel and the action.
+     Put the sheet in className 'ps-confirm' (24 between the text and the buttons). title · body · cancel (label; none: one button) · ok · onOk
+     · onClose (also what Cancel does, unless onCancel) */
+  PS.Confirm = function Confirm(p) {
+    return h(R.Fragment, null, h('div', { className: 'ps-confirm__text' }, h(PS.SheetHead, { align: 'left', title: p.title, onClose: p.onClose }), h('p', { className: 'ps-t-body-md' }, p.body)),
+      h(PS.ButtonRow, null, p.cancel ? h(PS.Button, { variant: 'inverse', size: 'md', className: 'ps-btn--ghost', onClick: p.onCancel || p.onClose }, p.cancel) : null, h(PS.Button, { size: 'md', onClick: p.onOk }, p.ok)));
   };
 
   /* Tooltip: a frosted bubble that places itself · open · text (string or node) · onClose (any tap closes it) · width (250)

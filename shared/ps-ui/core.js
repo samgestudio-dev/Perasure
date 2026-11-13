@@ -132,9 +132,10 @@
       p.icon ? h(PS.Icon, { name: p.icon, size: p.iconSize || 16 }) : null, p.children);
   };
 
-  /* Glass: the frosted round / pill button of headers and sheets · icon (name) or children · round (40×40) · label (aria) */
+  /* Glass: the frosted round / pill button of headers and sheets · icon (name) or children · round (40×40; false: a pill even with only an
+     icon) · size lg (the 44 px pill) · iconSize · label (aria) */
   PS.Glass = function Glass(p) {
-    return h(PS.m.button, Object.assign({ type: 'button', className: PS.cx('ps-glass', (p.round !== false && !p.children) && 'ps-glass--round', p.className),
+    return h(PS.m.button, Object.assign({ type: 'button', className: PS.cx('ps-glass', (p.round !== false && !p.children) && 'ps-glass--round', p.size === 'lg' && 'ps-glass--lg', p.className),
       onClick: p.onClick, 'aria-label': p.label, style: p.style }, PS.press(!p.children)),
       p.icon ? h(PS.Icon, { name: p.icon, size: p.iconSize || 18 }) : null, p.children);
   };
@@ -272,5 +273,17 @@
     var a = ANIMS[p.name], b = a.box, side = Math.max(b[2] - b[0], b[3] - b[1]) * (p.fit || 1), cx = (b[0] + b[2]) / 2, cy = (b[1] + b[3]) / 2;
     return h(PS.Lottie, { src: PS.root + 'animations/' + p.name + '/' + p.name + '.json', width: p.size || 100, className: p.className, style: p.style,
       viewBox: [cx - side / 2, cy - side / 2, side, side].map(Math.round).join(' '), intro: a.intro, loop: a.loop, once: a.once, active: p.active });
+  };
+
+  /* TextLink: an underlined text link that sits on its own line (Login: "No longer have access to old number?") · onClick · children */
+  PS.TextLink = function TextLink(p) { return h('button', { type: 'button', className: PS.cx('ps-ulink ps-t-section-sm', p.className), onClick: p.onClick }, p.children); };
+  /* InfoButton: a value with a help mark after it that opens an explainer (Payment detail: "18 days ⓘ") · onClick(event) · children.
+     The mark is its last child, so a tooltip can be anchored to event.currentTarget.lastChild. */
+  PS.InfoButton = function InfoButton(p) {
+    return h('button', { type: 'button', className: PS.cx('ps-inline', p.className), onClick: p.onClick }, p.children, h(PS.Icon, { name: 'help-circle', size: 16, color: 'tertiary' }));
+  };
+  /* SectionLabel: the small uppercase grey label over a list (UPCOMING, a date in Loan history) · tone negative (OVERDUE) · inset (8 in, not 12) */
+  PS.SectionLabel = function SectionLabel(p) {
+    return h('p', { className: PS.cx('ps-seclabel', p.inset && 'ps-seclabel--in8', p.tone === 'negative' && 'ps-c-negative', p.className) }, p.children);
   };
 })();
