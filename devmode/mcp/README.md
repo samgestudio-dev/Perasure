@@ -59,7 +59,7 @@ Settings (environment): `PERASURE_SOURCE=remote` always reads the live site; `PE
 | `get_visual_changes` | the latest visual check: what changed since the latest iteration but isn't recorded, where it starts, picture links |
 | `find_by_figma` | a Figma link (or node id) → the PS components and pages built from it |
 | `search` | pages, components, tokens and iterations at once |
-| `get_screenshot` | PNG of a page (state) or a component state; can outline a component (needs Playwright) |
+| `get_screenshot` | PNG of a page (state) or a component state; can outline a component (needs Playwright). Like `qa_compare` and `get_live_specs`, it takes `device` (360 / 390 / 430), `fit` (cap — the default capped zoom, rem, fit = 1:1, scale) and `text` (85–200 %), so the layout is the phone's, as in Dev Mode |
 | `qa_compare` | design QA: your implementation's screenshot (file) or URL vs the demo — demo · implementation · difference picture, differing regions and the components there (needs Playwright) |
 | `get_live_specs` | a component measured as it renders: size, padding and gaps with the token the CSS uses, radius, fill, stroke, shadow, text, the layers inside, matching CSS rules (needs Playwright) |
 

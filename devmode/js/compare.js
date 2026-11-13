@@ -85,7 +85,7 @@
       })();
     }
     return h('div', { className: 'dm-frame', style: Object.assign({ width: p.w, height: p.h, transform: 'scale(' + p.z + ')' }, p.style) },
-      h('iframe', { ref: ref, key: p.src + '|' + p.run, src: p.src, width: p.w, height: p.h, 'data-dm-clock': '', title: p.label, onLoad: load }));
+      h('iframe', { ref: ref, key: p.src + '|' + p.run, src: p.src, style: { width: p.w, height: p.h }, 'data-dm-clock': '', title: p.label, onLoad: load }));
   }
 
   /* ---- before → after ---- */
@@ -158,6 +158,8 @@
     var ws = R.useState(0), bump = ws[1];
     var stageRef = R.useRef(null), zs = R.useState(0.7), z = zs[0];
     var dev = DM.device(R.useMemo(function () { try { return localStorage.getItem('perasure.devmode.device') || '360'; } catch (e) { return '360'; } }, []));
+    /* the same Screen fit and Text size as the canvas: laid out W CSS px wide, drawn k times bigger */
+    var scrP = R.useMemo(function () { return DM.screenPrefs(); }, []), scr = DM.screenOf(dev, scrP.fit);
     R.useEffect(function () { window.DM_SPEED = speed; }, [speed]);
     R.useEffect(function () { return function () { window.DM_SPEED = 1; }; }, []);
     R.useLayoutEffect(function () {
@@ -175,8 +177,8 @@
     R.useEffect(function () { return function () { if (wins.current.unlink) wins.current.unlink(); }; }, []);
 
     var src = function (ver) {
-      if (p.comp) return p.comp.gallery ? DM.root(ver) + 'shared/stage.html?entry=' + encodeURIComponent(p.comp.gallery) + '&state=0' : null;
-      return window.DM_PAGES.url(p.page, p.state, DM.root(ver));
+      if (p.comp) return p.comp.gallery ? DM.screenSrc(DM.root(ver) + 'shared/stage.html?entry=' + encodeURIComponent(p.comp.gallery) + '&state=0', false, scrP) : null;
+      return DM.screenSrc(window.DM_PAGES.url(p.page, p.state, DM.root(ver)), true, scrP);
     };
     var js = p.comp ? null : window.DM_PAGES.js(p.page, p.state) || null, app = !p.comp;
     var ia = ids.indexOf(A.id), ib = ids.indexOf(B.id), lo = Math.max(ia, ib), hi = Math.min(ia, ib);
@@ -186,17 +188,17 @@
       return h('label', { className: 'dm-select' }, h('select', { value: val, onChange: function (e) { onCh(e.target.value); } }, its.map(function (it) { return h('option', { key: it.id, value: it.id }, label(it)); })), h(DM.Icon, { name: 'down', size: 12 }));
     }
     function frame(which, it, style) {
-      return h(Frame, { key: which + it.id, src: src(it.id), js: js, app: app, w: dev.w, h: dev.h, z: 1, run: run, label: it.label, style: style, onReady: function (w) { ready(which, w); } });
+      return h(Frame, { key: which + it.id, src: src(it.id), js: js, app: app, w: scr.W, h: scr.H, z: 1, run: run, label: it.label, style: style, onReady: function (w) { ready(which, w); } });
     }
     var boxStyle = { width: dev.w * z, height: dev.h * z };
-    var inner = function (which, it, extra) { return h('div', { className: 'dm-cmp__frame', style: boxStyle }, h('div', { style: { transform: 'scale(' + z + ')', transformOrigin: '0 0', width: dev.w, height: dev.h, position: 'relative' } }, frame(which, it, extra))); };
+    var inner = function (which, it, extra) { return h('div', { className: 'dm-cmp__frame', style: boxStyle }, h('div', { style: { transform: 'scale(' + z * scr.k + ')', transformOrigin: '0 0', width: scr.W, height: scr.H, position: 'relative' } }, frame(which, it, extra))); };
     var stage = src(B.id) ? (mode === 'side'
       ? h('div', { className: 'dm-cmp' },
           h('div', { className: 'dm-cmp__col' }, h('div', { className: 'dm-cmp__label' }, h('span', { className: 'dm-chip is-remove' }, t('cmp.before')), h('b', null, A.label), A.date), inner('a', A)),
           h('div', { className: 'dm-cmp__col' }, h('div', { className: 'dm-cmp__label' }, h('span', { className: 'dm-chip is-add' }, t('cmp.after')), h('b', null, B.label), B.date), inner('b', B)))
       : h('div', { className: 'dm-cmp' }, h('div', { className: 'dm-cmp__col' },
           h('div', { className: 'dm-cmp__label' }, h('b', null, A.label), '→', h('b', null, B.label)),
-          h('div', { className: 'dm-cmp__frame', style: boxStyle }, h('div', { style: { transform: 'scale(' + z + ')', transformOrigin: '0 0', width: dev.w, height: dev.h, position: 'relative' } },
+          h('div', { className: 'dm-cmp__frame', style: boxStyle }, h('div', { style: { transform: 'scale(' + z * scr.k + ')', transformOrigin: '0 0', width: scr.W, height: scr.H, position: 'relative' } },
             frame('a', A), frame('b', B, { position: 'absolute', left: 0, top: 0, opacity: opacity / 100, pointerEvents: opacity > 50 ? 'auto' : 'none' }))))))
       : h(DM.Empty, { icon: 'component' }, t('stage.empty'));
 

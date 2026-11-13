@@ -57,7 +57,17 @@
     var th = R.useState(stored('perasure.devmode.theme', 'system')), theme = th[0];
     var lg = R.useState(DM.lang), setLangState = lg[1];
     var md = R.useState('inspect'), mode = md[0], setMode = md[1];
-    var dv = R.useState(stored('perasure.devmode.device', '360')), device = dv[0];
+    /* device, Screen fit and Text size: saved in this browser; a link can carry them (#…&dev=390&fit=cap&tx=100) */
+    var dv = R.useState(function () { return H.dev && DM.DEVICES.some(function (d) { return d.id === H.dev; }) ? H.dev : stored('perasure.devmode.device', '360'); }), device = dv[0];
+    var sc = R.useState(function () { var s = DM.screenPrefs(); return { fit: DM.validFit(H.fit) || s.fit, text: DM.validText(H.tx) || s.text }; }), screen = sc[0];
+    function setScreen(patch) { var n = Object.assign({}, screen, patch); store('perasure.devmode.fit', n.fit); store('perasure.devmode.text', String(n.text)); sc[1](n); }
+    R.useEffect(function () {
+      if (H.dev == null && H.fit == null && H.tx == null) return;
+      if (H.dev && DM.DEVICES.some(function (d) { return d.id === H.dev; })) { store('perasure.devmode.device', H.dev); dv[1](H.dev); }
+      setScreen({ fit: DM.validFit(H.fit) || screen.fit, text: DM.validText(H.tx) || screen.text });
+      setH({ dev: null, fit: null, tx: null }, true);
+    }, [H.dev, H.fit, H.tx]);
+    DM._screen = { device: device, fit: screen.fit, text: screen.text };
     var zm = R.useState('fit'), zoom = zm[0];
     var tr = R.useState(null), T = tr[0], setT = tr[1];
     var hv = R.useState(null), hover = hv[0], setHover = hv[1];
@@ -100,12 +110,12 @@
     if (view === 'components' && comp) {
       title = 'PS.' + comp.name; kind = 'component'; app = false;
       if (comp.gallery) {
-        src = DM.root(ver) + 'shared/stage.html?entry=' + encodeURIComponent(comp.gallery) + '&state=' + compState + '&focus=' + comp.name + (ver ? '' : '&v=' + DM.STAMP);
+        src = DM.screenSrc(DM.root(ver) + 'shared/stage.html?entry=' + encodeURIComponent(comp.gallery) + '&state=' + compState + '&focus=' + comp.name + (ver ? '' : '&v=' + DM.STAMP), false, screen);
         states = (comp.states || []).map(function (s, i) { return { label: s, on: i === compState, onClick: function () { setH({ cs: i || null, sel: null }); } }; });
       }
       code = comp.file.split('/').pop() + ':' + comp.line;
     } else if (view === 'pages') {
-      src = PAGES.url(lpage, lstate, DM.root(ver)); js = PAGES.js(lpage, lstate) || null;
+      src = DM.screenSrc(PAGES.url(lpage, lstate, DM.root(ver)), true, screen); js = PAGES.js(lpage, lstate) || null;
       title = DM.pageName(page); kind = page.kind; code = page.kind === 'sheet' ? "APP.open('" + page.code + "')" : '?page=' + (page.page || page.code);
       states = page.states ? page.states.map(function (s, i) { return { label: DM.lang === 'en' ? s.en || s.name : s.name, on: i === stateIdx, onClick: function () { setH({ s: i || null, sel: null }); } }; }) : null;
     }
@@ -168,7 +178,7 @@
     else if (view === 'iterations') center = h('main', { className: 'dm-center' }, DM.IterView ? h(DM.IterView, { id: H.it, onIter: function (id) { setH({ it: id }); }, onPage: openPage, onComp: openComp, onVersion: function (id) { setH({ ver: id === DM.latest().id ? null : id, v: 'pages' }); }, onCompare: openCompare }) : null);
     else if (view === 'components' && !comp) center = h('main', { className: 'dm-center' }, h(DM.Empty, { icon: 'component' }, t('comp.count', { n: Object.keys(DM.IDX().components).length }) + ' · ' + t('search.components')));
     else if (view === 'components' && comp && !comp.gallery) center = h('main', { className: 'dm-center' }, DM.StageMissing ? h(DM.StageMissing, { comp: comp, onPage: openPage }) : null);
-    else center = h(DM.Canvas, { src: src, js: js, app: app, device: device, zoom: zoom, mode: mode, sel: sel, extHover: layerHover, reloadKey: reloadKey,
+    else center = h(DM.Canvas, { src: src, js: js, app: app, device: device, fit: screen.fit, text: screen.text, zoom: zoom, mode: mode, sel: sel, extHover: layerHover, reloadKey: reloadKey,
       title: title, code: code, kind: kind, states: states, banner: banner,
       notes: notes, activeNote: activeNote,
       onAnnotate: function (a) { edS[1]({ note: { i: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), p: a.p, x: a.x, y: a.y, t: '', k: 'ui', c: Date.now() }, x: a.sx, y: a.sy, isNew: true }); },
@@ -189,7 +199,7 @@
           else { A.done = true; if (A.n) setH({ cs: null }, true); }
         }
       },
-      onZoom: zm[1], onDevice: function (d) { store('perasure.devmode.device', d); dv[1](d); }, onReload: function () { setReloadKey(reloadKey + 1); },
+      onZoom: zm[1], onDevice: function (d) { store('perasure.devmode.device', d); dv[1](d); }, onFit: function (f) { setScreen({ fit: f }); }, onText: function (n) { setScreen({ text: n }); }, onReload: function () { setReloadKey(reloadKey + 1); },
       winRef: winRef });
 
     var doc = view === 'tokens' || view === 'iterations';

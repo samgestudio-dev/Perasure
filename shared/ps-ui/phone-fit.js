@@ -11,6 +11,7 @@
      fit   — 1:1: laid out at the phone's own width, nothing enlarged (true sizes, text can feel small on big iPhones);
      scale — full zoom: the 360 px design scaled to the screen (as the older demos, prototypes/withdraw-fund-flow/phone-fit.js).
    A phone narrower than 360 px is never shrunk (cap / fit): the layout takes its width.
+   PeraSure Dev Mode draws these modes itself (devmode/js/canvas.js DM.screenOf, devmode/mcp/server.mjs screenOf): change them together.
 
    TEXT SIZE (pages that opt in with PS_FIT.text = true: the app). The page is sized in rem (tokens-rem/, shared/ps-ui): 1rem is the
    phone's text size — 16 px at the default setting. The setting is read from the browser: Chrome / Android WebView with

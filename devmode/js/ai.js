@@ -8,8 +8,10 @@
 
   /* the live link of what is open now (also when Dev Mode runs from a local copy) */
   DM.liveLink = function () {
-    var hs = (location.hash || '').replace(/^#/, '').split('&').filter(function (kv) { return kv && !/^(ai|tab|notes)=/.test(kv); }).join('&');
-    return SITE + 'devmode/index.html' + (hs ? '#' + hs : '');
+    var hs = (location.hash || '').replace(/^#/, '').split('&').filter(function (kv) { return kv && !/^(ai|tab|notes|dev|fit|tx)=/.test(kv); });
+    /* with the device, Screen fit and Text size, so whoever opens it (or their AI) sees the same layout */
+    var s = DM._screen; if (s) hs.push('dev=' + s.device, 'fit=' + s.fit, 'tx=' + s.text);
+    return SITE + 'devmode/index.html' + (hs.length ? '#' + hs.join('&') : '');
   };
   DM.copyForAI = function (what) {
     var link = DM.liveLink();

@@ -7,7 +7,12 @@ see what each iteration changed and developers can pull the exact code. Desktop 
 ## What it does
 
 - **Pages / Components / Tokens / Iterations** on the left, with a search; **Layers** of what is in the canvas, as React draws it.
-- **Canvas**: the real app (or a component's states) in a 360 / 390 / 430 frame. *Inspect* (I): hover outlines a component and shows
+- **Canvas**: the real app (or a component's states) in a 360 / 390 / 430 frame, laid out and drawn as on that phone: the toolbar's
+  screen menu has the device, **Screen fit** (as the app's Tune — capped zoom by default: a 390 phone lays the page out 360 CSS px wide
+  and draws it ×1.08, a 430 one 374 px ×1.15; capped zoom · rem; 1:1; full zoom) and **Text size** (85–200 %). Inspect measures the
+  page's CSS px. The frame keeps its size and place on every page (the states line above it scrolls sideways). Links carry these
+  settings (`#…&dev=390&fit=cap&tx=100`). `DM.screenOf` (`js/canvas.js`) mirrors `shared/ps-ui/phone-fit.js`: change them together
+  (and `screenOf` in the MCP server). *Inspect* (I): hover outlines a component and shows
   its padding (blue hatching) and the gaps between its children (pink), labelled with the token the CSS actually uses (`gap-md` =
   `var(--spacing-gap-md)`, `Auto` for space-between, the number when no token is written); click selects; Ctrl / ⌘ goes down to the
   element; Alt draws redlines to what the pointer is over (or to the parent); Shift+Enter selects the parent, Enter the first child,
@@ -44,7 +49,7 @@ see what each iteration changed and developers can pull the exact code. Desktop 
 | `js/util.js` | React shorthands, icons, versions, links, statuses, small pieces |
 | `js/i18n.js` | every interface text in Chinese and English (`DM.t`), bilingual data (`DM.tx`) |
 | `js/inspector.js` | reads the app in the canvas: components from React's tree, sizes, props, specs, the CSS as written, assets |
-| `js/canvas.js` | the frame, the overlays (outlines, padding / gap hatching, redlines), modes, zoom, devices |
+| `js/canvas.js` | the frame, the overlays (outlines, padding / gap hatching, redlines), modes, zoom, the screen menu (device, Screen fit, Text size) |
 | `js/sidebar.js`, `js/panels.js` | the left column (lists, layers) and Inspect / History |
 | `js/views.js`, `js/compare.js` | Tokens and Iterations pages; version compare (and the slow-motion clock) |
 | `js/app.js` | the shell: top bar, state in the address (`#p=home&sel=…`), theme, language |

@@ -140,11 +140,16 @@ code, pre, .dm-mono { font-family: var(--mono); font-size: 11.5px; }
 .dm-center { position: relative; min-width: 0; min-height: 0; background: var(--bg-canvas); overflow: hidden; }
 .dm-canvas { position: absolute; inset: 0; overflow: auto; display: flex; }
 .dm-canvas__inner { margin: auto; padding: 64px 80px 96px; display: flex; flex-direction: column; align-items: flex-start; }
-.dm-framehead { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; max-width: 100%; color: var(--text-2); font-size: 12px; }
-.dm-framehead b { color: var(--text); font-weight: 600; }
-.dm-framehead code { color: var(--text-3); font-size: 11px; }
-.dm-states { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; max-width: 520px; }
-.dm-state { height: 24px; padding: 0 9px; border-radius: 12px; background: var(--bg); box-shadow: inset 0 0 0 1px var(--line); color: var(--text-2); font-size: 11.5px; }
+/* the title line and the states line keep the same height on every page (canvas.js HEAD = 20 + 10 + 24 + 12), so the frame never moves */
+.dm-framehead { display: flex; align-items: center; gap: 8px; height: 20px; margin-bottom: 10px; color: var(--text-2); font-size: 12px; white-space: nowrap; overflow: hidden; }
+.dm-framehead b { color: var(--text); font-weight: 600; flex: none; }
+.dm-framehead code { color: var(--text-3); font-size: 11px; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.dm-states { display: flex; flex-wrap: nowrap; gap: 6px; height: 24px; margin-bottom: 12px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+.dm-states::-webkit-scrollbar { display: none; }
+.dm-states.is-more-r { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 40px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 40px), transparent); }
+.dm-states.is-more-l { -webkit-mask-image: linear-gradient(90deg, transparent, #000 40px); mask-image: linear-gradient(90deg, transparent, #000 40px); }
+.dm-states.is-more-l.is-more-r { -webkit-mask-image: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 40px), transparent); mask-image: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 40px), transparent); }
+.dm-state { flex: none; height: 24px; padding: 0 9px; border-radius: 12px; background: var(--bg); box-shadow: inset 0 0 0 1px var(--line); color: var(--text-2); font-size: 11.5px; white-space: nowrap; }
 .dm-state:hover { color: var(--text); box-shadow: inset 0 0 0 1px var(--line-strong); }
 .dm-state.is-on { background: var(--text); color: var(--bg); box-shadow: none; }
 .dm-framebox { position: relative; flex: none; }
@@ -162,6 +167,23 @@ code, pre, .dm-mono { font-family: var(--mono); font-size: 11.5px; }
 .dm-mlabel { position: absolute; display: none; padding: 0 4px; border-radius: 3px; background: var(--measure); color: #fff; font: 600 10.5px/16px var(--font); white-space: nowrap; transform: translate(-50%, -50%); pointer-events: none; }
 .dm-toolbar { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); width: max-content; white-space: nowrap; display: flex; align-items: center; gap: 4px; padding: 4px; border-radius: 10px; background: var(--bg-raised); box-shadow: var(--shadow-pop); z-index: 5; }
 .dm-toolbar__sep { width: 1px; height: 20px; background: var(--line); margin: 0 4px; }
+/* the screen menu (device, Screen fit, Text size) */
+.dm-scr { position: relative; }
+.dm-scr__btn { height: 28px; display: inline-flex; align-items: center; gap: 6px; padding: 0 8px 0 9px; border-radius: 6px; background: var(--bg-sunk); box-shadow: inset 0 0 0 1px var(--line); color: var(--text); }
+.dm-scr__btn:hover, .dm-scr__btn.is-open { box-shadow: inset 0 0 0 1px var(--line-strong); }
+.dm-scr__btn .dm-icon { color: var(--text-3); }
+.dm-scr__pop { position: absolute; left: 50%; bottom: calc(100% + 10px); transform: translateX(-50%); width: 300px; padding: 6px; border-radius: 10px; background: var(--bg-raised); box-shadow: var(--shadow-pop); white-space: normal; text-align: left; z-index: 6; }
+.dm-scr__h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 6px; white-space: nowrap; padding: 8px 8px 4px; color: var(--text-3); font-size: 11px; font-weight: 600; }
+.dm-scr__h small { font-weight: 400; }
+.dm-scr__opt { width: 100%; display: flex; align-items: flex-start; gap: 8px; padding: 6px 8px; border-radius: 6px; color: var(--text); text-align: left; }
+.dm-scr__opt:hover { background: var(--bg-sunk); }
+.dm-scr__opt b { display: block; font-weight: 500; font-size: 12px; line-height: 16px; }
+.dm-scr__opt small { display: block; color: var(--text-3); font-size: 11px; line-height: 15px; margin-top: 1px; }
+.dm-scr__dot { flex: none; width: 12px; height: 12px; margin-top: 2px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--line-strong); }
+.dm-scr__opt.is-on .dm-scr__dot { box-shadow: inset 0 0 0 4px var(--accent); }
+.dm-scr__texts { display: flex; margin: 2px 8px 4px; }
+.dm-scr__texts > button { flex: 1; }
+.dm-scr__now { margin: 6px 2px 2px; padding: 8px; border-radius: 6px; background: var(--bg-sunk); color: var(--text-2); font-size: 11px; line-height: 16px; }
 .dm-toolbar .dm-zoom { min-width: 48px; text-align: center; color: var(--text-2); font-variant-numeric: tabular-nums; }
 .dm-hint { position: absolute; left: 16px; top: 12px; color: var(--text-3); font-size: 11px; z-index: 4; max-width: calc(50% - 160px); line-height: 16px; }
 .dm-banner { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; padding: 6px 8px 6px 12px; border-radius: 8px; background: var(--changed-bg); color: var(--changed); box-shadow: inset 0 0 0 1px var(--changed); font-weight: 500; z-index: 5; }

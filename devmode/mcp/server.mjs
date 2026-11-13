@@ -19,7 +19,7 @@ import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import { execFileSync } from 'node:child_process';
 
-const VERSION = '1.1.0';
+const VERSION = '1.2.0';
 const NAME = 'perasure-devmode';
 const SITE = (process.env.PERASURE_DEVMODE_URL || 'https://samgestudio-dev.github.io/Perasure/').replace(/\/?$/, '/');
 const REPO = 'samgestudio-dev/Perasure';
@@ -30,6 +30,22 @@ const LOCAL = (() => {
   return null;
 })();
 const DEVICES = { 360: [360, 780], 390: [390, 844], 430: [430, 932] };
+/* Screen fit and Text size, as on the phone and in Dev Mode (devmode/js/canvas.js DM.screenOf; shared/ps-ui/phone-fit.js): the browser
+   lays the page out W CSS px wide and enlarges it k times to the screen. Default: capped zoom (at most 1.15×), text 100 %. */
+const FITS = ['cap', 'rem', 'fit', 'scale'], TEXTS = [85, 100, 115, 130, 150, 200], ZMAX = 1.15;
+const FIT_NAMES = { cap: 'capped zoom (up to 1.15×)', rem: 'capped zoom · rem', fit: '1:1', scale: 'full zoom' };
+function screenOf(device, fit, text) {
+  const [w, h] = DEVICES[device] || DEVICES[360], f = FITS.includes(fit) ? fit : 'cap', tx = TEXTS.includes(+text) ? +text : 100;
+  const W = f === 'fit' || f === 'rem' ? w : f === 'scale' ? Math.max(360, Math.ceil(600 * w / h)) : Math.round(w / Math.max(1, Math.min(ZMAX, w / 360)));
+  const k = w / W, fz = f === 'rem' ? Math.max(1, Math.min(ZMAX, w / 360)) : 1, r2 = v => Math.round(v * 1000) / 1000;
+  const desc = `${w} px phone · ${FIT_NAMES[f]}: laid out ${W} CSS px wide${k > 1.001 ? `, drawn ×${r2(k)}` : ''}${fz > 1.001 ? `, rem ×${r2(fz)}` : ''} · text ${tx}%`;
+  return { device: String(w), w, h, fit: f, text: tx, W, H: h / k, k, fz, desc };
+}
+/* the app always gets fit and text (a value saved in its Tune must not leak in); a component stage only when they change what it draws */
+function screenUrl(url, app, s) {
+  const q = app ? [`fit=${s.fit}`, `text=${s.text}`] : [s.fit === 'rem' ? 'fit=rem' : '', s.text !== 100 ? `text=${s.text}` : ''].filter(Boolean);
+  return q.length ? url + (url.includes('?') ? '&' : '?') + q.join('&') : url;
+}
 const RAW_VISUAL = `https://raw.githubusercontent.com/${'samgestudio-dev/Perasure'}/devmode-visual/`;
 const log = (...a) => process.stderr.write('[' + NAME + '] ' + a.join(' ') + '\n');
 
@@ -290,7 +306,7 @@ async function base() {
 }
 async function openTarget(a) {
   const D = await data(), ver = a.version && a.version !== D.latest.id ? a.version : null, ix = await indexAt(ver);
-  const [w, h] = DEVICES[a.device] || DEVICES[360], root = (await base()) + (ver ? `devmode/snapshots/${ver}/` : '');
+  const scr = screenOf(a.device, a.fit, a.text), root = (await base()) + (ver ? `devmode/snapshots/${ver}/` : '');
   let url, js = null, app = true, label;
   if (a.component && !a.page) {
     const c = findComp(ix, a.component); if (!c) throw new Error(`no component "${a.component}"`);
@@ -301,7 +317,9 @@ async function openTarget(a) {
     const st = p.states ? p.states[+a.state || 0] : null;
     url = D.pages.url(p, st, root); js = D.pages.js(p, st) || null; label = `${p.en}${st ? ' · ' + (st.en || st.name) : ''}`;
   }
-  const b = await browser(), page = await b.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: a.scale || 2 });
+  url = screenUrl(url, app, scr);
+  /* the page is laid out W CSS px wide and drawn k times bigger, so a screenshot is the phone's width × 2 (as a 2× phone screenshot) */
+  const b = await browser(), page = await b.newPage({ viewport: { width: scr.W, height: Math.round(scr.H) }, deviceScaleFactor: (a.scale || 2) * scr.k });
   await page.goto(url, { waitUntil: 'load', timeout: 30000 });
   await page.waitForFunction(app ? () => !!(window.APP && window.APP.S && window.PS) : () => !!(window.PS && document.getElementById('root').children.length), null, { timeout: 20000 });
   if (app) await page.waitForFunction(() => !window.APP.S.stack.some(e => e.name === 'opening'), null, { timeout: 8000 }).catch(() => {});
@@ -316,7 +334,7 @@ async function openTarget(a) {
   const insp = await read('devmode/js/inspector.js');
   await page.addScriptTag({ content: 'window.DM = { IDX: function () { return window.__DMIDX; } }; window.__DMIDX = ' + JSON.stringify({ components: Object.fromEntries(Object.keys(ix.components).map(n => [n, 1])) }) + ';' });
   await page.addScriptTag({ content: insp });
-  return { page, url, label, ver };
+  return { page, url, label, ver, screen: scr };
 }
 async function findTargets(page, target, all) {
   return page.evaluate(([target, all]) => {
@@ -334,6 +352,9 @@ async function findTargets(page, target, all) {
 /* ---------------------------------------------------------------- tools */
 const S = (props, req = []) => ({ type: 'object', properties: props, required: req, additionalProperties: false });
 const verP = { type: 'string', description: 'An iteration id (see list_iterations). Default: the latest version.' };
+const devP = { type: 'string', enum: ['360', '390', '430'], description: 'Phone width in points (default 360)' };
+const fitP = { type: 'string', enum: FITS, description: 'Screen fit, as the app\'s Tune: cap = capped zoom, the default (a 390 phone lays out 360 CSS px and draws them ×1.083; 430 → 374 ×1.15); rem = the same factor through the root font size; fit = 1:1; scale = full zoom' };
+const textP = { type: 'integer', enum: TEXTS, description: 'Text size in % (default 100). Up to 130 the whole layout grows; above it only text' };
 const TOOLS = [
   { name: 'get_overview', title: 'Overview',
     description: 'What PeraSure Dev Mode holds and how to use these tools: versions, page sections, component files, statuses. Call this first if unsure.',
@@ -367,6 +388,8 @@ const TOOLS = [
       const D = await data(), hash = String(url).split('#')[1] || String(url), H = {};
       hash.split('&').forEach(kv => { if (!kv) return; const i = kv.indexOf('='); H[decodeURIComponent(i < 0 ? kv : kv.slice(0, i))] = i < 0 ? '' : decodeURIComponent(kv.slice(i + 1)); });
       const ver = H.ver || null, out = [];
+      /* the device, Screen fit and Text size the link was made with */
+      const scrLine = H.dev || H.fit || H.tx ? (() => { const sc = screenOf(H.dev, H.fit, H.tx); return `Screen: ${sc.desc}. Pass device "${sc.device}", fit "${sc.fit}", text ${sc.text} to get_screenshot / get_live_specs / qa_compare to see the same layout.`; })() : '';
       /* notes made in Dev Mode's Annotate mode travel in the link: a task list, one item per pin */
       if (H.notes) {
         let o = null; try { o = JSON.parse(Buffer.from(H.notes.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8')); } catch {}
@@ -380,7 +403,7 @@ const TOOLS = [
             const cut = n.p.indexOf('|'), comp = (cut < 0 ? n.p : n.p.slice(0, cut)).split('>').pop().replace(/#\d+$/, ''), c = ix.components[comp];
             out.push(`${i + 1}. **[${TYPES[n.k] || 'UI'}]** ${n.t}`, `   Layer: \`${n.p}\` — ${c ? `PS.${comp} (\`${c.file}\`:${c.line}; get_component "${comp}")` : comp}${cut >= 0 ? ', an element inside it' : ''}`);
           });
-          out.push('', m && m[1] === 'p' ? `Page details: get_page("${m[2]}"${+m[3] ? ', state ' + m[3] : ''}). Measured specs of a noted layer: get_live_specs with page and the layer path (needs Playwright).` : '');
+          out.push('', m && m[1] === 'p' ? `Page details: get_page("${m[2]}"${+m[3] ? ', state ' + m[3] : ''}). Measured specs of a noted layer: get_live_specs with page and the layer path (needs Playwright).` : '', scrLine);
           return out.join('\n');
         }
       }
@@ -398,6 +421,7 @@ const TOOLS = [
         const p = findPage(D, H.p || 'home');
         if (p) out.push(`Page: ${p.en} (${p.name}) — \`${p.id}\`${H.s ? ', state ' + H.s : ''}. Details: get_page("${p.id}"${H.s ? ', state ' + H.s : ''}).`);
       }
+      if (scrLine) out.push(scrLine);
       if (comp && /^APP\./.test(comp)) out.push(`\n${comp} is the app's own piece, not a shared component: its code is in prototypes/app/ (see the page source in get_page).`);
       else if (comp && /^[A-Z]/.test(comp) && !['tabs'].includes(comp)) out.push('\n' + await componentText(comp, { version: ver }));
       else if (!comp && H.v !== 'components') { const p = findPage(D, H.p || 'home'); if (p) out.push('\n' + await pageText(p.id, { version: ver, state: H.s })); }
@@ -517,7 +541,7 @@ const TOOLS = [
   { name: 'get_screenshot', title: 'Screenshot (needs Playwright)',
     description: 'A PNG of an app page (and state) or of a component\'s gallery state, as it really renders, at phone width; optionally outlining a component on it. Needs Playwright on this computer (otherwise it says how to install it).',
     inputSchema: S({ page: { type: 'string', description: 'Page id (list_pages)' }, state: { type: 'integer' }, component: { type: 'string', description: 'Alone: screenshot this component\'s gallery state. With page: outline it on the page.' },
-      componentState: { type: 'integer', description: 'Gallery state index (get_component → States)' }, device: { type: 'string', enum: ['360', '390', '430'] }, version: verP, fullPage: { type: 'boolean' }, wait: { type: 'integer', description: 'Extra ms to wait before the shot (default 1500)' } }),
+      componentState: { type: 'integer', description: 'Gallery state index (get_component → States)' }, device: devP, fit: fitP, text: textP, version: verP, fullPage: { type: 'boolean' }, wait: { type: 'integer', description: 'Extra ms to wait before the shot (default 1500)' } }),
     run: async a => {
       const t = await openTarget(a);
       try {
@@ -528,14 +552,14 @@ const TOOLS = [
           else note = `\nPS.${a.component} is not on this page/state. Components here: ${f.names.join(', ')}`;
         }
         const png = await t.page.screenshot({ fullPage: !!a.fullPage });
-        return [{ type: 'image', data: png.toString('base64'), mimeType: 'image/png' }, { type: 'text', text: `${t.label} · ${t.url}${note}` }];
+        return [{ type: 'image', data: png.toString('base64'), mimeType: 'image/png' }, { type: 'text', text: `${t.label} · ${t.screen.desc} · ${t.url}${note}` }];
       } finally { await t.page.close(); }
     } },
   { name: 'qa_compare', title: 'Design QA: implementation vs demo (needs Playwright)',
     description: 'Design QA for developers: compares a screenshot of your implementation (an image file on this computer, or a web URL Playwright can open) with the PeraSure demo of the same page / state or component state. Returns demo | implementation | difference pictures, how much differs, the regions that differ (CSS px) and the demo components there. The screenshot is scaled to the demo width; offsetY moves it (negative to skip a status bar). Needs Playwright.',
     inputSchema: S({ page: { type: 'string', description: 'Demo page id (list_pages)' }, state: { type: 'integer' }, component: { type: 'string', description: 'Or a component: its gallery state is the reference' }, componentState: { type: 'integer' },
       image: { type: 'string', description: 'Path to a PNG / JPG screenshot of the implementation (any scale; full width of the screen)' }, url: { type: 'string', description: 'Or the implementation\'s URL (web), shot at the same width' },
-      offsetX: { type: 'number' }, offsetY: { type: 'number', description: 'CSS px to move the implementation by (e.g. -24 to cut a 24 px status bar)' }, device: { type: 'string', enum: ['360', '390', '430'] }, version: verP,
+      offsetX: { type: 'number' }, offsetY: { type: 'number', description: 'CSS px to move the implementation by (e.g. -24 to cut a 24 px status bar)' }, device: devP, fit: fitP, text: textP, version: verP,
       tolerance: { type: 'integer', description: 'How far a colour channel may differ before a pixel counts (default 40)' } }),
     run: async a => {
       if (!a.image && !a.url) throw new Error('give image (a screenshot file of the implementation) or url');
@@ -584,7 +608,7 @@ const TOOLS = [
           return { ratio: n / (W * H), regions: regions.slice(0, 8), image: btoa(s), implW: M.width, implH: M.height };
         }, [demo.toString('base64'), implB64, a.offsetX || 0, a.offsetY || 0, a.tolerance || 40]);
         const where = box => { const [x, y, w, h] = box, cx = x + w / 2, cy = y + h / 2; const hit = comps.filter(c => cx >= c.r[0] && cx <= c.r[0] + c.r[2] && cy >= c.r[1] && cy <= c.r[1] + c.r[3]).sort((p, q) => p.r[2] * p.r[3] - q.r[2] * q.r[3]); return [...new Set(hit.map(c => c.name))].slice(0, 3); };
-        const text = [`# Design QA — ${t.label}`, `Demo: ${t.url}`, `Implementation: ${implNote} (${r.implW}×${r.implH}, scaled to the demo width${a.offsetY || a.offsetX ? `, moved ${a.offsetX || 0}, ${a.offsetY || 0} px` : ''})`,
+        const text = [`# Design QA — ${t.label}`, `Demo: ${t.url} (${t.screen.desc})`, `Implementation: ${implNote} (${r.implW}×${r.implH}, scaled to the demo width${a.offsetY || a.offsetX ? `, moved ${a.offsetX || 0}, ${a.offsetY || 0} px` : ''})`,
           `${(r.ratio * 100).toFixed(2)}% of pixels differ (tolerance ${a.tolerance || 40}). Picture: demo | implementation | difference (numbered regions).`,
           r.regions.length ? '\n## Regions that differ (CSS px: x, y, w, h)\n' + r.regions.map((g, i) => `${i + 1}. ${g.box.join(', ')} — demo components there: ${where(g.box).map(n => (/^APP\./.test(n) ? n : 'PS.' + n)).join(', ') || '—'}`).join('\n') : '\nNo differing regions: it matches the demo.',
           '\nIf everything is off by the same few pixels, the screenshot is shifted (a status bar): try offsetY. For exact values of a component, use get_live_specs or get_component.'].join('\n');
@@ -593,7 +617,7 @@ const TOOLS = [
     } },
   { name: 'get_live_specs', title: 'Live measurements (needs Playwright)',
     description: 'Measures a component as it renders on a page (or in its gallery state), the way Dev Mode\'s Inspect does: size, padding and gaps with the token the CSS uses, radius, fill, stroke, shadow, text style, and the CSS rules it matches. Give a component name or a Dev Mode layer path (sel=…). Needs Playwright.',
-    inputSchema: S({ page: { type: 'string' }, state: { type: 'integer' }, component: { type: 'string', description: 'Component name, or a layer path from a Dev Mode link (sel=…)' }, componentState: { type: 'integer' }, device: { type: 'string', enum: ['360', '390', '430'] }, version: verP, all: { type: 'boolean', description: 'Up to 6 instances instead of 3' } }, ['component']),
+    inputSchema: S({ page: { type: 'string' }, state: { type: 'integer' }, component: { type: 'string', description: 'Component name, or a layer path from a Dev Mode link (sel=…)' }, componentState: { type: 'integer' }, device: devP, fit: fitP, text: textP, version: verP, all: { type: 'boolean', description: 'Up to 6 instances instead of 3' } }, ['component']),
     run: async a => {
       const onPage = a.page || /[>|]/.test(a.component);
       const t = await openTarget({ ...a, page: onPage ? (a.page || 'home') : undefined, component: onPage ? undefined : a.component });
@@ -614,7 +638,7 @@ const TOOLS = [
           });
         });
         const f2 = (v, px, root) => (px && typeof v === 'number' ? `${Math.round(v * 100) / 100}px (${Math.round(v / root * 1000) / 1000}rem)` : String(v));
-        return `${t.label} · ${a.device || 360}px wide · ${t.url}\n` + res.map(r => [
+        return `${t.label} · ${t.screen.desc} · ${t.url}\nSizes are the page's CSS px (what the code writes)${t.screen.k > 1.001 ? `; the phone draws them ×${Math.round(t.screen.k * 1000) / 1000}` : ''}.\n` + res.map(r => [
           `\n## ${r.path}`, r.classes.length ? 'Classes: ' + r.classes.map(c => '.' + c).join(' ') : '',
           ...r.rows.map(x => `- ${x.group} · ${x.label}: ${f2(x.value, x.px, r.root)}${x.token ? ' · `' + x.token + '`' : ''}${x.expr ? ' · ' + x.expr : ''}`),
           r.padding ? '- padding as written: ' + ['top', 'right', 'bottom', 'left'].map(s => `${s} ${Math.round(r.padding[s].px * 100) / 100}px${r.padding[s].decl ? ' = ' + r.padding[s].decl : ''}`).join(', ') : '',
@@ -656,7 +680,8 @@ async function updateNote() {
   try {
     const r = await fetch(SITE + 'devmode/mcp/server.mjs?t=' + Math.floor(Date.now() / 3600000)); if (!r.ok) return '';
     const m = /const VERSION = '([^']+)'/.exec(await r.text());
-    return m && m[1] !== VERSION ? ` · a newer server (${m[1]}) is published: download it again (devmode/mcp/README.md)` : '';
+    const newer = (x, y) => { const p = x.split('.').map(Number), q = y.split('.').map(Number); for (let i = 0; i < 3; i++) if ((p[i] || 0) !== (q[i] || 0)) return (p[i] || 0) > (q[i] || 0); return false; };
+    return m && newer(m[1], VERSION) ? ` · a newer server (${m[1]}) is published: download it again (devmode/mcp/README.md)` : '';
   } catch { return ''; }
 }
 

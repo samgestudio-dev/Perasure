@@ -9,6 +9,63 @@
   DM.DEVICES = [{ id: '360', w: 360, h: 780, name: 'Android · 360' }, { id: '390', w: 390, h: 844, name: 'iPhone 15 · 390' }, { id: '430', w: 430, h: 932, name: 'iPhone 15 Pro Max · 430' }];
   DM.device = function (id) { return DM.DEVICES.filter(function (d) { return d.id === String(id); })[0] || DM.DEVICES[0]; };
 
+  /* ---- Screen fit and Text size, as on the phone (the app's Tune; shared/ps-ui/phone-fit.js). A phone browser lays the page out at a
+     width W and enlarges it to the screen by k = device width / W; Dev Mode does the same: the frame is W CSS px wide and drawn k times
+     bigger, so the layout is the phone's and what Inspect measures is the page's CSS px. ---- */
+  DM.FITS = ['cap', 'rem', 'fit', 'scale'];
+  DM.TEXTS = [85, 100, 115, 130, 150, 200];
+  DM.ZMAX = 1.15;   /* the app's capped zoom (prototypes/app/index.html: PS_FIT.max) */
+  DM.screenOf = function (dev, fit) {
+    var W = fit === 'fit' || fit === 'rem' ? dev.w : fit === 'scale' ? Math.max(360, Math.ceil(600 * dev.w / dev.h)) : Math.round(dev.w / Math.max(1, Math.min(DM.ZMAX, dev.w / 360)));
+    var k = dev.w / W;
+    return { W: W, H: dev.h / k, k: k, fz: fit === 'rem' ? Math.max(1, Math.min(DM.ZMAX, dev.w / 360)) : 1 };
+  };
+  function pref(key, d) { try { return localStorage.getItem(key) || d; } catch (e) { return d; } }
+  DM.validFit = function (f) { return DM.FITS.indexOf(f) >= 0 ? f : null; };
+  DM.validText = function (n) { return DM.TEXTS.indexOf(+n) >= 0 ? +n : null; };
+  DM.screenPrefs = function () { return { fit: DM.validFit(pref('perasure.devmode.fit', 'cap')) || 'cap', text: DM.validText(pref('perasure.devmode.text', '100')) || 100 }; };
+  /* the frame's address with them: the app always gets both (a value saved in the app's own Tune in this browser must not leak in);
+     a component stage only when they change what it draws (rem, text size), so its default address stays as it was */
+  DM.screenSrc = function (src, app, s) {
+    if (!src || !s) return src;
+    var q = app ? ['fit=' + s.fit, 'text=' + s.text] : [s.fit === 'rem' ? 'fit=rem' : '', s.text !== 100 ? 'text=' + s.text : ''].filter(Boolean);
+    return q.length ? src + (src.indexOf('?') < 0 ? '?' : '&') + q.join('&') : src;
+  };
+  function x2(v) { return String(Math.round(v * 100) / 100); }
+
+  /* the toolbar's screen menu: device, Screen fit and Text size (the same choices as the app's Tune) */
+  function ScreenMenu(p) {
+    var t = DM.t, os = R.useState(false), open = os[0], ref = R.useRef(null);
+    R.useEffect(function () {
+      if (!open) return;
+      var md = function (e) { if (ref.current && !ref.current.contains(e.target)) os[1](false); };
+      var kd = function (e) { if (e.key === 'Escape') { e.stopPropagation(); os[1](false); } };
+      document.addEventListener('mousedown', md, true); window.addEventListener('keydown', kd, true);
+      return function () { document.removeEventListener('mousedown', md, true); window.removeEventListener('keydown', kd, true); };
+    }, [open]);
+    var s = DM.screenOf(p.dev, p.fit), f = p.fit === 'rem' ? s.fz : s.k;
+    var label = p.dev.name + ' · ' + t('scr.short.' + p.fit) + (f > 1.001 ? ' ×' + x2(f) : '') + (p.text !== 100 ? ' · ' + t('scr.textShort', { n: p.text }) : '');
+    var now = p.fit === 'fit' ? t('scr.now1', { w: s.W }) : p.fit === 'rem' ? t('scr.nowRem', { w: s.W, x: x2(s.fz) }) : f > 1.001 ? t('scr.now', { w: s.W, x: x2(s.k) }) : t('scr.now1', { w: s.W });
+    function opt(on, title, sub, onClick, key) {
+      return h('button', { key: key, type: 'button', role: 'menuitemradio', 'aria-checked': on, className: DM.cx('dm-scr__opt', on && 'is-on'), onClick: onClick },
+        h('span', { className: 'dm-scr__dot' }), h('span', null, h('b', null, title), sub ? h('small', null, sub) : null));
+    }
+    return h('div', { className: 'dm-scr', ref: ref },
+      h('button', { type: 'button', className: DM.cx('dm-scr__btn', open && 'is-open'), title: t('scr.tip'), 'aria-expanded': open, onClick: function () { os[1](!open); } },
+        h(DM.Icon, { name: 'phone', size: 14 }), h('span', null, label), h(DM.Icon, { name: 'down', size: 12 })),
+      open ? h('div', { className: 'dm-scr__pop', role: 'menu' },
+        h('div', { className: 'dm-scr__h' }, t('device')),
+        DM.DEVICES.map(function (d) { return opt(d.id === p.dev.id, d.name, null, function () { p.onDevice(d.id); }, d.id); }),
+        h('div', { className: 'dm-scr__h' }, t('scr.fit'), h('small', null, t('scr.fitSub'))),
+        DM.FITS.map(function (x) { return opt(x === p.fit, t('scr.fit.' + x) + (x === 'cap' ? ' · ' + t('scr.default') : ''), t('scr.fitd.' + x), function () { p.onFit(x); }, x); }),
+        h('div', { className: 'dm-scr__h' }, t('scr.text'), h('small', null, t('scr.textSub'))),
+        h('div', { className: 'dm-seg is-sm dm-scr__texts' }, DM.TEXTS.map(function (n) {
+          return h('button', { key: n, type: 'button', className: n === p.text ? 'is-on' : '', onClick: function () { p.onText(n); } }, n + '%');
+        })),
+        h('p', { className: 'dm-scr__now' }, now)) : null);
+  }
+  DM.ScreenMenu = ScreenMenu;
+
   /* ---- overlay, drawn as HTML every frame (only written when it changed) ---- */
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function num(v) { return String(Math.round(v * 10) / 10); }
@@ -119,18 +176,23 @@
 
   function editable(t) { return t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)); }
 
-  /* p: src, js, app (false for a page without the app), device, zoom ('fit' | number), mode, sel (path), extHover (path from Layers),
-        onSelect(path), onHover(path), onTree(T), onRoute(route), onMode(mode), onZoom(z), onDevice(id), onReload(), title, code,
-        states [{ label, on, onClick }], banner (node), hintless */
+  /* p: src, js, app (false for a page without the app), device, fit, text, zoom ('fit' | number), mode, sel (path), extHover (path from Layers),
+        onSelect(path), onHover(path), onTree(T), onRoute(route), onMode(mode), onZoom(z), onDevice(id), onFit(mode), onText(n), onReload(),
+        title, code, states [{ label, on, onClick }], banner (node), hintless */
+  var HEAD = 66;   /* the title line and the states line above the frame: always this tall (a page without states keeps the line empty),
+                      so the frame keeps its size and place from page to page */
   DM.Canvas = function Canvas(p) {
-    var frameRef = R.useRef(null), ovRef = R.useRef(null), centerRef = R.useRef(null), headRef = R.useRef(null);
+    var frameRef = R.useRef(null), ovRef = R.useRef(null), centerRef = R.useRef(null), statesRef = R.useRef(null);
     var st = R.useRef({ T: null, hover: null, alt: false, win: null, html: '', sig: '', route: '' }).current;
     var ls = R.useState(true), loading = ls[0], setLoading = ls[1];
     var fz = R.useState(1), fitZ = fz[0], setFitZ = fz[1];
     var dev = DM.device(p.device), z = p.zoom === 'fit' || !p.zoom ? fitZ : +p.zoom;
+    /* z: the canvas zoom (100 % = the phone's screen at its real size); zc: CSS px of the page → canvas px (z × the phone's own enlargement) */
+    var scr = DM.screenOf(dev, p.fit || 'cap'), zc = z * scr.k;
     var pr = R.useRef(p); pr.current = p;
-    var zr = R.useRef(z); zr.current = z;
+    var zr = R.useRef(zc); zr.current = zc;
     var dr = R.useRef(dev); dr.current = dev;
+    var sr = R.useRef(scr); sr.current = scr;
     /* design QA: the developers' screenshot over (or beside) the demo — overlay with opacity, difference, side by side; arrows nudge it */
     var qaS = R.useState(null), qa = qaS[0], qaRef = R.useRef(null); qaRef.current = qa;
     function setQa(patch) { qaS[1](function (q) { return patch === null ? null : Object.assign({}, q || { mode: 'diff', opacity: 50, dx: 0, dy: 0 }, patch); }); }
@@ -150,13 +212,28 @@
     R.useLayoutEffect(function () {
       var el = centerRef.current; if (!el) return;
       function fit() {
-        var head = headRef.current ? headRef.current.offsetHeight : 40, d = dr.current;
-        var zz = Math.min((el.clientWidth - 160) / d.w, (el.clientHeight - 64 - 96 - head) / d.h);
+        var d = dr.current, zz = Math.min((el.clientWidth - 160) / d.w, (el.clientHeight - 64 - 96 - HEAD) / d.h);
         setFitZ(Math.max(0.3, Math.min(1.5, Math.floor(zz * 100) / 100)));
       }
-      fit(); var ro = new ResizeObserver(fit); ro.observe(el); if (headRef.current) ro.observe(headRef.current);
+      fit(); var ro = new ResizeObserver(fit); ro.observe(el);
       return function () { ro.disconnect(); };
     }, [p.device]);
+    /* the states line: one row that scrolls sideways (the wheel scrolls it too), the chosen state kept in view, faded where more hides */
+    R.useEffect(function () {
+      var el = statesRef.current; if (!el) return;
+      function edges() { el.classList.toggle('is-more-l', el.scrollLeft > 2); el.classList.toggle('is-more-r', el.scrollLeft + el.clientWidth < el.scrollWidth - 2); }
+      var wh = function (e) { if (el.scrollWidth <= el.clientWidth || e.ctrlKey || e.metaKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return; e.preventDefault(); el.scrollLeft += e.deltaY; };
+      el.addEventListener('scroll', edges, { passive: true }); el.addEventListener('wheel', wh, { passive: false });
+      edges(); var ro = new ResizeObserver(edges); ro.observe(el);
+      return function () { el.removeEventListener('scroll', edges); el.removeEventListener('wheel', wh); ro.disconnect(); };
+    }, []);
+    var onIdx = (p.states || []).map(function (s) { return !!s.on; }).indexOf(true);
+    R.useLayoutEffect(function () {
+      var el = statesRef.current, b = el && el.querySelector('.is-on'); if (!b) { if (el) el.scrollLeft = 0; return; }
+      var l = b.offsetLeft - el.offsetLeft, r = l + b.offsetWidth;
+      if (l < el.scrollLeft + 16) el.scrollLeft = Math.max(0, l - 24); else if (r > el.scrollLeft + el.clientWidth - 16) el.scrollLeft = r - el.clientWidth + 24;
+      el.dispatchEvent(new Event('scroll'));
+    }, [p.title, onIdx, z]);
 
     function setHover(n) {
       var a = st.hover && st.hover.path, b = n && n.path;
@@ -265,7 +342,7 @@
         if (ov && st.T && st.win && P.mode !== 'interact') {
           try {
             var hv = st.hover || (P.extHover ? I.resolve(st.T, P.extHover) : null), ann = P.mode === 'annotate';
-            html = DM.overlayHTML({ win: st.win, T: st.T, hover: hv, sel: ann || !P.sel ? null : I.resolve(st.T, P.sel), alt: st.alt && !ann, z: zr.current, w: dr.current.w, h: dr.current.h,
+            html = DM.overlayHTML({ win: st.win, T: st.T, hover: hv, sel: ann || !P.sel ? null : I.resolve(st.T, P.sel), alt: st.alt && !ann, z: zr.current, w: sr.current.W, h: sr.current.H,
               mode: P.mode, notes: P.notes, activeNote: P.activeNote });
           } catch (e) { html = ''; }
         }
@@ -292,15 +369,14 @@
     return h('div', { className: 'dm-center', ref: centerRef },
       h('div', { className: 'dm-canvas', onWheel: canvasWheel, onDragOver: function (e) { if (qa) e.preventDefault(); }, onDrop: function (e) { if (!qa) return; e.preventDefault(); qaFile(e.dataTransfer.files[0]); } },
         h('div', { className: 'dm-canvas__inner' },
-          h('div', { ref: headRef },
-            h('div', { className: 'dm-framehead' }, h(DM.Icon, { name: p.kind === 'sheet' ? 'sheet' : p.kind === 'component' ? 'component' : 'frame', size: 14 }),
-              h('b', null, p.title), p.code ? h('code', null, p.code) : null, p.headExtra || null),
-            p.states && p.states.length > 1 ? h('div', { className: 'dm-states' }, p.states.map(function (s, i) {
-              return h('button', { key: i, type: 'button', className: DM.cx('dm-state', s.on && 'is-on'), onClick: s.onClick, title: s.title }, s.label);
-            })) : null),
+          h('div', { className: 'dm-framehead', style: { width: Math.max(dev.w * z, 260) } }, h(DM.Icon, { name: p.kind === 'sheet' ? 'sheet' : p.kind === 'component' ? 'component' : 'frame', size: 14 }),
+            h('b', null, p.title), p.code ? h('code', null, p.code) : null, p.headExtra || null),
+          h('div', { className: 'dm-states', ref: statesRef, style: { width: Math.max(dev.w * z, 260) } }, p.states && p.states.length > 1 ? p.states.map(function (s, i) {
+            return h('button', { key: i, type: 'button', className: DM.cx('dm-state', s.on && 'is-on'), onClick: s.onClick, title: s.title }, s.label);
+          }) : null),
           h('div', { className: 'dm-framebox', style: { width: dev.w * z, height: dev.h * z } },
-            h('div', { className: DM.cx('dm-frame', loading && 'is-loading'), style: { width: dev.w, height: dev.h, transform: 'scale(' + z + ')' } },
-              p.src ? h('iframe', { key: p.src + '|' + (p.js || '') + '|' + dev.id + '|' + (p.reloadKey || 0), ref: frameRef, src: p.src, width: dev.w, height: dev.h, title: p.title, onLoad: onLoad }) : null),
+            h('div', { className: DM.cx('dm-frame', loading && 'is-loading'), style: { width: scr.W, height: scr.H, transform: 'scale(' + zc + ')' } },
+              p.src ? h('iframe', { key: p.src + '|' + (p.js || '') + '|' + dev.id + '|' + (p.reloadKey || 0), ref: frameRef, src: p.src, style: { width: scr.W, height: scr.H }, title: p.title, onLoad: onLoad }) : null),
             qa && qa.img && qa.mode !== 'side' ? h('div', { className: 'dm-qa', style: { width: dev.w * z, height: dev.h * z } },
               h('img', { src: qa.img, alt: '', style: { width: dev.w * z, left: qa.dx * z, top: qa.dy * z, opacity: qa.mode === 'overlay' ? qa.opacity / 100 : 1, mixBlendMode: qa.mode === 'diff' ? 'difference' : 'normal' } })) : null,
             qa && qa.img && qa.mode === 'side' ? h('div', { className: 'dm-qa is-side', style: { left: dev.w * z + 28, width: dev.w * z, height: dev.h * z } },
@@ -326,9 +402,7 @@
           h('button', { type: 'button', className: p.mode === 'interact' ? 'is-on' : '', title: t('mode.interact') + ' (P)', onClick: function () { p.onMode('interact'); } }, h(DM.Icon, { name: 'play', size: 13 }), t('mode.interact')),
           p.onAnnotate ? h('button', { type: 'button', className: p.mode === 'annotate' ? 'is-on' : '', title: t('mode.annotate') + ' (N)', onClick: function () { p.onMode('annotate'); } }, h(DM.Icon, { name: 'pin', size: 13 }), t('mode.annotate')) : null),
         h('span', { className: 'dm-toolbar__sep' }),
-        h('label', { className: 'dm-select', title: t('device') },
-          h('select', { value: dev.id, onChange: function (e) { p.onDevice(e.target.value); } }, DM.DEVICES.map(function (d) { return h('option', { key: d.id, value: d.id }, d.name); })),
-          h(DM.Icon, { name: 'down', size: 12 })),
+        h(ScreenMenu, { dev: dev, fit: p.fit || 'cap', text: p.text || 100, onDevice: p.onDevice, onFit: p.onFit, onText: p.onText }),
         h('span', { className: 'dm-toolbar__sep' }),
         h('button', { type: 'button', className: 'dm-iconbtn', title: '−', onClick: function () { zoomTo(z / 1.25); } }, h(DM.Icon, { name: 'minus', size: 14 })),
         h('span', { className: 'dm-zoom' }, Math.round(z * 100) + '%'),

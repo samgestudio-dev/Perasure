@@ -293,6 +293,10 @@ at the version's tag), Figma nodes, statuses, the iteration record and version c
   runs it on every push and publishes the report to the branch `devmode-visual` (Dev Mode → Iterations → Unrecorded changes; MCP
   `get_visual_changes`). Use it before recording an iteration (skill `perasure-iteration-log`); a new page or state in `pages.js` must
   render steadily (check with `--filter <id>` twice).
+- **Screen as on the phone** (owner): the canvas lays a page out and draws it as the chosen phone does — device, Screen fit (the app's
+  Tune modes, default capped zoom) and Text size, in the toolbar's screen menu; the frame keeps one size and place on every page.
+  `DM.screenOf` (`devmode/js/canvas.js`) and `screenOf` in `devmode/mcp/server.mjs` mirror `shared/ps-ui/phone-fit.js`: when the fit
+  modes or the capped zoom change there, change both.
 - **Annotate, QA, Figma links** (owner): notes pinned on layers travel in links (`devmode/js/notes.js`); QA lays the developers'
   screenshot over the demo (canvas); design-system components matched to PS components live in `devmode/data/figma-links.js` (only
   clear one-to-one matches). Writing links into the shared Figma file needs the owner's go-ahead (Code Connect needs an Organization plan).
