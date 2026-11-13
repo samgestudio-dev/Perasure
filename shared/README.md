@@ -91,6 +91,8 @@ New in round 6: `PS.Toasts` (layout.js: a stack of the last three, each new one 
 in form.js, `PS.Lottie{active}` / `PS.Anim{active}` (core.js: play from the start when it becomes the card on screen), `PS.Accordion{small}`
 (pay.js), `PS.FileRow{pic}` (a photo's thumbnail; the tick is Icon / Check 8, 8 around the dot), `.ps-t-section-md-light`, and the icons
 `clear-small` (the fields' clear button: Neutral/950 at 60 %), `upload-cloud`, `alert-filled`, `warning-filled`.
+`PS.Popover` opens centred on the last tap (or `at`), 8 from the page's sides, growing from that point; without a tap, its right edge on the
+anchor's. `PS.Wheel`'s band is its highlight (it covers the wheel's own line: no double text) and it owns every touch on it.
 
 ## Rules for changing components
 

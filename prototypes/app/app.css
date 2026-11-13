@@ -51,7 +51,7 @@ html.ps-edge .app-amount__sheet { padding-bottom: calc(var(--sb) + var(--spacing
 html.ps-edge .app-wd__tune { top: calc(56px + var(--e)); }
 .app-amount__top { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); padding: var(--spacing-padding-3xl) 0; }
 /* the amount as it is typed (Figma 52:12744): ₱ 28 Inter, digits 48 / 44 Satoshi, what is not typed yet in the disabled colour */
-.app-amount__num { display: flex; align-items: flex-end; height: 2.75rem; font-family: var(--ps-font-num); font-weight: var(--font-weight-bold); font-variant-numeric: tabular-nums; }
+.app-amount__num { display: flex; align-items: flex-end; height: 2.75rem; font-family: var(--ps-font-num); font-weight: var(--font-weight-bold); }
 .app-amount__cur { font: var(--font-weight-medium) calc(1.75rem * var(--ps-tx, 1))/calc(1.75rem * var(--ps-tx, 1)) var(--font-family-body); color: var(--color-text-disabled); margin-right: var(--spacing-gap-sm); }
 .app-amount__typed { display: inline-flex; font-size: calc(3rem * var(--ps-tx, 1)); line-height: calc(2.75rem * var(--ps-tx, 1)); color: var(--color-text-primary); }
 .app-amount__typed > span { display: inline-block; }
@@ -241,9 +241,10 @@ html:not(.ps-edge) .app-contact__bar { padding-bottom: calc(var(--spacing-paddin
 .app-faq__h { color: var(--color-text-primary); margin-bottom: calc(-1 * var(--spacing-gap-xs)); }
 .app-faq__ul { list-style: none; display: flex; flex-direction: column; }
 .app-faq__ul > li::before { content: '- '; }
-.app-faq__vote { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); margin: var(--spacing-gap-lg) var(--spacing-padding-sm) 0; padding: var(--spacing-padding-2xl) 0; border-top: var(--stroke-width-default) solid var(--color-stroke-subtle); border-bottom: var(--stroke-width-default) solid var(--color-stroke-subtle); }
+.app-faq__vote { display: flex; flex-direction: column; gap: var(--spacing-gap-md); margin-top: var(--spacing-gap-lg); padding: var(--spacing-padding-2xl) 0;
+  border-top: var(--stroke-width-default) solid var(--color-stroke-divider); border-bottom: var(--stroke-width-default) solid var(--color-stroke-divider); }   /* DS 5453:4947: full width, lines above and below, 24 · title · 12 · buttons · 24 */
 .app-faq__chips { display: flex; gap: var(--spacing-gap-md); }
-.app-faq__chip { width: 4.5rem; height: 2.75rem; border-radius: var(--radius-full); background: var(--color-action-bg-inverse); color: var(--color-text-primary); transition: background-color 0.15s ease, color 0.15s ease; touch-action: manipulation; }
+.app-faq__chip { display: flex; align-items: center; justify-content: center; width: 4.5rem; min-height: 2.75rem; padding: var(--spacing-gap-md) var(--spacing-padding-xl); border-radius: var(--radius-full); background: var(--color-action-bg-inverse); color: var(--color-text-primary); transition: background-color 0.15s ease, color 0.15s ease; touch-action: manipulation; }
 .app-faq__chip.is-on { background: var(--color-action-bg-primary-default); color: var(--color-text-inverse); }
 .app-faq__related { display: flex; flex-direction: column; padding: var(--spacing-padding-2xl) var(--spacing-padding-sm) 0; }
 .app-faq__related > p { padding-bottom: var(--spacing-gap-sm); }

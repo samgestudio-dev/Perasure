@@ -139,13 +139,17 @@
 
   /* Popover: a short list that opens under what was tapped (DS 7201:12032 · 7201:11836): the glass card (Surface/Elevated/Glass, 1 px light rim,
      radius 24, 8 padding, Blur/Glass-nav-effect-focus), 36 px pill options in Body/md (the chosen one on Alpha/Cold Bg/Subtle), at most 220 high —
-     longer lists scroll, with a 6 px thumb and a white fade at the bottom while more is below. It sits 8 px under the anchor, its right edge on the
-     anchor's (block: as wide as the anchor), and above the anchor when there is no room below. Grows from that corner on the Smooth spring.
-     open · options [strings] · value · onPick(option) · onClose · anchor (ref; default: the parent) · block · render(option) · noCatch (no tap-outside layer) */
+     longer lists scroll, with a 6 px thumb and a white fade at the bottom while more is below. It sits 8 px under the anchor (above it when there is
+     no room below) and, like an iPhone menu, centred on where the finger tapped, kept 8 from the page's sides; it grows from that point on the
+     Smooth spring. Opened without a tap (keyboard): its right edge on the anchor's. block: as wide as the anchor (suggestions under a field).
+     open · options [strings] · value · onPick(option) · onClose · anchor (ref; default: the parent) · at ({ x, y } client point; default the last tap) ·
+     block · render(option) · noCatch (no tap-outside layer) */
   PS.Popover = function Popover(p) {
     return h(AP, null, p.open ? h(PopCard, Object.assign({ key: 'pop' }, p)) : null);
   };
-  var POP_MAX = 220, POP_GAP = 8;
+  var POP_MAX = 220, POP_GAP = 8, POP_EDGE = 8, TAP = { x: 0, y: 0, t: 0 };
+  /* the last tap, so a list opens where the finger was (like an iPhone menu) */
+  document.addEventListener('pointerdown', function (e) { TAP = { x: e.clientX, y: e.clientY, t: Date.now() }; }, true);
   function PopCard(p) {
     var card = R.useRef(null), list = R.useRef(null), thumb = R.useRef(null), fade = R.useRef(null), pl = R.useState(null), place = pl[0];
     R.useLayoutEffect(function () {
@@ -155,8 +159,14 @@
       var limit = Math.min(window.innerHeight, bot ? bot.getBoundingClientRect().top : window.innerHeight) - GAP;
       var below = limit - (ar.bottom + GAP), above = ar.top - GAP - Math.max(0, (screen.querySelector('.ps-pb--top') || { getBoundingClientRect: function () { return { bottom: 0 }; } }).getBoundingClientRect().bottom);
       var up = below < hh && above > below;
+      var at = p.at || (!p.block && Date.now() - TAP.t < 1000 ? TAP : null), left = null, ox = null, w = c.offsetWidth;
+      if (at) {   /* centred on the tap; kept 8 from the page's sides */
+        var fr = (c.closest('.ps-frame') || document.documentElement).getBoundingClientRect(), E = PS.px(POP_EDGE);
+        var x = Math.max(fr.left + E, Math.min(fr.right - E - w, at.x - w / 2));
+        left = x - pr.left; ox = Math.max(0, Math.min(w, at.x - x));
+      }
       pl[1]({ up: up, top: up ? ar.top - pr.top - GAP - Math.min(hh, Math.max(PS.px(120), above)) : ar.bottom - pr.top + GAP, right: pr.right - ar.right,
-        width: p.block ? ar.width : null, max: Math.min(MAX, Math.max(PS.px(120), up ? above : below)) });
+        left: left, ox: ox, width: p.block ? ar.width : left != null ? w : null, max: Math.min(MAX, Math.max(PS.px(120), up ? above : below)) });
     }, []);
     function onScroll() {
       var l = list.current, t = thumb.current; if (!l) return;
@@ -165,7 +175,9 @@
       if (fade.current) fade.current.style.opacity = room - l.scrollTop > 2 ? 1 : 0;
     }
     R.useLayoutEffect(onScroll, [place, p.options.length]);
-    var b = 'blur(' + MT.BLUR + 'px)', st = place ? { top: place.top, right: place.right, width: place.width || undefined, maxHeight: place.max, transformOrigin: place.up ? '100% 100%' : '100% 0' } : { visibility: 'hidden', top: 0, right: 0 };
+    var b = 'blur(' + MT.BLUR + 'px)', oy = place && place.up ? '100%' : '0';
+    var st = !place ? { visibility: 'hidden', top: 0, right: 0 } : place.left != null ? { top: place.top, left: place.left, width: place.width, maxHeight: place.max, transformOrigin: place.ox + 'px ' + oy }
+      : { top: place.top, right: place.right, width: place.width || undefined, maxHeight: place.max, transformOrigin: '100% ' + oy };
     return h(R.Fragment, null,
       p.noCatch ? null : h('div', { className: 'ps-pop-catch', onClick: p.onClose, onTouchMove: p.onClose }),
       h(m.div, { ref: card, className: PS.cx('ps-pop ps-bubble', p.block && 'ps-pop--block'), role: 'listbox', 'aria-label': p.label, style: st,
@@ -243,9 +255,12 @@
      load it and its style.css after React), styled from the tokens: the chosen row on a Neutral/50 band in Hanken Medium 24 (primary), the
      others Hanken Medium 20 (placeholder), turning away on the wheel. options [{ value, label }] · value · onChange(value) · infinite (months) */
   PS.Wheel = function Wheel(p) {
-    var W = window.WheelPicker;
+    var W = window.WheelPicker, el = R.useRef(null);
+    /* a touchmove listener there from the start: iOS then lets the wheel cancel every move (no page or sheet scrolling under the finger) */
+    R.useEffect(function () { var e = el.current; if (!e) return; function stop(ev) { if (ev.cancelable) ev.preventDefault(); } e.addEventListener('touchmove', stop, { passive: false });
+      return function () { e.removeEventListener('touchmove', stop); }; }, []);
     if (!W) return h('div', { className: 'ps-wheel' }, h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, 'The wheel picker could not load.'));
-    return h('div', { className: 'ps-wheel' }, h('i', { className: 'ps-wheel__band' }),
+    return h('div', { className: 'ps-wheel', ref: el },
       h(W.WheelPickerWrapper, { className: 'ps-wheel__wrap' },
         h(W.WheelPicker, { options: p.options, value: p.value, onValueChange: p.onChange, infinite: !!p.infinite, visibleCount: 12, optionItemHeight: Math.round(PS.px(40)), dragSensitivity: 3, scrollSensitivity: 5,
           classNames: { optionItem: 'ps-wheel__opt', highlightWrapper: 'ps-wheel__hi', highlightItem: 'ps-wheel__hi-item' } })));
@@ -268,16 +283,19 @@
     function moveTo(y, m) { var t = Math.max(min.y * 12 + min.m, Math.min(max.y * 12 + max.m, y * 12 + m)), ny = Math.floor(t / 12), nm = t % 12;
       setV(clamp({ y: ny, m: nm, d: Math.min(v.d, new Date(ny, nm + 1, 0).getDate()) })); }
     function shift(dm) { var t = view.y * 12 + view.m + dm; if (t < min.y * 12 + min.m || t > max.y * 12 + max.m) return; moveTo(Math.floor(t / 12), t % 12); }
-    function openWheel(which) { setWheel(which === 'month' ? view.m : view.y); setMode(which); }
+    /* the month wheel lists only months that can be picked: a range of up to 12 months runs straight across the year (December 2026, January 2027…),
+       a longer one shows the year on show's months (all 12 loop) */
+    var t0 = min.y * 12 + min.m, t1 = max.y * 12 + max.m, across = t1 - t0 < 12;
+    function openWheel(which) { setWheel(which === 'month' ? (across ? view.y * 12 + view.m : view.m) : view.y); setMode(which); }
     function closeWheel(ok) {
-      if (ok && wheel != null) { if (mode === 'month') moveTo(view.y, wheel); else moveTo(wheel, view.m); }
+      if (ok && wheel != null) { if (mode === 'month') { if (across) moveTo(Math.floor(wheel / 12), wheel % 12); else moveTo(view.y, wheel); } else moveTo(wheel, view.m); }
       setMode('date');
     }
     function done() { if (mode !== 'date') { closeWheel(true); return; } p.onConfirm(v); }
     function back() { if (mode !== 'date') { closeWheel(false); return; } if (p.onCancel) p.onCancel(); }
     function stepper(label, which, dm) {
       return h('span', { className: 'ps-date__step' },
-        h(m.button, Object.assign({ type: 'button', 'aria-label': 'Previous ' + which, onClick: function () { shift(-dm); } }, PS.press(true)), h(PS.Icon, { name: 'chevron-left', size: 16, color: 'var(--color-stroke-brand-strong)' })),
+        h(m.button, Object.assign({ type: 'button', 'aria-label': 'Previous ' + which, onClick: function () { shift(-dm); } }, PS.press(true)), h(PS.Icon, { name: 'chevron-right', size: 16, color: 'var(--color-stroke-brand-strong)', style: { transform: 'scaleX(-1)' } })),   /* DS: the same Chevron Right, turned */
         h('button', { type: 'button', className: PS.cx('ps-date__label ps-t-section-md-light', mode === which && 'is-on'), 'aria-label': 'Choose the ' + which, onClick: function () { if (mode === which) closeWheel(false); else openWheel(which); } },
           h(PS.Swap, { k: label, y: MT.Y.digit, block: true }, h('span', null, label))),
         h(m.button, Object.assign({ type: 'button', 'aria-label': 'Next ' + which, onClick: function () { shift(dm); } }, PS.press(true)), h(PS.Icon, { name: 'chevron-right', size: 16, color: 'var(--color-stroke-brand-strong)' })));
@@ -294,10 +312,12 @@
         h('div', { className: 'ps-date__week ps-t-caption-xs' }, WEEK.map(function (w) { return h('span', { key: w }, w); })),
         h(PS.Crossfade, { k: view.y + '-' + view.m, className: 'ps-date__grid' }, cells));
     } else {
-      var opts = mode === 'month' ? MONTHS.map(function (n, j) { return { value: j, label: n, disabled: (view.y === min.y && j < min.m) || (view.y === max.y && j > max.m) }; })
-        : (function () { var o = []; for (var y = min.y; y <= max.y; y++) o.push({ value: y, label: String(y) }); return o; })();
+      var opts = [];
+      if (mode === 'year') for (var y = min.y; y <= max.y; y++) opts.push({ value: y, label: String(y) });
+      else if (across) for (var t = t0; t <= t1; t++) opts.push({ value: t, label: MONTHS[t % 12] + (min.y !== max.y ? ' ' + Math.floor(t / 12) : '') });
+      else MONTHS.forEach(function (n, j) { if (!((view.y === min.y && j < min.m) || (view.y === max.y && j > max.m))) opts.push({ value: j, label: n }); });
       body = h('div', { className: 'ps-date__pick' },
-        h(PS.Wheel, { key: mode, options: opts, value: wheel, onChange: setWheel, infinite: mode === 'month' && min.y !== max.y }),
+        h(PS.Wheel, { key: mode, options: opts, value: wheel, onChange: setWheel, infinite: mode === 'month' && !across && opts.length === 12 }),
         h('div', { className: 'ps-date__acts' }, h(PS.Button, { variant: 'glass', size: 'sm', onClick: function () { closeWheel(false); } }, 'Cancel'), h(PS.Button, { variant: 'glass', size: 'sm', onClick: function () { closeWheel(true); } }, 'Confirm')));
     }
     return h('div', { className: 'ps-date' },

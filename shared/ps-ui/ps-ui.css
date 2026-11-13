@@ -168,7 +168,7 @@ html.ps-edge .ps-nav { padding-bottom: calc(var(--sb) + var(--spacing-section-lg
 .ps-cart { position: relative; display: block; flex: none; width: var(--ps-s, 5rem); height: var(--ps-s, 5rem); }
 .ps-cart > img { position: absolute; top: 0; left: -3.31%; width: 108.31%; height: 100%; max-width: none; }
 
-.ps-amount { font-family: var(--ps-font-num); font-weight: var(--font-weight-bold); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ps-amount { font-family: var(--ps-font-num); font-weight: var(--font-weight-bold); white-space: nowrap; }   /* Satoshi's own (proportional) figures, as in Figma: its tabular set draws other digits */
 .ps-amount__cur--body { font-family: var(--font-family-body); font-weight: var(--font-weight-medium); }
 .ps-amount--strike { font: var(--font-weight-regular) var(--font-size-caption-sm)/var(--font-line-height-caption-sm) var(--font-family-body);
   color: var(--color-text-disabled); text-decoration: line-through; }
@@ -345,6 +345,7 @@ html.ps-edge .ps-sheet--plain { padding-bottom: calc(var(--sb) + var(--spacing-p
 .ps-payment__head { align-items: flex-start; }
 .ps-payment__amt { display: flex; align-items: flex-end; gap: var(--spacing-gap-xs); }
 .ps-payment__amt .ps-amount:first-child { font-size: calc(1.5rem * var(--ps-tx, 1)); line-height: 1; color: var(--color-text-brand-default); }
+.ps-payment__amt .ps-amount:first-child .ps-amount__cur { font-weight: var(--font-weight-medium); }   /* DS 9019:21549: ₱ Medium, digits Satoshi Bold 24 */
 .ps-payment__due { display: flex; flex-direction: column; gap: var(--spacing-gap-2xs); }
 .ps-payment__due > p:last-child { display: flex; align-items: center; gap: var(--spacing-gap-xs); color: var(--color-text-secondary); }
 
@@ -933,11 +934,11 @@ button.ps-ff__box { cursor: pointer; touch-action: manipulation; }
 
 /* ---- Wheel (react-wheel-picker, DS 5900:9854): rows 40, the chosen one on a 38 px Neutral/50 band 12 in from the sides ---- */
 .ps-wheel { position: relative; height: 12rem; display: flex; align-items: center; }
-.ps-wheel__band { position: absolute; left: var(--spacing-padding-md); right: var(--spacing-padding-md); top: 50%; height: 2.375rem; margin-top: -1.1875rem; border-radius: var(--radius-full); background: var(--color-neutral-50); }
 .ps-wheel__wrap { position: relative; touch-action: none; }
 .ps-wheel__wrap [data-rwp] { -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 78%, transparent 100%); mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 78%, transparent 100%); }
 .ps-wheel__opt { color: var(--color-text-placeholder); font: var(--font-weight-medium) calc(1.25rem * var(--ps-tx, 1))/calc(2.5rem * var(--ps-tx, 1)) var(--font-family-title) !important; }   /* Figma: Hanken Medium 20, placeholder (no text style) */
-.ps-wheel__hi { font-size: inherit; }
+.ps-wheel .ps-wheel__hi { left: var(--spacing-padding-md); right: var(--spacing-padding-md); width: auto; height: 2.375rem !important; border-radius: var(--radius-full); background: var(--color-neutral-50); font-size: inherit; }
+.ps-wheel__hi [data-rwp-highlight-list] { margin-top: -0.0625rem; }   /* the band (38) covers the wheel's own line behind it — no double text; its 40 rows stay centred */
 .ps-wheel__hi-item { color: var(--color-text-primary); font: var(--font-weight-medium) calc(1.5rem * var(--ps-tx, 1))/calc(2.5rem * var(--ps-tx, 1)) var(--font-family-title); }   /* Hanken Medium 24, primary */
 .ps-wheel__opt[data-disabled], .ps-wheel__hi-item[data-disabled] { opacity: 0.35; }
 
@@ -962,7 +963,8 @@ button.ps-ff__box { cursor: pointer; touch-action: manipulation; }
 .ps-date__day.is-on > i { opacity: 1; }
 .ps-date__day.is-on > span { color: var(--color-text-inverse); }
 .ps-date__day.is-off { color: var(--color-text-disabled); }
-.ps-date__pick { display: flex; flex-direction: column; justify-content: space-between; height: 100%; }
+.ps-date__pick { display: flex; flex-direction: column; height: 100%; }
+.ps-date__pick > .ps-wheel { flex: 1 1 0; min-height: 0; height: auto; margin-top: calc(-1 * var(--spacing-gap-xl)); }   /* the wheel sits in the middle of the space between the month / year line and the buttons */
 .ps-date__acts { display: flex; gap: var(--spacing-gap-lg); padding: 0 var(--spacing-padding-md); }
 .ps-date__acts > .ps-btn { flex: 1 1 0; }
 
