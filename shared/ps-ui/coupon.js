@@ -93,7 +93,7 @@
   /* CouponOption: a coupon in the picker sheet (DS 10840:29499 "Installment", screen 10836:28988) — a white card, value + what it is on the left,
      Best + the round mark on the right. value ('25% OFF') · label ('First-payment interest') · best · expiresAt (ms) · rule (the coupon's condition,
      shown under a line when it can't be used) · state default | selected | unavailable · onPick.
-     Picking changes the shadow and the mark (150 ms). A coupon with less than a day left shows the countdown strip under the card (owner: only
+     Picking gives the card a 1 px brand line inside (DS 10842:29606, drawn over the strip too), the default shadow and the mark (150 ms). A coupon with less than a day left shows the countdown strip under the card (owner: only
      then, and only this way). */
   PS.CouponOption = function CouponOption(p) {
     var st = p.state || 'default', on = st === 'selected', off = st === 'unavailable', left = p.expiresAt ? p.expiresAt - Date.now() : 0, soon = left > 0 && left <= 86400000;

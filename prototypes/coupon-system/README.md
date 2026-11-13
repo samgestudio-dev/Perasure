@@ -24,7 +24,7 @@ at most 1.1×), 1:1, or full zoom like the older demos; "Most zoom" sets the cap
   off; "See all" opens the picker with every coupon. The order details show the discount only when one is used.
   Confirm stays inactive until the agreement is ticked; tapping it then scrolls to the agreement and the circle ripples.
 - **Coupon picker** (sheet, DS 10836:28988) — Discount / Limit increase, one of each per loan; each coupon is a white card (`PS.CouponOption`:
-  value, what it is, Best, the round mark). Coupons that don't fit the loan are greyed, "Unavailable", with their condition under a line; one with
+  value, what it is, Best, the round mark; the picked card gets a 1 px brand line inside and the default shadow). Coupons that don't fit the loan are greyed, "Unavailable", with their condition under a line; one with
   less than a day left has the countdown strip under it. The total, "Saved" and "New limit" update as you pick; Confirm applies.
 - **Keep your coupon?** (card sheet) — when a new amount or term takes a coupon off: Keep coupon sets the amount or
   term it needs, Don't use coupon leaves it off.

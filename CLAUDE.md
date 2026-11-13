@@ -217,8 +217,8 @@ rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), buil
   line and its buttons. The ‹ › arrows switch at once (a step past the range lands on its end; greyed out at the very end), a sideways swipe on
   the days changes the month. The days are always six rows; the weekday row never moves (owner).
 - **Payment logos are 24 px** (owner) in the withdrawal method and bank lists.
-- **The coupon picker** (owner, DS 10836:28988): tabs without counts; each coupon a white card (`PS.CouponOption`) — picking changes only the
-  shadow and the mark; the "Expires in" strip shows only with less than a day left, and only as the strip under the card (owner). Used by the app and
+- **The coupon picker** (owner, DS 10836:28988): tabs without counts; each coupon a white card (`PS.CouponOption`) — picking gives it a 1 px
+  brand line inside (DS 10842:29606, over the strip too), the default shadow and the mark; the "Expires in" strip shows only with less than a day left, and only as the strip under the card (owner). Used by the app and
   the Coupon system demo. The coupon centre keeps its tickets (`PS.CouponTicket`).
 - **Fonts as Figma marks them** (owner): Satoshi only where the Figma node says Satoshi (`PS.Amount`, the keypad, the hero, payment card…);
   amounts Figma sets in Inter or Hanken stay in Inter / Hanken. Check the node's font before changing one.

@@ -113,7 +113,7 @@
           ['Unavailable', function () { return T({ action: 'pick', state: 'unavailable', value: '20% OFF', label: 'Interest on all payments', rule: 'Borrow ₱6,000 or more · 6 / 8 terms', reason: 'Works with 6 or 8 terms' }); }],
           ['Used', function () { return T({ state: 'used', meta: 'Used on Oct 24, 2026' }); }],
           ['Expired', function () { return T({ state: 'expired', value: '+₱3,000', label: 'Credit limit increase', meta: 'Expired on Oct 15, 2026' }); }]] },
-      { name: 'CouponOption', desc: 'A coupon in the picker sheet (DS 10840:29499): picking changes the shadow and the mark; with less than a day left, the countdown strip sits under the card.',
+      { name: 'CouponOption', desc: 'A coupon in the picker sheet (DS 10840:29499): picking gives it a 1 px brand line inside (DS 10842:29606), the default shadow and the mark; with less than a day left, the countdown strip sits under the card.',
         props: 'value · label · best · expiresAt · rule (shown when unavailable) · state default | selected | unavailable · onPick',
         states: [['Pick', function () { return h(Toggle, { init: false, render: function (on, set) { return h(PS.CouponOption, { value: '25% OFF', label: 'First-payment interest', best: true, state: on ? 'selected' : 'default', onPick: function () { set(!on); } }); } }); }],
           ['Less than a day left', function () { return h(Toggle, { init: true, render: function (on, set) { return h(PS.CouponOption, { value: '25% OFF', label: 'First-payment interest', expiresAt: NOW + 86399000, state: on ? 'selected' : 'default', onPick: function () { set(!on); } }); } }); }],

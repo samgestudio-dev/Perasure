@@ -104,7 +104,7 @@ often instant; actions wait 0.25–1 s and show the loader only when it's long e
   a province is picked), or search, which groups matching cities, provinces and regions with the typed part in brand blue.
 - **The selfie** (DS 5561:7329 / 7501 / 7411): while it uploads only the circle stays — a turning dashed brand ring with "Uploading";
   a failed check shows the red mark and "Failed", and the button becomes Try again.
-- **The coupon picker** (DS 10836:28988): white coupon cards (`PS.CouponOption`), no counts on the tabs; the countdown strip only with less than a
+- **The coupon picker** (DS 10836:28988): white coupon cards (`PS.CouponOption`; the picked one has a 1 px brand line inside, the default shadow and the mark), no counts on the tabs; the countdown strip only with less than a
   day left (owner). The coupon centre keeps the tickets.
 - **Lists open where you tap** (owner), like an iPhone menu: centred on the finger, 8 px from the page's sides at most.
 - **Dates**: the month wheel lists only the months of the year on show that can be picked (names only); the ‹ › arrows switch month / year at
