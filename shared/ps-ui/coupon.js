@@ -90,6 +90,23 @@
       h('div', null, h('p', { className: 'ps-t-title-sm ps-c-tertiary' }, p.title), p.body ? h('p', { className: 'ps-t-body-md ps-c-placeholder' }, p.body) : null), p.children);
   };
 
+  /* CouponOption: a coupon in the picker sheet (DS 10840:29499 "Installment", screen 10836:28988) — a white card, value + what it is on the left,
+     Best + the round mark on the right. value ('25% OFF') · label ('First-payment interest') · best · expiresAt (ms) · rule (the coupon's condition,
+     shown under a line when it can't be used) · state default | selected | unavailable · onPick.
+     Picking changes the shadow and the mark (150 ms). A coupon with less than a day left shows the countdown strip under the card (owner: only
+     then, and only this way). */
+  PS.CouponOption = function CouponOption(p) {
+    var st = p.state || 'default', on = st === 'selected', off = st === 'unavailable', left = p.expiresAt ? p.expiresAt - Date.now() : 0, soon = left > 0 && left <= 86400000;
+    return h(m.button, Object.assign({ type: 'button', className: PS.cx('ps-copt', on && 'is-on', off && 'is-off', p.className), 'aria-pressed': on, 'aria-disabled': off || undefined, onClick: p.onPick }, PS.press()),
+      h('span', { className: 'ps-copt__card' },
+        h('span', { className: 'ps-copt__top' },
+          h('span', { className: 'ps-copt__text' }, h('span', { className: 'ps-copt__value ps-ellipsis' }, p.value), h('span', { className: 'ps-t-caption-sm ps-copt__label ps-ellipsis' }, p.label)),
+          p.best && !off ? h(PS.Tag, { tone: 'best' }, 'Best') : null,
+          off ? h('span', { className: 'ps-t-label-sm ps-c-disabled' }, 'Unavailable') : h('span', { className: 'ps-copt__pick' }, h(PS.Check, { on: on }))),
+        off && p.rule ? h('span', { className: 'ps-copt__rule' }, h(PS.Divider), h('span', { className: 'ps-t-caption-sm ps-c-secondary' }, p.rule)) : null,
+        soon ? h('span', { className: 'ps-copt__strip ps-t-caption-sm' }, h(PS.Icon, { name: 'clock', size: 16, color: 'countdown' }), h(PS.Countdown, { to: p.expiresAt })) : null));
+  };
+
   /* CouponRow: a coupon line on the loan page; a tap turns it on or off · type · title · sub (green when on) · on · onClick
      The line under the title crossfades only when the row turns on or off; a value that follows the slider just updates. */
   PS.CouponRow = function CouponRow(p) {

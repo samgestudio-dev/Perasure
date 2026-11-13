@@ -168,16 +168,15 @@
       APP.set({ L: n, sheet: null });
     }
     return h(PS.CouponPicker, { tab: kind, onTab: function (t) { APP.set({ draft: Object.assign({}, draft, { tab: t }) }); }, onClose: APP.close,
-      tabs: [{ id: 'discount', label: 'Discount', count: discs.length }, { id: 'limit', label: 'Limit increase', count: lims.length }],
+      tabs: [{ id: 'discount', label: 'Discount' }, { id: 'limit', label: 'Limit increase' }],   /* DS 10836:28988: no counts */
       intro: 'You can use 1 interest discount and 1 limit increase on each loan.', loan: termLine(l.amount, l.term),
       summary: h(PS.Summary, { total: c2.total, was: c2.was, saved: c2.save, newLimit: c2.limit, onConfirm: confirm }) },
       sorted.length ? sorted.map(function (c) {
         var ok = CS.fits(c, l.amount, l.term), on = (kind === 'limit' ? draft.lim : draft.disc) === c.id;
-        return h(PS.CouponTicket, { key: c.id, value: c.value, label: c.label, rule: c.rule, ruleLong: c.long, meta: c.meta, expiresAt: c.expiresAt, best: ok && top === c,
-          state: on ? 'selected' : ok ? 'default' : 'unavailable', reason: CS.why(c, l.amount, l.term), action: 'pick',
+        return h(PS.CouponOption, { key: c.id, value: c.value, label: c.label, rule: c.rule, expiresAt: c.expiresAt, best: ok && top === c,
+          state: on ? 'selected' : ok ? 'default' : 'unavailable',
           onPick: function () { var r = CS.why(c, l.amount, l.term); if (r) { APP.say(r + '.'); return; }
-            var d = Object.assign({}, draft); if (c.kind === 'limit') d.lim = d.lim === c.id ? null : c.id; else d.disc = d.disc === c.id ? null : c.id; APP.set({ draft: d }); },
-          onRule: function (el) { APP.tipAt(el, c.rule); } });
+            var d = Object.assign({}, draft); if (c.kind === 'limit') d.lim = d.lim === c.id ? null : c.id; else d.disc = d.disc === c.id ? null : c.id; APP.set({ draft: d }); } });
       }) : h(PS.EmptyState, { title: kind === 'limit' ? 'No limit increases yet' : 'No discounts yet', body: 'When you get one, it shows up here.', style: { marginTop: '4.5rem' } }));
   } });
   APP.sheet('keep', { kind: 'card', label: 'Keep your coupon?', render: function Keep() {

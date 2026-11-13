@@ -229,14 +229,13 @@
       var c2 = CS.calc(loan.amount, loan.term, dD, dL), top = CS.best(coupons, kind, loan.amount, loan.term);
       var sorted = list.slice().sort(function (a, b) { return (CS.fits(b, loan.amount, loan.term) ? 1 : 0) - (CS.fits(a, loan.amount, loan.term) ? 1 : 0); });
       return h(PS.CouponPicker, { tab: kind, onTab: function (t) { setDraft(Object.assign({}, draft, { tab: t })); }, onClose: function () { setSheet(null); },
-        tabs: [{ id: 'discount', label: 'Discount', count: discs.length }, { id: 'limit', label: 'Limit increase', count: lims.length }],
+        tabs: [{ id: 'discount', label: 'Discount' }, { id: 'limit', label: 'Limit increase' }],   /* DS 10836:28988: no counts */
         intro: 'You can use 1 interest discount and 1 limit increase on each loan.', loan: termLine(loan.amount, loan.term),
         summary: h(PS.Summary, { total: c2.total, was: c2.was, saved: c2.save, newLimit: c2.limit, onConfirm: confirmPicker }) },
         sorted.length ? sorted.map(function (c) {
           var ok = CS.fits(c, loan.amount, loan.term), on = (kind === 'limit' ? draft.lim : draft.disc) === c.id;
-          return h(PS.CouponTicket, { key: c.id, value: c.value, label: c.label, rule: c.rule, ruleLong: c.long, meta: c.meta, expiresAt: c.expiresAt, best: ok && top === c,
-            state: on ? 'selected' : ok ? 'default' : 'unavailable', reason: CS.why(c, loan.amount, loan.term), action: 'pick',
-            onPick: function () { pick(c); }, onRule: function (el) { showRule(c, el); } });
+          return h(PS.CouponOption, { key: c.id, value: c.value, label: c.label, rule: c.rule, expiresAt: c.expiresAt, best: ok && top === c,
+            state: on ? 'selected' : ok ? 'default' : 'unavailable', onPick: function () { pick(c); } });   /* DS 10836:28988 */
         }) : h(PS.EmptyState, { title: kind === 'limit' ? 'No limit increases yet' : 'No discounts yet', body: 'When you get one, it shows up here.', style: { marginTop: 72 } }));
     }
     function keepSheet() {

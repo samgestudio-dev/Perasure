@@ -8,6 +8,7 @@
 :root {
   --ps-shade-30: rgba(0, 1, 40, 0.3);        /* Figma: the shadow colour at 30% (credit card track, Withdraw button) — no token */
   --ps-countdown: #ff5e00;                   /* Figma: coupon countdown text and clock — no token */
+  --ps-expire-strip: #fff4ee;                /* Figma 10836:28988: the picked coupon's countdown strip — no token */
   --ps-laurel: #c8e5df;                      /* Figma: trust card laurels — no token (drawn in the PNG) */
   --ps-scrim: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.2) 100%); /* Figma: sheet scrim — no token */
   --ps-secondary-bottom: 235, 240, 239;      /* #EBF0EF: bottom bar of secondary pages (CLAUDE.md) — no token */
@@ -440,10 +441,23 @@ button.ps-ticket { display: block; width: 100%; text-align: left; }
 .ps-summary { display: flex; flex-direction: column; padding: var(--spacing-padding-md); border-radius: var(--radius-xl); }
 .ps-summary__chips { overflow: hidden; }
 .ps-summary__chiprow { display: flex; flex-wrap: wrap; gap: var(--spacing-gap-sm); padding-top: var(--spacing-gap-sm); }
-.ps-summary__go { margin-top: var(--spacing-gap-lg); }
-.ps-summary__total { display: flex; flex-direction: column; gap: var(--spacing-gap-2xs); }
+.ps-summary__go { margin-top: var(--spacing-gap-md); }   /* DS 10836:28988: 12 above Confirm */
+.ps-summary__total { display: flex; flex-direction: column; }
 .ps-summary__total > div { display: flex; align-items: baseline; gap: var(--spacing-gap-xs); }
-.ps-summary__total .ps-amount:first-child { font-size: var(--font-size-title-lg); line-height: var(--font-line-height-title-lg); letter-spacing: -0.01em; color: var(--color-text-primary); }
+.ps-summary__total .ps-amount:first-child { font-size: var(--font-size-20); line-height: var(--font-line-height-28); color: var(--color-text-primary); }   /* DS: Satoshi Bold 20 / 28 */
+/* CouponOption (DS 10840:29499): white card r20, 12 / 16 padding; Inter SemiBold 16 + Caption/sm; Best 24 high r12; picked: the default shadow */
+.ps-copt { display: block; width: 100%; flex: none; text-align: left; touch-action: manipulation; }
+.ps-copt__card { display: flex; flex-direction: column; border-radius: var(--radius-lg); overflow: hidden; background: var(--color-surface-card-default); box-shadow: 0 0 0 transparent; transition: box-shadow 0.15s ease; }
+.ps-copt.is-on .ps-copt__card { box-shadow: var(--shadow-default); }
+.ps-copt__top { display: flex; align-items: center; gap: var(--spacing-gap-sm); min-height: 4.125rem; padding: var(--spacing-12) var(--spacing-padding-lg); background: var(--color-surface-card-default); }
+.ps-copt__text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: var(--spacing-gap-2xs); }
+.ps-copt__value { font: var(--font-weight-semi-bold) var(--font-size-16)/var(--font-line-height-24) var(--font-family-body); color: var(--color-text-primary); }
+.ps-copt__label { color: var(--color-text-tertiary); }
+.ps-copt.is-off .ps-copt__value, .ps-copt.is-off .ps-copt__label { color: var(--color-text-disabled); }
+.ps-copt .ps-tag--best { height: 1.5rem; padding: var(--spacing-4) var(--spacing-12); border-radius: var(--radius-12); font: var(--font-weight-semi-bold) var(--font-size-label-sm)/var(--font-line-height-label-sm) var(--font-family-label); }
+.ps-copt__pick { flex: none; height: 1.75rem; display: flex; align-items: center; }
+.ps-copt__rule { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); padding: 0 var(--spacing-padding-lg) var(--spacing-12); margin-top: calc(-1 * var(--spacing-gap-xs)); }   /* 8 · line · 8 · rule */
+.ps-copt__strip { display: flex; align-items: center; gap: var(--spacing-gap-xs); padding: var(--spacing-gap-sm) var(--spacing-padding-lg); background: var(--ps-expire-strip); color: var(--ps-countdown); }   /* less than a day left */
 .ps-picker__intro { display: flex; flex-direction: column; gap: var(--spacing-gap-xs); margin-bottom: var(--spacing-gap-lg); }
 .ps-picker__intro > p { padding: 0 var(--spacing-padding-md); color: var(--color-text-secondary); }
 .ps-picker__loan { display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-gap-md); border-radius: var(--radius-xl); background: var(--color-surface-card-default); white-space: nowrap; }

@@ -73,13 +73,18 @@
         states: [['Default', function () { return h('div', { style: { display: 'flex', flexDirection: 'column', gap: 20 } }, h(PS.TrustCard), h(PS.Legal)); }]] }
     ] },
     { id: 'coupons', title: 'Coupons', items: [
-      { name: 'CouponTicket', desc: 'The coupon in the coupon centre (Use) and in the picker (pick). Fields not given are left out.', props: 'value · label · rule · ruleLong + onRule · meta · expiresAt · best · state default | selected | used | expired | unavailable · reason · action use | pick | none · onUse · onPick',
+      { name: 'CouponTicket', desc: 'The coupon in the coupon centre (Use). The picker uses CouponOption. Fields not given are left out.', props: 'value · label · rule · ruleLong + onRule · meta · expiresAt · best · state default | selected | used | expired | unavailable · reason · action use | pick | none · onUse · onPick',
         states: [['To use', function () { return T({ action: 'use', best: true, expiresAt: NOW + 86399000 }); }],
           ['Long rule', function () { return T({ action: 'use', value: '₱300 OFF', rule: 'Borrow ₱10,000 or more · 3 / 6 terms · One per account, on your first loan of the month', ruleLong: true }); }],
           ['Picker', function () { return h(Toggle, { render: function (on, set) { return T({ action: 'pick', state: on ? 'selected' : 'default', onPick: function () { set(!on); } }); } }); }],
           ['Unavailable', function () { return T({ action: 'pick', state: 'unavailable', value: '20% OFF', label: 'Interest on all payments', rule: 'Borrow ₱6,000 or more · 6 / 8 terms', reason: 'Works with 6 or 8 terms' }); }],
           ['Used', function () { return T({ state: 'used', meta: 'Used on Oct 24, 2026' }); }],
           ['Expired', function () { return T({ state: 'expired', value: '+₱3,000', label: 'Credit limit increase', meta: 'Expired on Oct 15, 2026' }); }]] },
+      { name: 'CouponOption', desc: 'A coupon in the picker sheet (DS 10840:29499): picking changes the shadow and the mark; with less than a day left, the countdown strip sits under the card.',
+        props: 'value · label · best · expiresAt · rule (shown when unavailable) · state default | selected | unavailable · onPick',
+        states: [['Pick', function () { return h(Toggle, { init: false, render: function (on, set) { return h(PS.CouponOption, { value: '25% OFF', label: 'First-payment interest', best: true, state: on ? 'selected' : 'default', onPick: function () { set(!on); } }); } }); }],
+          ['Less than a day left', function () { return h(Toggle, { init: true, render: function (on, set) { return h(PS.CouponOption, { value: '25% OFF', label: 'First-payment interest', expiresAt: NOW + 86399000, state: on ? 'selected' : 'default', onPick: function () { set(!on); } }); } }); }],
+          ['Unavailable', function () { return h(PS.CouponOption, { value: '20% OFF', label: 'Interest on all payments', rule: 'Borrow ₱6,000 or more · 6 / 8 terms', state: 'unavailable' }); }]] },
       { name: 'Tabs', desc: 'Segmented control; the pill glides to the picked tab. Count badges are optional.', props: 'items [{ id, label, count }] · value · onChange · glass · id',
         states: [['Coupon centre', function () { return h(Tabs3, {}); }], ['Picker (glass)', function () { return h(Toggle, { init: 'd', render: function (v, set) { return h('div', { style: { background: 'var(--color-surface-inset-default)', padding: 12, borderRadius: 24 } }, h(PS.Tabs, { id: 'g-t2', glass: true, value: v, onChange: set, items: [{ id: 'd', label: 'Discount', count: 2 }, { id: 'l', label: 'Limit increase', count: 1 }] })); } }); }]] },
       { name: 'EmptyState', desc: 'Picture, title and one line.', props: 'art · title · body',
@@ -126,8 +131,8 @@
     var close = function () { set(false); };
     var body = p.kind === 'plain' ? h(R.Fragment, null, h(PS.SheetTitle, { onClose: close }, 'Repayment plan'), h('p', { className: 'ps-t-body-md ps-c-tertiary', style: { padding: '0 12px' } }, 'Sheet content.'), h(PS.Button, { block: true, onClick: close }, 'Continue'))
       : p.kind === 'card' ? h(PS.Decision, { art: 'amount', title: 'Keep your ₱300 off?', body: 'This coupon works with 3 or 6 terms, so we’ve taken it off.', primary: { label: 'Keep coupon', onClick: close }, secondary: { label: 'Don’t use coupon', onClick: close }, onClose: close })
-      : h(PS.CouponPicker, { tab: 'd', onTab: noop, onClose: close, tabs: [{ id: 'd', label: 'Discount', count: 1 }, { id: 'l', label: 'Limit increase', count: 0 }], intro: 'You can use 1 interest discount and 1 limit increase on each loan.', loan: '₱45,000.00 · 6 terms', summary: h(PS.Summary, { total: 50231.25, was: 50400, saved: 168.75, onConfirm: close }) },
-          T({ action: 'pick', state: 'selected', best: true }));
+      : h(PS.CouponPicker, { tab: 'd', onTab: noop, onClose: close, tabs: [{ id: 'd', label: 'Discount' }, { id: 'l', label: 'Limit increase' }], intro: 'You can use 1 interest discount and 1 limit increase on each loan.', loan: '₱45,000.00 · 6 terms', summary: h(PS.Summary, { total: 50231.25, was: 50400, saved: 168.75, onConfirm: close }) },
+          h(PS.CouponOption, { value: '25% OFF', label: 'First-payment interest', state: 'selected', best: true, expiresAt: NOW + 86399000 }));
     return frame(p.kind === 'page' ? 620 : 480, [
       h('div', { key: 'b', className: 'g-center' }, h(PS.Button, { size: 'sm', onClick: function () { set(true); } }, 'Open sheet')),
       h(PS.Sheet, { key: 's', open: open, kind: p.kind, onClose: close, label: 'Example' }, body)]);

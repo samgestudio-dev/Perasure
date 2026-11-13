@@ -19,8 +19,9 @@ at most 1.1×), 1:1, or full zoom like the older demos; "Most zoom" sets the cap
 - **Apply a loan** — opens with the coupons that do the most for the loan. Tapping a coupon row turns that coupon on or
   off; "See all" opens the picker with every coupon. The order details show the discount only when one is used.
   Confirm stays inactive until the agreement is ticked; tapping it then scrolls to the agreement and the circle ripples.
-- **Coupon picker** (sheet) — Discount / Limit increase, one of each per loan. Coupons that don't fit the loan are
-  greyed with the reason. The total, "Saved" and "New limit" update as you pick; Confirm applies.
+- **Coupon picker** (sheet, DS 10836:28988) — Discount / Limit increase, one of each per loan; each coupon is a white card (`PS.CouponOption`:
+  value, what it is, Best, the round mark). Coupons that don't fit the loan are greyed, "Unavailable", with their condition under a line; one with
+  less than a day left has the countdown strip under it. The total, "Saved" and "New limit" update as you pick; Confirm applies.
 - **Keep your coupon?** (card sheet) — when a new amount or term takes a coupon off: Keep coupon sets the amount or
   term it needs, Don't use coupon leaves it off.
 - **Repayment plan** (sheet) — from "View payment schedule"; a discounted interest shows the original struck through.
