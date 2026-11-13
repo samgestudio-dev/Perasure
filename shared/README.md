@@ -115,7 +115,8 @@ anchor's. `PS.Wheel`'s band is its highlight (it covers the wheel's own line: no
 - **Motion = the PeraSure values**, the same as `prototypes/withdraw-fund-flow/motion-tokens.js` and the
   `perasure-card-morph` skill, in `PS.MT` (core.js). Reuse them; don't invent new timings:
   - moves (sheets, page push / pop, tab and nav pills, rows opening): the Smooth spring 240 / 30 / 1 (`PS.MT.SPRING`),
-    never sped up for a short move, no bounce;
+    never sped up for a short move, no bounce (the one exception: menus — `PS.Popover` grows out of the tap on `PS.MT.MENU`,
+    a light-bounce spring, its rows following, like an iPhone menu; owner);
   - content that is replaced (text after a tap, a tab's list, toasts, tooltips): `PS.fade()` / `PS.Swap` / `PS.Crossfade`
     — LEAVE 0.15 s rising out, ENTER 0.30 s + 0.07 s rising 8–10 px, 3 px blur between;
   - press: `PS.press()` — 60 ms, scale 0.985 (buttons, cards) / 0.92 (icon buttons);

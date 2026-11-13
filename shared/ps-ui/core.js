@@ -24,7 +24,7 @@
   PS.reduce = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 
   /* ---- motion: the PeraSure values, the same as prototypes/withdraw-fund-flow/motion-tokens.js and the
-     perasure-card-morph skill. Never sped up for a short move; nothing bounces. ---- */
+     perasure-card-morph skill. Never sped up for a short move; nothing bounces — except menus (MENU, owner). ---- */
   var EASE_IN = [0.22, 0.61, 0.36, 1];
   var MT = PS.MT = {
     /* geometry (sheets, pages, pills): withdraw's Smooth spring, settles within 0.378 px — 95 % at ≈ 290 ms, rest ≈ 560 ms */
@@ -37,7 +37,13 @@
     Y: { text: 8, block: 10, digit: 6 }, BLUR: 3,
     REVEAL: function (i) { return { duration: 0.34, delay: 0.06 + (i || 0) * 0.03, ease: EASE_IN }; },
     PRESS: { duration: 0.06 }, PRESS_SCALE: { pill: 0.985, icon: 0.92 },
-    COLOR: 0.15                                                /* colour changes: 150 ms */
+    COLOR: 0.15,                                               /* colour changes: 150 ms */
+    /* menus (owner asked for an iPhone menu's life — the one thing that bounces): the list grows out of the finger on a light-bounce spring,
+       its height a beat behind its width so it unfolds like a drop; rows follow one after another; it shrinks back into the finger quickly */
+    MENU: { type: 'spring', visualDuration: 0.34, bounce: 0.3 },
+    MENU_Y: { type: 'spring', visualDuration: 0.42, bounce: 0.32 },
+    MENU_ROW: function (i) { return { delay: 0.05 + Math.min(i, 8) * 0.022, y: { type: 'spring', visualDuration: 0.36, bounce: 0.35 }, opacity: { duration: 0.2, ease: EASE_IN }, filter: { duration: 0.2, ease: EASE_IN } }; },
+    MENU_OUT: { duration: 0.18, ease: [0.4, 0, 1, 1] }
   };
   PS.T = { spring: MT.SPRING, ui: MT.SPRING, layout: MT.SPRING, sheet: MT.SPRING, page: MT.SPRING, snap: MT.PRESS, pop: MT.SPRING };
   PS.TAP = { scale: MT.PRESS_SCALE.pill };

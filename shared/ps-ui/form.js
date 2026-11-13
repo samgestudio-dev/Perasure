@@ -152,6 +152,9 @@
   document.addEventListener('pointerdown', function (e) { TAP = { x: e.clientX, y: e.clientY, t: Date.now() }; }, true);
   function PopCard(p) {
     var card = R.useRef(null), list = R.useRef(null), thumb = R.useRef(null), fade = R.useRef(null), pl = R.useState(null), place = pl[0];
+    var ch = R.useState(null), chosen = ch[0], shown = R.useRef(false);
+    R.useEffect(function () { if (place) shown.current = true; }, [place]);   /* rows that arrive later (suggestions while typing) just appear */
+    function pick(o) { if (chosen != null) return; ch[1](o); setTimeout(function () { p.onPick(o); }, 120); }   /* the row lights up, then the menu folds away */
     R.useLayoutEffect(function () {
       var a = p.anchor && p.anchor.current, c = card.current; if (!c) return;
       var par = c.offsetParent || c.parentNode, ar = a ? a.getBoundingClientRect() : par.getBoundingClientRect(), pr = par.getBoundingClientRect();
@@ -175,17 +178,22 @@
       if (fade.current) fade.current.style.opacity = room - l.scrollTop > 2 ? 1 : 0;
     }
     R.useLayoutEffect(onScroll, [place, p.options.length]);
-    var b = 'blur(' + MT.BLUR + 'px)', oy = place && place.up ? '100%' : '0';
+    var b = 'blur(' + MT.BLUR + 'px)', oy = place && place.up ? '100%' : '0', dir = place && place.up ? 1 : -1, calm = PS.reduce;
     var st = !place ? { visibility: 'hidden', top: 0, right: 0 } : place.left != null ? { top: place.top, left: place.left, width: place.width, maxHeight: place.max, transformOrigin: place.ox + 'px ' + oy }
       : { top: place.top, right: place.right, width: place.width || undefined, maxHeight: place.max, transformOrigin: '100% ' + oy };
     return h(R.Fragment, null,
       p.noCatch ? null : h('div', { className: 'ps-pop-catch', onClick: p.onClose, onTouchMove: p.onClose }),
+      /* like an iPhone menu (owner): it grows out of the tap — a little wide and flat first, then unfolding with a light bounce — blurred to sharp,
+         the rows sliding in from the finger's side one after another; it folds back into the tap on the way out */
       h(m.div, { ref: card, className: PS.cx('ps-pop ps-bubble', p.block && 'ps-pop--block'), role: 'listbox', 'aria-label': p.label, style: st,
-        initial: { opacity: 0, scale: 0.96, filter: b }, animate: { opacity: 1, scale: 1, filter: 'blur(0px)', transition: { default: Object.assign({}, MT.SPRING, { restDelta: 0.001 }), opacity: MT.ENTER, filter: MT.ENTER } },
-        exit: { opacity: 0, scale: 0.98, filter: b, transition: MT.LEAVE } },
-        h('div', { ref: list, className: 'ps-pop__list', onScroll: onScroll, style: place ? { maxHeight: place.max - PS.px(16) } : null }, p.options.map(function (o) {
-          return h('button', { key: o, type: 'button', role: 'option', 'aria-selected': o === p.value, className: PS.cx('ps-pop__opt', o === p.value && 'is-on'),
-            onMouseDown: function (e) { e.preventDefault(); }, onClick: function () { p.onPick(o); } }, p.render ? p.render(o) : o);
+        initial: calm ? { opacity: 0 } : { opacity: 0, scaleX: 0.5, scaleY: 0.22, filter: 'blur(6px)' },
+        animate: calm ? { opacity: 1 } : { opacity: 1, scaleX: 1, scaleY: 1, filter: 'blur(0px)', transition: { scaleX: MT.MENU, scaleY: MT.MENU_Y, opacity: { duration: 0.16, ease: MT.EASE_IN }, filter: { duration: 0.24, ease: MT.EASE_IN } } },
+        exit: calm ? { opacity: 0, transition: MT.MENU_OUT } : { opacity: 0, scaleX: 0.7, scaleY: 0.5, filter: 'blur(4px)', transition: MT.MENU_OUT } },
+        h('div', { ref: list, className: 'ps-pop__list', onScroll: onScroll, style: place ? { maxHeight: place.max - PS.px(16) } : null }, p.options.map(function (o, i) {
+          var on = chosen != null ? o === chosen : o === p.value;
+          return h(m.button, { key: o, type: 'button', role: 'option', 'aria-selected': on, className: PS.cx('ps-pop__opt', on && 'is-on'),
+            initial: calm || shown.current ? false : { opacity: 0, y: PS.px(10) * dir, filter: 'blur(2px)' }, animate: { opacity: 1, y: 0, filter: 'blur(0px)', transition: MT.MENU_ROW(i) },
+            onMouseDown: function (e) { e.preventDefault(); }, onClick: function () { pick(o); } }, p.render ? p.render(o) : o);
         })),
         h('i', { ref: fade, className: 'ps-pop__fade' }), h('i', { ref: thumb, className: 'ps-pop__thumb' })));
   }
@@ -268,7 +276,7 @@
 
   /* DatePicker: the content of the "Select date" card (DS 7628:14113 · 5900:9854 · 5900:9592): Glass back / tick, the month and year steppers
      (‹ December › ‹ 2026 ›), then the month's days — the chosen one on a brand circle (36). Tapping the month or the year swaps the days for a wheel
-     with Cancel / Confirm. Days outside min … max are shown faded and can't be picked. The body keeps one height (six weeks) so nothing jumps.
+     with Cancel / Confirm. Days outside min … max are shown faded and can't be picked. The body keeps one height (six weeks) so nothing jumps; a month of fewer weeks sits in its middle.
      value { y, m, d } (m from 0) · min · max ({ y, m, d }) · onConfirm(value) · onCancel · title */
   var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   var WEEK = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -303,13 +311,13 @@
     var body;
     if (mode === 'date') {
       var first = new Date(view.y, view.m, 1).getDay(), days = new Date(view.y, view.m + 1, 0).getDate(), cells = [];
-      for (var i = 0; i < 42; i++) {
+      for (var i = 0, n = Math.ceil((first + days) / 7) * 7; i < n; i++) {   /* only the weeks the month has */
         var d = i - first + 1, inMonth = d >= 1 && d <= days, k = inMonth ? key({ y: view.y, m: view.m, d: d }) : 0, off = inMonth && (k < key(min) || k > key(max)), on = inMonth && k === key(v);
         cells.push(inMonth ? h('button', { key: i, type: 'button', disabled: off, 'aria-pressed': on, className: PS.cx('ps-date__day ps-t-body-md-em', on && 'is-on', off && 'is-off'),
           onClick: (function (dd) { return function () { setV({ y: view.y, m: view.m, d: dd }); }; })(d) }, h('i'), h('span', null, d)) : h('span', { key: i, className: 'ps-date__day is-empty' }));
       }
       body = h('div', { className: 'ps-date__cal' },
-        h('div', { className: 'ps-date__week ps-t-caption-xs' }, WEEK.map(function (w) { return h('span', { key: w }, w); })),
+        h(m.div, { layout: 'position', transition: { layout: MT.SPRING }, className: 'ps-date__week ps-t-caption-xs' }, WEEK.map(function (w) { return h('span', { key: w }, w); })),   /* glides when a month has fewer weeks */
         h(PS.Crossfade, { k: view.y + '-' + view.m, className: 'ps-date__grid' }, cells));
     } else {
       var opts = [];

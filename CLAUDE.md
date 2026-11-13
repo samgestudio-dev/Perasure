@@ -195,10 +195,11 @@ rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), buil
 - **Secondary pages** (owner): every page except the Home / Payment / Account tabs has a solid header in the page colour (`PS.Screen{secondary}`);
   the immersive amount entry and the order page are not secondary pages.
 - **Lists in the application are popovers** (owner, DS 7201:12032 — the bottom-sheet lists are retired): `PS.FormField{menu}` / `PS.Popover`.
-  Like an iPhone menu they open centred on where the finger tapped (growing from that point), kept 8 px from the page's sides.
+  Like an iPhone menu they open centred on where the finger tapped, kept 8 px from the page's sides, and grow out of that point on a
+  light-bounce spring (`PS.MT.MENU`, the one thing that bounces), rows following one after another; a picked row lights up, then it folds away.
   **Dates** use `PS.DatePicker` (DS 7628:14113); its month / year wheel is react-wheel-picker (`PS.Wheel`), not a hand-made one. The wheel lists
   only dates that can be picked (a range of up to 12 months runs across the year: December 2026, January 2027) and sits in the middle of the
-  space between the month / year line and its buttons.
+  space between the month / year line and its buttons; a month of fewer than six weeks sits in the middle of the days' space.
 - **Payment logos are 24 px** (owner) in the withdrawal method and bank lists.
 - **Fonts as Figma marks them** (owner): Satoshi only where the Figma node says Satoshi (`PS.Amount`, the keypad, the hero, payment card…);
   amounts Figma sets in Inter or Hanken stay in Inter / Hanken. Check the node's font before changing one.

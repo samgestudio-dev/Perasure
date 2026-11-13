@@ -645,7 +645,8 @@ textarea.ps-field__value { white-space: normal; }
 .ps-selbar__note { flex: 0 1 auto; min-width: 0; max-width: 55%; text-align: right; color: var(--color-text-placeholder); transition: color 0.15s ease; }
 .ps-selbar.is-on .ps-selbar__note { color: var(--color-text-brand-light); }
 .ps-search { flex: 1 1 0; min-width: 0; height: 2.5rem; display: flex; align-items: center; gap: var(--spacing-gap-sm); padding: var(--spacing-padding-sm) var(--spacing-padding-md); background: var(--color-surface-elevated-glass);
-  border-radius: var(--radius-full); box-shadow: var(--blur-glass-nav-effect-shadow), inset 0 0 0 var(--stroke-width-default) var(--color-icon-inverse); }
+  border-radius: var(--radius-full); box-shadow: var(--blur-glass-nav-effect-shadow), inset 0 0 0 var(--stroke-width-default) var(--color-icon-inverse);
+  -webkit-backdrop-filter: blur(calc(var(--blur-backdrop-bg) / 2)); backdrop-filter: blur(calc(var(--blur-backdrop-bg) / 2)); }   /* the same glass as the close button beside it */
 .ps-search > input { flex: 1 1 0; min-width: 0; border: 0; outline: 0; background: none; color: var(--color-text-primary); font: var(--font-weight-regular) var(--font-size-body-md)/var(--font-line-height-body-md) var(--font-family-body); }
 .ps-search > input::placeholder { color: var(--color-text-placeholder); }
 .ps-search > button { display: flex; }
@@ -955,7 +956,7 @@ button.ps-ff__box { cursor: pointer; touch-action: manipulation; }
 .ps-date__label { flex: 0 1 5rem; min-width: 0; color: var(--color-text-primary); text-align: center; touch-action: manipulation; transition: color 0.15s ease; }
 .ps-date__body { position: relative; height: 18.375rem; }   /* week row 14 + 16 + six rows of 24 with 24 between */
 .ps-date__view { position: absolute; inset: 0; }
-.ps-date__cal { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); }
+.ps-date__cal { display: flex; flex-direction: column; justify-content: center; height: 100%; gap: var(--spacing-gap-lg); }   /* a month of 4 or 5 weeks sits in the middle of the space (six weeks fill it, as in Figma) */
 .ps-date__week, .ps-date__grid { display: grid; grid-template-columns: repeat(7, 1.5rem); justify-content: space-between; padding: 0 var(--spacing-padding-lg); }   /* Figma: 24 px cells, space between, 16 in */
 .ps-date__week { color: var(--color-neutral-200); text-align: center; white-space: nowrap; }
 .ps-date__week > span { display: flex; justify-content: center; }
