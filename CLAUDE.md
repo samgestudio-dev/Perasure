@@ -52,7 +52,8 @@ shared/gallery.js, gallery-app.js  every shared component's states (one entry ea
 shared/stage.html          draws one state of one entry (?entry=&state=): Dev Mode's canvas for a component
 shared/gallery.html        only forwards old links to Dev Mode → Components
 devmode/                   PeraSure Dev Mode ("PeraSure Dev Mode" on the picker, desktop): every page and component inspected like Figma Dev Mode,
-                           with code, specs, tokens, iterations and version compare — see "PeraSure Dev Mode" and devmode/README.md
+                           with code, specs, tokens, iterations and version compare — see "PeraSure Dev Mode" and devmode/README.md;
+                           devmode/mcp/server.mjs: its MCP server for developers' AI tools
 tools/devmode-index.py     makes devmode/data/index.js from the code (stamp.py runs it); devmode-snapshot.py saves a version's runnable copy
 shared/README.md           how to use the components, files, rules for changing them
 prototypes/app/            the whole app as a test environment ("PeraSure app") — see "The full app"
@@ -282,6 +283,10 @@ at the version's tag), Figma nodes, statuses, the iteration record and version c
 - **The platform's own look is not PeraSure's** (owner): PeraSure tokens are data inside it (Inspect, the Tokens tab), never its styling.
   It is bilingual (中 / EN, every text in `devmode/js/i18n.js`, data as `{ zh, en }`) and has light and dark themes.
 - Don't read `tokens/tokens.css` into context for it: the Tokens tab parses the file in the browser.
+- **MCP for developers' AI** (owner): `devmode/mcp/server.mjs` (one file, no dependencies, stdio; guide `devmode/mcp/README.md`) reads the
+  same data files, `shared/ps-ui`, the gallery entries and `tokens/tokens.css`, and injects `devmode/js/inspector.js` for live measurements.
+  When a data format, a page's opening (`pages.js`) or the inspector changes, update the server in the same commit and raise its `VERSION`;
+  check with `node devmode/mcp/server.mjs --check`. Its setup dialog and "Copy for AI" are `devmode/js/ai.js`.
 
 ## Withdraw: the two credit states of the Credit limit intro
 

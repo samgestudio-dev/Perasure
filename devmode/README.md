@@ -19,6 +19,9 @@ see what each iteration changed and developers can pull the exact code. Desktop 
   it on a phone, and its components. **History**: the iterations that changed it.
 - **Compare**: any two versions side by side (a tap, scroll or typing on one side happens on the other) or overlaid (opacity slider),
   replayed together at 1× / 0.5× / 0.25×, with the recorded changes and, per component, properties and code before → after.
+- **Connect AI** (top bar): an MCP server for developers' AI tools — Claude Code, Cursor, Codex … read pages, components, code, CSS,
+  tokens, motion and iterations straight from Dev Mode ([`mcp/README.md`](mcp/README.md)). **Copy for AI** (right panel) copies an
+  instruction with the link to what is selected; the AI opens it with `resolve_devmode_link`.
 - 中 / EN switch and system / light / dark theme (remembered in the browser). The platform has its own look: PeraSure's tokens are
   data inside it, never its styling.
 
@@ -37,6 +40,7 @@ see what each iteration changed and developers can pull the exact code. Desktop 
 | `data/pages.js` | how each app page and state is opened (Tune settings, `?page=`, a script) — add new screens here |
 | `data/index.js` | made by `tools/devmode-index.py` from the code (stamp.py runs it): components, pages, lines, CSS, tokens, Figma |
 | `data/iterations.js`, `data/status.js` | the iteration record and the dev statuses (rules: skill `perasure-iteration-log`) |
+| `mcp/server.mjs`, `js/ai.js` | the MCP server (one file, Node 18+; guide `mcp/README.md`) and its setup dialog / Copy for AI |
 | `snapshots/<id>/` | a runnable copy of each iteration (`tools/devmode-snapshot.py <id>`); the *Dev Mode* workflow tags its commit `devmode-<id>` |
 
 `shared/stage.html?entry=<gallery entry>&state=<n>` draws one state of a component for the canvas; the states themselves are written

@@ -213,7 +213,16 @@
       var tk = I.tokenOf ? I.tokenOf(d) : null;
       return { token: tk || (d && /var\(/.test(d) ? null : lenTok(px, cat)), expr: d && /var\(/.test(d) && !tk ? d : null };
     }
-    function colTok(c, prop) { var d = prop && I.declared ? I.declared(win, el, prop) : '', tk = I.tokenOf ? I.tokenOf(d) : null; return tk || (T.color[c] || [])[0] || null; }
+    function colTok(c, prop, from) {
+      var tk = null, e = from || el;
+      if (prop && I.declared) {
+        for (var k = 0; e && e.nodeType === 1 && k < (prop === 'color' ? 40 : 1); k++, e = e.parentElement) {   /* text colour is inherited */
+          var d = I.declared(win, e, prop) || (prop === 'background-color' ? I.declared(win, e, 'background') : prop === 'border-top-color' ? I.declared(win, e, 'border') || I.declared(win, e, 'border-top') : '');
+          if (d) { var m = /var\((--color-[\w-]+)\)/.exec(d) || /var\((--[\w-]+)\)/.exec(d); tk = m && !/^(?:inherit|currentcolor)$/i.test(d) ? m[1] : null; break; }
+        }
+      }
+      return tk || (T.color[c] || [])[0] || null;
+    }
     var rows = [], add = function (group, label, value, token, px, expr) { rows.push({ group: group, label: label, value: value, token: token, px: px, expr: expr || null }); };
     add('layout', 'w', r.width, null, true); add('layout', 'h', r.height, null, true);
     var pad = ['Top', 'Right', 'Bottom', 'Left'].map(function (s) { return parseFloat(cs['padding' + s]); });
@@ -225,9 +234,9 @@
     if (rad) { var rw = said('border-top-left-radius', rad, 'radius'); add('look', 'radius', rad >= 999 ? 9999 : rad, rw.token || (rad >= 999 ? '--radius-full' : null), true, rw.expr); }
     if (cs.backgroundColor && cs.backgroundColor !== 'rgba(0, 0, 0, 0)') add('look', 'fill', cs.backgroundColor, colTok(cs.backgroundColor, 'background-color'));
     if (cs.backgroundImage && cs.backgroundImage !== 'none') add('look', 'image', cs.backgroundImage.slice(0, 80) + (cs.backgroundImage.length > 80 ? '…' : ''));
-    if (parseFloat(cs.borderTopWidth)) add('look', 'stroke', cs.borderTopWidth + ' ' + cs.borderTopStyle + ' ' + cs.borderTopColor, colTok(cs.borderTopColor));
-    if (cs.boxShadow && cs.boxShadow !== 'none') add('look', 'shadow', cs.boxShadow, (T.shadow[cs.boxShadow] || [])[0] || null);
-    if (cs.opacity !== '1') add('look', 'opacity', cs.opacity);
+    if (parseFloat(cs.borderTopWidth)) add('look', 'stroke', cs.borderTopWidth + ' ' + cs.borderTopStyle + ' ' + cs.borderTopColor, colTok(cs.borderTopColor, 'border-top-color'));
+    if (cs.boxShadow && cs.boxShadow !== 'none' && !/^(rgba\(0, 0, 0, 0\) 0px 0px 0px 0px(, )?)+$/.test(cs.boxShadow)) { var sd = I.declared ? I.declared(win, el, 'box-shadow') : '', stk = I.tokenOf ? I.tokenOf(sd) : null; add('look', 'shadow', cs.boxShadow, stk || (sd && /var\(/.test(sd) ? null : (T.shadow[cs.boxShadow] || [])[0] || null), false, sd && /var\(/.test(sd) && !stk ? sd : null); }
+    if (parseFloat(cs.opacity) < 0.99) add('look', 'opacity', Math.round(parseFloat(cs.opacity) * 100) / 100);
     var tc = Array.prototype.filter.call(el.classList, function (c) { return /^ps-t-/.test(c); });
     var txt = el.querySelector('*') && !el.textContent.trim() ? null : el;
     if (txt) {
@@ -236,7 +245,7 @@
       add('text', 'font', ts.fontFamily.split(',')[0].replace(/["']/g, '') + ' ' + ts.fontWeight);
       add('text', 'size', parseFloat(ts.fontSize), lenTok(ts.fontSize, 'font'), true);
       if (ts.lineHeight !== 'normal') add('text', 'line', parseFloat(ts.lineHeight), lenTok(ts.lineHeight, 'line'), true);
-      add('text', 'color', ts.color, colTok(ts.color));
+      add('text', 'color', ts.color, colTok(ts.color, 'color', t));
     }
     return { rows: rows, rootPx: rootPx, element: el, classes: Array.prototype.slice.call(el.classList) };
   };
@@ -370,16 +379,21 @@
     });
     return out;
   }
+  /* the declarations as written: from cssText, split at top-level semicolons (a var() shorthand stays one line) */
+  function declsOf(st) {
+    var t = st.cssText, out = [], d = 0, cur = '';
+    for (var i = 0; i < t.length; i++) { var c = t[i]; if (c === '(') d++; if (c === ')') d--; if (c === ';' && !d) { if (cur.trim()) out.push(cur.trim() + ';'); cur = ''; } else cur += c; }
+    if (cur.trim()) out.push(cur.trim() + ';');
+    return out;
+  }
   I.matchedRules = function (win, el) {
     if (!el) return [];
     return rules(win).filter(function (x) {
       if (/tokens(-rem)?\.css$|fonts\.css$/.test(x.file)) return false;
       if (x.media && !win.matchMedia(x.media).matches) return false;
       return x.r.selectorText.split(/,(?![^(]*\))/).some(function (s) { try { return el.matches(s.trim()); } catch (e) { return false; } });
-    }).map(function (x) {
-      var decl = []; for (var i = 0; i < x.r.style.length; i++) { var n = x.r.style[i]; decl.push(n + ': ' + x.r.style.getPropertyValue(n).trim() + (x.r.style.getPropertyPriority(n) ? ' !important' : '') + ';'); }
-      return { sel: x.r.selectorText, file: x.file, media: x.media, decl: decl };
-    });
+    }).filter(function (x) { return !/^[\s*,:a-z-]*$/.test(x.r.selectorText) || /[a-z]/.test(x.r.selectorText.replace(/::?(before|after)/g, '')); })
+      .map(function (x) { return { sel: x.r.selectorText, file: x.file, media: x.media, decl: declsOf(x.r.style) }; });
   };
   /* pictures drawn inside a layer: <img>, and icons / backgrounds set with url() */
   I.assets = function (win, node) {

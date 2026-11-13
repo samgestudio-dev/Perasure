@@ -99,10 +99,14 @@ window.DM_PAGES = (function () {
   SECTIONS.forEach(function (s) { s.pages.forEach(function (p) { p.section = s.id; p.kind = p.kind || (p.tab && !p.js ? 'tab' : 'screen'); p.code = p.code || (p.tab && !p.js ? p.tab : p.id); BY[p.id] = p; }); });
   /* url(page, state, root): the app's address for a page (root: '' for the live app, a snapshot's folder for an old version) */
   function url(p, st, root) {
-    var q = (st && st.q) || p.q || '', page = p.page ? '&page=' + p.page : p.tab && p.tab !== 'home' ? '&page=' + p.tab : '';
+    /* a page's settings override BASE (the app reads the first value of a repeated key, so each key is written once) */
+    var q = new URLSearchParams(BASE);
+    new URLSearchParams((st && st.q) || p.q || '').forEach(function (v, k) { q.set(k, v); });
+    if (p.page) q.set('page', p.page); else if (p.tab && p.tab !== 'home') q.set('page', p.tab);
     /* the deploy stamp (stamp.py) makes phones and browsers fetch a fresh app after an update, as the picker's links do */
-    var st = (document.querySelector('script[src*="data/pages.js"]') || {}).src, v = st && /[?&]v=(\w+)/.exec(st);
-    return (root || '../') + 'prototypes/app/index.html?' + BASE + '&' + q + page + (v && (!root || root === '../') ? '&v=' + v[1] : '');
+    var me = (document.querySelector('script[src*="data/pages.js"]') || {}).src, v = me && /[?&]v=(\w+)/.exec(me);
+    if (v && (!root || root === '../')) q.set('v', v[1]);
+    return (root || '../') + 'prototypes/app/index.html?' + q.toString();
   }
   return { BASE: BASE, sections: SECTIONS, byId: BY, url: url, js: function (p, st) { return (st && st.js) || p.js || ''; } };
 })();

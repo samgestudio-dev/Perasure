@@ -37,6 +37,7 @@
           h('select', { value: cur.id, onChange: function (e) { p.onVer(e.target.value === DM.latest().id ? null : e.target.value); } },
             its.map(function (it, i) { return h('option', { key: it.id, value: it.id }, it.label + (i === 0 ? ' · ' + t('version.latest') : '') + (it.jira ? '' : '')); })),
           h(DM.Icon, { name: 'down', size: 12 })),
+        h('button', { type: 'button', className: 'dm-btn is-outline', onClick: p.onAi, title: t('ai.title') }, h(DM.Icon, { name: 'spark', size: 14 }), t('ai.button')),
         h('button', { type: 'button', className: 'dm-btn is-outline', onClick: p.onCompare }, h(DM.Icon, { name: 'compare', size: 14 }), t('compare')),
         h('span', { className: 'dm-toolbar__sep' }),
         h('div', { className: 'dm-seg', role: 'group', 'aria-label': 'Theme' }, [['system', 'monitor'], ['light', 'sun'], ['dark', 'moon']].map(function (x) {
@@ -163,7 +164,7 @@
 
     return h(R.Fragment, null,
       h('div', { className: DM.cx('dm-app', doc && 'is-doc') },
-        h(Top, { crumbs: crumbs.filter(Boolean), ver: ver, theme: theme, onTheme: changeTheme, onLang: changeLang, onVer: function (v) { setH({ ver: v }); }, onCompare: function () { openCompare(); } }),
+        h(Top, { crumbs: crumbs.filter(Boolean), ver: ver, theme: theme, onTheme: changeTheme, onLang: changeLang, onVer: function (v) { setH({ ver: v }); }, onCompare: function () { openCompare(); }, onAi: function () { setH({ ai: 1 }); } }),
         h(DM.Left, { view: view, onView: function (v) { setQ(''); setH({ v: v === 'pages' ? null : v, sel: null, tab: null }); }, q: q, onQ: setQ,
           page: page.id, onPage: openPage, comp: H.c, onComp: openComp, iter: H.it || DM.latest().id, onIter: function (id) { setH({ it: id }); },
           cat: H.cat || 'color', onCat: function (c) { setH({ cat: c }, true); }, tokens: tokens,
@@ -173,6 +174,7 @@
           tab: H.tab === 'history' ? 'history' : 'inspect', onTab: function (x) { setH({ tab: x === 'history' ? 'history' : null }, true); },
           onSelect: select, onComp: openComp, onPage: openPage, onVersion: function (id) { setH({ ver: id === DM.latest().id ? null : id }); }, onCompare: openCompare })),
       cmp && DM.Compare ? h(DM.Compare, { a: cmp[0], b: cmp[1], page: page, state: state, comp: comp, onChange: function (a, b) { setH({ cmp: a + '..' + b }, true); }, onClose: function () { setH({ cmp: null }); } }) : null,
+      H.ai && DM.AiSetup ? h(DM.AiSetup, { onClose: function () { setH({ ai: null }); } }) : null,
       h(Toast));
   }
 

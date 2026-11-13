@@ -54,7 +54,8 @@
     radius: 'M3 13V8a5 5 0 015-5h5',
     type: 'M3 4V3h10v1M8 3v10M6 13h4',
     shadow: 'M3 3h8v8H3zM5 13h8V5',
-    more: 'M4 8h.01M8 8h.01M12 8h.01'
+    more: 'M4 8h.01M8 8h.01M12 8h.01',
+    spark: 'M8 2.5l1.3 3.2L12.5 7 9.3 8.3 8 11.5 6.7 8.3 3.5 7l3.2-1.3zM12.5 11l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z'
   };
   DM.Icon = function Icon(p) {
     var s = p.size || 16;
