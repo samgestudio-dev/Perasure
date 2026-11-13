@@ -232,5 +232,7 @@
             g.items.map(function (it) { return h(Entry, { key: it.name, item: it }); }));
         }))));
   }
+  PS.GALLERY = GROUPS;                  /* every entry, for PeraSure Dev Mode's component stage (shared/stage.html) */
+  if (window.PS_STAGE) return;          /* the stage mounts one entry itself */
   PS.mount(App);
 })();

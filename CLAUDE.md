@@ -9,8 +9,8 @@ Phone-first motion prototypes for PeraSure, served by GitHub Pages from `main` /
 ## Components first (owner's rule — this repo and every PeraSure project)
 
 **A new component or feature is created in the component library first, then the page uses it directly.** Here the library is
-`shared/ps-ui` and its gallery `shared/gallery.html`: build the piece there (every state a prop, tokens only, rem), add its states to
-the gallery in the same commit, then use it from the page. A change to a piece (a colour, a spacing, a new state) is made in the
+`shared/ps-ui` and its gallery entries (`shared/gallery.js` / `gallery-app.js`, shown in PeraSure Dev Mode → Components): build the piece
+there (every state a prop, tokens only, rem), add its states to the gallery entries in the same commit, then use it from the page. A change to a piece (a colour, a spacing, a new state) is made in the
 component, never patched from a page — page CSS only places shared pieces, and never targets a component's classes. Skill:
 `perasure-components`.
 
@@ -23,6 +23,9 @@ PeraSure-related project (fetch from `https://raw.githubusercontent.com/samgestu
   buttons, placeholders, errors, notes) follows it, in this repo and in any PeraSure-related project.
 - **`perasure-components`** — components first: a new piece of UI or feature is made in the component library (with its states
   and a gallery entry) before any page uses it, and changes are made in the component. Every PeraSure project, every screen.
+- **`perasure-iteration-log`** — recording an iteration in PeraSure Dev Mode: every new requirement (a Jira ticket or not) that changes a
+  page, a component or a motion gets an entry in `devmode/data/iterations.js` (UI / motion, pages, components, before → after), its
+  statuses, a runnable snapshot and a git tag. Use it whenever such a change is committed.
 - **`perasure-card-morph`** — the card morph motion of the withdraw fund flow and Change co-maker (a card or page turning
   into another state). Any new morph starts from its `example.html` + `engine.js` and keeps its rules, so the motion is
   the same everywhere. When a morph in a prototype is changed for the owner, update the skill too if the rule changed.
@@ -45,7 +48,12 @@ shared/ps-ui/              PeraSure UI components (React, configurable): ps-ui.c
                            list.js (links, facts, activity, inbox, history, hub), fx.js (Order submit, OTP sheet, Credit limit intro),
                            apply.js (page head, cameras, selfie, ID sides and result, documents, search sheets, address picker, estimate, help articles),
                            withdraw-host.js (runs the Withdraw demo's loan screen from the demo's own code)
-shared/gallery.html        live gallery of every shared component and its states (on the picker as "PeraSure components"; entries in gallery.js + gallery-app.js)
+shared/gallery.js, gallery-app.js  every shared component's states (one entry each: name, desc, props, states) — shown in Dev Mode
+shared/stage.html          draws one state of one entry (?entry=&state=): Dev Mode's canvas for a component
+shared/gallery.html        only forwards old links to Dev Mode → Components
+devmode/                   PeraSure Dev Mode ("PeraSure Dev Mode" on the picker, desktop): every page and component inspected like Figma Dev Mode,
+                           with code, specs, tokens, iterations and version compare — see "PeraSure Dev Mode" and devmode/README.md
+tools/devmode-index.py     makes devmode/data/index.js from the code (stamp.py runs it); devmode-snapshot.py saves a version's runnable copy
 shared/README.md           how to use the components, files, rules for changing them
 prototypes/app/            the whole app as a test environment ("PeraSure app") — see "The full app"
 prototypes/<slug>/index.html    main / recommended variant of a demo
@@ -97,7 +105,7 @@ README.md                  human-facing summary + demo / animation tables
    - Link to the file explicitly (`.../index.html`), not the folder — folder links break when the repo is opened locally.
    - Newest demo goes at the top of the array unless the owner says otherwise. Order set by the owner (keep it, in the
      `DEMOS` array and the README table): Credit limit increase, Withdraw fund flow, Order submit, OTP sheet morph,
-     Loading page, Landing page (website). Newer ones sit above them, newest first; "PeraSure components" (the gallery)
+     Loading page, Landing page (website). Newer ones sit above them, newest first; "PeraSure Dev Mode" (it replaced the gallery)
      stays right after Coupon system.
    - Only edit the `DEMOS` array for a normal addition; don't restyle the picker unless asked.
    - The picker and the player are React + Material UI 5 (browser builds in `vendor/`, no JSX, no build step;
@@ -155,7 +163,8 @@ built on it. Details and the head block to copy: `shared/README.md`; reference p
 - Granularity (owner: "functional cards and states as components"): atoms (amount, button, tag, chip, check, icon),
   bars (top / bottom / navigator), sheets, and each functional card (credit card, payment card, home coupons, coupon
   ticket, coupon row, amount card, order details, protection, method, profile, credit limit, menu…). Every state is a
-  prop (`state`, `on`, `tone`, `variant`) and is shown in `shared/gallery.html` — add new states there too.
+  prop (`state`, `on`, `tone`, `variant`) and has a gallery entry (`shared/gallery.js` / `gallery-app.js`, shown in Dev Mode → Components) —
+  add new states there too.
 - Styles only from the tokens; a value with no token goes into `:root` of `ps-ui.css` as `--ps-*` with a note.
 - **Sizes in rem, never a fixed px** (owner): 1rem = 16 design px at the default text size; tokens from `tokens-rem/` (load it after
   `tokens/tokens.css`). px only for hairlines (1–2 px strokes), shadows, blurs, the 40 px status strip above the screen
@@ -183,7 +192,7 @@ rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), buil
 - **New work goes in here too.** When a new screen, flow or motion piece is added to the repo, add it to the app as well (a screen in
   `screens-*.js`, its states in Tune), so the app stays complete. Change co-maker and the landing page are not part of it.
 - **The gallery keeps up with the app** (owner): a card, sheet content or other piece of the app's look is a shared component (`shared/ps-ui`)
-  with its states in `shared/gallery.html`, added in the same commit as the screen that uses it — `app.css` / `screens-*.js` only place
+  with its states in the gallery entries (`shared/gallery*.js`, shown in Dev Mode), added in the same commit as the screen that uses it — `app.css` / `screens-*.js` only place
   shared pieces and hold the flow. A visual change to a piece is made in the component, so the gallery shows it too.
 - States that can't be reached by tapping are switched in Tune (account, loan, coupons, network, code / ID / selfie outcomes, inbox,
   rating). Also in Tune: Screen fit (default capped zoom 1.15×; "Capped zoom · rem" gives the same factor through the root font size), Text size
@@ -255,6 +264,23 @@ rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), buil
   is laid over its frame (Figma | app | difference) and corrected before it counts as done. `prototypes/app/README.md` lists what has
   been compared.
 - Links: `?page=<screen>` opens a screen directly, `?auto=0` stops the app typing codes and moving on by itself.
+
+## PeraSure Dev Mode (`devmode/`)
+
+The owner's tool for designers and developers (desktop, after Figma Dev Mode): every page of the app and every shared component, live,
+with hover spacing (padding / gaps labelled with the tokens the CSS uses), Alt redlines, specs, tokens, the code behind each piece (GitHub,
+at the version's tag), Figma nodes, statuses, the iteration record and version compare. Guide: `devmode/README.md`.
+
+- **Every new requirement is recorded** (owner): a change to a page, a component or a motion gets an iteration entry — skill
+  `perasure-iteration-log` (Jira key and title read from Jira; "无 Jira 单号" when there is none). The version stays v1 — iterations are
+  labelled `v1 · YYYY-MM-DD · PHL-xxx`; only a large redesign starts v2.0. Each iteration keeps a runnable snapshot (`devmode/snapshots/<id>`)
+  and a git tag `devmode-<id>`; the statuses (Ready for dev / Changed / Completed) are in `devmode/data/status.js`, kept by Claude.
+- **Nothing is tagged by hand**: components are found in React's tree (`PS.*`, and the app's own `APP.*` pieces), pages come from
+  `devmode/data/pages.js` (how each page and state is opened) and `devmode/data/index.js` (made by `tools/devmode-index.py` from the code).
+  A new screen → add it to `pages.js`; a new component → its gallery entry (it then has states in Dev Mode).
+- **The platform's own look is not PeraSure's** (owner): PeraSure tokens are data inside it (Inspect, the Tokens tab), never its styling.
+  It is bilingual (中 / EN, every text in `devmode/js/i18n.js`, data as `{ zh, en }`) and has light and dark themes.
+- Don't read `tokens/tokens.css` into context for it: the Tokens tab parses the file in the browser.
 
 ## Withdraw: the two credit states of the Credit limit intro
 
@@ -375,7 +401,8 @@ bundle was unpacked onto the shared environment):
 
 GitHub Pages lets browsers reuse a file for 10 minutes. Before committing a change to the Playground pages,
 `animations/` or `assets/`, run `python3 tools/stamp.py`: it stamps the shared scripts (`?v=<stamp>`), and the
-index adds that stamp to every link and thumbnail, so phones load the new version right away. The player
+index adds that stamp to every link and thumbnail, so phones load the new version right away. It also remakes Dev Mode's index
+(`devmode/data/index.js`) and stamps `devmode/index.html`. The player
 fetches animation JSON with `cache: 'no-cache'` and loads GSAP modules with a per-load token.
 
 ## Publishing

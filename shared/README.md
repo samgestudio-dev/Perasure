@@ -7,7 +7,10 @@ states as props; the look lives here once. Change a component here and every pro
 > (every state a prop, tokens only, rem, its states in the gallery in the same commit), then pages use it directly. A change to a piece
 > is made in the component, never patched from a page: page CSS only places shared pieces. Skill: `.claude/skills/perasure-components`.
 
-- **Live gallery:** [`shared/gallery.html`](gallery.html) — every component with its states (tap the chips) and props (`gallery.js`; the components added with the full app are in `gallery-app.js`).
+- **Live, with every state:** [PeraSure Dev Mode → Components](../devmode/index.html#v=components) — each component's states (the chips
+  above the canvas), props, specs, tokens, code and where it is used. The states are written in `gallery.js` (the components added with
+  the full app: `gallery-app.js`), one entry per component; `stage.html?entry=<name>&state=<n>` draws one of them, and that is what Dev
+  Mode shows. `gallery.html` only sends old links on to Dev Mode.
 - **The whole app built on it:** [`prototypes/app/`](../prototypes/app/README.md).
 - **First prototype built on it:** [`prototypes/coupon-system/`](../prototypes/coupon-system/README.md).
 - Figma source: PeraSure design system (`OBsvf42AiRapcRrasD7KNm`) — home `10730:58631`, loan `10656:51873`,

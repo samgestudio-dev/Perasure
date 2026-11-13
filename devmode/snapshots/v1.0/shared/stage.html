@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="format-detection" content="telephone=no">
+<title>PeraSure component stage</title>
+<!-- One state of one gallery entry, alone on the page: what PeraSure Dev Mode shows in its canvas for a component.
+     ?entry=<gallery entry name>&state=<index>. The entries live in gallery.js / gallery-app.js (the same as the old gallery page). -->
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../tokens-rem/tokens-rem.css?v=202611130740">
+<link rel="stylesheet" href="../../../../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../../../../vendor/react-wheel-picker@1.2.3/style.css">
+<link rel="stylesheet" href="ps-ui/ps-ui.css?v=202611130740">
+<style>
+  html, body { margin: 0; min-height: 100%; background: var(--color-surface-page-default); }
+  .st { padding: 16px; }
+  .st-missing { padding: 24px 16px; color: var(--color-text-tertiary); font: 14px/20px var(--font-family-body); }
+  .g-row { display: flex; gap: 8px; align-items: center; }
+  .g-frame { position: relative; width: calc(100% + 32px); margin: -16px; overflow: hidden; background: var(--color-surface-page-default); isolation: isolate; }
+  .g-center { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+</style>
+<script>window.PS_STAGE = true;</script>
+</head>
+<body>
+<div id="root"></div>
+<script src="../../../../vendor/react@18.3.1/react.production.min.js"></script>
+<script src="../../../../vendor/react-dom@18.3.1/react-dom.production.min.js"></script>
+<script src="../../../../vendor/react-wheel-picker@1.2.3/react-wheel-picker.js"></script>
+<script src="../../../../vendor/motion@14.4.0/motion-react.js"></script>
+<script src="ps-ui/core.js?v=202611130740"></script>
+<script src="ps-ui/layout.js?v=202611130740"></script>
+<script src="ps-ui/coupon.js?v=202611130740"></script>
+<script src="ps-ui/home.js?v=202611130740"></script>
+<script src="ps-ui/loan.js?v=202611130740"></script>
+<script src="ps-ui/account.js?v=202611130740"></script>
+<script src="ps-ui/feedback.js?v=202611130740"></script>
+<script src="ps-ui/form.js?v=202611130740"></script>
+<script src="ps-ui/status.js?v=202611130740"></script>
+<script src="ps-ui/pay.js?v=202611130740"></script>
+<script src="ps-ui/list.js?v=202611130740"></script>
+<script src="ps-ui/fx.js?v=202611130740"></script>
+<script src="ps-ui/apply.js?v=202611130740"></script>
+<script src="gallery-app.js?v=202611130740"></script>
+<script src="gallery.js?v=202611130740"></script>
+<script>
+  (function () {
+    var R = window.React, M = window.Motion, PS = window.PS, h = R.createElement, q = new URLSearchParams(location.search);
+    var name = q.get('entry'), idx = +q.get('state') || 0, item = null;
+    (PS.GALLERY || []).forEach(function (g) { g.items.forEach(function (it) { if (it.name === name) item = it; }); });
+    function Stage() {
+      var st = item && (item.states[idx] || item.states[0]);
+      return h(M.LazyMotion, { features: M.domMax, strict: true }, h(M.MotionConfig, { reducedMotion: 'user' },
+        st ? h('div', { className: 'st' }, st[1]()) : h('p', { className: 'st-missing' }, 'No gallery entry called “' + name + '”.')));
+    }
+    PS.mount(Stage);
+  })();
+</script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 # PeraSure app (test environment)
 
 > **For AI agents — components first (owner's rule):** a new component or feature is created in the component library
-> (`shared/ps-ui`, with its states in `shared/gallery.html`) first, then this page uses it directly; a change to a piece is made in
+> (`shared/ps-ui`, with its states in `shared/gallery.js`, shown in PeraSure Dev Mode) first, then this page uses it directly; a change to a piece is made in
 > the component, never patched from the page. See the `perasure-components` skill and `CLAUDE.md` → "Components first".
 
 The whole app in one prototype. Figma: file `barda5NcnFzxG7CHtISKsW`, page `38:1137`, plus what the repo already had
@@ -184,7 +184,7 @@ inconsistencies left as the system has them: the selfie frame's heading text is 
 ## Shared pieces and the gallery
 
 Every piece of the app's look is a shared component in `shared/ps-ui`, shown with its states in the
-[component gallery](../../shared/gallery.html) (owner: a new piece is made there first, then the page uses it). `app.css` only places
+[PeraSure Dev Mode → Components](../../devmode/index.html#v=components) (states in `shared/gallery.js` / `gallery-app.js`; owner: a new piece is made there first, then the page uses it). `app.css` only places
 shared pieces (stacks, gaps, the Withdraw demo's layer); nothing in it restyles a component. Moved out of the app, each checked pixel for
 pixel against the screen it came from: `apply.js` (`PageHead`, `PageHero`, `IdCamera`, `IdSideCard`, `Selfie`, `FaceCamera`, `IdResult`,
 `FileList`, `SearchSheet`, `BankList`, `PlacePicker`, `EstimateCard`, `Article`, `Feedback`, `RelatedLinks`), `layout.js` (`SheetHead`,

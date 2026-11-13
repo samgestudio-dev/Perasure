@@ -31,7 +31,9 @@ component must look the same as before (compare screenshots pixel for pixel).
 - Library: `shared/ps-ui/` (React, no build step; `PS.<Name>`; styles in `ps-ui.css`). File by area: `core.js`,
   `layout.js`, `form.js`, `feedback.js`, `coupon.js`, `home.js`, `loan.js`, `pay.js`, `account.js`, `list.js`,
   `status.js`, `apply.js`, `fx.js` — the table is in `shared/README.md`.
-- Gallery: `shared/gallery.html` (entries in `gallery.js` and `gallery-app.js`; `name`, `desc`, `props`, `states`).
+- Gallery entries: `shared/gallery.js` and `gallery-app.js` (`name`, `desc`, `props`, `states`), shown in PeraSure Dev Mode →
+  Components (`devmode/index.html#v=components`), which replaced the gallery page.
+- A change to a component or a page is also an iteration: record it with `perasure-iteration-log`.
 - After changing shared files run `python3 tools/stamp.py` (cache stamps).
 - The full app (`prototypes/app/`) follows this too: `app.css` only places shared pieces.
 

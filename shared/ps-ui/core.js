@@ -1,11 +1,13 @@
 /* PeraSure UI — core: the namespace, motion values, helpers and atoms (icon, amount, button, tag, chip, check, card,
    section, rows). Load order: react, react-dom, motion-react, then core.js, layout.js, and the area files the page needs
    (home.js, coupon.js, loan.js, account.js). Each file adds components to window.PS. Styles: ps-ui.css.
-   No JSX, no build step: PS.h = React.createElement. Docs and props: shared/README.md, live: shared/gallery.html. */
+   No JSX, no build step: PS.h = React.createElement. Docs and props: shared/README.md, live with every state: devmode/ (PeraSure Dev Mode → Components). */
 (function () {
   'use strict';
   var R = window.React, M = window.Motion, h = R.createElement;
   var PS = window.PS = window.PS || {};
+  /* PeraSure Dev Mode (devmode/) can slow a page it is comparing (slow motion): it sets its clock here, before anything moves */
+  try { if (window.parent !== window && window.parent.DM_CLOCK) window.parent.DM_CLOCK(window); } catch (e) {}
 
   /* assets sit next to this file, so a page anywhere in the repo can use the components */
   var me = document.currentScript && document.currentScript.src;
