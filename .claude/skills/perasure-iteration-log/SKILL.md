@@ -14,7 +14,7 @@ are not iterations.
 
 - The version stays **v1** (the baseline is `v1.0`). Only a large redesign starts `v2.0` — never decide that yourself; ask.
 - An iteration's label: `v1 · YYYY-MM-DD · PHL-123`; with no Jira ticket: `v1 · YYYY-MM-DD · 无 Jira 单号`.
-- Its id (snapshot folder and git tag `devmode-<id>`): `v1-YYYYMMDD-PHL-123`; without a ticket `v1-YYYYMMDD-n1` (n2, n3… for more that day).
+- Its id (snapshot folder and git tag `devmode-<id>`, made by the workflow): `v1-YYYYMMDD-PHL-123`; without a ticket `v1-YYYYMMDD-n1` (n2, n3… for more that day).
 - Date: today, from the clock tool.
 
 ## Steps
@@ -36,8 +36,9 @@ are not iterations.
 6. **Index and stamp:** `python3 tools/stamp.py` (it remakes `devmode/data/index.js` from the code).
 7. **Snapshot:** `python3 tools/devmode-snapshot.py <id>` — a runnable copy of this version in `devmode/snapshots/<id>/`. It refuses an
    id that exists: a saved version is never changed. Make it after the code is final and before the commit.
-8. **Commit, tag, push:** commit everything (message names the iteration and the ticket), then `git tag devmode-<id>` on that commit and
-   `git push origin main devmode-<id>`. Dev Mode links an older version's code to this tag.
+8. **Commit and push** everything (the message names the iteration and the ticket). Don't tag: the *Dev Mode* workflow
+   (`.github/workflows/devmode.yml`) tags `devmode-<id>` on the commit that added the snapshot (sessions can't push tags). Dev Mode links
+   an older version's code to that tag; check the tag exists a minute after the push (`git ls-remote --tags origin devmode-<id>`).
 9. **Check in Dev Mode** (desktop viewport, `devmode/index.html`): the version menu lists the new label; Iterations shows the entry;
    the changed page / component's History tab lists it; Compare (previous → new) shows both frames and the changes with properties
    and code before → after. No console errors. Give the owner the Dev Mode link with the iteration open

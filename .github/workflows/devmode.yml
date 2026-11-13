@@ -1,0 +1,37 @@
+# PeraSure Dev Mode: every runnable snapshot (devmode/snapshots/<id>/, made by tools/devmode-snapshot.py) gets its git tag
+# devmode-<id> on the commit that added it, so Dev Mode can link an older version's code at that version. Sessions can't push tags,
+# so this workflow does it on every push that adds a snapshot (and on demand).
+name: Dev Mode
+
+on:
+  push:
+    branches: [main]
+    paths: ['devmode/snapshots/**']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: devmode
+  cancel-in-progress: false
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Tag each snapshot
+        run: |
+          shopt -s nullglob
+          for d in devmode/snapshots/*/; do
+            id=$(basename "$d"); tag="devmode-$id"
+            [ -f "${d}meta.json" ] || continue
+            if git ls-remote --exit-code --tags origin "refs/tags/$tag" > /dev/null; then echo "$tag already tagged."; continue; fi
+            sha=$(git log --diff-filter=A --format=%H -1 -- "${d}meta.json")
+            git tag "$tag" "$sha" && git push origin "$tag"
+            echo "Tagged $tag at ${sha:0:7}" >> "$GITHUB_STEP_SUMMARY"
+          done

@@ -37,7 +37,7 @@ see what each iteration changed and developers can pull the exact code. Desktop 
 | `data/pages.js` | how each app page and state is opened (Tune settings, `?page=`, a script) — add new screens here |
 | `data/index.js` | made by `tools/devmode-index.py` from the code (stamp.py runs it): components, pages, lines, CSS, tokens, Figma |
 | `data/iterations.js`, `data/status.js` | the iteration record and the dev statuses (rules: skill `perasure-iteration-log`) |
-| `snapshots/<id>/` | a runnable copy of each iteration (`tools/devmode-snapshot.py <id>`); git tag `devmode-<id>` |
+| `snapshots/<id>/` | a runnable copy of each iteration (`tools/devmode-snapshot.py <id>`); the *Dev Mode* workflow tags its commit `devmode-<id>` |
 
 `shared/stage.html?entry=<gallery entry>&state=<n>` draws one state of a component for the canvas; the states themselves are written
 in `shared/gallery.js` / `gallery-app.js`. `shared/ps-ui/core.js` lets Dev Mode set a slower clock in pages it compares (one guarded line).

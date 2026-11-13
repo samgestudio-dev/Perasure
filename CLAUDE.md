@@ -68,6 +68,7 @@ tokens-rem/                the same length tokens in rem (tokens-rem.css), MADE 
                            (stamp.py runs it) — never edit it or the token files by hand; used by the app and shared/ps-ui
 tools/figma-tokens/        Figma side of the token pipeline: core.js (export + digest) and the export plugin
 .github/workflows/tokens.yml  applies exports dropped in tokens/inbox/, tags tokens-v<version>, checks generated files
+.github/workflows/devmode.yml tags each Dev Mode snapshot's commit devmode-<id>
 vendor/<lib>@<version>/    pinned libraries: lottie-web, gsap (+ plugins; esm/ = ES modules), react, react-dom, mui-material,
                            motion (motion-react.js = React API, motion.js = vanilla; both set window.Motion), matter-js,
                            react-wheel-picker (the package's dist/index.js unchanged in a small wrapper → window.WheelPicker; + style.css)
@@ -274,7 +275,7 @@ at the version's tag), Figma nodes, statuses, the iteration record and version c
 - **Every new requirement is recorded** (owner): a change to a page, a component or a motion gets an iteration entry — skill
   `perasure-iteration-log` (Jira key and title read from Jira; "无 Jira 单号" when there is none). The version stays v1 — iterations are
   labelled `v1 · YYYY-MM-DD · PHL-xxx`; only a large redesign starts v2.0. Each iteration keeps a runnable snapshot (`devmode/snapshots/<id>`)
-  and a git tag `devmode-<id>`; the statuses (Ready for dev / Changed / Completed) are in `devmode/data/status.js`, kept by Claude.
+  and a git tag `devmode-<id>` (made by `.github/workflows/devmode.yml` on push — don't tag yourself); the statuses (Ready for dev / Changed / Completed) are in `devmode/data/status.js`, kept by Claude.
 - **Nothing is tagged by hand**: components are found in React's tree (`PS.*`, and the app's own `APP.*` pieces), pages come from
   `devmode/data/pages.js` (how each page and state is opened) and `devmode/data/index.js` (made by `tools/devmode-index.py` from the code).
   A new screen → add it to `pages.js`; a new component → its gallery entry (it then has states in Dev Mode).
