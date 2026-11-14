@@ -2,7 +2,7 @@
 
 Phone-first motion prototypes. The repo is private; it is served at samge.studio behind a password ([`worker/`](worker/README.md)).
 
-**Open on your phone:** https://samge.studio/perasure/ — a picker page with two tabs:
+**Open on your phone:** https://samge.studio/perasure/playground/ — a picker page with two tabs:
 **Prototypes** (interactive flows) and **Animations** (illustration animations, played one at a time as Lottie or GSAP).
 
 ## Prototypes

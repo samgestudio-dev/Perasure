@@ -2,7 +2,8 @@
    password, straight from GitHub (nothing is copied or built: a push to main is live within about 20 seconds), plus the hosted MCP
    server for developers' AI tools at /perasure/devmode/mcp.
 
-     /perasure/<path>          the repo's file at the newest commit of main (Dev Mode: /perasure/devmode/; the picker: /perasure/)
+     /perasure/playground/     the Playground picker (/perasure/ forwards here); /perasure/playground/<path> is the repo's file
+     /perasure/<path>          the repo's file at the newest commit of main (Dev Mode: /perasure/devmode/)
      /perasure/_visual/<path>  the Dev Mode visual check (branch devmode-visual)
      /perasure/_login, _logout the password page (account and password are Cloudflare secrets, never in the page)
      /perasure/_mcp            for signed-in Dev Mode: the MCP address and access token (Connect AI shows them)
@@ -20,6 +21,7 @@ import { createDevmode } from '../devmode/mcp/core.mjs';
 
 const REPO = 'samgestudio-dev/Perasure';
 const BASE = '/perasure';
+const PLAY = BASE + '/playground';   /* the Playground picker's address; the same repo files as BASE */
 const COOKIE = 'ps_devmode';
 const SESSION_DAYS = 30;
 const HEAD_TTL = 20;            /* seconds a data centre keeps the newest commit id before asking GitHub again */
@@ -41,7 +43,10 @@ export default {
     try {
       if (p === '/robots.txt') return text('User-agent: *\nDisallow: /\n');
       if (p !== BASE && !p.startsWith(BASE + '/')) return blank(p === '/' ? 200 : 404);
-      if (p === BASE) return redirect(BASE + '/' + url.search);
+      if (p === BASE || p === BASE + '/' || p === BASE + '/index.html') return redirect(PLAY + '/' + url.search, 302);
+      if (p === PLAY) return redirect(PLAY + '/' + url.search);
+      /* one Dev Mode: the picker's link to it goes to /perasure/devmode/ */
+      if (p.startsWith(PLAY + '/devmode/')) return redirect(BASE + p.slice(PLAY.length) + url.search, 302);
       if (p === BASE + '/devmode/mcp') return await mcp(req, env, ctx);
       if (p === BASE + '/_login') return await login(req, env, url);
       if (p === BASE + '/_logout') return new Response(null, { status: 303, headers: { Location: BASE + '/', 'Set-Cookie': `${COOKIE}=; Path=${BASE}; Max-Age=0; HttpOnly; Secure; SameSite=Lax` } });
@@ -49,6 +54,7 @@ export default {
       if (p === BASE + '/_mcp') return json({ url: url.origin + BASE + '/devmode/mcp', token: env.MCP_TOKEN || '' }, 200, { 'Cache-Control': 'no-store' });
       if (req.method !== 'GET' && req.method !== 'HEAD') return text('Method not allowed', 405);
       if (p.startsWith(BASE + '/_visual/')) return await file(req, env, ctx, 'devmode-visual', p.slice((BASE + '/_visual/').length));
+      if (p.startsWith(PLAY + '/')) return await file(req, env, ctx, 'main', p.slice(PLAY.length + 1));
       return await file(req, env, ctx, 'main', p.slice(BASE.length + 1));
     } catch (e) {
       return text('Something went wrong on our side: ' + (e && e.message || e), 502);
@@ -176,7 +182,7 @@ async function human(token, ip, env) {
     return v.success === true && v.action === 'login' && v.hostname === 'samge.studio';
   } catch { return false; }
 }
-function safeNext(n) { return n.startsWith(BASE + '/') && !n.startsWith('//') && !/[\r\n]/.test(n) && !n.startsWith(BASE + '/_log') ? n : BASE + '/devmode/'; }
+function safeNext(n) { return n.startsWith(BASE + '/') && !n.startsWith('//') && !/[\r\n]/.test(n) && !n.startsWith(BASE + '/_log') ? n : PLAY + '/'; }
 async function signedIn(req, env) {
   if (!env.SESSION_SECRET) return false;
   const m = new RegExp('(?:^|;\\s*)' + COOKIE + '=(\\d+)\\.([\\w-]+)').exec(req.headers.get('Cookie') || '');
@@ -204,7 +210,7 @@ function loginPage(next, problem, status, tries = 0, env = {}) {
     ? `<div class="ts cf-turnstile" data-sitekey="${env.TURNSTILE_SITEKEY}" data-action="login" data-theme="auto" data-language="auto"></div><script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>` : '';
   const esc = s => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
   return new Response(`<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex"><title>PeraSure Dev Mode · 登录</title><style>
+<meta name="robots" content="noindex"><title>PeraSure · 登录</title><style>
 :root{color-scheme:light dark;--bg:#f4f5f7;--card:#fff;--fg:#16181d;--mute:#6b7280;--line:#d9dce1;--acc:#4f46e5;--err:#c2410c}
 @media(prefers-color-scheme:dark){:root{--bg:#111316;--card:#1b1e23;--fg:#eceef1;--mute:#9aa1ab;--line:#2e333a;--acc:#8b85ff;--err:#fb923c}}
 *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--fg);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
@@ -215,7 +221,7 @@ input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8p
 input:focus{outline:2px solid var(--acc);outline-offset:-1px;border-color:transparent}
 button{width:100%;margin-top:22px;padding:11px;border:0;border-radius:8px;background:var(--acc);color:#fff;font:inherit;font-weight:600;cursor:pointer}
 .err{color:var(--err);font-size:13px;margin:12px 0 0}.ts{margin-top:18px;min-height:65px}</style></head><body>
-<form method="post" action="${BASE}/_login"><h1>PeraSure Dev Mode</h1><p class="sub">登录后查看页面、组件和代码 · Sign in to see the pages, components and code</p>
+<form method="post" action="${BASE}/_login"><h1>PeraSure</h1><p class="sub">登录后打开 Playground 和 Dev Mode · Sign in to open the Playground and Dev Mode</p>
 <input type="hidden" name="next" value="${esc(next)}">
 <label for="u">账号 Account</label><input id="u" name="user" autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus>
 <label for="p">密码 Password</label><input id="p" name="pass" type="password" autocomplete="current-password" required>
