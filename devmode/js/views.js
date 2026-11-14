@@ -161,7 +161,7 @@
       h('div', { className: 'dm-itermeta' },
         h('span', { className: 'dm-chip' }, h(DM.Icon, { name: 'history', size: 12 }), t('vis.against', { v: r.against })),
         h('span', { className: 'dm-chip' }, t('vis.checked', { t: ago(r.at) })),
-        r.commit ? h('a', { className: 'dm-chip is-link', href: DM.REPO + '/commit/' + r.commit, target: '_blank', rel: 'noopener' }, h(DM.Icon, { name: 'code', size: 12 }), r.commit.slice(0, 7)) : null,
+        r.commit ? h('span', { className: 'dm-chip', title: r.commit }, h(DM.Icon, { name: 'code', size: 12 }), r.commit.slice(0, 7)) : null,
         h('span', { className: 'dm-chip' }, t('vis.renders', { n: r.items })),
         h('span', { className: 'dm-chip ' + (n ? 'is-edit' : 'is-add') }, n ? t('vis.count', { n: n }) : t('vis.clean'))),
       n ? h('div', { className: 'dm-note dm-gap' }, t('vis.howRecord')) : null,

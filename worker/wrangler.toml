@@ -3,6 +3,8 @@ name = "perasure-devmode"
 main = "index.js"
 compatibility_date = "2025-09-01"
 workers_dev = false
+# keep the switches SITE_LOGIN / MCP_LOGIN set in the Cloudflare dashboard (they are not written here)
+keep_vars = true
 routes = [{ pattern = "samge.studio/*", zone_name = "samge.studio" }]
 # Secrets (never here): GITHUB_TOKEN, DEVMODE_USER, DEVMODE_PASS, SESSION_SECRET, MCP_TOKEN
 

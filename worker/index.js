@@ -5,9 +5,12 @@
      /perasure/playground/     the Playground picker (/perasure/ forwards here); /perasure/playground/<path> is the repo's file
      /perasure/<path>          the repo's file at the newest commit of main (Dev Mode: /perasure/devmode/)
      /perasure/_visual/<path>  the Dev Mode visual check (branch devmode-visual)
+     /perasure/_source/<path>  a file's source with line numbers (?v=<iteration id> for an older version, #L10-L20 marks lines,
+                               ?raw for plain text) — what Dev Mode and the MCP link to, so nobody needs GitHub
      /perasure/_login, _logout the password page (account and password are Cloudflare secrets, never in the page)
      /perasure/_mcp            for signed-in Dev Mode: the MCP address and access token (Connect AI shows them)
-     /perasure/devmode/mcp     the MCP server (Streamable HTTP, JSON answers; header Authorization: Bearer <MCP_TOKEN>)
+     /perasure/devmode/mcp     the MCP server (Streamable HTTP, JSON answers). Signs in with the same account and password as the site:
+                               headers X-PeraSure-Account + X-PeraSure-Password (or Authorization: Basic …; Bearer <MCP_TOKEN> also works)
      anything else             a blank samge.studio page
 
    Secrets (Cloudflare → Workers & Pages → perasure-devmode → Settings → Variables and Secrets):
@@ -16,6 +19,9 @@
      SESSION_SECRET  signs the sign-in cookie (changing it signs everyone out)
      MCP_TOKEN       developers' MCP access token (changing it disconnects their AI tools until they update it)
      TURNSTILE_SECRET  the secret of the Turnstile widget "perasure-devmode-login" (its public site key: TURNSTILE_SITEKEY in wrangler.toml)
+   Switches (Cloudflare → … → Variables and Secrets, type Text; missing = on):
+     SITE_LOGIN      on / off — whether the site (Playground, Dev Mode, source) asks for the account and password
+     MCP_LOGIN       on / off — whether the MCP server asks for them
    Deployed by .github/workflows/devmode-live.yml (when CLOUDFLARE_API_TOKEN is set in the repo's Actions secrets). Guide: worker/README.md */
 import { createDevmode } from '../devmode/mcp/core.mjs';
 
@@ -35,6 +41,7 @@ const TYPES = {
   woff2: 'font/woff2', woff: 'font/woff', ttf: 'font/ttf', otf: 'font/otf', lottie: 'application/zip', zip: 'application/zip',
   mp4: 'video/mp4', webm: 'video/webm', mp3: 'audio/mpeg', wasm: 'application/wasm', map: 'application/json; charset=utf-8'
 };
+const isOn = v => !/^(off|false|0|no)$/i.test(String(v == null ? 'on' : v).trim());
 const SAFE = { 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin', 'X-Robots-Tag': 'noindex, nofollow', 'X-Frame-Options': 'SAMEORIGIN' };
 
 export default {
@@ -48,13 +55,14 @@ export default {
       /* one Dev Mode: the picker's link to it goes to /perasure/devmode/ */
       if (p.startsWith(PLAY + '/devmode/')) return redirect(BASE + p.slice(PLAY.length) + url.search, 302);
       if (p === BASE + '/devmode/mcp') return await mcp(req, env, ctx);
-      if (p === BASE + '/_login') return await login(req, env, url);
+      if (p === BASE + '/_login') return isOn(env.SITE_LOGIN) ? await login(req, env, url) : redirect(PLAY + '/', 302);
       if (p === BASE + '/_logout') return new Response(null, { status: 303, headers: { Location: BASE + '/', 'Set-Cookie': `${COOKIE}=; Path=${BASE}; Max-Age=0; HttpOnly; Secure; SameSite=Lax` } });
       if ((p.startsWith(BASE + '/assets/fonts/') || p === BASE + LOGO) && req.method === 'GET') return await file(req, env, ctx, 'main', p.slice(BASE.length + 1));
-      if (!(await signedIn(req, env))) return loginPage(url.pathname + url.search, '', 200, await triesOf(req.headers.get('CF-Connecting-IP') || 'unknown'), env);
-      if (p === BASE + '/_mcp') return json({ url: url.origin + BASE + '/devmode/mcp', token: env.MCP_TOKEN || '' }, 200, { 'Cache-Control': 'no-store' });
+      if (isOn(env.SITE_LOGIN) && !(await signedIn(req, env))) return loginPage(url.pathname + url.search, '', 200, await triesOf(req.headers.get('CF-Connecting-IP') || 'unknown'), env);
+      if (p === BASE + '/_mcp') return json({ url: url.origin + BASE + '/devmode/mcp', login: isOn(env.MCP_LOGIN) }, 200, { 'Cache-Control': 'no-store' });
       if (req.method !== 'GET' && req.method !== 'HEAD') return text('Method not allowed', 405);
       if (p.startsWith(BASE + '/_visual/')) return await file(req, env, ctx, 'devmode-visual', p.slice((BASE + '/_visual/').length));
+      if (p.startsWith(BASE + '/_source/')) return await source(req, env, ctx, url);
       if (p.startsWith(PLAY + '/')) return await file(req, env, ctx, 'main', p.slice(PLAY.length + 1));
       return await file(req, env, ctx, 'main', p.slice(BASE.length + 1));
     } catch (e) {
@@ -116,11 +124,58 @@ async function readText(env, ctx, ref, rel) {
   return r.text();
 }
 
+/* every file of the repo at a commit or tag: [{ path, size }] (GitHub's tree), kept like a file */
+async function tree(env, ctx, ref) {
+  const key = new Request(CACHE + 'tree/' + encodeURIComponent(ref)), hit = await caches.default.match(key);
+  if (hit) return hit.json();
+  const r = await gh(env, '/git/trees/' + encodeURIComponent(ref) + '?recursive=1', 'application/vnd.github+json');
+  if (!r.ok) throw new Error(`GitHub said ${r.status} for the file list at ${ref}`);
+  const list = (await r.json()).tree.filter(t => t.type === 'blob').map(t => ({ path: t.path, size: t.size || 0 }));
+  ctx.waitUntil(caches.default.put(key, new Response(JSON.stringify(list), { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'max-age=' + (ref.length === 40 ? 2592000 : 300) } })));
+  return list;
+}
+
+/* ---------------------------------------------------------------- source viewer */
+async function source(req, env, ctx, url) {
+  let rel; try { rel = decodeURIComponent(url.pathname.slice((BASE + '/_source/').length)); } catch { return notFound(); }
+  const segs = rel.split('/'), v = url.searchParams.get('v') || '';
+  if (!rel || segs.some(x => x === '' || x === '..' || x.startsWith('.')) || segs[0] === 'worker' || (v && !/^[\w.-]{1,80}$/.test(v))) return notFound();
+  const ref = v ? 'devmode-' + v : await head(env, ctx, 'main');
+  let res = await blob(env, ctx, ref, rel);
+  if (!res && v) res = await blob(env, ctx, await head(env, ctx, 'main'), `devmode/snapshots/${v}/${rel}`);   /* versions before their tag */
+  if (!res) return notFound();
+  const textBody = await res.text();
+  if (url.searchParams.has('raw')) return new Response(textBody, { headers: { 'Content-Type': TYPES.txt, 'Cache-Control': 'private, no-cache', ...SAFE } });
+  const esc = x => x.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const lines = textBody.replace(/\n$/, '').split('\n'), w = String(lines.length).length;
+  const rows = lines.map((l, i) => `<tr id="L${i + 1}"><td class="n" data-n="${i + 1}"></td><td class="c">${esc(l) || ' '}</td></tr>`).join('');
+  const live = /\.(html?)$/i.test(rel) && !v ? ` · <a href="${BASE}/${rel.split('/').map(encodeURIComponent).join('/')}">Open the page</a>` : '';
+  return new Response(`<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>${esc(rel.split('/').pop())} · PeraSure source</title><style>
+:root{color-scheme:light dark;--bg:#fff;--fg:#1d2329;--mute:#77818a;--line:#eceff2;--hl:#fff6c8;--bar:#f7f8f9}
+@media(prefers-color-scheme:dark){:root{--bg:#14171b;--fg:#dfe3e7;--mute:#7c8792;--line:#23282e;--hl:#3a3415;--bar:#1b1f24}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{position:sticky;top:0;z-index:1;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;padding:12px 20px;background:var(--bar);border-bottom:1px solid var(--line)}
+header b{font:600 14px ui-monospace,SFMono-Regular,Menlo,monospace;word-break:break-all}header span,header a{color:var(--mute);font-size:13px}header a{color:inherit}
+table{border-collapse:collapse;width:100%;font:12.5px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;tab-size:2}
+td.n{width:${w + 3}ch;padding:0 12px 0 16px;text-align:right;color:var(--mute);user-select:none;cursor:pointer;vertical-align:top}td.n::before{content:attr(data-n)}
+td.c{padding:0 20px 0 8px;white-space:pre-wrap;word-break:break-word}tr.on td{background:var(--hl)}
+</style></head><body><header><b>${esc(rel)}</b><span>${v ? 'Version ' + esc(v) : 'Latest'} · ${lines.length} lines · <a href="?${v ? 'v=' + encodeURIComponent(v) + '&' : ''}raw">Plain text</a>${live}</span></header>
+<table>${rows}</table><script>
+function mark(){document.querySelectorAll('tr.on').forEach(function(r){r.classList.remove('on')});var m=/^#L(\d+)(?:-L?(\d+))?$/.exec(location.hash);if(!m)return;var a=+m[1],b=+(m[2]||a);for(var i=Math.min(a,b);i<=Math.max(a,b);i++){var r=document.getElementById('L'+i);r&&r.classList.add('on')}var f=document.getElementById('L'+Math.min(a,b));f&&f.scrollIntoView({block:'center'})}
+var last=0;document.addEventListener('click',function(e){var n=e.target.closest('td.n');if(!n)return;var k=+n.dataset.n;history.replaceState(null,'',e.shiftKey&&last?'#L'+Math.min(last,k)+'-L'+Math.max(last,k):'#L'+k);last=e.shiftKey?last:k;mark()});
+window.addEventListener('hashchange',mark);mark();</script></body></html>`, { headers: { 'Content-Type': TYPES.html, 'Cache-Control': 'private, no-cache', ...SAFE } });
+}
+
 /* ---------------------------------------------------------------- the MCP server */
 let dm = null, dmSha = '';
 async function mcp(req, env, ctx) {
   if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors() });
-  if (!env.MCP_TOKEN || !(await same(bearer(req), env.MCP_TOKEN, env))) return json({ jsonrpc: '2.0', id: null, error: { code: -32001, message: 'Unauthorized: add the header Authorization: Bearer <token> (Dev Mode → Connect AI shows it)' } }, 401, cors());
+  const auth = await mcpAuth(req, env);
+  if (auth !== 'ok') return json({ jsonrpc: '2.0', id: null, error: { code: -32001, message:
+    auth === 'locked' ? 'Too many wrong passwords from this address. Please wait 15 minutes, then try again.'
+    : auth === 'wrong' ? 'That account or password doesn’t match. Check the X-PeraSure-Account and X-PeraSure-Password headers.'
+    : 'Sign in first: add the headers X-PeraSure-Account and X-PeraSure-Password (the PeraSure account and password). Dev Mode → Connect AI shows the setup.' } }, auth === 'locked' ? 429 : 401, cors());
   if (req.method !== 'POST') return new Response('POST JSON-RPC messages here (MCP Streamable HTTP).', { status: 405, headers: { Allow: 'POST, OPTIONS', ...cors() } });
   let body;
   try { body = await req.json(); } catch { return json({ jsonrpc: '2.0', id: null, error: { code: -32700, message: 'Parse error' } }, 400, cors()); }
@@ -134,6 +189,13 @@ async function mcp(req, env, ctx) {
       label: `samge.studio (main at ${sha.slice(0, 7)})`,
       read: at(sha),
       readTag: (ver, rel) => readText(env, ctx, 'devmode-' + ver, rel),
+      tree: ver => tree(env, ctx, ver ? 'devmode-' + ver : sha),
+      readBytes: async (rel, ver) => {
+        let r = await blob(env, ctx, ver ? 'devmode-' + ver : sha, rel);
+        if (!r && ver) r = await blob(env, ctx, sha, `devmode/snapshots/${ver}/${rel}`);
+        if (!r) throw new Error('not found');
+        return new Uint8Array(await r.arrayBuffer());
+      },
       loadData: async () => {
         const at = await head(env, ctx, 'devmode-mcp').catch(() => null);
         if (!at) throw new Error('the Dev Mode data for the MCP server is not published yet: the "Dev Mode live" workflow makes it on the next push to main (branch devmode-mcp)');
@@ -148,8 +210,24 @@ async function mcp(req, env, ctx) {
   if (!out.length) return new Response(null, { status: 202, headers: cors() });
   return json(Array.isArray(body) ? out : out[0], 200, cors());
 }
-function bearer(req) { const h = req.headers.get('Authorization') || ''; return h.replace(/^Bearer\s+/i, '').trim(); }
-function cors() { return { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Authorization, Content-Type, Mcp-Session-Id, Mcp-Protocol-Version', 'Access-Control-Allow-Methods': 'POST, OPTIONS' }; }
+/* the MCP signs in with the site's account and password (headers, or HTTP Basic); the older MCP_TOKEN still works.
+   Wrong passwords count per address like on the sign-in page: MAX_TRIES in 15 minutes locks it. */
+async function mcpAuth(req, env) {
+  if (!isOn(env.MCP_LOGIN)) return 'ok';
+  const h = req.headers.get('Authorization') || '';
+  if (/^Bearer\s/i.test(h) && env.MCP_TOKEN && await same(h.replace(/^Bearer\s+/i, '').trim(), env.MCP_TOKEN, env)) return 'ok';
+  let user = req.headers.get('X-PeraSure-Account'), pass = req.headers.get('X-PeraSure-Password');
+  if (/^Basic\s/i.test(h)) { try { const d = new TextDecoder().decode(Uint8Array.from(atob(h.replace(/^Basic\s+/i, '').trim()), c => c.charCodeAt(0))), i = d.indexOf(':'); if (i > 0) { user = d.slice(0, i); pass = d.slice(i + 1); } } catch {} }
+  if (user == null && pass == null) return 'none';
+  const ip = req.headers.get('CF-Connecting-IP') || 'unknown', key = new Request(CACHE + 'mcp-tries/' + encodeURIComponent(ip));
+  const tries = +(await (await caches.default.match(key))?.text() || 0);
+  if (tries >= MAX_TRIES) return 'locked';
+  const ok = env.DEVMODE_USER && env.DEVMODE_PASS && String(user || '').trim().toLowerCase() === String(env.DEVMODE_USER).trim().toLowerCase() && await same(String(pass || ''), String(env.DEVMODE_PASS), env);
+  if (ok) return 'ok';
+  await caches.default.put(key, new Response(String(tries + 1), { headers: { 'Cache-Control': 'max-age=900' } }));
+  return 'wrong';
+}
+function cors() { return { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Authorization, Content-Type, Mcp-Session-Id, Mcp-Protocol-Version, X-PeraSure-Account, X-PeraSure-Password', 'Access-Control-Allow-Methods': 'POST, OPTIONS' }; }
 
 /* ---------------------------------------------------------------- signing in */
 async function login(req, env, url) {

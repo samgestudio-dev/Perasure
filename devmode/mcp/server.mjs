@@ -34,6 +34,22 @@ const DM = createDevmode({
   /* a file as it was in an older version: its git tag devmode-<id> (exact), else core reads the version's snapshot copy */
   readTag: async (ver, rel) => { try { return execFileSync('git', ['show', `devmode-${ver}:${rel}`], { cwd: LOCAL, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], maxBuffer: 32e6 }); } catch { return null; } },
   loadData: () => localData(readLocal),
+  readBytes: async (rel, ver) => {
+    if (!ver) return new Uint8Array(await fs.promises.readFile(path.join(LOCAL, rel)));
+    try { return new Uint8Array(execFileSync('git', ['show', `devmode-${ver}:${rel}`], { cwd: LOCAL, stdio: ['ignore', 'pipe', 'ignore'], maxBuffer: 64e6 })); }
+    catch { return new Uint8Array(await fs.promises.readFile(path.join(LOCAL, 'devmode', 'snapshots', ver, rel))); }
+  },
+  /* every file: the working copy now (so new files count), or the git tag devmode-<ver> */
+  tree: async ver => {
+    if (ver) return execFileSync('git', ['ls-tree', '-r', '-l', `devmode-${ver}`], { cwd: LOCAL, encoding: 'utf8', maxBuffer: 64e6 }).split('\n').filter(Boolean)
+      .map(l => { const m = /^\S+ blob \S+\s+(\d+|-)\t(.*)$/.exec(l); return m && { path: m[2], size: +m[1] || 0 }; }).filter(Boolean);
+    const out = [], walk = d => { for (const e of fs.readdirSync(path.join(LOCAL, d), { withFileTypes: true })) {
+      if (e.name.startsWith('.') || e.name === 'node_modules' || e.name === 'devmode-visual-out') continue;
+      const rel = d ? d + '/' + e.name : e.name;
+      if (e.isDirectory()) walk(rel); else if (e.isFile()) out.push({ path: rel, size: fs.statSync(path.join(LOCAL, rel)).size });
+    } };
+    walk(''); return out;
+  },
   visual: async () => {
     const local = path.join(LOCAL, 'devmode-visual-out', 'report.json');
     if (fs.existsSync(local)) return { report: JSON.parse(fs.readFileSync(local, 'utf8')), base: '', source: 'local run (devmode-visual-out/)' };

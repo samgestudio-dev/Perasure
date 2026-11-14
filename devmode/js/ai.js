@@ -48,12 +48,14 @@
     var ac = R.useState(undefined), acc = ac[0];
     R.useEffect(function () { access().then(function (a) { ac[1](a); }); }, []);
     R.useEffect(function () { var f = function (e) { if (e.key === 'Escape') p.onClose(); }; window.addEventListener('keydown', f); return function () { window.removeEventListener('keydown', f); }; }, []);
-    var url = (acc && acc.url) || SERVER, token = (acc && acc.token) || '<token>';
-    var json = '{\n  "mcpServers": {\n    "' + NAME + '": {\n      "url": "' + url + '",\n      "headers": { "Authorization": "Bearer ' + token + '" }\n    }\n  }\n}';
+    /* the MCP signs in with the same account and password as the site (worker/index.js mcpAuth); never filled in here */
+    var url = (acc && acc.url) || SERVER, login = !acc || acc.login !== false;
+    var H = login ? [['X-PeraSure-Account', '<account>'], ['X-PeraSure-Password', '<password>']] : [];
+    var json = '{\n  "mcpServers": {\n    "' + NAME + '": {\n      "url": "' + url + '"' + (H.length ? ',\n      "headers": {\n' + H.map(function (x) { return '        "' + x[0] + '": "' + x[1] + '"'; }).join(',\n') + '\n      }' : '') + '\n    }\n  }\n}';
     var add = {
-      claude: { cmd: 'claude mcp add -s user --transport http ' + NAME + ' ' + url + ' --header "Authorization: Bearer ' + token + '"', note: t('ai.claudeNote') },
+      claude: { cmd: 'claude mcp add -s user --transport http ' + NAME + ' ' + url + H.map(function (x) { return ' \\\n  --header "' + x[0] + ': ' + x[1] + '"'; }).join(''), note: t('ai.claudeNote') },
       cursor: { cmd: json, note: t('ai.cursorNote') },
-      codex: { cmd: '# ~/.codex/config.toml\n[mcp_servers.' + NAME + ']\nurl = "' + url + '"\nhttp_headers = { Authorization = "Bearer ' + token + '" }', note: t('ai.codexNote') },
+      codex: { cmd: '# ~/.codex/config.toml\n[mcp_servers.' + NAME + ']\nurl = "' + url + '"' + (H.length ? '\nhttp_headers = { ' + H.map(function (x) { return '"' + x[0] + '" = "' + x[1] + '"'; }).join(', ') + ' }' : ''), note: t('ai.codexNote') },
       other: { cmd: json, note: t('ai.otherNote') }
     }[tool];
     var examples = [t('ai.ex1'), t('ai.ex2'), t('ai.ex3'), t('ai.ex4')];
@@ -62,8 +64,7 @@
         h('header', { className: 'dm-dialog__head' }, h('div', null, h('h3', null, t('ai.title')), h('p', null, t('ai.sub'))),
           h('button', { type: 'button', className: 'dm-iconbtn', title: t('cmp.close') + ' (Esc)', onClick: p.onClose }, h(DM.Icon, { name: 'close', size: 16 }))),
         h('div', { className: 'dm-dialog__body' },
-          h(Step, { n: 1, title: t('ai.s1'), sub: acc === null ? t('ai.offline') : t('ai.s1sub') },
-            h(Cmd, null, t('ai.addr') + '  ' + url + '\n' + t('ai.token') + '  ' + (acc === undefined ? '…' : token))),
+          h(Step, { n: 1, title: t('ai.s1'), sub: login ? t('ai.s1sub') : t('ai.nologin') }, h(Cmd, null, url)),
           h(Step, { n: 2, title: t('ai.s2'), extra: h(Seg, { value: tool, onChange: tl[1], items: [['claude', 'Claude Code'], ['cursor', 'Cursor'], ['codex', 'Codex'], ['other', t('ai.otherTool')]] }) },
             h(Cmd, null, add.cmd), h('p', { className: 'dm-step__note' }, add.note)),
           h(Step, { n: 3, title: t('ai.s3'), sub: t('ai.s3sub') }, h(Cmd, null, tool === 'claude' ? 'claude mcp list' : t('ai.s3other'))),

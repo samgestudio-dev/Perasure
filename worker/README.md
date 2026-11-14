@@ -14,10 +14,24 @@ The repo is private, so it is served by a Cloudflare Worker (`perasure-devmode`,
 - **A relay, not a copy.** Each file is read from GitHub (main, newest commit) when it is asked for. A push is live within about
   20 seconds, with nothing to deploy. Files are cached by commit, so a page loads fast after the first visit.
 - **MCP.** The hosted server runs the same tools as `devmode/mcp/server.mjs` (shared code: `devmode/mcp/core.mjs`), except screenshots,
-  design QA and live measurements, which need a browser (local server only). Developers send `Authorization: Bearer <MCP_TOKEN>`;
-  signed-in Dev Mode shows the token in Connect AI. The data of `devmode/data/pages.js`, `iterations.js` and `status.js` reaches it as
+  design QA and live measurements, which need a browser (local server only), and reads any file of the repo (`read_file`,
+  `list_files`, `search_code`). Developers sign in with the same account and password, as the headers `X-PeraSure-Account` and
+  `X-PeraSure-Password` (or HTTP Basic; the older `Authorization: Bearer <MCP_TOKEN>` still works); wrong ones count toward the lockout.
+- **Source viewer.** `/perasure/_source/<path>` shows a repo file with line numbers (`#L10-L20` highlights, `?v=<iteration>` an older
+  version, `?raw` the plain file). Dev Mode's code links open it, so nobody needs a GitHub account. The data of `devmode/data/pages.js`, `iterations.js` and `status.js` reaches it as
   JSON on the branch `devmode-mcp`, made by the *Dev Mode live* workflow on every change (Workers can't run those scripts).
 - Not served: dot folders (`.github`, `.claude` …) and `worker/`. `samge.studio` itself shows a blank page.
+
+## Switches
+
+Same page, type *Text* (a missing switch counts as on). Changing one takes effect at once, no deploy:
+
+| Name | Value |
+|---|---|
+| `SITE_LOGIN` | `on` / `off` — whether the website (Playground, Dev Mode, source viewer) asks for the account and password |
+| `MCP_LOGIN` | `on` / `off` — whether the MCP server asks for them |
+
+`wrangler.toml` has `keep_vars = true`, so a deploy keeps whatever the dashboard says.
 
 ## Secrets
 
@@ -29,7 +43,7 @@ Cloudflare dashboard → Workers & Pages → `perasure-devmode` → Settings →
 | `DEVMODE_USER` | the account (not case-sensitive) |
 | `DEVMODE_PASS` | the password (case-sensitive) |
 | `SESSION_SECRET` | random text that signs the sign-in cookie; changing it signs everyone out |
-| `MCP_TOKEN` | random text, developers' MCP token; changing it means everyone updates the token in their AI tool |
+| `MCP_TOKEN` | optional: an older way into the MCP (`Authorization: Bearer …`); the account and password are the normal way |
 | `TURNSTILE_SECRET` | the secret of the Turnstile widget `perasure-devmode-login` (Cloudflare → Turnstile); its public site key is `TURNSTILE_SITEKEY` in `wrangler.toml` |
 
 To change the password, edit `DEVMODE_PASS` there. Random text: `openssl rand -hex 32`.
