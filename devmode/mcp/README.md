@@ -2,46 +2,44 @@
 
 Lets a developer's AI (Claude Code, Cursor, Codex, VS Code, Windsurf … anything that speaks MCP) read what PeraSure Dev Mode shows:
 every app page and shared component with its source, CSS as written, tokens and their values, motion values, usage examples, Figma
-nodes, statuses and iteration history — and, optionally, screenshots and live measurements. In Dev Mode: **Connect AI** in the top bar
-shows the same steps; **Copy for AI** in the right panel copies an instruction with the link to what is selected.
+nodes, statuses and iteration history. In Dev Mode: **Connect AI** in the top bar shows the steps with the address and token filled in;
+**Copy for AI** in the right panel copies an instruction with the link to what is selected.
 
-One file ([`server.mjs`](server.mjs)), no dependencies, Node 18+, MCP over stdio. It reads the live Dev Mode
-(`https://samgestudio-dev.github.io/Perasure/`); run from inside a clone of this repo it reads the clone's files instead.
+## Hosted (what developers use)
 
-## Set up
+`https://samge.studio/perasure/devmode/mcp` — MCP over Streamable HTTP, nothing to install, always the newest code on GitHub
+(`worker/index.js`; guide `worker/README.md`). It needs the header `Authorization: Bearer <token>`; Connect AI shows the token once you
+are signed in to Dev Mode.
 
 ```sh
-# 1. download (macOS / Linux; Windows: Invoke-WebRequest <url> -OutFile $HOME\.perasure\devmode-mcp.mjs)
-mkdir -p ~/.perasure && curl -fsSL https://samgestudio-dev.github.io/Perasure/devmode/mcp/server.mjs -o ~/.perasure/devmode-mcp.mjs
-
-# 2. add it to your AI tool
-claude mcp add perasure-devmode -s user -- node ~/.perasure/devmode-mcp.mjs       # Claude Code
-codex mcp add perasure-devmode -- node ~/.perasure/devmode-mcp.mjs                # Codex (or ~/.codex/config.toml, below)
-
-# 3. check it
-node ~/.perasure/devmode-mcp.mjs --check
-
-# 4. optional: screenshots and live measurements (about 150 MB)
-npm install -g playwright && npx playwright install chromium
+claude mcp add -s user --transport http perasure-devmode https://samge.studio/perasure/devmode/mcp --header "Authorization: Bearer <token>"
 ```
 
 Cursor (`~/.cursor/mcp.json`) and most other tools:
 
 ```json
-{ "mcpServers": { "perasure-devmode": { "command": "node", "args": ["/Users/<you>/.perasure/devmode-mcp.mjs"] } } }
+{ "mcpServers": { "perasure-devmode": { "url": "https://samge.studio/perasure/devmode/mcp", "headers": { "Authorization": "Bearer <token>" } } } }
 ```
 
 Codex `~/.codex/config.toml`:
 
 ```toml
 [mcp_servers.perasure-devmode]
-command = "node"
-args = ["/Users/<you>/.perasure/devmode-mcp.mjs"]
+url = "https://samge.studio/perasure/devmode/mcp"
+http_headers = { Authorization = "Bearer <token>" }
 ```
 
-To update, download it again (`get_overview` and `--check` say when a newer one is published).
-Settings (environment): `PERASURE_SOURCE=remote` always reads the live site; `PERASURE_ROOT=<folder>` reads a local clone;
-`PERASURE_DEVMODE_URL` another copy of the site.
+## Local (inside a clone, for screenshots and live measurements)
+
+[`server.mjs`](server.mjs): the same tools over stdio, reading the clone's files, plus `get_screenshot`, `qa_compare` and `get_live_specs`
+when Playwright is installed (`npm install -g playwright && npx playwright install chromium`, about 150 MB).
+
+```sh
+claude mcp add perasure-devmode-local -s user -- node /path/to/Perasure/devmode/mcp/server.mjs
+node devmode/mcp/server.mjs --check
+```
+
+`PERASURE_ROOT=<folder>` reads another clone.
 
 ## Tools
 
@@ -59,16 +57,17 @@ Settings (environment): `PERASURE_SOURCE=remote` always reads the live site; `PE
 | `get_visual_changes` | the latest visual check: what changed since the latest iteration but isn't recorded, where it starts, picture links |
 | `find_by_figma` | a Figma link (or node id) → the PS components and pages built from it |
 | `search` | pages, components, tokens and iterations at once |
-| `get_screenshot` | PNG of a page (state) or a component state; can outline a component (needs Playwright). Like `qa_compare` and `get_live_specs`, it takes `device` (360 / 390 / 430), `fit` (cap — the default capped zoom, rem, fit = 1:1, scale) and `text` (85–200 %), so the layout is the phone's, as in Dev Mode |
-| `qa_compare` | design QA: your implementation's screenshot (file) or URL vs the demo — demo · implementation · difference picture, differing regions and the components there (needs Playwright) |
-| `get_live_specs` | a component measured as it renders: size, padding and gaps with the token the CSS uses, radius, fill, stroke, shadow, text, the layers inside, matching CSS rules (needs Playwright) |
+| `get_screenshot` · `qa_compare` · `get_live_specs` | **local server only** (need Playwright): a page or component state as a PNG; your implementation's screenshot vs the demo with a difference picture; a component measured as it renders. They take `device` (360 / 390 / 430), `fit` (cap, rem, fit, scale) and `text` (85–200 %) |
 
 Every tool takes `version` (an iteration id) where it makes sense: older versions are read from their git tag `devmode-<id>` or
 snapshot. All tools only read.
 
 ## For whoever changes Dev Mode
 
-`server.mjs` reads `devmode/data/*.js` (the same files the platform loads), `tokens/tokens.css`, `shared/ps-ui/*`, `shared/gallery*.js`,
-and for live measurements injects `devmode/js/inspector.js` into the page. When one of those formats changes, update the server in the
-same commit, raise `VERSION` in it (people then see that a newer one is published) and run
-`node devmode/mcp/server.mjs --check` plus a tools call (any MCP client, or pipe JSON-RPC lines into it).
+- [`core.mjs`](core.mjs) holds every tool both servers share (no Node or Cloudflare APIs); [`server.mjs`](server.mjs) adds stdio and the
+  browser tools; `worker/index.js` adds HTTP, the token and GitHub reads; [`local.mjs`](local.mjs) reads `devmode/data/*.js` in Node
+  (also for `tools/devmode-mcp-data.mjs`, which publishes them as JSON for the Worker).
+- They read `devmode/data/*.js` (the same files the platform loads), `tokens/tokens.css`, `shared/ps-ui/*`, `shared/gallery*.js`, and
+  for live measurements inject `devmode/js/inspector.js`. When one of those formats changes, update `core.mjs` in the same commit, raise
+  `VERSION` there and run `node devmode/mcp/server.mjs --check` plus a tools call. `pagesFrom()` in `core.mjs` mirrors `url()` in
+  `devmode/data/pages.js`: change them together. A change to `core.mjs` or `worker/` is deployed by the *Dev Mode live* workflow.

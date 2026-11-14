@@ -4,7 +4,7 @@
 (function () {
   'use strict';
   var DM = window.DM, h = DM.h, R = DM.R, I = DM.inspect, t = function (k, v) { return DM.t(k, v); };
-  var LIVE = 'https://samgestudio-dev.github.io/Perasure/';
+  var LIVE = 'https://samge.studio/perasure/';
 
   /* ---- code colouring (JS / CSS / JSX), small and good enough to read ---- */
   var RX = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'|`(?:[^`\\]|\\.)*`)|(var\(--[\w-]+\)|--[\w-]+)|\b(function|return|var|const|let|if|else|true|false|null|undefined|new|this|typeof|import|export|from)\b|(#[0-9a-fA-F]{3,8}\b|\b\d+(?:\.\d+)?(?:px|rem|ms|s|%)?\b)|(<\/?[A-Z][\w.]*|\/>|\bPS\.[A-Z]\w*)/g;

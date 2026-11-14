@@ -1,0 +1,40 @@
+# PeraSure Playground on samge.studio
+
+The repo is private, so it is served by a Cloudflare Worker (`perasure-devmode`, [`index.js`](index.js)) instead of GitHub Pages:
+
+| Address | What |
+|---|---|
+| https://samge.studio/perasure/devmode/ | PeraSure Dev Mode |
+| https://samge.studio/perasure/ | the Playground picker (every prototype and animation) |
+| https://samge.studio/perasure/devmode/mcp | the hosted MCP server for developers' AI tools (Dev Mode → Connect AI) |
+
+- **Password first.** Every page asks for the account and password once (a cookie keeps you signed in for 30 days; `/perasure/_logout`
+  signs out). Both live only in Cloudflare secrets. 10 wrong tries from one address lock it for 15 minutes.
+- **A relay, not a copy.** Each file is read from GitHub (main, newest commit) when it is asked for. A push is live within about
+  20 seconds, with nothing to deploy. Files are cached by commit, so a page loads fast after the first visit.
+- **MCP.** The hosted server runs the same tools as `devmode/mcp/server.mjs` (shared code: `devmode/mcp/core.mjs`), except screenshots,
+  design QA and live measurements, which need a browser (local server only). Developers send `Authorization: Bearer <MCP_TOKEN>`;
+  signed-in Dev Mode shows the token in Connect AI. The data of `devmode/data/pages.js`, `iterations.js` and `status.js` reaches it as
+  JSON on the branch `devmode-mcp`, made by the *Dev Mode live* workflow on every change (Workers can't run those scripts).
+- Not served: dot folders (`.github`, `.claude` …) and `worker/`. `samge.studio` itself shows a blank page.
+
+## Secrets
+
+Cloudflare dashboard → Workers & Pages → `perasure-devmode` → Settings → Variables and Secrets (type *Secret*):
+
+| Name | Value |
+|---|---|
+| `GITHUB_TOKEN` | GitHub fine-grained token: only this repo, Contents read-only (renew it before it expires) |
+| `DEVMODE_USER` | the account (not case-sensitive) |
+| `DEVMODE_PASS` | the password (case-sensitive) |
+| `SESSION_SECRET` | random text that signs the sign-in cookie; changing it signs everyone out |
+| `MCP_TOKEN` | random text, developers' MCP token; changing it means everyone updates the token in their AI tool |
+
+To change the password, edit `DEVMODE_PASS` there. Random text: `openssl rand -hex 32`.
+
+## Deploying the Worker's own code
+
+Only needed when `worker/` or `devmode/mcp/core.mjs` changes. The *Dev Mode live* workflow (`.github/workflows/devmode-live.yml`)
+deploys it with Wrangler when the repo has the Actions secrets `CLOUDFLARE_API_TOKEN` (a Cloudflare API token with *Edit Cloudflare
+Workers*) and `CLOUDFLARE_ACCOUNT_ID`; without them it skips and says so, and Claude can deploy through the Cloudflare connector.
+By hand: `npx wrangler deploy -c worker/wrangler.toml`.

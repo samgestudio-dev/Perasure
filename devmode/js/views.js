@@ -119,7 +119,7 @@
   'use strict';
   var DM = window.DM, h = DM.h, R = DM.R, t = function (k, v) { return DM.t(k, v); };
   /* the report lives on the branch devmode-visual; ?visual=<folder> reads another one (a local run of the tool) */
-  var RAW = new URLSearchParams(location.search).get('visual') || 'https://raw.githubusercontent.com/samgestudio-dev/Perasure/devmode-visual/';
+  var RAW = new URLSearchParams(location.search).get('visual') || '../_visual/';   /* the branch devmode-visual, through the Worker (worker/index.js) */
   DM.VISUAL = RAW;
   var vp = null;
   DM.loadVisual = function () {

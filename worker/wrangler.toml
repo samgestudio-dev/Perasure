@@ -1,0 +1,7 @@
+# PeraSure Playground on samge.studio (worker/README.md). Deployed by .github/workflows/devmode-live.yml; by hand: npx wrangler deploy -c worker/wrangler.toml
+name = "perasure-devmode"
+main = "index.js"
+compatibility_date = "2026-11-01"
+workers_dev = false
+routes = [{ pattern = "samge.studio/*", zone_name = "samge.studio" }]
+# Secrets (never here): GITHUB_TOKEN, DEVMODE_USER, DEVMODE_PASS, SESSION_SECRET, MCP_TOKEN

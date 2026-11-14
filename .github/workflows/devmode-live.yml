@@ -1,0 +1,68 @@
+# PeraSure Dev Mode on samge.studio (worker/README.md). The site itself needs no deploy: the Worker reads main straight from GitHub,
+# so a push is live within about 20 seconds. This workflow does the two things that can't happen that way:
+#   data    devmode/data/pages.js, iterations.js and status.js as JSON on the branch devmode-mcp, for the hosted MCP server
+#           (Cloudflare Workers can't run those scripts) — on every change to them
+#   deploy  the Worker's own code (worker/, devmode/mcp/core.mjs) to Cloudflare — needs the repo's Actions secrets
+#           CLOUDFLARE_API_TOKEN (and CLOUDFLARE_ACCOUNT_ID); without them this step is skipped and says so
+name: Dev Mode live
+
+on:
+  push:
+    branches: [main]
+    paths: ['devmode/data/**', 'devmode/mcp/**', 'tools/devmode-mcp-data.mjs', 'worker/**', '.github/workflows/devmode-live.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: devmode-live
+  cancel-in-progress: false
+
+jobs:
+  data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Publish the MCP data (branch devmode-mcp)
+        run: |
+          mkdir out && node tools/devmode-mcp-data.mjs out/data.json
+          cd out
+          echo "Dev Mode data of ${GITHUB_SHA} for the hosted MCP server (worker/index.js). Made by the Dev Mode live workflow; replaced each time." > README.md
+          git init -q -b devmode-mcp
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Dev Mode data of ${GITHUB_SHA::7}"
+          git push -q -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" devmode-mcp
+          echo "MCP data published for ${GITHUB_SHA::7}" >> "$GITHUB_STEP_SUMMARY"
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Did the Worker's code change?
+        id: changed
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || git diff --name-only HEAD~1 HEAD | grep -qE '^(worker/|devmode/mcp/core\.mjs)'; then echo "yes=1" >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/setup-node@v4
+        if: steps.changed.outputs.yes
+        with:
+          node-version: 20
+      - name: Deploy the Worker
+        if: steps.changed.outputs.yes
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "Worker code changed, but CLOUDFLARE_API_TOKEN is not set: not deployed. Ask Claude to deploy it, or add the secret (worker/README.md)." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          npx --yes wrangler@4 deploy -c worker/wrangler.toml
+          echo "Worker deployed from ${GITHUB_SHA::7}" >> "$GITHUB_STEP_SUMMARY"
