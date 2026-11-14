@@ -5,3 +5,7 @@ compatibility_date = "2025-09-01"
 workers_dev = false
 routes = [{ pattern = "samge.studio/*", zone_name = "samge.studio" }]
 # Secrets (never here): GITHUB_TOKEN, DEVMODE_USER, DEVMODE_PASS, SESSION_SECRET, MCP_TOKEN
+
+[vars]
+# public site key of the Cloudflare Turnstile widget "perasure-devmode-login" (its secret is the TURNSTILE_SECRET secret)
+TURNSTILE_SITEKEY = "0x4AAAAAAGAkWmfYJfGFH4Y_"

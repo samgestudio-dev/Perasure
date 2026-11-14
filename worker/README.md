@@ -9,7 +9,8 @@ The repo is private, so it is served by a Cloudflare Worker (`perasure-devmode`,
 | https://samge.studio/perasure/devmode/mcp | the hosted MCP server for developers' AI tools (Dev Mode → Connect AI) |
 
 - **Password first.** Every page asks for the account and password once (a cookie keeps you signed in for 30 days; `/perasure/_logout`
-  signs out). Both live only in Cloudflare secrets. 10 wrong tries from one address lock it for 15 minutes.
+  signs out). Both live only in Cloudflare secrets. After 3 wrong tries from one address the page asks for Cloudflare
+  Turnstile (are you human?), checked on the server before the password; 20 wrong tries lock the address for 15 minutes.
 - **A relay, not a copy.** Each file is read from GitHub (main, newest commit) when it is asked for. A push is live within about
   20 seconds, with nothing to deploy. Files are cached by commit, so a page loads fast after the first visit.
 - **MCP.** The hosted server runs the same tools as `devmode/mcp/server.mjs` (shared code: `devmode/mcp/core.mjs`), except screenshots,
@@ -29,6 +30,7 @@ Cloudflare dashboard → Workers & Pages → `perasure-devmode` → Settings →
 | `DEVMODE_PASS` | the password (case-sensitive) |
 | `SESSION_SECRET` | random text that signs the sign-in cookie; changing it signs everyone out |
 | `MCP_TOKEN` | random text, developers' MCP token; changing it means everyone updates the token in their AI tool |
+| `TURNSTILE_SECRET` | the secret of the Turnstile widget `perasure-devmode-login` (Cloudflare → Turnstile); its public site key is `TURNSTILE_SITEKEY` in `wrangler.toml` |
 
 To change the password, edit `DEVMODE_PASS` there. Random text: `openssl rand -hex 32`.
 

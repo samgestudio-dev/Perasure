@@ -14,6 +14,7 @@
      DEVMODE_USER    the account (compared without case)       DEVMODE_PASS   the password (case matters)
      SESSION_SECRET  signs the sign-in cookie (changing it signs everyone out)
      MCP_TOKEN       developers' MCP access token (changing it disconnects their AI tools until they update it)
+     TURNSTILE_SECRET  the secret of the Turnstile widget "perasure-devmode-login" (its public site key: TURNSTILE_SITEKEY in wrangler.toml)
    Deployed by .github/workflows/devmode-live.yml (when CLOUDFLARE_API_TOKEN is set in the repo's Actions secrets). Guide: worker/README.md */
 import { createDevmode } from '../devmode/mcp/core.mjs';
 
@@ -22,7 +23,8 @@ const BASE = '/perasure';
 const COOKIE = 'ps_devmode';
 const SESSION_DAYS = 30;
 const HEAD_TTL = 20;            /* seconds a data centre keeps the newest commit id before asking GitHub again */
-const MAX_TRIES = 10;           /* wrong passwords per address in 15 minutes */
+const CHECK_AFTER = 3;          /* after this many wrong passwords, the sign-in page asks for Cloudflare Turnstile (are you human?) */
+const MAX_TRIES = 20;           /* wrong passwords per address in 15 minutes before it is locked */
 const CACHE = 'https://samge.studio/__cache/';   /* Cache API keys (never served) */
 const TYPES = {
   html: 'text/html; charset=utf-8', htm: 'text/html; charset=utf-8', js: 'text/javascript; charset=utf-8', mjs: 'text/javascript; charset=utf-8',
@@ -43,7 +45,7 @@ export default {
       if (p === BASE + '/devmode/mcp') return await mcp(req, env, ctx);
       if (p === BASE + '/_login') return await login(req, env, url);
       if (p === BASE + '/_logout') return new Response(null, { status: 303, headers: { Location: BASE + '/', 'Set-Cookie': `${COOKIE}=; Path=${BASE}; Max-Age=0; HttpOnly; Secure; SameSite=Lax` } });
-      if (!(await signedIn(req, env))) return loginPage(url.pathname + url.search, '', 200);
+      if (!(await signedIn(req, env))) return loginPage(url.pathname + url.search, '', 200, await triesOf(req.headers.get('CF-Connecting-IP') || 'unknown'), env);
       if (p === BASE + '/_mcp') return json({ url: url.origin + BASE + '/devmode/mcp', token: env.MCP_TOKEN || '' }, 200, { 'Cache-Control': 'no-store' });
       if (req.method !== 'GET' && req.method !== 'HEAD') return text('Method not allowed', 405);
       if (p.startsWith(BASE + '/_visual/')) return await file(req, env, ctx, 'devmode-visual', p.slice((BASE + '/_visual/').length));
@@ -146,19 +148,33 @@ function cors() { return { 'Access-Control-Allow-Origin': '*', 'Access-Control-A
 async function login(req, env, url) {
   if (req.method !== 'POST') return redirect(BASE + '/');
   const f = await req.formData(), next = safeNext(String(f.get('next') || ''));
-  const ip = req.headers.get('CF-Connecting-IP') || 'unknown', key = new Request(CACHE + 'tries/' + encodeURIComponent(ip));
-  const tries = +(await (await caches.default.match(key))?.text() || 0);
-  if (tries >= MAX_TRIES) return loginPage(next, 'locked', 429);
+  const ip = req.headers.get('CF-Connecting-IP') || 'unknown', tries = await triesOf(ip);
+  if (tries >= MAX_TRIES) return loginPage(next, 'locked', 429, tries, env);
+  /* after a few wrong passwords: Turnstile first, checked with Cloudflare before the password is even looked at */
+  if (tries >= CHECK_AFTER && !(await human(f.get('cf-turnstile-response'), ip, env))) return loginPage(next, 'human', 403, tries, env);
   const okUser = String(f.get('user') || '').trim().toLowerCase() === String(env.DEVMODE_USER || '').trim().toLowerCase();
   const okPass = await same(String(f.get('pass') || ''), String(env.DEVMODE_PASS || ''), env);
   if (!env.DEVMODE_USER || !env.DEVMODE_PASS || !okUser || !okPass) {
-    await caches.default.put(key, new Response(String(tries + 1), { headers: { 'Cache-Control': 'max-age=900' } }));
+    await caches.default.put(triesKey(ip), new Response(String(tries + 1), { headers: { 'Cache-Control': 'max-age=900' } }));
     await new Promise(r => setTimeout(r, 400));
-    return loginPage(next, 'wrong', 401);
+    return loginPage(next, 'wrong', 401, tries + 1, env);
   }
-  await caches.default.delete(key);
+  await caches.default.delete(triesKey(ip));
   const exp = Math.floor(Date.now() / 1000) + SESSION_DAYS * 86400;
   return new Response(null, { status: 303, headers: { Location: next, 'Set-Cookie': `${COOKIE}=${exp}.${await sign('session.' + exp, env)}; Path=${BASE}; Max-Age=${SESSION_DAYS * 86400}; HttpOnly; Secure; SameSite=Lax` } });
+}
+const triesKey = ip => new Request(CACHE + 'tries-v2/' + encodeURIComponent(ip));
+async function triesOf(ip) { return +(await (await caches.default.match(triesKey(ip)))?.text() || 0); }
+/* Cloudflare Turnstile siteverify: one-time token, this widget's action, this site's hostname; anything else (or no answer) fails */
+async function human(token, ip, env) {
+  if (typeof token !== 'string' || !token || token.length > 2048 || !env.TURNSTILE_SECRET) return false;
+  try {
+    const r = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', { method: 'POST', signal: AbortSignal.timeout(10000),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ secret: env.TURNSTILE_SECRET, response: token, remoteip: ip }) });
+    if (!r.ok) return false;
+    const v = await r.json();
+    return v.success === true && v.action === 'login' && v.hostname === 'samge.studio';
+  } catch { return false; }
 }
 function safeNext(n) { return n.startsWith(BASE + '/') && !n.startsWith('//') && !/[\r\n]/.test(n) && !n.startsWith(BASE + '/_log') ? n : BASE + '/devmode/'; }
 async function signedIn(req, env) {
@@ -180,9 +196,12 @@ async function same(a, b, env) {
 }
 
 /* ---------------------------------------------------------------- pages */
-function loginPage(next, problem, status) {
+function loginPage(next, problem, status, tries = 0, env = {}) {
   const msg = problem === 'wrong' ? '<p class="err">账号或密码不对，请再试一次。<br>That account or password isn’t right. Please try again.</p>'
+    : problem === 'human' ? '<p class="err">请先完成下面的人机验证，再登录。<br>Please finish the check below, then sign in.</p>'
     : problem === 'locked' ? '<p class="err">试错次数太多了，请 15 分钟后再试。<br>Too many tries. Please try again in 15 minutes.</p>' : '';
+  const check = problem !== 'locked' && tries >= CHECK_AFTER && env.TURNSTILE_SITEKEY
+    ? `<div class="ts cf-turnstile" data-sitekey="${env.TURNSTILE_SITEKEY}" data-action="login" data-theme="auto" data-language="auto"></div><script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>` : '';
   const esc = s => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
   return new Response(`<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex"><title>PeraSure Dev Mode · 登录</title><style>
@@ -195,12 +214,12 @@ label{display:block;font-size:13px;color:var(--mute);margin:14px 0 6px}
 input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:transparent;color:inherit;font:inherit}
 input:focus{outline:2px solid var(--acc);outline-offset:-1px;border-color:transparent}
 button{width:100%;margin-top:22px;padding:11px;border:0;border-radius:8px;background:var(--acc);color:#fff;font:inherit;font-weight:600;cursor:pointer}
-.err{color:var(--err);font-size:13px;margin:12px 0 0}</style></head><body>
+.err{color:var(--err);font-size:13px;margin:12px 0 0}.ts{margin-top:18px;min-height:65px}</style></head><body>
 <form method="post" action="${BASE}/_login"><h1>PeraSure Dev Mode</h1><p class="sub">登录后查看页面、组件和代码 · Sign in to see the pages, components and code</p>
 <input type="hidden" name="next" value="${esc(next)}">
 <label for="u">账号 Account</label><input id="u" name="user" autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus>
 <label for="p">密码 Password</label><input id="p" name="pass" type="password" autocomplete="current-password" required>
-${msg}<button type="submit">登录 Sign in</button></form></body></html>`, { status, headers: { 'Content-Type': TYPES.html, 'Cache-Control': 'no-store', ...SAFE } });
+${check}${msg}<button type="submit">登录 Sign in</button></form></body></html>`, { status, headers: { 'Content-Type': TYPES.html, 'Cache-Control': 'no-store', ...SAFE } });
 }
 function blank(status) {
   return new Response('<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>samge.studio</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;font:15px -apple-system,sans-serif;color:#888}</style></head><body>samge.studio</body></html>',
