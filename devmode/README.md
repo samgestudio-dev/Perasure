@@ -35,7 +35,7 @@ see what each iteration changed and developers can pull the exact code. Desktop 
   difference (matching parts go black), an overlay (opacity) or side by side; arrows nudge it. Mark issues with Annotate.
 - **Figma links**: paste a Figma link into the Pages / Components search to find what it is built as. Design-system components are
   matched to PS components in `data/figma-links.js` (added to each component's Figma nodes by `tools/devmode-index.py`).
-- **Connect AI** (top bar): an MCP server for developers' AI tools — Claude Code, Cursor, Codex … read pages, components, code, CSS,
+- **Connect AI** (top bar): the hosted MCP server for developers' AI tools (address and token filled in for whoever is signed in) — Claude Code, Cursor, Codex … read pages, components, code, CSS,
   tokens, motion and iterations straight from Dev Mode ([`mcp/README.md`](mcp/README.md)). **Copy for AI** (right panel) copies an
   instruction with the link to what is selected; the AI opens it with `resolve_devmode_link`.
 - 中 / EN switch and system / light / dark theme (remembered in the browser). The platform has its own look: PeraSure's tokens are
@@ -59,7 +59,7 @@ see what each iteration changed and developers can pull the exact code. Desktop 
 | `js/notes.js` | Annotate: notes storage, link encoding, editor, Notes tab, task list |
 | `data/figma-links.js` | design-system components (Figma) ↔ PS components |
 | `../tools/devmode-visual.mjs`, `../.github/workflows/devmode-visual.yml` | the visual check and the workflow that publishes it (branch `devmode-visual`) |
-| `mcp/server.mjs`, `js/ai.js` | the MCP server (one file, Node 18+; guide `mcp/README.md`) and its setup dialog / Copy for AI |
+| `mcp/core.mjs`, `mcp/server.mjs`, `js/ai.js` | the MCP tools (shared by the hosted server, `../worker/index.js`, and the local one, `server.mjs`; guide `mcp/README.md`) and its setup dialog / Copy for AI |
 | `snapshots/<id>/` | a runnable copy of each iteration (`tools/devmode-snapshot.py <id>`); the *Dev Mode* workflow tags its commit `devmode-<id>` |
 
 `shared/stage.html?entry=<gallery entry>&state=<n>` draws one state of a component for the canvas; the states themselves are written

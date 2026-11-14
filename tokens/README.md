@@ -57,7 +57,7 @@ Use semantic tokens (`--color-text-*`, `--color-surface-*`, `--spacing-gap-*`, `
 | Want | URL |
 | --- | --- |
 | A fixed version (recommended for the app) | `https://cdn.jsdelivr.net/gh/samgestudio-dev/Perasure@tokens-v2026.10.27/tokens/tokens.css` |
-| Always the latest | `https://samgestudio-dev.github.io/Perasure/tokens/tokens.css` |
+| Always the latest | `https://samge.studio/perasure/tokens/tokens.css` (signed in; the repo is private, so a CDN link needs a public copy) |
 
 Swap `tokens.css` for `tokens.json` to get the W3C format (for Style Dictionary, Tokens Studio, etc.). To upgrade,
 read the *Developer impact* of each version in between in `CHANGELOG.md`, then change the tag.

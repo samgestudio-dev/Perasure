@@ -9,8 +9,8 @@
 <!-- First application — a new customer from log in to a ready credit limit (Figma: Perasure handoff nG5SHtAxW2TD782mHr3eeX, section 13485:21324).
      Nothing is re-made: the screens are the PeraSure app's own (prototypes/app, loaded from there), so a change in the app shows here too.
      flow.js only sets the path through them: where it starts, the step it skips and how it ends. -->
-<script src="../../shared/ps-ui/tune.js?v=202611130929"></script>
-<link rel="stylesheet" href="../../shared/ps-ui/tune.css?v=202611130929">
+<script src="../../shared/ps-ui/tune.js?v=202611140832"></script>
+<link rel="stylesheet" href="../../shared/ps-ui/tune.css?v=202611140832">
 <script>
 PSTune.setup({ key: 'perasure.first-application.tune',
   note: 'A new customer’s first visit, on the app’s own screens: log in with a code, the home before there’s a limit, the application, then the credit limit. A change starts the flow again from log in.',
@@ -30,16 +30,16 @@ PSTune.setup({ key: 'perasure.first-application.tune',
 Object.assign(window.PS_TUNE, { user: 'guest', loan: 'none', coupons: '6', intro: 0, inbox: 'unread', rating: 0 });
 window.PS_FIT = { max: 1.15, text: true };
 </script>
-<script src="../../shared/ps-ui/phone-fit.js?v=202611130929"></script>
+<script src="../../shared/ps-ui/phone-fit.js?v=202611140832"></script>
 <link rel="stylesheet" href="../../tokens/tokens.css">
-<link rel="stylesheet" href="../../tokens-rem/tokens-rem.css?v=202611130929">
+<link rel="stylesheet" href="../../tokens-rem/tokens-rem.css?v=202611140832">
 <link rel="stylesheet" href="../../assets/fonts/fonts.css">
 <link rel="stylesheet" href="../../vendor/react-wheel-picker@1.2.3/style.css">
 <link rel="preload" href="../../assets/fonts/hanken-grotesk-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../../assets/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../../assets/fonts/satoshi-700.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../../shared/ps-ui/ps-ui.css?v=202611130929">
-<link rel="stylesheet" href="../app/app.css?v=202611130929">
+<link rel="stylesheet" href="../../shared/ps-ui/ps-ui.css?v=202611140832">
+<link rel="stylesheet" href="../app/app.css?v=202611140832">
 </head>
 <body>
 <div id="root"></div>
@@ -47,35 +47,35 @@ window.PS_FIT = { max: 1.15, text: true };
 <script src="../../vendor/react-dom@18.3.1/react-dom.production.min.js"></script>
 <script src="../../vendor/react-wheel-picker@1.2.3/react-wheel-picker.js"></script>
 <script src="../../vendor/motion@14.4.0/motion-react.js"></script>
-<script src="../../shared/ps-ui/core.js?v=202611130929"></script>
-<script src="../../shared/ps-ui/layout.js?v=202611130929"></script>
-<script src="../../shared/ps-ui/feedback.js?v=202611130929"></script>
-<script src="../../shared/ps-ui/form.js?v=202611130929"></script>
-<script src="../../shared/ps-ui/coupon.js?v=202611130929"></script>
-<script src="../../shared/ps-ui/home.js?v=202611130929"></script>
-<script src="../../shared/ps-ui/loan.js?v=202611130929"></script>
-<script src="../../shared/ps-ui/account.js?v=202611130929"></script>
-<script src="../../shared/ps-ui/status.js?v=202611130929"></script>
-<script src="../../shared/ps-ui/pay.js?v=202611130929"></script>
-<script src="../../shared/ps-ui/list.js?v=202611130929"></script>
-<script src="../../shared/ps-ui/fx.js?v=202611130929"></script>
-<script src="../../shared/ps-ui/apply.js?v=202611130929"></script>
-<script src="../../shared/ps-ui/withdraw-host.js?v=202611130929"></script>
+<script src="../../shared/ps-ui/core.js?v=202611140832"></script>
+<script src="../../shared/ps-ui/layout.js?v=202611140832"></script>
+<script src="../../shared/ps-ui/feedback.js?v=202611140832"></script>
+<script src="../../shared/ps-ui/form.js?v=202611140832"></script>
+<script src="../../shared/ps-ui/coupon.js?v=202611140832"></script>
+<script src="../../shared/ps-ui/home.js?v=202611140832"></script>
+<script src="../../shared/ps-ui/loan.js?v=202611140832"></script>
+<script src="../../shared/ps-ui/account.js?v=202611140832"></script>
+<script src="../../shared/ps-ui/status.js?v=202611140832"></script>
+<script src="../../shared/ps-ui/pay.js?v=202611140832"></script>
+<script src="../../shared/ps-ui/list.js?v=202611140832"></script>
+<script src="../../shared/ps-ui/fx.js?v=202611140832"></script>
+<script src="../../shared/ps-ui/apply.js?v=202611140832"></script>
+<script src="../../shared/ps-ui/withdraw-host.js?v=202611140832"></script>
 <!-- the app itself: its data, shell and screens, as they are in prototypes/app -->
-<script src="../app/coupons-data.js?v=202611130929"></script>
-<script src="../app/data.js?v=202611130929"></script>
-<script src="../app/app.js?v=202611130929"></script>
-<script src="../app/screens-auth.js?v=202611130929"></script>
-<script src="../app/screens-home.js?v=202611130929"></script>
-<script src="../app/screens-loan.js?v=202611130929"></script>
-<script src="../app/screens-withdraw.js?v=202611130929"></script>
-<script src="../app/screens-pay.js?v=202611130929"></script>
-<script src="../app/screens-account.js?v=202611130929"></script>
-<script src="../app/ph-places.js?v=202611130929"></script>
-<script src="../app/screens-kyc.js?v=202611130929"></script>
-<script src="../app/screens-help.js?v=202611130929"></script>
+<script src="../app/coupons-data.js?v=202611140832"></script>
+<script src="../app/data.js?v=202611140832"></script>
+<script src="../app/app.js?v=202611140832"></script>
+<script src="../app/screens-auth.js?v=202611140832"></script>
+<script src="../app/screens-home.js?v=202611140832"></script>
+<script src="../app/screens-loan.js?v=202611140832"></script>
+<script src="../app/screens-withdraw.js?v=202611140832"></script>
+<script src="../app/screens-pay.js?v=202611140832"></script>
+<script src="../app/screens-account.js?v=202611140832"></script>
+<script src="../app/ph-places.js?v=202611140832"></script>
+<script src="../app/screens-kyc.js?v=202611140832"></script>
+<script src="../app/screens-help.js?v=202611140832"></script>
 <!-- this demo's path through them -->
-<script src="flow.js?v=202611130929"></script>
+<script src="flow.js?v=202611140832"></script>
 <script>APP.start();</script>
 </body>
 </html>

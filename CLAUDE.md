@@ -1,8 +1,9 @@
 # PeraSure Playground — agent guide
 
-Phone-first motion prototypes for PeraSure, served by GitHub Pages from `main` / root.
+Phone-first motion prototypes for PeraSure. The repo is private: a Cloudflare Worker serves `main` at samge.studio behind a password,
+read straight from GitHub (`worker/`, guide `worker/README.md`).
 
-- Live picker: https://samgestudio-dev.github.io/Perasure/
+- Live picker: https://samge.studio/perasure/ · Dev Mode: https://samge.studio/perasure/devmode/
 - Each demo is opened and tested on a real phone (iOS Safari and Android Chrome).
 - The owner is a designer; reply in plain language and keep the picker page tidy.
 
@@ -53,7 +54,8 @@ shared/stage.html          draws one state of one entry (?entry=&state=): Dev Mo
 shared/gallery.html        only forwards old links to Dev Mode → Components
 devmode/                   PeraSure Dev Mode ("PeraSure Dev Mode" on the picker, desktop): every page and component inspected like Figma Dev Mode,
                            with code, specs, tokens, iterations and version compare — see "PeraSure Dev Mode" and devmode/README.md;
-                           devmode/mcp/server.mjs: its MCP server for developers' AI tools
+                           devmode/mcp/: its MCP tools for developers' AI (core.mjs shared by the hosted and the local server)
+worker/                    the Cloudflare Worker serving the repo at samge.studio/perasure/ behind a password, and the hosted MCP server
 tools/devmode-index.py     makes devmode/data/index.js from the code (stamp.py runs it); devmode-snapshot.py saves a version's runnable copy
 shared/README.md           how to use the components, files, rules for changing them
 prototypes/app/            the whole app as a test environment ("PeraSure app") — see "The full app"
@@ -71,6 +73,7 @@ tools/figma-tokens/        Figma side of the token pipeline: core.js (export + d
 .github/workflows/tokens.yml  applies exports dropped in tokens/inbox/, tags tokens-v<version>, checks generated files
 .github/workflows/devmode.yml tags each Dev Mode snapshot's commit devmode-<id>
 .github/workflows/devmode-visual.yml  the Dev Mode visual check on every push (tools/devmode-visual.mjs) → branch devmode-visual
+.github/workflows/devmode-live.yml    Dev Mode data as JSON → branch devmode-mcp (for the hosted MCP); deploys worker/ when it changes
 vendor/<lib>@<version>/    pinned libraries: lottie-web, gsap (+ plugins; esm/ = ES modules), react, react-dom, mui-material,
                            motion (motion-react.js = React API, motion.js = vanilla; both set window.Motion), matter-js,
                            react-wheel-picker (the package's dist/index.js unchanged in a small wrapper → window.WheelPicker; + style.css)
@@ -295,14 +298,16 @@ at the version's tag), Figma nodes, statuses, the iteration record and version c
   render steadily (check with `--filter <id>` twice).
 - **Screen as on the phone** (owner): the canvas lays a page out and draws it as the chosen phone does — device, Screen fit (the app's
   Tune modes, default capped zoom) and Text size, in the toolbar's screen menu; the frame keeps one size and place on every page.
-  `DM.screenOf` (`devmode/js/canvas.js`) and `screenOf` in `devmode/mcp/server.mjs` mirror `shared/ps-ui/phone-fit.js`: when the fit
+  `DM.screenOf` (`devmode/js/canvas.js`) and `screenOf` in `devmode/mcp/core.mjs` mirror `shared/ps-ui/phone-fit.js`: when the fit
   modes or the capped zoom change there, change both.
 - **Annotate, QA, Figma links** (owner): notes pinned on layers travel in links (`devmode/js/notes.js`); QA lays the developers'
   screenshot over the demo (canvas); design-system components matched to PS components live in `devmode/data/figma-links.js` (only
   clear one-to-one matches). Writing links into the shared Figma file needs the owner's go-ahead (Code Connect needs an Organization plan).
-- **MCP for developers' AI** (owner): `devmode/mcp/server.mjs` (one file, no dependencies, stdio; guide `devmode/mcp/README.md`) reads the
+- **MCP for developers' AI** (owner): hosted at https://samge.studio/perasure/devmode/mcp (`worker/index.js`, token in Connect AI) and
+  local in a clone (`devmode/mcp/server.mjs`, stdio, adds the Playwright tools); both run the tools in `devmode/mcp/core.mjs` (guide
+  `devmode/mcp/README.md`). The local one reads the
   same data files, `shared/ps-ui`, the gallery entries and `tokens/tokens.css`, and injects `devmode/js/inspector.js` for live measurements.
-  When a data format, a page's opening (`pages.js`) or the inspector changes, update the server in the same commit and raise its `VERSION`;
+  When a data format, a page's opening (`pages.js`) or the inspector changes, update `core.mjs` in the same commit and raise its `VERSION`;
   check with `node devmode/mcp/server.mjs --check`. Its setup dialog and "Copy for AI" are `devmode/js/ai.js`.
 
 ## Withdraw: the two credit states of the Credit limit intro
@@ -422,7 +427,7 @@ bundle was unpacked onto the shared environment):
 
 ## Caching (phones keep old copies otherwise)
 
-GitHub Pages lets browsers reuse a file for 10 minutes. Before committing a change to the Playground pages,
+The site asks browsers to check every file for a newer version, but phones still hold on to some. Before committing a change to the Playground pages,
 `animations/` or `assets/`, run `python3 tools/stamp.py`: it stamps the shared scripts (`?v=<stamp>`), and the
 index adds that stamp to every link and thumbnail, so phones load the new version right away. It also remakes Dev Mode's index
 (`devmode/data/index.js`) and stamps `devmode/index.html`. The player
@@ -430,7 +435,7 @@ fetches animation JSON with `cache: 'no-cache'` and loads GSAP modules with a pe
 
 ## Publishing
 
-- Commit to `main` and push; GitHub Pages redeploys automatically (about a minute).
-- Pages is configured in the repo settings (source: `main`, folder `/`). If the live link 404s, check that
-  setting and that the repo is public.
-- Give the owner the direct demo link as well as the picker link.
+- Commit to `main` and push; samge.studio shows it within about 20 seconds (the Worker reads `main` from GitHub; nothing to deploy).
+  Only a change to `worker/` or `devmode/mcp/core.mjs` needs a Worker deploy (*Dev Mode live* workflow, or the Cloudflare connector).
+- The account, password and tokens are Cloudflare secrets: never write them into the repo.
+- Give the owner the direct demo link (https://samge.studio/perasure/…) as well as the picker link.

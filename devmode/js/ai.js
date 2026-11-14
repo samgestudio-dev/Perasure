@@ -1,10 +1,18 @@
-/* PeraSure Dev Mode — connecting a developer's AI: the setup dialog for the MCP server (devmode/mcp/server.mjs) and "Copy for AI",
-   which copies a short instruction with the live link of what is open, for the AI to read through the MCP (resolve_devmode_link). */
+/* PeraSure Dev Mode — connecting a developer's AI: the setup dialog for the hosted MCP server (worker/index.js, on samge.studio; its
+   address and access token come from /perasure/_mcp for whoever is signed in) and "Copy for AI", which copies a short instruction with
+   the live link of what is open, for the AI to read through the MCP (resolve_devmode_link). */
 (function () {
   'use strict';
   var DM = window.DM, h = DM.h, R = DM.R, t = function (k, v) { return DM.t(k, v); };
-  var SITE = 'https://samgestudio-dev.github.io/Perasure/', SERVER = SITE + 'devmode/mcp/server.mjs', NAME = 'perasure-devmode';
+  var SITE = 'https://samge.studio/perasure/', SERVER = SITE + 'devmode/mcp', NAME = 'perasure-devmode';
   DM.MCP = { name: NAME, server: SERVER };
+  /* the MCP address and token, from the Worker (only on samge.studio, signed in) */
+  var accessP = null;
+  function access() {
+    if (!accessP) accessP = fetch('../_mcp', { cache: 'no-store', credentials: 'same-origin' }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .catch(function () { accessP = null; return null; });
+    return accessP;
+  }
 
   /* the live link of what is open now (also when Dev Mode runs from a local copy) */
   DM.liveLink = function () {
@@ -36,19 +44,16 @@
   }
 
   DM.AiSetup = function AiSetup(p) {
-    var os = R.useState(/Win/.test(navigator.platform) ? 'win' : 'mac'), sys = os[0];
     var tl = R.useState('claude'), tool = tl[0];
+    var ac = R.useState(undefined), acc = ac[0];
+    R.useEffect(function () { access().then(function (a) { ac[1](a); }); }, []);
     R.useEffect(function () { var f = function (e) { if (e.key === 'Escape') p.onClose(); }; window.addEventListener('keydown', f); return function () { window.removeEventListener('keydown', f); }; }, []);
-    var file = sys === 'win' ? '$HOME\\.perasure\\devmode-mcp.mjs' : '~/.perasure/devmode-mcp.mjs';
-    var abs = sys === 'win' ? 'C:\\\\Users\\\\<you>\\\\.perasure\\\\devmode-mcp.mjs' : '/Users/<you>/.perasure/devmode-mcp.mjs';
-    var dl = sys === 'win'
-      ? 'New-Item -ItemType Directory -Force $HOME\\.perasure | Out-Null\nInvoke-WebRequest ' + SERVER + ' -OutFile $HOME\\.perasure\\devmode-mcp.mjs'
-      : 'mkdir -p ~/.perasure && curl -fsSL ' + SERVER + ' -o ~/.perasure/devmode-mcp.mjs';
-    var json = '{\n  "mcpServers": {\n    "' + NAME + '": {\n      "command": "node",\n      "args": ["' + abs + '"]\n    }\n  }\n}';
+    var url = (acc && acc.url) || SERVER, token = (acc && acc.token) || '<token>';
+    var json = '{\n  "mcpServers": {\n    "' + NAME + '": {\n      "url": "' + url + '",\n      "headers": { "Authorization": "Bearer ' + token + '" }\n    }\n  }\n}';
     var add = {
-      claude: { cmd: 'claude mcp add ' + NAME + ' -s user -- node ' + file, note: t('ai.claudeNote') },
+      claude: { cmd: 'claude mcp add -s user --transport http ' + NAME + ' ' + url + ' --header "Authorization: Bearer ' + token + '"', note: t('ai.claudeNote') },
       cursor: { cmd: json, note: t('ai.cursorNote') },
-      codex: { cmd: 'codex mcp add ' + NAME + ' -- node ' + file + '\n\n# ' + t('ai.or') + ' ~/.codex/config.toml\n[mcp_servers.' + NAME + ']\ncommand = "node"\nargs = ["' + abs.replace(/\\\\/g, '\\\\') + '"]', note: t('ai.codexNote') },
+      codex: { cmd: '# ~/.codex/config.toml\n[mcp_servers.' + NAME + ']\nurl = "' + url + '"\nhttp_headers = { Authorization = "Bearer ' + token + '" }', note: t('ai.codexNote') },
       other: { cmd: json, note: t('ai.otherNote') }
     }[tool];
     var examples = [t('ai.ex1'), t('ai.ex2'), t('ai.ex3'), t('ai.ex4')];
@@ -57,11 +62,12 @@
         h('header', { className: 'dm-dialog__head' }, h('div', null, h('h3', null, t('ai.title')), h('p', null, t('ai.sub'))),
           h('button', { type: 'button', className: 'dm-iconbtn', title: t('cmp.close') + ' (Esc)', onClick: p.onClose }, h(DM.Icon, { name: 'close', size: 16 }))),
         h('div', { className: 'dm-dialog__body' },
-          h(Step, { n: 1, title: t('ai.s1'), sub: t('ai.s1sub'), extra: h(Seg, { value: sys, onChange: os[1], items: [['mac', 'macOS / Linux'], ['win', 'Windows']] }) }, h(Cmd, null, dl)),
+          h(Step, { n: 1, title: t('ai.s1'), sub: acc === null ? t('ai.offline') : t('ai.s1sub') },
+            h(Cmd, null, t('ai.addr') + '  ' + url + '\n' + t('ai.token') + '  ' + (acc === undefined ? '…' : token))),
           h(Step, { n: 2, title: t('ai.s2'), extra: h(Seg, { value: tool, onChange: tl[1], items: [['claude', 'Claude Code'], ['cursor', 'Cursor'], ['codex', 'Codex'], ['other', t('ai.otherTool')]] }) },
             h(Cmd, null, add.cmd), h('p', { className: 'dm-step__note' }, add.note)),
-          h(Step, { n: 3, title: t('ai.s3'), sub: t('ai.s3sub') }, h(Cmd, null, 'node ' + file + ' --check')),
-          h(Step, { n: 4, title: t('ai.s4'), sub: t('ai.s4sub') }, h(Cmd, null, 'npm install -g playwright\nnpx playwright install chromium')),
+          h(Step, { n: 3, title: t('ai.s3'), sub: t('ai.s3sub') }, h(Cmd, null, tool === 'claude' ? 'claude mcp list' : t('ai.s3other'))),
+          h(Step, { n: 4, title: t('ai.s4'), sub: t('ai.s4sub') }, h(Cmd, null, 'git clone https://github.com/samgestudio-dev/Perasure.git\nnpm install -g playwright && npx playwright install chromium\nnode Perasure/devmode/mcp/server.mjs --help')),
           h('section', { className: 'dm-step is-plain' }, h('div', { className: 'dm-step__body' },
             h('div', { className: 'dm-step__head' }, h('b', null, t('ai.use'))),
             h('p', null, t('ai.useSub')),
