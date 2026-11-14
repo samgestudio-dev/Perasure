@@ -303,7 +303,9 @@ at the version's tag), Figma nodes, statuses, the iteration record and version c
 - **Annotate, QA, Figma links** (owner): notes pinned on layers travel in links (`devmode/js/notes.js`); QA lays the developers'
   screenshot over the demo (canvas); design-system components matched to PS components live in `devmode/data/figma-links.js` (only
   clear one-to-one matches). Writing links into the shared Figma file needs the owner's go-ahead (Code Connect needs an Organization plan).
-- **MCP for developers' AI** (owner): hosted at https://samge.studio/perasure/devmode/mcp (`worker/index.js`, token in Connect AI) and
+- **MCP for developers' AI** (owner): hosted at https://samge.studio/perasure/devmode/mcp (`worker/index.js`; signs in with the site's account and password as headers, and reads
+  any repo file through `read_file` / `list_files` / `search_code`, so developers never need GitHub; switches `SITE_LOGIN` / `MCP_LOGIN` in
+  `worker/README.md`) and
   local in a clone (`devmode/mcp/server.mjs`, stdio, adds the Playwright tools); both run the tools in `devmode/mcp/core.mjs` (guide
   `devmode/mcp/README.md`). The local one reads the
   same data files, `shared/ps-ui`, the gallery entries and `tokens/tokens.css`, and injects `devmode/js/inspector.js` for live measurements.

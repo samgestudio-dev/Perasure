@@ -76,7 +76,8 @@
   /* the folder an iteration runs from: the live repo for the latest, its snapshot for an older one */
   DM.root = function (id) { return !id || id === DM.latest().id ? '../' : 'snapshots/' + id + '/'; };
   DM.ref = function (id) { return !id || id === DM.latest().id ? 'main' : 'devmode-' + id; };
-  DM.gh = function (file, a, b, id) { return DM.REPO + '/blob/' + DM.ref(id) + '/' + file + (a ? '#L' + a + (b && b !== a ? '-L' + b : '') : ''); };
+  /* the code behind a piece, on the site itself (worker/index.js → /perasure/_source/; no GitHub account needed) */
+  DM.gh = function (file, a, b, id) { var v = DM.ref(id) === 'main' ? '' : '?v=' + id; return '../_source/' + file + v + (a ? '#L' + a + (b && b !== a ? '-L' + b : '') : ''); };
   DM.figmaUrl = function (n) { return n.url || ('https://www.figma.com/design/' + (n.file || 'OBsvf42AiRapcRrasD7KNm') + '/?node-id=' + String(n.id).replace(':', '-')); };
   /* a Figma link (or a node id) → the components and pages that name that node (index: comments + data/figma-links.js) */
   DM.parseFigma = function (q) {

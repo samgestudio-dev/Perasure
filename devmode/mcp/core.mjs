@@ -5,7 +5,7 @@
    Each of them passes a source: how to read a file now and at an older version, the data of devmode/data/*.js as JSON, the visual check.
    Keep in step with devmode/data/*.js and devmode/js/inspector.js when their formats change, and raise VERSION. */
 
-export const VERSION = '2.0.0';
+export const VERSION = '2.1.0';
 export const NAME = 'perasure-devmode';
 export const REPO = 'samgestudio-dev/Perasure';
 export const HOSTED = 'https://samge.studio/perasure/';
@@ -50,6 +50,9 @@ const b64json = s => { const bin = atob(s.replace(/-/g, '+').replace(/_/g, '/'))
      read(rel)            a file of the repo as it is now (text)
      readTag(ver, rel)    the file at the git tag devmode-<ver>, or null (then the version's snapshot copy is read)
      loadData()           { BASE, sections, iterations, status } — devmode/data/pages.js, iterations.js, status.js as data
+     readBytes(rel, ver)  a file as bytes (Uint8Array), now (ver null) or at the version — images and other binary files for read_file
+     tree(ver)            every file of the repo, [{ path, size }], now (ver null) or at the git tag devmode-<ver> (read_file,
+                          list_files, search_code)
      visual()             { report, base, source } of the latest visual check, or null
      extraNote            optional text added to resolve_devmode_link answers that select a layer
    } */
@@ -85,7 +88,8 @@ export function createDevmode(src) {
   /* ---------------------------------------------------------------- lookups and links */
   const lc = s => String(s || '').toLowerCase();
   const ref = (D, ver) => (!ver || ver === D.latest.id ? 'main' : 'devmode-' + ver);
-  const gh = (D, file, a, b, ver) => `https://github.com/${REPO}/blob/${ref(D, ver)}/${file}${a ? '#L' + a + (b && b !== a ? '-L' + b : '') : ''}`;
+  /* a file's source on samge.studio (worker/index.js /_source/, signed in): no GitHub needed. The name is from when it linked to GitHub. */
+  const gh = (D, file, a, b, ver) => `${SITE}_source/${file}${ver && ver !== D.latest.id ? '?v=' + ver : ''}${a ? '#L' + a + (b && b !== a ? '-L' + b : '') : ''}`;
   const dm = hash => SITE + 'devmode/index.html#' + hash;
   const tx = v => (v == null ? '' : typeof v === 'string' ? v : [v.zh, v.en].filter(Boolean).join(' / '));
   const allPages = D => Object.values(D.pages.byId);
@@ -255,6 +259,76 @@ export function createDevmode(src) {
   const devP = { type: 'string', enum: ['360', '390', '430'], description: 'Phone width in points (default 360)' };
   const fitP = { type: 'string', enum: FITS, description: 'Screen fit, as the app\'s Tune: cap = capped zoom, the default (a 390 phone lays out 360 CSS px and draws them ×1.083; 430 → 374 ×1.15); rem = the same factor through the root font size; fit = 1:1; scale = full zoom' };
   const textP = { type: 'integer', enum: TEXTS, description: 'Text size in % (default 100). Up to 130 the whole layout grows; above it only text' };
+  /* ---------------------------------------------------------------- any file of the repo (read_file, list_files, search_code) */
+  const TEXT = /\.(js|mjs|cjs|css|html?|json|md|txt|svg|py|toml|ya?ml|csv)$/i;
+  const MAX_LINES = 1500;
+  /* not readable: dot folders and files (.git, .github, .claude …) and the Worker's own code — the same rule as the site */
+  const denied = p => { const s = p.split('/'); return s.some(x => x === '' || x === '..' || x.startsWith('.')) || s[0] === 'worker'; };
+  /* a repo path from a path, a samge.studio link or a GitHub link */
+  function repoPath(input) {
+    let p = String(input || '').trim();
+    p = p.replace(/^https?:\/\/[^/]+\/perasure\/(playground\/)?/i, '')
+      .replace(/^https?:\/\/github\.com\/[^/]+\/[^/]+\/(blob|tree)\/[^/]+\//i, '')
+      .replace(/[?#].*$/, '').replace(/^\.?\/+/, '').replace(/\/+$/, '');
+    try { p = decodeURIComponent(p); } catch {}
+    if (p && denied(p)) throw new Error(`"${p}" can't be read here (dot folders and worker/ are left out).`);
+    return p;
+  }
+  let treeC = {};
+  async function treeAt(ver) {
+    if (!src.tree) throw new Error('this server cannot list the repo\'s files');
+    const D = await data(), v = ver && ver !== D.latest.id ? ver : '';
+    if (v && !D.iterations.some(i => i.id === v)) throw new Error(`no version "${v}". Versions: ${D.iterations.map(i => i.id).join(', ')}`);
+    if (!treeC[v] || Date.now() - treeC[v].t > 30000) treeC[v] = { t: Date.now(), p: Promise.resolve(src.tree(v || null)).then(l => l.filter(f => !denied(f.path))) };
+    return treeC[v].p.catch(e => { delete treeC[v]; throw e; });
+  }
+  const SKIP = /^(vendor\/|devmode\/snapshots\/|tokens\/|tokens-rem\/|animations\/.*\.(json|lottie)$)|\.min\.(js|css)$|\.svg$/;
+  async function searchCode({ query, path, regex, caseSensitive, version, limit }) {
+    if (!query) throw new Error('query is required');
+    const root = repoPath(path || ''), max = Math.min(Math.max(+limit || 80, 1), 300);
+    let re; try { re = new RegExp(regex ? query : query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), caseSensitive ? '' : 'i'); } catch (e) { throw new Error('bad regex: ' + e.message); }
+    const all = (await treeAt(version)).filter(f => (!root || f.path === root || f.path.startsWith(root + '/')) && TEXT.test(f.path) && f.size < 400000 && (root ? true : !SKIP.test(f.path)));
+    const files = all.slice(0, 320), hits = [];
+    for (let i = 0; i < files.length && hits.length < max; i += 12) {
+      const texts = await Promise.all(files.slice(i, i + 12).map(f => readAt(f.path, version).then(t => [f.path, t]).catch(() => [f.path, ''])));
+      for (const [f, t] of texts) { const ls = t.split('\n'); for (let n = 0; n < ls.length && hits.length < max; n++) if (re.test(ls[n])) hits.push([f, n + 1, ls[n]]); }
+    }
+    return { hits, scanned: files.length, total: all.length, root, max };
+  }
+  /* an app piece (APP.WdHero) or another named function that isn't a shared PS component: where it is defined */
+  async function findDefinition(name, version) {
+    const n = String(name).replace(/^(PS|APP)\./, '').replace(/[^\w$]/g, '');
+    if (!n) return null;
+    for (const root of ['prototypes/app', 'shared', 'prototypes']) {
+      const r = await searchCode({ query: `(APP|PS|window)\\.${n}\\s*=|function\\s+${n}\\s*\\(|(var|let|const)\\s+${n}\\s*=`, regex: true, caseSensitive: true, path: root, version, limit: 5 });
+      if (r.hits.length) return r.hits;
+    }
+    return null;
+  }
+  async function definitionText(name, version) {
+    const hits = await findDefinition(name, version).catch(() => null);
+    if (!hits) return null;
+    const [f, line] = hits[0], text = await readAt(f, version), total = text.split('\n').length, end = Math.min(total, line + 159);
+    return [`# ${String(name).replace(/^(PS|APP)\./, '')} — not a shared component (PS.*), defined in the code below`,
+      `Defined at \`${f}\` line ${line}${hits.length > 1 ? ' (also: ' + hits.slice(1).map(h => `${h[0]}:${h[1]}`).join(', ') + ')' : ''}. Lines ${line}–${end} of ${total}; read more with read_file (path "${f}", start ${end + 1}).`,
+      'It may draw a demo\'s own code: follow the files it loads (search_code, read_file) rather than rebuilding it from a similar shared component.',
+      fence(numbered(text.split('\n'), line, end), 'js')].join('\n');
+  }
+  /* images come back as images, other binary files (fonts, .lottie, zip …) as an embedded file — all through the MCP, no web sign-in */
+  const BIN = /\.(png|jpe?g|gif|webp|avif|ico|woff2?|ttf|otf|lottie|zip|mp4|webm|mp3|wasm|pdf)$/i;
+  const MIME = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif', webp: 'image/webp', avif: 'image/avif', ico: 'image/x-icon', woff2: 'font/woff2', woff: 'font/woff', ttf: 'font/ttf', otf: 'font/otf', lottie: 'application/zip', zip: 'application/zip', mp4: 'video/mp4', webm: 'video/webm', mp3: 'audio/mpeg', wasm: 'application/wasm', pdf: 'application/pdf' };
+  function b64(bytes) { let s = ''; for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000)); return btoa(s); }
+  async function binaryFile(p, ver) {
+    if (!src.readBytes) throw new Error(`"${p}" is a binary file and this server can only read text`);
+    let bytes; try { bytes = await src.readBytes(p, ver || null); } catch { throw new Error(`no file "${p}"${ver ? ' at ' + ver : ''}. Use list_files or search_code to find it.`); }
+    const ext = p.split('.').pop().toLowerCase(), mime = MIME[ext] || 'application/octet-stream', kb = (bytes.length / 1024).toFixed(1);
+    if (bytes.length > 5 * 1024 * 1024) return `\`${p}\` is ${kb} KB, too big to send through the MCP (5 MB at most).`;
+    const note = { type: 'text', text: `# ${p}\n${ver ? 'Version ' + ver : 'Latest (main)'} · ${mime} · ${kb} KB — the file itself, below.` };
+    if (mime.startsWith('image/') && mime !== 'image/x-icon') return [note, { type: 'image', data: b64(bytes), mimeType: mime }];
+    return [note, { type: 'resource', resource: { uri: `${SITE}${p}`, mimeType: mime, blob: b64(bytes) } }];
+  }
+  function numbered(ls, a, b) { const w = String(b).length; return ls.slice(a - 1, b).map((l, i) => String(a + i).padStart(w) + '  ' + l).join('\n'); }
+
   const TOOLS = [
     { name: 'get_overview', title: 'Overview',
       description: 'What PeraSure Dev Mode holds and how to use these tools: versions, page sections, component files, statuses. Call this first if unsure.',
@@ -276,6 +350,7 @@ export function createDevmode(src) {
           '- A screen → get_page (how to open it, its source, its components).',
           '- What changed → get_changes / get_iteration (recorded) and get_visual_changes (found by the visual check, not recorded yet); what to build → get_status.',
           '- Token values → get_tokens; motion values → get_motion.',
+          '- Any source file itself → read_file (find it with search_code or list_files); every file of the repo can be read, so nothing needs GitHub.',
           '- Seeing it → get_screenshot; exact measured sizes and spacing → get_live_specs; checking an implementation against the demo → qa_compare' + (src.browser ? ' (these need Playwright).' : ': these three run only in the local server, inside a clone of the repo (devmode/mcp/README.md).'),
           '- The code is React 18 without JSX (h = React.createElement) and Motion (Framer Motion); keep the token names when porting to another stack.'
         ].join('\n');
@@ -350,14 +425,14 @@ export function createDevmode(src) {
         return Object.entries(by).map(([f, cs]) => `## ${f}\n` + cs.map(c => `- PS.${c.name} — ${firstLine(c.doc)}${c.states?.length ? ` · ${c.states.length} states` : ''}${statusOf(D, 'components', c.name).status !== 'ready' ? ' · ' + STATUS[statusOf(D, 'components', c.name).status] : ''}`).join('\n')).join('\n\n') || 'No component matches.';
       } },
     { name: 'get_component', title: 'Get a component',
-      description: 'Everything about one shared component (PS.<Name>): description, props, states, usage examples, source code, CSS exactly as written, tokens with their values, motion values, icons and pictures, Figma nodes, pages that use it, status and history. Use sections to ask for less.',
+      description: 'Everything about one shared component (PS.<Name>); for an app piece that is not shared (APP.WdHero …) it returns where it is defined and its code: description, props, states, usage examples, source code, CSS exactly as written, tokens with their values, motion values, icons and pictures, Figma nodes, pages that use it, status and history. Use sections to ask for less.',
       inputSchema: S({ name: { type: 'string', description: 'Component name, e.g. CouponOption or PS.CouponOption' }, version: verP,
         sections: { type: 'array', items: { type: 'string', enum: ['doc', 'props', 'states', 'usage', 'code', 'css', 'tokens', 'motion', 'assets', 'classes', 'uses', 'pages', 'history'] }, description: 'Only these parts (default: all)' } }, ['name']),
-      run: a => componentText(a.name, a) },
+      run: a => componentText(a.name, a).catch(async e => (await definitionText(a.name, a.version)) || Promise.reject(e)) },
     { name: 'get_component_code', title: 'Get component code',
       description: 'Just the code of a shared component: its JS source and its CSS rules as written, at a version.',
       inputSchema: S({ name: { type: 'string' }, version: verP }, ['name']),
-      run: a => componentText(a.name, { version: a.version, sections: ['code', 'css'] }) },
+      run: a => componentText(a.name, { version: a.version, sections: ['code', 'css'] }).catch(async e => (await definitionText(a.name, a.version)) || Promise.reject(e)) },
     { name: 'get_tokens', title: 'Get design tokens',
       description: 'PeraSure design tokens (CSS custom properties, tokens/tokens.css; app-only --ps-* from ps-ui.css) with raw and resolved values and rem. Filter by words, a category, or exact names.',
       inputSchema: S({ query: { type: 'string', description: 'Words in the name or value, e.g. "gap", "brand", "#2f80ed"' }, category: { type: 'string', enum: ['color', 'spacing', 'radius', 'type', 'shadow', 'ps', 'other'] }, names: { type: 'array', items: { type: 'string' } }, version: verP, limit: { type: 'integer', description: 'Default 150' } }),
@@ -436,6 +511,51 @@ export function createDevmode(src) {
         if (it.length) out.push('## Iterations\n' + it.map(i => `- \`${i.id}\` ${i.label} — ${tx(i.title)}`).join('\n'));
         return out.join('\n\n') || 'Nothing found.';
       } },
+    { name: 'read_file', title: 'Read a file',
+      description: 'Any file of the PeraSure repo — text with line numbers; images (png, jpg, webp …) as the image; fonts, .lottie and other binary files as an embedded file. Text files — the source itself, e.g. the file Dev Mode or another tool points to (prototypes/withdraw-fund-flow/withdraw.js, prototypes/app/screens-home.js, shared/ps-ui/home.js …). Takes a repo path, a samge.studio link or a GitHub link. Up to 1500 lines per call: give start / end for a range, and call again for the rest. version = an iteration id for the file as it was then.',
+      inputSchema: S({ path: { type: 'string', description: 'Repo path or link, e.g. prototypes/withdraw-fund-flow/withdraw.js' }, start: { type: 'integer', minimum: 1, description: 'First line (default 1)' }, end: { type: 'integer', minimum: 1, description: 'Last line (default start + 1499)' }, version: verP }, ['path']),
+      run: async a => {
+        const p = repoPath(a.path);
+        if (!p) throw new Error('give a file path (list_files shows the folders)');
+        const D = await data();
+        if (BIN.test(p)) return binaryFile(p, a.version);
+        let text;
+        try { text = await readAt(p, a.version); } catch {
+          const t = await treeAt(a.version).catch(() => []), near = t.filter(f => f.path.startsWith(p + '/')).length;
+          const paths = t.map(f => f.path).filter(x => !/^devmode\/snapshots\//.test(x));
+          throw new Error(near ? `"${p}" is a folder: use list_files` : `no file "${p}"${a.version ? ' at ' + a.version : ''}. ${suggest(paths, p.split('/').pop()).slice(0, 5).map(x => 'did you mean ' + x).join(' · ') || 'Use list_files or search_code to find it.'}`);
+        }
+        if (!TEXT.test(p) && /[\x00-\x08\x0e-\x1f]/.test(text.slice(0, 4000))) return binaryFile(p, a.version);
+        const ls = text.split('\n'), total = ls.length, s = Math.min(Math.max(1, a.start || 1), total), e = Math.min(total, a.end || s + MAX_LINES - 1, s + MAX_LINES - 1);
+        const ext = (p.split('.').pop() || '').toLowerCase(), lang = { mjs: 'js', cjs: 'js', htm: 'html', yml: 'yaml' }[ext] || ext;
+        return [`# ${p}`, `${a.version ? 'Version ' + a.version : 'Latest (main)'} · lines ${s}–${e} of ${total} · ${gh(D, p, s, e, a.version)}`,
+          fence(numbered(ls, s, e), lang), e < total ? `More: read_file with path "${p}", start ${e + 1}.` : ''].filter(Boolean).join('\n');
+      } },
+    { name: 'list_files', title: 'List files',
+      description: 'What is in a folder of the PeraSure repo: sub-folders (with how many files) and files (with sizes). Start with no path for the top level; then read_file.',
+      inputSchema: S({ path: { type: 'string', description: 'Folder, e.g. prototypes/withdraw-fund-flow (default: the top level)' }, version: verP }),
+      run: async a => {
+        const root = repoPath(a.path || ''), pre = root ? root + '/' : '', dirs = {}, files = [];
+        for (const f of await treeAt(a.version)) {
+          if (pre && !f.path.startsWith(pre)) continue;
+          const rest = f.path.slice(pre.length), i = rest.indexOf('/');
+          if (i < 0) files.push(f); else { const d = rest.slice(0, i); dirs[d] = (dirs[d] || 0) + 1; }
+        }
+        if (!files.length && !Object.keys(dirs).length) throw new Error(`no folder "${root}"`);
+        const kb = n => n < 1024 ? n + ' B' : (n / 1024).toFixed(n < 10240 ? 1 : 0) + ' KB';
+        return [`# ${root || '(top level)'}${a.version ? ' · ' + a.version : ''}`,
+          ...Object.entries(dirs).sort().map(([d, n]) => `- ${pre}${d}/ (${n} file${n > 1 ? 's' : ''})`),
+          ...files.sort((x, y) => x.path.localeCompare(y.path)).map(f => `- ${f.path} · ${kb(f.size || 0)}`)].join('\n');
+      } },
+    { name: 'search_code', title: 'Search the code',
+      description: 'Find text in the repo\'s files (like grep): every matching line with its file and line number, e.g. where APP.WdHero is defined or which files use a class, token or picture. Narrow with path (a folder or file). Without path, vendor/, snapshots, tokens, SVGs and animation data are skipped. Then read_file around a hit.',
+      inputSchema: S({ query: { type: 'string', description: 'Text to find (or a regular expression with regex: true)' }, path: { type: 'string', description: 'Folder or file to search in, e.g. prototypes/app' }, regex: { type: 'boolean' }, caseSensitive: { type: 'boolean' }, limit: { type: 'integer', minimum: 1, maximum: 300, description: 'Most matching lines (default 80)' }, version: verP }, ['query']),
+      run: async a => {
+        const r = await searchCode(a), by = {};
+        r.hits.forEach(([f, n, l]) => { (by[f] = by[f] || []).push(`  ${n}: ${l.trim().slice(0, 220)}`); });
+        const head = `${r.hits.length}${r.hits.length >= r.max ? '+' : ''} matching line(s) in ${Object.keys(by).length} file(s) · searched ${r.scanned}${r.total > r.scanned ? ' of ' + r.total + ' (narrow with path for the rest)' : ''} file(s)${r.root ? ' under ' + r.root : ''}`;
+        return [head, ...Object.entries(by).map(([f, ls]) => `${f}\n${ls.join('\n')}`)].join('\n\n');
+      } },
 
   ];
 
@@ -465,6 +585,7 @@ export function createDevmode(src) {
   }
   const INSTRUCTIONS = 'PeraSure Dev Mode: the PeraSure app\'s pages and shared React components (PS.*) with code, CSS as written, design tokens, motion values, Figma nodes, statuses and iteration history. '
     + 'When the user pastes a Dev Mode link (…/devmode/index.html#…), call resolve_devmode_link; for a Figma link, find_by_figma. For a component call get_component; for a screen get_page; for what changed get_changes. '
+    + 'For any source file itself use read_file (and list_files, search_code): when a tool says code lives in a file, read that file rather than rebuilding it from something similar. '
     + 'Values come from design tokens (CSS custom properties); keep the token names when implementing.';
   const PROTOCOLS = ['2025-06-18', '2025-03-26', '2024-11-05'];
   /* one JSON-RPC message → its answer (null for notifications and responses) */
