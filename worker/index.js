@@ -9,8 +9,13 @@
                                ?raw for plain text) — what Dev Mode and the MCP link to, so nobody needs GitHub
      /perasure/_login, _logout the password page (account and password are Cloudflare secrets, never in the page)
      /perasure/_mcp            for signed-in Dev Mode: the MCP address and access token (Connect AI shows them)
-     /perasure/devmode/mcp     the MCP server (Streamable HTTP, JSON answers). Signs in with the same account and password as the site:
-                               headers X-PeraSure-Account + X-PeraSure-Password (or Authorization: Basic …; Bearer <MCP_TOKEN> also works)
+     /perasure/devmode/mcp     the MCP server (Streamable HTTP, JSON answers). Signs in the MCP standard way (OAuth 2.1): the developer's AI tool
+                               finds the sign-in through /.well-known/…, opens /perasure/oauth/authorize in a browser, the developer enters the
+                               account and password once, and the tool gets a token (refreshed by itself). Also accepted: headers
+                               X-PeraSure-Account + X-PeraSure-Password, Authorization: Basic …, or Bearer <MCP_TOKEN>
+     /.well-known/oauth-*      the OAuth discovery documents (protected resource + authorization server)
+     /perasure/oauth/register  dynamic client registration (stateless: the client id is signed, nothing is stored)
+     /perasure/oauth/authorize the sign-in page an AI tool opens · /perasure/oauth/token  codes and refresh tokens → access tokens
      anything else             a blank samge.studio page
 
    Secrets (Cloudflare → Workers & Pages → perasure-devmode → Settings → Variables and Secrets):
@@ -49,12 +54,14 @@ export default {
     const url = new URL(req.url), p = url.pathname;
     try {
       if (p === '/robots.txt') return text('User-agent: *\nDisallow: /\n');
+      if (p.startsWith('/.well-known/')) return wellKnown(req, url) || blank(404);
       if (p !== BASE && !p.startsWith(BASE + '/')) return blank(p === '/' ? 200 : 404);
       if (p === BASE || p === BASE + '/' || p === BASE + '/index.html') return redirect(PLAY + '/' + url.search, 302);
       if (p === PLAY) return redirect(PLAY + '/' + url.search);
       /* one Dev Mode: the picker's link to it goes to /perasure/devmode/ */
       if (p.startsWith(PLAY + '/devmode/')) return redirect(BASE + p.slice(PLAY.length) + url.search, 302);
       if (p === BASE + '/devmode/mcp') return await mcp(req, env, ctx);
+      if (p.startsWith(BASE + '/oauth/')) return await oauth(req, env, url);
       if (p === BASE + '/_login') return isOn(env.SITE_LOGIN) ? await login(req, env, url) : redirect(PLAY + '/', 302);
       if (p === BASE + '/_logout') return new Response(null, { status: 303, headers: { Location: BASE + '/', 'Set-Cookie': `${COOKIE}=; Path=${BASE}; Max-Age=0; HttpOnly; Secure; SameSite=Lax` } });
       if ((p.startsWith(BASE + '/assets/fonts/') || p === BASE + LOGO) && req.method === 'GET') return await file(req, env, ctx, 'main', p.slice(BASE.length + 1));
@@ -172,10 +179,16 @@ let dm = null, dmSha = '';
 async function mcp(req, env, ctx) {
   if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors() });
   const auth = await mcpAuth(req, env);
-  if (auth !== 'ok') return json({ jsonrpc: '2.0', id: null, error: { code: -32001, message:
-    auth === 'locked' ? 'Too many wrong passwords from this address. Please wait 15 minutes, then try again.'
-    : auth === 'wrong' ? 'That account or password doesn’t match. Check the X-PeraSure-Account and X-PeraSure-Password headers.'
-    : 'Sign in first: add the headers X-PeraSure-Account and X-PeraSure-Password (the PeraSure account and password). Dev Mode → Connect AI shows the setup.' } }, auth === 'locked' ? 429 : 401, cors());
+  if (auth !== 'ok') {
+    /* WWW-Authenticate points the AI tool at the sign-in (MCP authorization spec); the message is for people reading the raw answer */
+    const meta = new URL(req.url).origin + '/.well-known/oauth-protected-resource' + BASE + '/devmode/mcp';
+    return json({ jsonrpc: '2.0', id: null, error: { code: -32001, message:
+      auth === 'locked' ? 'Too many wrong passwords from this address. Please wait 15 minutes, then try again.'
+      : auth === 'wrong' ? 'That account or password doesn’t match. Check the X-PeraSure-Account and X-PeraSure-Password headers.'
+      : auth === 'expired' ? 'Your sign-in has ended. Sign in again from your AI tool (in Claude Code: /mcp → perasure-devmode → Authenticate).'
+      : 'Sign in first: your AI tool opens the PeraSure sign-in page (in Claude Code: /mcp → perasure-devmode → Authenticate). Dev Mode → Connect AI shows the setup.' } },
+      auth === 'locked' ? 429 : 401, { ...cors(), 'WWW-Authenticate': `Bearer realm="PeraSure Dev Mode", resource_metadata="${meta}"` + (auth === 'expired' ? ', error="invalid_token"' : '') });
+  }
   if (req.method !== 'POST') return new Response('POST JSON-RPC messages here (MCP Streamable HTTP).', { status: 405, headers: { Allow: 'POST, OPTIONS', ...cors() } });
   let body;
   try { body = await req.json(); } catch { return json({ jsonrpc: '2.0', id: null, error: { code: -32700, message: 'Parse error' } }, 400, cors()); }
@@ -215,7 +228,12 @@ async function mcp(req, env, ctx) {
 async function mcpAuth(req, env) {
   if (!isOn(env.MCP_LOGIN)) return 'ok';
   const h = req.headers.get('Authorization') || '';
-  if (/^Bearer\s/i.test(h) && env.MCP_TOKEN && await same(h.replace(/^Bearer\s+/i, '').trim(), env.MCP_TOKEN, env)) return 'ok';
+  if (/^Bearer\s/i.test(h)) {
+    const tok = h.replace(/^Bearer\s+/i, '').trim();
+    if (tok.startsWith('psat.')) return (await readToken(tok, 'a', env)) ? 'ok' : 'expired';
+    if (env.MCP_TOKEN && await same(tok, env.MCP_TOKEN, env)) return 'ok';
+    return 'expired';
+  }
   let user = req.headers.get('X-PeraSure-Account'), pass = req.headers.get('X-PeraSure-Password');
   if (/^Basic\s/i.test(h)) { try { const d = new TextDecoder().decode(Uint8Array.from(atob(h.replace(/^Basic\s+/i, '').trim()), c => c.charCodeAt(0))), i = d.indexOf(':'); if (i > 0) { user = d.slice(0, i); pass = d.slice(i + 1); } } catch {} }
   if (user == null && pass == null) return 'none';
@@ -227,26 +245,152 @@ async function mcpAuth(req, env) {
   await caches.default.put(key, new Response(String(tries + 1), { headers: { 'Cache-Control': 'max-age=900' } }));
   return 'wrong';
 }
-function cors() { return { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Authorization, Content-Type, Mcp-Session-Id, Mcp-Protocol-Version, X-PeraSure-Account, X-PeraSure-Password', 'Access-Control-Allow-Methods': 'POST, OPTIONS' }; }
+function cors() { return { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Authorization, Content-Type, Mcp-Session-Id, Mcp-Protocol-Version, X-PeraSure-Account, X-PeraSure-Password', 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 'Access-Control-Expose-Headers': 'WWW-Authenticate' }; }
 
 /* ---------------------------------------------------------------- signing in */
 async function login(req, env, url) {
   if (req.method !== 'POST') return redirect(BASE + '/');
   const f = await req.formData(), next = safeNext(String(f.get('next') || ''));
+  const c = await checkPassword(req, f, env);
+  if (c.problem) return loginPage(next, c.problem, c.status, c.tries, env);
+  return new Response(null, { status: 303, headers: { Location: next, 'Set-Cookie': await sessionCookie(env) } });
+}
+/* the account and password from a sign-in form (the site's or an AI tool's): 20 wrong tries per address in 15 minutes lock it; from the
+   3rd, Turnstile first, checked with Cloudflare before the password is even looked at */
+async function checkPassword(req, f, env) {
   const ip = req.headers.get('CF-Connecting-IP') || 'unknown', tries = await triesOf(ip);
-  if (tries >= MAX_TRIES) return loginPage(next, 'locked', 429, tries, env);
-  /* after a few wrong passwords: Turnstile first, checked with Cloudflare before the password is even looked at */
-  if (tries >= CHECK_AFTER && !(await human(f.get('cf-turnstile-response'), ip, env))) return loginPage(next, 'human', 403, tries, env);
+  if (tries >= MAX_TRIES) return { problem: 'locked', status: 429, tries };
+  if (tries >= CHECK_AFTER && !(await human(f.get('cf-turnstile-response'), ip, env))) return { problem: 'human', status: 403, tries };
   const okUser = String(f.get('user') || '').trim().toLowerCase() === String(env.DEVMODE_USER || '').trim().toLowerCase();
   const okPass = await same(String(f.get('pass') || ''), String(env.DEVMODE_PASS || ''), env);
   if (!env.DEVMODE_USER || !env.DEVMODE_PASS || !okUser || !okPass) {
     await caches.default.put(triesKey(ip), new Response(String(tries + 1), { headers: { 'Cache-Control': 'max-age=900' } }));
     await new Promise(r => setTimeout(r, 400));
-    return loginPage(next, 'wrong', 401, tries + 1, env);
+    return { problem: 'wrong', status: 401, tries: tries + 1 };
   }
   await caches.default.delete(triesKey(ip));
+  return {};
+}
+async function sessionCookie(env) {
   const exp = Math.floor(Date.now() / 1000) + SESSION_DAYS * 86400;
-  return new Response(null, { status: 303, headers: { Location: next, 'Set-Cookie': `${COOKIE}=${exp}.${await sign('session.' + exp, env)}; Path=${BASE}; Max-Age=${SESSION_DAYS * 86400}; HttpOnly; Secure; SameSite=Lax` } });
+  return `${COOKIE}=${exp}.${await sign('session.' + exp, env)}; Path=${BASE}; Max-Age=${SESSION_DAYS * 86400}; HttpOnly; Secure; SameSite=Lax`;
+}
+
+/* ---------------------------------------------------------------- MCP sign-in (OAuth 2.1, as the MCP authorization spec asks)
+   Nothing is stored: client ids, codes and tokens are signed with SESSION_SECRET. Tokens carry a fingerprint of the password, so
+   changing DEVMODE_PASS (or SESSION_SECRET) signs every AI tool out. Codes are single-use (Cache API) and need PKCE (S256). */
+const ACCESS_TTL = 86400, REFRESH_TTL = 90 * 86400, CODE_TTL = 600;
+const b64u = s => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const unb64u = s => decodeURIComponent(escape(atob(s.replace(/-/g, '+').replace(/_/g, '/'))));
+async function seal(kind, o, env) { const body = b64u(JSON.stringify(o)); return kind + '.' + body + '.' + await sign(kind + '.' + body, env); }
+async function unseal(kind, s, env) {
+  const m = new RegExp('^' + kind + '\\.([\\w-]+)\\.([\\w-]+)$').exec(String(s || ''));
+  if (!m || !env.SESSION_SECRET || !(await same(m[2], await sign(kind + '.' + m[1], env), env))) return null;
+  try { const o = JSON.parse(unb64u(m[1])); return o.exp && o.exp < Date.now() / 1000 ? null : o; } catch { return null; }
+}
+async function passPrint(env) { return (await sign('pass.' + (env.DEVMODE_PASS || ''), env)).slice(0, 16); }
+async function readToken(tok, kind, env) { const o = await unseal('psat', tok, env); return o && o.k === kind && o.pv === await passPrint(env) ? o : null; }
+async function tokens(env, client) {
+  const now = Math.floor(Date.now() / 1000), pv = await passPrint(env);
+  return { access_token: await seal('psat', { k: 'a', c: client, pv, exp: now + ACCESS_TTL }, env), token_type: 'Bearer', expires_in: ACCESS_TTL,
+    refresh_token: await seal('psat', { k: 'r', c: client, pv, exp: now + REFRESH_TTL, n: crypto.randomUUID() }, env), scope: 'devmode' };
+}
+function wellKnown(req, url) {
+  const o = url.origin, p = url.pathname, h = { 'Cache-Control': 'max-age=3600', ...cors() };
+  if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors() });
+  if (p === '/.well-known/oauth-protected-resource' || p === '/.well-known/oauth-protected-resource' + BASE + '/devmode/mcp')
+    return json({ resource: o + BASE + '/devmode/mcp', authorization_servers: [o], bearer_methods_supported: ['header'], scopes_supported: ['devmode'], resource_name: 'PeraSure Dev Mode' }, 200, h);
+  if (p === '/.well-known/oauth-authorization-server' || p === '/.well-known/openid-configuration')
+    return json({ issuer: o, authorization_endpoint: o + BASE + '/oauth/authorize', token_endpoint: o + BASE + '/oauth/token', registration_endpoint: o + BASE + '/oauth/register',
+      response_types_supported: ['code'], response_modes_supported: ['query'], grant_types_supported: ['authorization_code', 'refresh_token'], code_challenge_methods_supported: ['S256'],
+      token_endpoint_auth_methods_supported: ['none'], scopes_supported: ['devmode'], service_documentation: o + BASE + '/devmode/' }, 200, h);
+  return null;
+}
+/* a redirect address an AI tool may register: https, a loopback http address, or the tool's own scheme (cursor://, vscode://) */
+function okRedirect(u) {
+  try { const x = new URL(u); if (/^(javascript|data|file|blob|vbscript):$/i.test(x.protocol) || x.hash) return false;
+    return x.protocol === 'https:' || (x.protocol === 'http:' && /^(localhost|127\.0\.0\.1|\[::1\])$/.test(x.hostname)) || !/^https?:$/.test(x.protocol); } catch { return false; }
+}
+/* loopback addresses match whatever port the tool listens on that time (RFC 8252); everything else matches exactly */
+function sameRedirect(a, b) {
+  if (a === b) return true;
+  try { const x = new URL(a), y = new URL(b); return x.protocol === 'http:' && y.protocol === 'http:' && /^(localhost|127\.0\.0\.1|\[::1\])$/.test(x.hostname) && x.hostname === y.hostname && x.pathname === y.pathname; } catch { return false; }
+}
+const oauthErr = (error, description, status = 400) => json({ error, error_description: description }, status, { 'Cache-Control': 'no-store', ...cors() });
+async function oauth(req, env, url) {
+  const p = url.pathname.slice((BASE + '/oauth/').length);
+  if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors() });
+  if (p === 'register') {
+    if (req.method !== 'POST') return oauthErr('invalid_request', 'POST the client metadata here', 405);
+    let m; try { m = JSON.parse(await req.text() || '{}'); } catch { return oauthErr('invalid_client_metadata', 'the body is not JSON'); }
+    const r = Array.isArray(m.redirect_uris) ? m.redirect_uris.map(String) : [];
+    if (!r.length || r.length > 10 || r.some(u => u.length > 500 || !okRedirect(u))) return oauthErr('invalid_redirect_uri', 'redirect_uris: 1 to 10 https, loopback or app addresses');
+    const name = String(m.client_name || 'Your AI tool').replace(/[\u0000-\u001f<>]/g, '').slice(0, 60);
+    const client_id = await seal('psc', { r, n: name }, env);
+    return json({ client_id, client_id_issued_at: Math.floor(Date.now() / 1000), client_name: name, redirect_uris: r, grant_types: ['authorization_code', 'refresh_token'],
+      response_types: ['code'], token_endpoint_auth_method: 'none', scope: 'devmode' }, 201, { 'Cache-Control': 'no-store', ...cors() });
+  }
+  if (p === 'authorize') {
+    const q = req.method === 'POST' ? null : url.searchParams;
+    const f = req.method === 'POST' ? await req.formData() : null;
+    const a = q ? Object.fromEntries(q) : await unseal('psq', f.get('q'), env);
+    if (!a) return oauthPage(env, { problem: 'This sign-in link has expired. Please start again from your AI tool.' }, 400);
+    const client = await unseal('psc', a.client_id, env);
+    if (!client || !a.redirect_uri || !client.r.some(r => sameRedirect(r, a.redirect_uri))) return oauthPage(env, { problem: 'This sign-in link isn’t valid. Please start again from your AI tool.' }, 400);
+    const back = (o) => { const u = new URL(a.redirect_uri); for (const [k, v] of Object.entries(o)) if (v != null) u.searchParams.set(k, v); return redirect(u.toString(), 303); };
+    if (a.response_type !== 'code') return back({ error: 'unsupported_response_type', state: a.state });
+    if (!a.code_challenge || (a.code_challenge_method || 'plain') !== 'S256') return back({ error: 'invalid_request', error_description: 'PKCE with S256 is required', state: a.state });
+    const give = async (extra = {}) => {
+      const code = await seal('psk', { c: a.client_id.slice(-24), r: a.redirect_uri, ch: a.code_challenge, exp: Math.floor(Date.now() / 1000) + CODE_TTL, n: crypto.randomUUID() }, env);
+      const res = back({ code, state: a.state, iss: url.origin });
+      for (const [k, v] of Object.entries(extra)) res.headers.append(k, v);
+      return res;
+    };
+    if (!isOn(env.MCP_LOGIN)) return give();
+    const sealed = await seal('psq', { ...a, exp: Math.floor(Date.now() / 1000) + 1800 }, env);
+    const signed = await signedIn(req, env), tries = await triesOf(req.headers.get('CF-Connecting-IP') || 'unknown');
+    if (!f) return oauthPage(env, { name: client.n, q: sealed, signed, tries });
+    /* signed in to the site already: Allow is enough (the cookie is SameSite=Lax, so another site can't post this for you) */
+    if (signed && f.get('allow') === '1') return give();
+    const c = await checkPassword(req, f, env);
+    if (c.problem) return oauthPage(env, { name: client.n, q: sealed, signed: false, tries: c.tries, problem: c.problem }, c.status);
+    return give({ 'Set-Cookie': await sessionCookie(env) });
+  }
+  if (p === 'token') {
+    if (req.method !== 'POST') return oauthErr('invalid_request', 'POST here', 405);
+    const ct = req.headers.get('Content-Type') || '';
+    let f; try { f = ct.includes('json') ? new Map(Object.entries(await req.json())) : await req.formData(); } catch { return oauthErr('invalid_request', 'unreadable body'); }
+    const g = k => { const v = f.get(k); return v == null ? '' : String(v); };
+    if (g('grant_type') === 'authorization_code') {
+      const k = await unseal('psk', g('code'), env);
+      if (!k) return oauthErr('invalid_grant', 'the code is wrong or has expired');
+      if (g('client_id') && g('client_id').slice(-24) !== k.c) return oauthErr('invalid_grant', 'the code was given to another client');
+      if (g('redirect_uri') && !sameRedirect(k.r, g('redirect_uri'))) return oauthErr('invalid_grant', 'redirect_uri doesn’t match');
+      const v = g('code_verifier');
+      const ch = v ? btoa(String.fromCharCode(...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v))))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '') : '';
+      if (!v || ch !== k.ch) return oauthErr('invalid_grant', 'code_verifier doesn’t match');
+      const used = new Request(CACHE + 'oauth-code/' + k.n);
+      if (await caches.default.match(used)) return oauthErr('invalid_grant', 'the code was used already');
+      await caches.default.put(used, new Response('1', { headers: { 'Cache-Control': 'max-age=' + CODE_TTL } }));
+      return json(await tokens(env, k.c), 200, { 'Cache-Control': 'no-store', Pragma: 'no-cache', ...cors() });
+    }
+    if (g('grant_type') === 'refresh_token') {
+      const r = await readToken(g('refresh_token'), 'r', env);
+      if (!r) return oauthErr('invalid_grant', 'the sign-in has ended; sign in again');
+      return json(await tokens(env, r.c), 200, { 'Cache-Control': 'no-store', Pragma: 'no-cache', ...cors() });
+    }
+    return oauthErr('unsupported_grant_type', 'authorization_code or refresh_token');
+  }
+  return notFound();
+}
+function oauthPage(env, o, status = 200) {
+  if (!o.q) return loginPage('', '', status, 0, env, { title: 'Can’t sign in', note: o.problem });
+  const name = (o.name || 'Your AI tool').replace(/\s*\([^)]*\)\s*$/, '') || 'Your AI tool';   /* "Claude Code (perasure-devmode)" → "Claude Code" */
+  return loginPage('', o.problem || '', status, o.tries || 0, env, {
+    action: BASE + '/oauth/authorize', hidden: { q: o.q }, title: 'Connect ' + name, signed: o.signed,
+    sub: o.signed ? `You’re signed in. Allow ${name} to read PeraSure Dev Mode: pages, components and code.`
+      : `Sign in to let ${name} read PeraSure Dev Mode: pages, components and code.`,
+    button: o.signed ? 'Allow' : 'Sign in and allow' });
 }
 const triesKey = ip => new Request(CACHE + 'tries-v2/' + encodeURIComponent(ip));
 async function triesOf(ip) { return +(await (await caches.default.match(triesKey(ip)))?.text() || 0); }
@@ -282,7 +426,7 @@ async function same(a, b, env) {
 
 /* ---------------------------------------------------------------- pages */
 const LOGO = '/prototypes/withdraw-fund-flow/assets/perasure-logo.svg';   /* shown on the sign-in page, so served before sign-in */
-function loginPage(next, problem, status, tries = 0, env = {}) {
+function loginPage(next, problem, status, tries = 0, env = {}, o = {}) {
   /* copy follows the PeraSure tone of voice: plain, kind, says what to do next */
   const msg = problem === 'wrong' ? 'That account or password doesn’t match. Try again.'
     : problem === 'human' ? 'Please finish the quick check below, then continue.'
@@ -303,7 +447,8 @@ function loginPage(next, problem, status, tries = 0, env = {}) {
 body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;background:#fff;color:var(--ink);font:16px/1.45 var(--body);-webkit-font-smoothing:antialiased}
 main{flex:1;width:100%;max-width:440px;display:flex;flex-direction:column;justify-content:center;padding:calc(env(safe-area-inset-top) + 48px) 24px 32px}
 .logo{display:block;height:34px;width:auto;margin:0 auto 36px}
-h1{margin:0 0 40px;text-align:center;font:500 clamp(28px,7.4vw,34px)/1.15 var(--head);letter-spacing:-.02em}
+h1{margin:0 0 40px;text-align:center;font:500 clamp(28px,7.4vw,34px)/1.15 var(--head);letter-spacing:-.02em;overflow-wrap:anywhere}
+.sub{margin:-26px 0 32px;text-align:center;color:var(--mute);font-size:16px;line-height:1.5;overflow-wrap:anywhere}
 .f{position:relative;margin-bottom:14px;border:1.5px solid var(--line);border-radius:20px;background:#fff;transition:border-color .15s,box-shadow .15s}
 .f:focus-within{border-color:var(--focus);box-shadow:0 0 0 4px rgba(44,116,190,.12)}
 .f label{position:absolute;left:20px;top:13px;font-size:13px;line-height:1;color:var(--mute);pointer-events:none}
@@ -320,19 +465,19 @@ h1{margin:0 0 40px;text-align:center;font:500 clamp(28px,7.4vw,34px)/1.15 var(--
 footer{padding:0 24px calc(env(safe-area-inset-bottom) + 28px);font-size:13px;color:#9aa3a9;text-align:center}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style></head><body>
-<main><form method="post" action="${BASE}/_login" novalidate>
+<main><form method="post" action="${esc(o.action || BASE + '/_login')}" novalidate>
   <img class="logo" src="${BASE}${LOGO}" alt="PeraSure" width="126" height="34">
-  <h1>Welcome back</h1>
-  <input type="hidden" name="next" value="${esc(next)}">
-  <div class="f"><label for="u">Account</label><input id="u" name="user" autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus></div>
+  <h1>${esc(o.title || 'Welcome back')}</h1>${o.sub ? `\n  <p class="sub">${esc(o.sub)}</p>` : ''}
+  ${o.note ? `<p class="sub">${esc(o.note)}</p>` : `${o.action ? '' : `<input type="hidden" name="next" value="${esc(next)}">`}${Object.entries(o.hidden || {}).map(([k, v]) => `<input type="hidden" name="${esc(k)}" value="${esc(v)}">`).join('')}
+  ${o.signed ? '<input type="hidden" name="allow" value="1">' : `<div class="f"><label for="u">Account</label><input id="u" name="user" autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus></div>
   <div class="f pw"><label for="p">Password</label><input id="p" name="pass" type="password" autocomplete="current-password" required>
-    <button type="button" class="eye" aria-label="Show password" aria-pressed="false">${eye}</button></div>
-  ${msg ? `<p class="err" role="alert">${msg}</p>` : ''}${check}
-  <button type="submit" class="go">Continue</button>
-  <p class="help">Need access? Ask the PeraSure design team.</p>
+    <button type="button" class="eye" aria-label="Show password" aria-pressed="false">${eye}</button></div>`}
+  ${msg ? `<p class="err" role="alert">${msg}</p>` : ''}${o.signed ? '' : check}
+  <button type="submit" class="go">${esc(o.button || 'Continue')}</button>
+  <p class="help">Need access? Ask the PeraSure design team.</p>`}
 </form></main>
 <footer>PeraSure Playground &amp; Dev Mode</footer>
-<script>var b=document.querySelector('.eye'),i=document.getElementById('p');b.onclick=function(){var s=i.type==='password';i.type=s?'text':'password';b.setAttribute('aria-pressed',s);b.setAttribute('aria-label',s?'Hide password':'Show password');i.focus()};</script>
+<script>var b=document.querySelector('.eye'),i=document.getElementById('p');if(b)b.onclick=function(){var s=i.type==='password';i.type=s?'text':'password';b.setAttribute('aria-pressed',s);b.setAttribute('aria-label',s?'Hide password':'Show password');i.focus()};</script>
 </body></html>`, { status, headers: { 'Content-Type': TYPES.html, 'Cache-Control': 'no-store', ...SAFE } });
 }
 function blank(status) {

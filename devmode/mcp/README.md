@@ -9,29 +9,28 @@ fonts), so nobody needs GitHub access. In Dev Mode: **Connect AI** in the top ba
 ## Hosted (what developers use)
 
 `https://samge.studio/perasure/devmode/mcp` — MCP over Streamable HTTP, nothing to install, always the newest code on GitHub
-(`worker/index.js`; guide `worker/README.md`). It signs in with the same account and password as the website, sent as two headers —
-no web sign-in, no token to copy. (`Authorization: Basic …` with `account:password`, or the older `Authorization: Bearer <MCP_TOKEN>`,
-also work.) Wrong passwords count per address: 20 in 15 minutes lock it. When the `MCP_LOGIN` switch is off, no headers are needed.
+(`worker/index.js`; guide `worker/README.md`). The address is all a tool needs: it signs in the MCP standard way (OAuth 2.1 with
+discovery, dynamic client registration and PKCE). The first time, the tool opens the PeraSure sign-in page in a browser; the developer
+enters the account and password once and the tool keeps itself signed in (a day-long token it refreshes for 90 days; changing the
+password signs every tool out). If the browser is already signed in to the site, one tap on **Allow** is enough. Wrong passwords count
+toward the same lockout as the site.
 
 ```sh
-claude mcp add -s user --transport http perasure-devmode https://samge.studio/perasure/devmode/mcp \
-  --header "X-PeraSure-Account: <account>" --header "X-PeraSure-Password: <password>"
+claude mcp add -s user --transport http perasure-devmode https://samge.studio/perasure/devmode/mcp
+# then in Claude Code: /mcp → perasure-devmode → Authenticate
 ```
 
-Cursor (`~/.cursor/mcp.json`) and most other tools:
+Cursor (`~/.cursor/mcp.json`, then the sign-in button next to it in Settings → MCP) and most other tools:
 
 ```json
-{ "mcpServers": { "perasure-devmode": { "url": "https://samge.studio/perasure/devmode/mcp",
-  "headers": { "X-PeraSure-Account": "<account>", "X-PeraSure-Password": "<password>" } } } }
+{ "mcpServers": { "perasure-devmode": { "url": "https://samge.studio/perasure/devmode/mcp" } } }
 ```
 
-Codex `~/.codex/config.toml`:
+Codex: `codex mcp add perasure-devmode --url https://samge.studio/perasure/devmode/mcp`, then `codex mcp login perasure-devmode`.
 
-```toml
-[mcp_servers.perasure-devmode]
-url = "https://samge.studio/perasure/devmode/mcp"
-http_headers = { "X-PeraSure-Account" = "<account>", "X-PeraSure-Password" = "<password>" }
-```
+A tool without MCP sign-in can send the account and password as headers instead — `X-PeraSure-Account` and `X-PeraSure-Password`
+(or `Authorization: Basic …`); the older `Authorization: Bearer <MCP_TOKEN>` also still works. With the `MCP_LOGIN` switch off, nothing
+is asked.
 
 ## Local (inside a clone, for screenshots and live measurements)
 
@@ -72,7 +71,7 @@ snapshot. All tools only read.
 ## For whoever changes Dev Mode
 
 - [`core.mjs`](core.mjs) holds every tool both servers share (no Node or Cloudflare APIs); [`server.mjs`](server.mjs) adds stdio and the
-  browser tools; `worker/index.js` adds HTTP, the sign-in and GitHub reads; [`local.mjs`](local.mjs) reads `devmode/data/*.js` in Node
+  browser tools; `worker/index.js` adds HTTP, the OAuth sign-in and GitHub reads; [`local.mjs`](local.mjs) reads `devmode/data/*.js` in Node
   (also for `tools/devmode-mcp-data.mjs`, which publishes them as JSON for the Worker).
 - They read `devmode/data/*.js` (the same files the platform loads), `tokens/tokens.css`, `shared/ps-ui/*`, `shared/gallery*.js`, and
   for live measurements inject `devmode/js/inspector.js`. When one of those formats changes, update `core.mjs` in the same commit, raise

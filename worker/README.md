@@ -15,8 +15,14 @@ The repo is private, so it is served by a Cloudflare Worker (`perasure-devmode`,
   20 seconds, with nothing to deploy. Files are cached by commit, so a page loads fast after the first visit.
 - **MCP.** The hosted server runs the same tools as `devmode/mcp/server.mjs` (shared code: `devmode/mcp/core.mjs`), except screenshots,
   design QA and live measurements, which need a browser (local server only), and reads any file of the repo (`read_file`,
-  `list_files`, `search_code`). Developers sign in with the same account and password, as the headers `X-PeraSure-Account` and
-  `X-PeraSure-Password` (or HTTP Basic; the older `Authorization: Bearer <MCP_TOKEN>` still works); wrong ones count toward the lockout.
+  `list_files`, `search_code`). It signs in the MCP standard way (OAuth 2.1): an AI tool given only the address finds the sign-in through
+  `/.well-known/oauth-protected-resource` and `/.well-known/oauth-authorization-server`, registers itself (`/perasure/oauth/register`),
+  opens `/perasure/oauth/authorize` — the same sign-in page, titled "Connect <tool>" (just **Allow** when the browser is signed in) — and
+  swaps the code for tokens at `/perasure/oauth/token` (PKCE S256; codes single-use; access tokens 24 h, refresh tokens 90 days).
+  Nothing is stored: client ids, codes and tokens are signed with `SESSION_SECRET` and carry a fingerprint of the password, so changing
+  `DEVMODE_PASS` signs every tool out. Also accepted: the headers `X-PeraSure-Account` + `X-PeraSure-Password`, HTTP Basic, or
+  `Authorization: Bearer <MCP_TOKEN>`. Wrong passwords anywhere count toward the same lockout.
+- Paths outside `/perasure/`: only `/.well-known/oauth-*` (the discovery documents above) and `robots.txt`; the rest is a blank page.
 - **Source viewer.** `/perasure/_source/<path>` shows a repo file with line numbers (`#L10-L20` highlights, `?v=<iteration>` an older
   version, `?raw` the plain file). Dev Mode's code links open it, so nobody needs a GitHub account. The data of `devmode/data/pages.js`, `iterations.js` and `status.js` reaches it as
   JSON on the branch `devmode-mcp`, made by the *Dev Mode live* workflow on every change (Workers can't run those scripts).
@@ -42,7 +48,7 @@ Cloudflare dashboard → Workers & Pages → `perasure-devmode` → Settings →
 | `GITHUB_TOKEN` | GitHub fine-grained token: only this repo, Contents read-only (renew it before it expires) |
 | `DEVMODE_USER` | the account (not case-sensitive) |
 | `DEVMODE_PASS` | the password (case-sensitive) |
-| `SESSION_SECRET` | random text that signs the sign-in cookie; changing it signs everyone out |
+| `SESSION_SECRET` | random text that signs the sign-in cookie and the AI tools' tokens; changing it signs everyone out |
 | `MCP_TOKEN` | optional: an older way into the MCP (`Authorization: Bearer …`); the account and password are the normal way |
 | `TURNSTILE_SECRET` | the secret of the Turnstile widget `perasure-devmode-login` (Cloudflare → Turnstile); its public site key is `TURNSTILE_SITEKEY` in `wrangler.toml` |
 
