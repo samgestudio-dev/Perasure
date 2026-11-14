@@ -5,7 +5,7 @@ The repo is private, so it is served by a Cloudflare Worker (`perasure-devmode`,
 | Address | What |
 |---|---|
 | https://samge.studio/perasure/devmode/ | PeraSure Dev Mode |
-| https://samge.studio/perasure/ | the Playground picker (every prototype and animation) |
+| https://samge.studio/perasure/playground/ | the Playground picker (every prototype and animation); `/perasure/` forwards here |
 | https://samge.studio/perasure/devmode/mcp | the hosted MCP server for developers' AI tools (Dev Mode → Connect AI) |
 
 - **Password first.** Every page asks for the account and password once (a cookie keeps you signed in for 30 days; `/perasure/_logout`

@@ -3,7 +3,7 @@
 Phone-first motion prototypes for PeraSure. The repo is private: a Cloudflare Worker serves `main` at samge.studio behind a password,
 read straight from GitHub (`worker/`, guide `worker/README.md`).
 
-- Live picker: https://samge.studio/perasure/ · Dev Mode: https://samge.studio/perasure/devmode/
+- Live picker: https://samge.studio/perasure/playground/ · Dev Mode: https://samge.studio/perasure/devmode/
 - Each demo is opened and tested on a real phone (iOS Safari and Android Chrome).
 - The owner is a designer; reply in plain language and keep the picker page tidy.
 
@@ -438,4 +438,4 @@ fetches animation JSON with `cache: 'no-cache'` and loads GSAP modules with a pe
 - Commit to `main` and push; samge.studio shows it within about 20 seconds (the Worker reads `main` from GitHub; nothing to deploy).
   Only a change to `worker/` or `devmode/mcp/core.mjs` needs a Worker deploy (*Dev Mode live* workflow, or the Cloudflare connector).
 - The account, password and tokens are Cloudflare secrets: never write them into the repo.
-- Give the owner the direct demo link (https://samge.studio/perasure/…) as well as the picker link.
+- Give the owner the direct demo link (https://samge.studio/perasure/playground/prototypes/…) as well as the picker link.
