@@ -12,6 +12,32 @@
    The page ids are devmode/data/pages.js's; the component names are PS.<Name> without "PS.". */
 window.DM_ITERATIONS = [
   {
+    id: 'v1-20261116-n3', label: 'v1 · 2026-11-16 · 无 Jira 单号', major: 1, date: '2026-11-16', jira: null,
+    title: { zh: '「保留优惠券？」：多张券放进同一张卡，左右滑', en: 'Keep your coupon?: more than one coupon in one card, swiped' },
+    summary: { zh: '一次改动让两张券都不满足条件时，以前会连续弹两个卡片，要点两次。现在两张券左右并排放在同一张卡里，像防诈骗提示（scams）那样左右滑，下面的圆点跟着手指走，卡片按最高的那页定高；只有当前这页的券在播动画，滑回来从头播。Keep / Don’t use 作用于当前这张，然后滑到下一张还没回答的；全部回答完卡片收起，借款一次改好，只弹一条提示。点关闭：已回答的生效，没回答的保持取消。布局按 Figma 10893:29050：圆点在 facts 下 12、按钮上 20；图片到标题从 28 改为 16（一张券时也一样）。Coupon system demo 和 app 都已更新。',
+      en: 'When one change took off two coupons, the app showed two cards, one after the other. Now the coupons sit side by side in one card and are swiped like the anti-scam tips: the dots follow the finger, the card keeps the height of its tallest page, and only the coupon on show plays its animation (from the start each time it comes back). Keep and Don’t use answer the coupon on show and move on to the next one not yet answered. Once every coupon is answered the card closes and the loan changes once, with one toast. Closing the card keeps the answers given so far; the rest stay off. Layout from Figma 10893:29050: the dots 12 under the facts and 20 above the buttons; picture → title is 16 instead of 28, with one coupon too. Updated in the Coupon system demo and the app.' },
+    changes: [
+      { type: 'ui', action: 'add', pages: ['keep'], components: ['Decision'],
+        title: { zh: 'Decision 新增 pages / index / onIndex', en: 'New Decision props: pages, index, onIndex' },
+        detail: { zh: '一次只显示一张券（art · title · body · facts）→ 再加 pages [{ art, title, body, facts }] · index · onIndex：多于一张时放进 PS.Carousel（dots、gap md），关闭按钮和两个按钮不动、作用于当前页；一张时和以前一样。文件 shared/ps-ui/coupon.js、ps-ui.css（.ps-decide__pages padding-bottom: --spacing-padding-xl）。',
+          en: 'One coupon at a time (art · title · body · facts) → plus pages [{ art, title, body, facts }] · index · onIndex: more than one goes into a PS.Carousel (dots, gap md); the close button and the buttons stay put and act on the page on show; one coupon looks as before. Files: shared/ps-ui/coupon.js, ps-ui.css (.ps-decide__pages padding-bottom: --spacing-padding-xl).' },
+        figma: ['10893:29050'] },
+      { type: 'ui', action: 'edit', pages: ['keep'], components: ['Decision'],
+        title: { zh: '图片到标题 28 → 16', en: 'Picture → title 28 → 16' },
+        detail: { zh: '.ps-decide__text margin-top：--spacing-gap-lg（16，加上 body gap 12 = 28）→ --spacing-gap-xs（4，合计 16），按 Figma 10893:29050。一张券和多张券都适用。',
+          en: '.ps-decide__text margin-top: --spacing-gap-lg (16, with the body gap of 12 = 28) → --spacing-gap-xs (4, 16 in all), from Figma 10893:29050. One coupon and several alike.' },
+        figma: ['10893:29050'] },
+      { type: 'motion', action: 'add', pages: ['keep'], components: ['Carousel', 'CouponArt'],
+        title: { zh: '翻页沿用 scams 的 Carousel；券动画只在当前页播放', en: 'Paging uses the anti-scam Carousel; only the coupon on show animates' },
+        detail: { zh: 'Carousel 新增 gap（页面 → 圆点，间距 token；默认 2xl 不变，Decision 用 md）。翻页、拖动、圆点跟手都是 Carousel 原样（Smooth spring 240/30/1）。CouponArt 新增 active：false 停在票券落定的那一帧（loop 标记），true 再次从头播放。',
+          en: 'Carousel: new prop gap (pages → dots, a gap token; default 2xl unchanged, Decision uses md). Swiping, dragging and the dots following are the Carousel’s own (Smooth spring 240/30/1). CouponArt: new prop active — false holds the frame where the ticket has landed (the loop marker), true plays it again from the start.' } },
+      { type: 'ui', action: 'edit', pages: ['keep'], components: [],
+        title: { zh: '回答逻辑：一起回答，一次改借款', en: 'Answering: all together, the loan changes once' },
+        detail: { zh: '以前：每张券单独弹卡片，点 Keep 立刻改借款并弹提示。现在：点完一张滑到下一张未回答的；全部回答完（或点关闭）才一次性改借款，只弹一条提示。app（prototypes/app/screens-loan.js）和 Coupon system（prototypes/coupon-system/coupon-system.js，新加载 pay.js）一致。Dev Mode「保留优惠券？」页现在真正打开这张卡，分一张券 / 两张券两个状态。',
+          en: 'Before: one card per coupon, and Keep changed the loan and showed a toast at once. Now: answering a coupon moves on to the next one not yet answered; the loan changes once, with one toast, when all are answered (or the card is closed). The app (prototypes/app/screens-loan.js) and Coupon system (prototypes/coupon-system/coupon-system.js, which now loads pay.js) match. Dev Mode’s Keep your coupon? page now opens the card, with One coupon and Two coupons states.' } }
+    ]
+  },
+  {
     id: 'v1-20261116-n2', label: 'v1 · 2026-11-16 · 无 Jira 单号', major: 1, date: '2026-11-16', jira: null,
     title: { zh: '「保留优惠券？」弹窗：优惠券插图换成动画', en: 'Keep your coupon?: the coupon picture is now an animation' },
     summary: { zh: '「保留优惠券？」弹窗里的优惠券插图改为播放新的 GSAP 动画（Playground → Animations 里的三个 Coupon 动画）：票券落下、印刷内容出现、徽章弹出，之后循环——百分比印章轻晃、₱ 硬币带厚度转一圈、箭头从凹槽飞出再回来。徽章按扁平风格绘制：一个右侧光源，硬阴影、单侧白边，没有渐变和 SVG 滤镜。其他地方（优惠券中心、首页、借款页的优惠券行）仍是静态插图。',

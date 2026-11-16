@@ -37,7 +37,10 @@ window.DM_PAGES = (function () {
         { name: '审核中', en: 'In review', q: 'user=approved&loan=reviewing' }, { name: '放款失败', en: 'Transfer failed', q: 'user=approved&loan=failed' }] },
       { id: 'coupons', name: '优惠券中心', en: 'Coupon centre', q: A, page: 'coupons', states: [{ name: '6 张', en: 'Six', q: A + '&coupons=6' }, { name: '1 张', en: 'One', q: A + '&coupons=1' }, { name: '没有', en: 'None', q: A + '&coupons=0' }] },
       { id: 'picker', name: '选择优惠券', en: 'Choose coupons', kind: 'sheet', q: A + '&loan=none', tab: 'home', js: 'APP.borrow()', note: '在借款页点优惠券的 See all 打开', noteEn: 'Opened from “See all” in the loan page’s coupons' },
-      { id: 'keep', name: '保留优惠券？', en: 'Keep your coupon?', kind: 'sheet', q: A, page: 'loan', js: sheet('keep', '{}') },
+      { id: 'keep', name: '保留优惠券？', en: 'Keep your coupon?', kind: 'sheet', q: A, page: 'loan', js: "APP.loanCheck({ amount: 3000, term: 6, disc: 'd20', lim: null })",
+        note: '借款页把金额改成 ₱3,000 后打开（券不再满足条件）', noteEn: 'Opens after the loan page’s amount changes to ₱3,000 (the coupon no longer fits)', states: [
+        { name: '一张券', en: 'One coupon', js: "APP.loanCheck({ amount: 3000, term: 6, disc: 'd20', lim: null })" },
+        { name: '两张券（左右滑）', en: 'Two coupons (swipe)', js: "APP.loanCheck({ amount: 3000, term: 6, disc: 'd20', lim: 'l5' })" }] },
       { id: 'plan', name: '还款计划', en: 'Repayment plan', kind: 'sheet', q: A, page: 'loan', js: "(function t() { if (APP.S.L) APP.open('plan'); else setTimeout(t, 50); })()", note: '借款页的数据就绪后打开（要用到这笔借款的金额和期数）', noteEn: 'Opens once the loan page has its loan (it needs the amount and the terms)' },
       { id: 'banks', name: '选择银行', en: 'Choose your bank', kind: 'sheet', q: A, page: 'method', js: sheet('banks') }] },
     { id: 'repay', name: '还款', en: 'Repay', pages: [

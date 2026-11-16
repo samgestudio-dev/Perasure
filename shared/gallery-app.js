@@ -214,7 +214,7 @@
           ['Methods', live('qr', function (v, set) { return h(PS.MethodPicker, { cats: CATS, value: v, onCat: set, onPick: noop }); })],
           ['Pager', live(0, function (v, set) { return col([h(PS.Pager, { key: 'p', n: 3, i: v }), h(PS.Button, { key: 'b', size: 'sm', onClick: function () { set((v + 1) % 3); } }, 'Next')]); })]] },
       { name: 'Carousel', desc: 'Pages side by side, swiped left or right (or moved by index) on the Smooth spring, as tall as the tallest page so nothing jumps; the dots follow the swipe. Only the card on show plays its animation, again from the start each time (the anti-scam cards).',
-        props: 'pages [nodes] · index · onIndex(i) · dots',
+        props: 'pages [nodes] · index · onIndex(i) · dots · gap (pages → dots: a gap token, default 2xl)',
         states: [['Swipe', live(0, function (v, set) { return col([h(PS.Carousel, { key: 'c', index: v, onIndex: set, dots: true, pages: [['customer-service', 'Customer service is only available in the app'], ['safe-transaction', 'Keep all payments and transactions in the app'], ['verification-code', 'Keep your verification code private']].map(function (c, k) {
           return h('div', { key: k, style: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, textAlign: 'center', padding: '8px 16px 0' } }, h(PS.Anim, { name: c[0], size: 100, active: k === v }), h('p', { className: 'ps-t-section-md' }, c[1]));
         }) }), h(PS.Button, { key: 'b', block: true, onClick: function () { set((v + 1) % 3); } }, 'Next')]); })]] },

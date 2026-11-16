@@ -470,11 +470,13 @@ button.ps-ticket { display: block; width: 100%; text-align: left; }
 .ps-decide { display: flex; flex-direction: column; align-items: center; }
 .ps-decide__close { align-self: flex-end; }
 .ps-decide__body { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-md); width: 100%; padding-bottom: var(--spacing-padding-xl); }
-.ps-decide__text { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); padding: 0 var(--spacing-padding-lg); text-align: center; margin-top: var(--spacing-gap-lg); }
+.ps-decide__text { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); padding: 0 var(--spacing-padding-lg); text-align: center; margin-top: var(--spacing-gap-xs); }   /* picture → title 16 (body gap 12 + 4), Figma 10893:29050 */
 .ps-decide__facts { display: flex; justify-content: space-between; gap: var(--spacing-gap-md); width: 100%; padding: var(--spacing-padding-sm) var(--spacing-padding-lg); border-radius: var(--radius-xl);
   background: var(--color-surface-inset-default); white-space: nowrap; }
 .ps-decide__facts > div { display: flex; flex-direction: column; gap: var(--spacing-gap-xs); }
 .ps-decide__facts > div:last-child { align-items: flex-end; }
+.ps-decide__pages { width: 100%; padding-bottom: var(--spacing-padding-xl); }   /* more than one coupon: a Carousel with its dots (Figma 10893:29050) */
+.ps-decide__body--page { padding-bottom: 0; }
 .ps-decide__acts { width: 100%; display: flex; flex-direction: column; }
 .ps-decide__acts .ps-btn--text { height: 3rem; }
 

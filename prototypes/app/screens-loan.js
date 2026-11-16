@@ -162,20 +162,38 @@
             var d = Object.assign({}, draft); if (c.kind === 'limit') d.lim = d.lim === c.id ? null : c.id; else d.disc = d.disc === c.id ? null : c.id; APP.set({ draft: d }); } });
       }) : h(PS.EmptyState, { title: kind === 'limit' ? 'No limit increases yet' : 'No discounts yet', body: 'When you get one, it shows up here.', style: { marginTop: '4.5rem' } }));
   } });
+  /* Keep your coupon? — every coupon the change took off, together: one coupon → one card; more → the coupons side by side, swiped like the
+     anti-scam cards (PS.Decision pages, dots). Keep / Don't use act on the coupon on show and move on to the next one not yet answered;
+     when every coupon is answered (or the sheet is closed: the rest stay off) the loan changes once, with one toast. */
   APP.sheet('keep', { kind: 'card', label: 'Keep your coupon?', render: function Keep() {
-    var S = APP.use(), keep = S.keep || [], k = keep[0], K = k ? find(S.coupons, k.id) : null;
-    if (!K) return null;
-    function next() { var rest = keep.slice(1); APP.set({ keep: rest, sheet: rest.length ? APP.S.sheet : null }); }
-    function keepIt() {
-      var l = Object.assign({}, APP.S.L, k.need); if (K.kind === 'limit') l.lim = K.id; else l.disc = K.id;
-      if (k.need.amount && K.kind !== 'limit' && !find(S.coupons, l.lim) && l.amount > CREDIT.available) l.amount = CREDIT.available;
-      APP.set({ L: l }); next(); APP.say(k.need.amount ? 'Your loan is now ' + termLine(l.amount, l.term) + '.' : 'Your loan is now ' + l.term + ' terms.');
+    var S = APP.use(), keep = (S.keep || []).filter(function (k) { return find(S.coupons, k.id); });
+    var st = R.useState(0), i = Math.min(st[0], Math.max(0, keep.length - 1)), setI = st[1], said = R.useRef({});
+    if (!keep.length) return null;
+    function finish() {
+      var l = Object.assign({}, APP.S.L), kept = keep.filter(function (k) { return said.current[k.id]; });
+      kept.forEach(function (k) { var K = find(S.coupons, k.id); Object.assign(l, k.need); if (K.kind === 'limit') l.lim = K.id; else l.disc = K.id; });
+      var max = CREDIT.available + (find(S.coupons, l.lim) ? find(S.coupons, l.lim).add : 0);
+      if (l.amount > max) l.amount = max;
+      APP.set({ L: l, sheet: null });   /* keep stays so the sheet still shows its coupon while it closes */
+      if (kept.length) APP.say(kept.some(function (k) { return k.need.amount; }) ? 'Your loan is now ' + termLine(l.amount, l.term) + '.' : 'Your loan is now ' + l.term + ' terms.');
     }
-    var kept = Object.assign({ amount: k.amount, term: k.term }, k.need), lim = K.kind === 'limit', facts = [{ label: 'Your loan', value: termLine(k.amount, k.term).replace('.00', '') }];
-    facts.push(lim ? { label: 'Your credit limit with it', value: money(CREDIT.available + K.add, 0), tone: 'positive' } : { label: 'You’d save', value: money(CS.calc(kept.amount, kept.term, K).save, 2), tone: 'positive' });
-    var body = k.byTerm ? 'You picked ' + k.term + ' terms. This coupon works with ' + CS.termsText(K.terms) + ', so we’ve taken it off. Keep it and we’ll switch you to ' + k.need.term + ' terms.'
-      : 'Your new amount is ' + money(k.amount, 0) + '. This coupon needs a loan of ' + money(K.min, 0) + ' or more, so we’ve taken it off. Keep it and we’ll set your loan to ' + money(k.need.amount, 0) + '.';
-    return h(PS.Decision, { art: K.type, title: 'Keep your ' + CS.short(K) + '?', body: body, facts: facts, onClose: next, primary: { label: 'Keep coupon', onClick: keepIt }, secondary: { label: 'Don’t use coupon', onClick: next } });
+    function answer(yes) {
+      said.current[keep[i].id] = yes;
+      var open = keep.map(function (k, n) { return n; }).filter(function (n) { return !(keep[n].id in said.current); });
+      var next = open.filter(function (n) { return n > i; })[0];
+      if (next == null) next = open[0];
+      if (next == null) finish(); else setI(next);
+    }
+    function page(k) {
+      var K = find(S.coupons, k.id), kept = Object.assign({ amount: k.amount, term: k.term }, k.need), lim = K.kind === 'limit';
+      var facts = [{ label: 'Your loan', value: termLine(k.amount, k.term).replace('.00', '') }];
+      facts.push(lim ? { label: 'Your credit limit with it', value: money(CREDIT.available + K.add, 0), tone: 'positive' } : { label: 'You’d save', value: money(CS.calc(kept.amount, kept.term, K).save, 2), tone: 'positive' });
+      var body = k.byTerm ? 'You picked ' + k.term + ' terms. This coupon works with ' + CS.termsText(K.terms) + ', so we’ve taken it off. Keep it and we’ll switch you to ' + k.need.term + ' terms.'
+        : 'Your new amount is ' + money(k.amount, 0) + '. This coupon needs a loan of ' + money(K.min, 0) + ' or more, so we’ve taken it off. Keep it and we’ll set your loan to ' + money(k.need.amount, 0) + '.';
+      return { art: K.type, title: 'Keep your ' + CS.short(K) + '?', body: body, facts: facts };
+    }
+    return h(PS.Decision, { pages: keep.map(page), index: i, onIndex: setI, onClose: finish,
+      primary: { label: 'Keep coupon', onClick: function () { answer(true); } }, secondary: { label: 'Don’t use coupon', onClick: function () { answer(false); } } });
   } });
   APP.sheet('plan', { kind: 'plain', label: 'Repayment plan', render: function Plan() {
     var S = APP.use(), l = S.L;

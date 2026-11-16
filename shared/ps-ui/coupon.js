@@ -1,5 +1,6 @@
 /* PeraSure UI — coupons: pictures, the ticket (every state), segmented tabs, empty state, the loan-page coupon row,
-   the payment summary, the coupon picker sheet and the "keep your coupon?" decision. Needs core.js and layout.js. */
+   the payment summary, the coupon picker sheet and the "keep your coupon?" decision. Needs core.js and layout.js (and pay.js for
+   Decision with more than one coupon: PS.Carousel). */
 (function () {
   'use strict';
   var R = window.React, PS = window.PS, h = R.createElement, m = PS.m, AP = PS.AP, MT = PS.MT;
@@ -10,27 +11,37 @@
      From 40 px up: the version with the white outline and the badge's shadow; below 40 px (the 36 px rows): the plain small one.
      animate (40 px up): plays the coupon animation instead (animations/coupon-percentage | coupon-amount | coupon-credit-limit, GSAP:
      the ticket lands, the badge pops on, then it floats and the badge rocks / turns / its arrow shoots up). Owner: only in the
-     "Keep your coupon?" sheet (PS.Decision) — everywhere else the still. Reduced motion: the animation's resting frame. */
+     "Keep your coupon?" sheet (PS.Decision) — everywhere else the still. Reduced motion: the animation's resting frame.
+     active (with animate): false holds the landed ticket, true again plays it from the start (Decision's pages). */
   var ART = { percent: 'coupon-percent', amount: 'coupon-amount', limit: 'coupon-limit' };
   var ANIM = { percent: 'coupon-percentage', amount: 'coupon-amount', limit: 'coupon-credit-limit' };
+  /* active (false: holds the landed ticket, the end of the intro; true again: plays from the start — a carousel's pages, owner: only the
+     page on show plays, and each time it comes back it plays again) */
   function CouponAnim(p) {
-    var ref = R.useRef(null), slug = ANIM[p.type] || ANIM.percent;
+    var ref = R.useRef(null), api = R.useRef(null), act = R.useRef(p.active !== false), slug = ANIM[p.type] || ANIM.percent;
+    act.current = p.active !== false;
+    function rest(a) { a.api.seekFrame(a.rest); }
     R.useEffect(function () {
-      var dead = false, api = null;
+      var dead = false;
       PS.loadGsapModule(PS.root + 'animations/' + slug + '/gsap/' + slug + '.js').then(function (mod) {
         if (dead || !ref.current) return;
         var make = Object.keys(mod).filter(function (k) { return /^create/.test(k); })[0];
-        api = mod[make](ref.current, { autoplay: true });
+        api.current = { api: mod[make](ref.current, { autoplay: act.current }), rest: mod.MARKERS ? mod.MARKERS.loop : 0 };
+        if (!act.current) rest(api.current);
       }, function () {});
-      return function () { dead = true; if (api) api.destroy(); };
+      return function () { dead = true; if (api.current) api.current.api.destroy(); api.current = null; };
     }, [slug]);
+    R.useEffect(function () {
+      var a = api.current; if (!a) return;
+      if (p.active === false) rest(a); else if (!PS.reduce) { a.api.player.pause(0); a.api.play(); }
+    }, [p.active]);
     return h('span', { className: PS.cx('ps-cart', p.className), style: Object.assign({ '--ps-s': PS.rem(p.size) }, p.style), 'aria-hidden': true },
       h('span', { className: 'ps-cart__anim', ref: ref }));
   }
   PS.CouponArt = function CouponArt(p) {
     var s = p.size || 36, name = ART[p.type] || ART.percent;
     if (s < 40) return h(PS.Art, { name: name + '-sm', size: s, className: p.className, style: p.style });
-    if (p.animate) return h(CouponAnim, { type: p.type, size: s, className: p.className, style: p.style });
+    if (p.animate) return h(CouponAnim, { type: p.type, size: s, active: p.active, className: p.className, style: p.style });
     /* the outline reaches 3.31 % left and 5 % right of the box (Figma insets), so the picture is drawn wider than its box */
     return h('span', { className: PS.cx('ps-cart', p.className), style: Object.assign({ '--ps-s': PS.rem(s) }, p.style), 'aria-hidden': true },
       h('img', { src: PS.asset('art/' + name + '.svg'), alt: '', draggable: false }));
@@ -174,16 +185,29 @@
 
   /* Decision: the "Keep your coupon?" card sheet (PS.Sheet kind="card") · art (coupon type: its animation plays) · title · body
      facts [{ label, value, tone: positive }] · primary { label, onClick } · secondary { label, onClick } · onClose */
+  /* Decision: "Keep your coupon?" in a card sheet — the coupon picture (animated), title, why it was taken off, the facts, Keep / Don't use.
+     art · title · body · facts [{ label, value, tone positive }] · primary { label, onClick } · secondary · onClose.
+     More than one coupon taken off at once: pages [{ art, title, body, facts }] · index · onIndex — the coupons sit side by side in a
+     Carousel like the anti-scam cards (PS.ScamTips; layout Figma 10893:29050: the dots 12 under the facts, 20 above the buttons): swiped left / right, the sheet as tall as the tallest, the dots following the swipe,
+     only the coupon on show plays its animation (from the start each time). The close button and the buttons stay put and act on the
+     coupon on show. */
+  function DecisionBody(p) {
+    return h('div', { className: PS.cx('ps-decide__body', p.page && 'ps-decide__body--page') },
+      h(PS.CouponArt, { type: p.art, size: 80, animate: true, active: p.active }),
+      h('div', { className: 'ps-decide__text' }, h('p', { className: 'ps-t-title-sm' }, p.title), p.body ? h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, p.body) : null),
+      p.facts ? h('div', { className: 'ps-decide__facts' }, p.facts.map(function (f, i) {
+        return h('div', { key: i }, h('span', { className: 'ps-t-caption-sm ps-c-tertiary' }, f.label),
+          h('span', { className: PS.cx('ps-t-label-md', f.tone === 'positive' ? 'ps-c-positive' : 'ps-c-secondary') }, f.value));
+      })) : null);
+  }
   PS.Decision = function Decision(p) {
+    var pages = p.pages && p.pages.length > 1 ? p.pages : null, i = p.index || 0;
     return h('div', { className: 'ps-decide' },
       h('div', { className: 'ps-decide__close' }, h(PS.Close, { onClick: p.onClose })),
-      h('div', { className: 'ps-decide__body' },
-        h(PS.CouponArt, { type: p.art, size: 80, animate: true }),
-        h('div', { className: 'ps-decide__text' }, h('p', { className: 'ps-t-title-sm' }, p.title), p.body ? h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, p.body) : null),
-        p.facts ? h('div', { className: 'ps-decide__facts' }, p.facts.map(function (f, i) {
-          return h('div', { key: i }, h('span', { className: 'ps-t-caption-sm ps-c-tertiary' }, f.label),
-            h('span', { className: PS.cx('ps-t-label-md', f.tone === 'positive' ? 'ps-c-positive' : 'ps-c-secondary') }, f.value));
-        })) : null),
+      pages ? h('div', { className: 'ps-decide__pages' }, h(PS.Carousel, { index: i, onIndex: p.onIndex, dots: true, gap: 'md', pages: pages.map(function (pg, k) {
+        return h(DecisionBody, Object.assign({ key: k, page: true, active: k === i }, pg));
+      }) }))
+        : h(DecisionBody, p.pages && p.pages.length ? p.pages[0] : p),
       h('div', { className: 'ps-decide__acts' },
         h(PS.Button, { block: true, onClick: p.primary.onClick }, p.primary.label),
         p.secondary ? h(PS.Button, { variant: 'text', block: true, onClick: p.secondary.onClick }, p.secondary.label) : null));

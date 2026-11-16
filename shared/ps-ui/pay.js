@@ -124,7 +124,8 @@
     return h(m.i, { className: 'ps-pager__dot', style: { width: w } }, h(m.b, { style: { opacity: o } }));
   }
   /* Carousel: pages side by side, swiped left / right (or moved by index) on the Smooth spring; as tall as its tallest page, so nothing
-     jumps when the page changes (owner) · pages [nodes] · index · onIndex(i) · dots (a Pager under it that follows the swipe) */
+     jumps when the page changes (owner) · pages [nodes] · index · onIndex(i) · dots (a Pager under it that follows the swipe)
+     · gap (pages → dots, a gap token: 'md' | … ; default 2xl — the anti-scam cards; 'md' in Keep your coupon?, Figma 10893:29050) */
   PS.Carousel = function Carousel(p) {
     var M = window.Motion, box = R.useRef(null), x = M.useMotionValue(0), prog = M.useMotionValue(p.index || 0), n = p.pages.length, wRef = R.useRef(0);
     R.useEffect(function () { return x.on('change', function (v) { var w = wRef.current || 1; prog.set(-v / w); }); }, []);
@@ -136,7 +137,7 @@
     }
     R.useEffect(function () { settle(p.index || 0); }, [p.index]);
     R.useEffect(function () { function fit() { x.jump(-(p.index || 0) * width()); } window.addEventListener('resize', fit); return function () { window.removeEventListener('resize', fit); }; }, [p.index]);
-    return h('div', { className: 'ps-carousel' },
+    return h('div', { className: 'ps-carousel', style: p.gap ? { gap: 'var(--spacing-gap-' + p.gap + ')' } : null },
       h('div', { ref: box, className: 'ps-carousel__view' },
         h(m.div, { className: 'ps-carousel__track', style: { x: x }, drag: 'x', dragElastic: 0.18, dragMomentum: false,
           dragConstraints: { left: -(n - 1) * (wRef.current || 1000), right: 0 },
