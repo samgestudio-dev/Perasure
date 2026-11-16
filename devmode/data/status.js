@@ -4,9 +4,12 @@
 window.DM_STATUS = {
   default: { status: 'ready', since: 'v1.0' },
   pages: {
-    home: { status: 'changed', since: 'v1-20261113-n1' }
+    home: { status: 'changed', since: 'v1-20261116-n1' }
   },
   components: {
-    'APP.WdHero': { status: 'changed', since: 'v1-20261113-n1' }
+    'APP.WdHero': { status: 'changed', since: 'v1-20261113-n1' },
+    Card: { status: 'changed', since: 'v1-20261116-n1' },
+    PaymentCard: { status: 'changed', since: 'v1-20261116-n1' },
+    HomeCoupons: { status: 'changed', since: 'v1-20261116-n1' }
   }
 };
