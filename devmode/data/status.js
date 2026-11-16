@@ -4,6 +4,9 @@
 window.DM_STATUS = {
   default: { status: 'ready', since: 'v1.0' },
   pages: {
+    loan: { status: 'changed', since: 'v1-20261116-n4' },
+    plan: { status: 'changed', since: 'v1-20261116-n4' },
+    withdraw: { status: 'changed', since: 'v1-20261116-n4' },
     home: { status: 'changed', since: 'v1-20261116-n1' },
     keep: { status: 'changed', since: 'v1-20261116-n3' }
   },
@@ -14,6 +17,8 @@ window.DM_STATUS = {
     HomeCoupons: { status: 'changed', since: 'v1-20261116-n1' },
     CouponArt: { status: 'changed', since: 'v1-20261116-n3' },
     Decision: { status: 'changed', since: 'v1-20261116-n3' },
-    Carousel: { status: 'changed', since: 'v1-20261116-n3' }
+    Carousel: { status: 'changed', since: 'v1-20261116-n3' },
+    CouponRow: { status: 'changed', since: 'v1-20261116-n4' },
+    Swap: { status: 'changed', since: 'v1-20261116-n4' }
   }
 };

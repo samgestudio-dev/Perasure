@@ -203,7 +203,7 @@
      k: what identifies the content — key it on the state, not on a number that follows a slider (numbers never animate). */
   PS.Swap = function Swap(p) {
     var f = PS.fade(p.y);
-    return h('span', { style: Object.assign({ position: 'relative', display: p.block ? 'grid' : 'inline-grid', minWidth: 0 }, p.style), className: p.className },
+    return h('span', { style: Object.assign({ position: 'relative', display: p.block ? 'grid' : 'inline-grid', minWidth: 0 }, p.block ? { gridTemplateColumns: 'minmax(0, 1fr)' } : null, p.style), className: p.className },   /* block: the column never grows past the box, so text inside can end in … */
       h(PS.AP, { initial: false },
         h(PS.m.span, Object.assign({ key: p.k, style: p.block ? { gridArea: '1 / 1', display: 'block', minWidth: 0 } : { gridArea: '1 / 1', display: 'inline-flex', alignItems: 'baseline', minWidth: 0 } }, f), p.children)));
   };

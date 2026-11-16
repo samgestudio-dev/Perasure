@@ -12,6 +12,18 @@
    The page ids are devmode/data/pages.js's; the component names are PS.<Name> without "PS.". */
 window.DM_ITERATIONS = [
   {
+    id: 'v1-20261116-n4', label: 'v1 · 2026-11-16 · 无 Jira 单号', major: 1, date: '2026-11-16', jira: null,
+    title: { zh: '订单页优惠券列表：说明文字超出用「…」', en: 'Order page coupons: a long line ends in …' },
+    summary: { zh: '订单页优惠券列表里，券的说明（如「Borrow ₱10,000 or more · 4 / 6 terms · One per account」）太长时会超出卡片。现在超出部分用「…」截断。顺带修正行高：标题 20 + 间距 4 + 说明 16 = 40（以前 44，比 Figma 多 4）。',
+      en: 'In the order page’s coupons, a coupon’s line (like “Borrow ₱10,000 or more · 4 / 6 terms · One per account”) ran past the card when it was long. It now ends in … instead. The text block is also back to Figma’s height: title 20 + gap 4 + line 16 = 40 (it was 44).' },
+    changes: [
+      { type: 'ui', action: 'edit', pages: ['loan', 'plan', 'withdraw'], components: ['CouponRow', 'Swap'],
+        title: { zh: '说明文字一行，超出用「…」', en: 'The line stays on one line and ends in …' },
+        detail: { zh: 'Swap{block}：网格列宽随内容变宽 → grid-template-columns: minmax(0, 1fr)（列不超过容器，里面的文字才能截断）。.ps-crow__sub：行内 → display: block（ps-ellipsis 生效；行高由 44 → 40，与 Figma 一致）。文件 shared/ps-ui/core.js、ps-ui.css。',
+          en: 'Swap{block}: the grid column grew with its content → grid-template-columns: minmax(0, 1fr) (the column never passes the box, so the text inside can be cut). .ps-crow__sub: inline → display: block (ps-ellipsis works; the text block 44 → 40, as in Figma). Files: shared/ps-ui/core.js, ps-ui.css.' } }
+    ]
+  },
+  {
     id: 'v1-20261116-n3', label: 'v1 · 2026-11-16 · 无 Jira 单号', major: 1, date: '2026-11-16', jira: null,
     title: { zh: '「保留优惠券？」：多张券放进同一张卡，左右滑', en: 'Keep your coupon?: more than one coupon in one card, swiped' },
     summary: { zh: '一次改动让两张券都不满足条件时，以前会连续弹两个卡片，要点两次。现在两张券左右并排放在同一张卡里，像防诈骗提示（scams）那样左右滑，下面的圆点跟着手指走，卡片按最高的那页定高；只有当前这页的券在播动画，滑回来从头播。Keep / Don’t use 作用于当前这张，然后滑到下一张还没回答的；全部回答完卡片收起，借款一次改好，只弹一条提示。点关闭：已回答的生效，没回答的保持取消。布局按 Figma 10893:29050：圆点在 facts 下 12、按钮上 20；图片到标题从 28 改为 16（一张券时也一样）。Coupon system demo 和 app 都已更新。',
