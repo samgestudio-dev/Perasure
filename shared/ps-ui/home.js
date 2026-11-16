@@ -46,13 +46,13 @@
       p.badge ? h(PS.Tag, { tone: p.overdue ? 'negative' : 'soft' }, p.badge) : null);
     var amt = h('div', { className: 'ps-payment__amt' }, h(PS.Amount, { value: p.amount }), p.was != null ? h(PS.Amount, { value: p.was, strike: true }) : null);
     var due = h('p', { className: 'ps-payment__date ps-t-body-md' }, h(PS.Icon, { name: 'calendar', size: 16, color: 'secondary' }), p.notice ? 'Due ' + p.due : p.due);
-    if (p.notice) return h(PS.Card, { variant: 'outline', className: 'ps-payment ps-payment--stack ps-card--raised' }, head,
+    if (p.notice) return h(PS.Card, { variant: 'outline', raised: true, className: 'ps-payment ps-payment--stack' }, head,
       h('div', { className: 'ps-payment__sum' }, amt, due),
       h('div', { className: 'ps-payment__note' }, h('p', null, p.notice.title), h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, p.notice.body),
         p.notice.onHelp ? h(m.button, Object.assign({ type: 'button', 'aria-label': 'How penalties work', onClick: function (e) { p.notice.onHelp(e.currentTarget); } }, PS.press(true)),
           h(PS.Icon, { name: 'help-circle', size: 16, color: 'tertiary' })) : null),
       h(PS.Button, { block: true, size: 'md', onClick: p.onPay }, p.payLabel || 'Pay now'));
-    return h(PS.Card, { variant: 'outline', className: 'ps-payment ps-card--raised' }, head, amt,   /* default shadow (owner) */
+    return h(PS.Card, { variant: 'outline', raised: true, className: 'ps-payment' }, head, amt,   /* default shadow (owner) */
       h(PS.Divider),
       h('div', { className: 'ps-payment__foot' },
         h('div', { className: 'ps-payment__due' }, h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, 'Due date'), due),
@@ -83,7 +83,7 @@
             h('div', { className: 'ps-hcone__body' }, h('p', { className: 'ps-t-label-md-light ps-c-secondary' }, c.label),
               h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, c.cond)))));
     }
-    return h(m.div, Object.assign({ className: 'ps-card ps-card--outline ps-hcoupons' }, press),
+    return h(PS.Card, Object.assign({ as: m.div, variant: 'outline', className: 'ps-hcoupons' }, press),
       h('div', { className: 'ps-hcoupons__title' }, h('p', { className: 'ps-t-section-sm' }, title)),
       h('div', { className: 'ps-hcoupons__pair' }, list.slice(0, 2).map(function (c, i) {
         return h('div', { key: i, className: 'ps-hcoupon' }, h('div', { className: 'ps-hcoupon__in' },

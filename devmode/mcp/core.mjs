@@ -5,7 +5,7 @@
    Each of them passes a source: how to read a file now and at an older version, the data of devmode/data/*.js as JSON, the visual check.
    Keep in step with devmode/data/*.js and devmode/js/inspector.js when their formats change, and raise VERSION. */
 
-export const VERSION = '2.1.0';
+export const VERSION = '2.2.0';
 export const NAME = 'perasure-devmode';
 export const REPO = 'samgestudio-dev/Perasure';
 export const HOSTED = 'https://samge.studio/perasure/';
@@ -224,8 +224,10 @@ export function createDevmode(src) {
     if (want('classes') && c.classes.length) out.push('\n## Classes it renders\n' + c.classes.map(x => '`.' + x + '`').join(' '));
     if (want('uses') && c.uses.length) out.push('\n## Uses\n' + c.uses.map(x => 'PS.' + x).join(', '));
     if (want('pages')) {
-      const pg = (c.pages || []).map(code => { const p = findPage(D, code); return p ? `- ${p.en} (${p.name}) — \`${p.id}\`` : `- \`${code}\``; });
-      out.push('\n## Used on pages\n' + (pg.length ? pg.join('\n') : '- Not used on an app page directly (other components use it)'));
+      /* pages that render it, and pages that render a component using it (index: via) */
+      const via = c.via || {}, line = code => { const p = findPage(D, code), v = via[code] ? ` · inside ${via[code].map(x => 'PS.' + x).join(', ')}` : ''; return (p ? `- ${p.en} (${p.name}) — \`${p.id}\`` : `- \`${code}\``) + v; };
+      const direct = (c.pages || []).filter(x => !via[x]), inner = (c.pages || []).filter(x => via[x]);
+      out.push('\n## Used on pages\n' + (direct.length || inner.length ? [...direct.map(line), ...inner.map(line)].join('\n') : '- Not on an app page yet'));
     }
     if (want('history')) out.push('\n## Iterations that changed it\n' + histLines(D, 'components', c.name));
     return out.join('\n');

@@ -168,10 +168,15 @@
   };
   PS.Divider = function Divider(p) { return h('span', { className: PS.cx('ps-divider', p.vertical && 'ps-divider--v', p.dashed && 'ps-divider--dash'), 'aria-hidden': true }); };
 
-  /* Card: white rounded card · variant plain | outline (home: 2 px white ring) | raised (shadow) · clip · as (element) */
+  /* Card: white rounded card · variant plain | outline (home: 2 px white ring) | raised (shadow; = plain + raised) · raised (the default shadow
+     on any variant: home's payment card is outline + raised) · clip · as (element, e.g. m.div) · any other prop (role, aria-*, onKeyDown,
+     PS.press()) goes to the element */
+  var CARD_OWN = { variant: 1, raised: 1, clip: 1, as: 1, className: 1, children: 1 };
   PS.Card = function Card(p) {
-    var v = p.variant || 'plain';
-    return h(p.as || 'div', { className: PS.cx('ps-card', v !== 'plain' && 'ps-card--' + v, p.clip && 'ps-card--clip', p.className), style: p.style, onClick: p.onClick }, p.children);
+    var v = p.variant || 'plain', o = {};
+    for (var k in p) if (!CARD_OWN[k]) o[k] = p[k];
+    o.className = PS.cx('ps-card', v === 'outline' && 'ps-card--outline', (p.raised || v === 'raised') && 'ps-card--raised', p.clip && 'ps-card--clip', p.className);
+    return h(p.as || 'div', o, p.children);
   };
   /* Section: uppercase label above a card, optional action link ("See all 6") */
   PS.Section = function Section(p) {

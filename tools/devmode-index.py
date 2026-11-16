@@ -120,6 +120,7 @@ GENERIC = re.compile(r'^ps-(t|c)-')   # typography / colour utilities belong to 
 
 def components():
     rules = css_rules(os.path.join(UI, 'ps-ui.css'))
+    css_classes = set(c for r in rules for c in re.findall(r'\.(ps-[a-z0-9_-]+)', r['sel']))
     comps, used_classes = {}, {}
     for fn in FILES:
         p = os.path.join(UI, fn)
@@ -132,7 +133,11 @@ def components():
             doc = comment_above(src, m.start())
             if not re.search(r'(^|[^A-Za-z])' + name + r'([^A-Za-z]|$)', doc or ''):
                 doc = comment_mentioning(src, m.start(), name) or doc
-            classes = sorted(set(c for c in re.findall(r"['\s(](ps-[a-z0-9_-]+)", body) if not GENERIC.match(c) and not c.endswith('-')))
+            classes = set(c for c in re.findall(r"['\s(](ps-[a-z0-9_-]+)", body) if not GENERIC.match(c) and not c.endswith('-'))
+            # a class put together in code ('ps-card--' + v): every class in ps-ui.css that starts with that prefix
+            for pre in re.findall(r"'(ps-[a-z0-9_-]+-)'\s*\+", body):
+                classes |= set(c for c in css_classes if c.startswith(pre))
+            classes = sorted(classes)
             comps[name] = {
                 'name': name, 'file': 'shared/ps-ui/' + fn, 'line': line_of(src, m.start()), 'end': line_of(src, e),
                 'doc': doc, 'classes': classes,
@@ -209,8 +214,24 @@ def pages(comps):
             doc = comment_above(src, pos)
             out[name] = {'id': name, 'kind': kind, 'file': 'prototypes/app/' + fn, 'line': line_of(src, pos), 'end': line_of(src, e), 'doc': doc,
                          'figma': figma_nodes(doc), 'components': sorted(set(x for x in set(re.findall(r'\bPS\.([A-Z][A-Za-z0-9]*)\b', body)) | reach(set(re.findall(r'\b((?:APP\.)?[A-Za-z_$][\w$]*)\s*\(', body)), set()) if x in comps))}
+    # a component is on a page when the page renders it, or renders a component that uses it (PaymentCard → Card): pages lists both,
+    # via says which of the page's own components brings it in when it isn't used directly
+    def inside(n, seen):
+        got = set()
+        for u in comps[n]['uses']:
+            if u in comps and u not in seen:
+                seen.add(u); got |= {u} | inside(u, seen)
+        return got
+    deep = {n: inside(n, {n}) for n in comps}
     for n, c in comps.items():
-        c['pages'] = sorted(p for p, v in out.items() if n in v['components'])
+        c['pages'], c['via'] = [], {}
+        for p, v in sorted(out.items()):
+            if n in v['components']:
+                c['pages'].append(p)
+            else:
+                through = sorted(x for x in v['components'] if n in deep.get(x, ()))
+                if through:
+                    c['pages'].append(p); c['via'][p] = through
     return out
 
 
