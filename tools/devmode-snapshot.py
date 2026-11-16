@@ -48,6 +48,9 @@ def main():
         for n in names:
             rel = os.path.relpath(os.path.join(base, n), ROOT).replace(os.sep, '/')
             if n.endswith('.json') and '/gsap/' not in rel: files.append(rel)
+            # GSAP-only animations (no Lottie JSON, e.g. the coupon pictures the Keep-your-coupon sheet plays): their modules
+            elif n.endswith('.js') and '/gsap/' in rel and not any(f.endswith('.json') for f in os.listdir(os.path.dirname(base))):
+                files.append(rel)
     size = 0
     for rel in sorted(set(files)):
         src, out = os.path.join(ROOT, rel), os.path.join(dest, rel)

@@ -23,8 +23,8 @@
 <script src="../vendor/motion@14.4.0/motion-react.js"></script>
 <script src="../vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
 <script src="../vendor/lottie-web@5.12.2/lottie_svg.min.js"></script>
-<script src="../assets/playground-ui.js?v=202611160304"></script>
-<script src="animations.js?v=202611160304"></script>
+<script src="../assets/playground-ui.js?v=202611160614"></script>
+<script src="animations.js?v=202611160614"></script>
 <script>
 /* ---- Animation player ------------------------------------------------------------------
    One animation at a time. Each animation exists twice, pixel-matched: the Lottie JSON played
@@ -128,7 +128,7 @@
   function hasGsap(entry){ return !!entry.gsap; }
   function engineFor(box, entry, part){
     var base = entry.slug + '/';
-    if (renderer === 'gsap' && hasGsap(entry))
+    if ((renderer === 'gsap' || !entry.json) && hasGsap(entry))   // GSAP-only entries (no Lottie file) always use GSAP
       return gsapEngine(box, './' + base + (part === 'success' ? entry.gsapSuccess : entry.gsap));
     return lottieEngine(box, base + (part === 'success' ? entry.success : entry.json));
   }
@@ -182,7 +182,7 @@
     }
     function syncUrl(){
       try { history.replaceState(null, '', '?a=' + encodeURIComponent(cur.slug) + (renderer === 'gsap' ? '&r=gsap' : '') + location.hash); } catch (e) {}
-      document.title = cur.title + ' · ' + (renderer === 'gsap' ? 'GSAP' : 'Lottie') + ' · PeraSure Playground';
+      document.title = cur.title + ' · ' + (renderer === 'gsap' || !cur.json ? 'GSAP' : 'Lottie') + ' · PeraSure Playground';
     }
     function destroy(){
       if (A) A.destroy(); if (B) B.destroy();
@@ -292,7 +292,7 @@
       open: open,
       go: function(d){ navDir = d; open((st.index + d + LIST.length) % LIST.length); },
       setRenderer: function(r){
-        if (!cur || r === renderer || (r === 'gsap' && !cur.gsap)) return;
+        if (!cur || r === renderer || (r === 'gsap' && !cur.gsap) || (r === 'lottie' && !cur.json)) return;
         var resume = active && active.total && !cur.success ? { frame: active.frame(), paused: paused } : null;
         renderer = r; store('ps-lottie-renderer', r);
         open(st.index, resume);
@@ -479,8 +479,8 @@
 
   /* Two options with a shared sliding indicator (layoutId) — Lottie / GSAP. Top-left of the stage. */
   function RendererSwitch(p){
-    var entry = p.entry, dark = p.st.bg === 'dark', cur = p.st.renderer === 'gsap' ? 'gsap' : 'lottie';
-    var opts = [['lottie', 'Lottie', true], ['gsap', 'GSAP', !!entry.gsap]];
+    var entry = p.entry, dark = p.st.bg === 'dark', cur = p.st.renderer === 'gsap' || !entry.json ? 'gsap' : 'lottie';
+    var opts = [['lottie', 'Lottie', !!entry.json], ['gsap', 'GSAP', !!entry.gsap]];
     return h(m.div, { role: 'radiogroup', 'aria-label': 'Renderer', onPointerDown: stop,
         animate: pillAnim(dark), transition: T.fade, style: Object.assign(pillStyle(dark), { left: 12, display: 'flex' }) },
       opts.map(function(o){

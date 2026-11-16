@@ -16,8 +16,32 @@
    gsap     optional GSAP version of the same animation: ES module (inline SVG + timeline)
             exporting create…(container, { autoplay }) — shown under the player's "GSAP" tab
    gsapSuccess  GSAP module for the success part (coin-style animations)
+   GSAP-only entries (no Lottie file, e.g. the coupon icons made straight from Figma, drawn flat with one consistent
+            light — no SVG filters, no gradients): leave out `json` / `lottie`;
+            `intro` / `loop` are then the module's own frames (its MARKERS / FRAMES) and the player opens them in GSAP
 */
 window.LOTTIES = [
+  {
+    slug: 'coupon-percentage',
+    title: 'Coupon · percentage discount',
+    desc: 'Ticket lands, its print fills in, the % seal turns into place; then it floats and the seal rocks.',
+    preview: 'preview.png', gsap: 'gsap/coupon-percentage.js',
+    intro: [0, 66], loop: [66, 210]
+  },
+  {
+    slug: 'coupon-amount',
+    title: 'Coupon · amount discount',
+    desc: 'Ticket lands, its print fills in, the peso coin spins in; then it floats and the coin turns a full circle, edge and all.',
+    preview: 'preview.png', gsap: 'gsap/coupon-amount.js',
+    intro: [0, 66], loop: [66, 210]
+  },
+  {
+    slug: 'coupon-credit-limit',
+    title: 'Coupon · credit limit increase',
+    desc: 'Ticket lands, the arrow draws up in the badge; then it floats and the arrow shoots up and back in.',
+    preview: 'preview.png', gsap: 'gsap/coupon-credit-limit.js',
+    intro: [0, 66], loop: [66, 210]
+  },
   {
     slug: 'customer-service-chat',
     title: 'Customer service chat',

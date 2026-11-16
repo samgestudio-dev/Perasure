@@ -220,6 +220,27 @@
     });
     return lottieP;
   };
+  /* GSAP modules of animations/<slug>/gsap/ are written for an import map (import { gsap } from "gsap"); the app's pages have none.
+     loadGsapModule(url) puts the shared GSAP build on window, points the module's one import line at it and imports the text from a
+     Blob URL — the module file itself stays exactly what the Playground player plays. */
+  var gsapP = null, gsapMods = {};
+  PS.loadGsap = function () {
+    if (window.gsap) return Promise.resolve(window.gsap);
+    if (!gsapP) gsapP = new Promise(function (res, rej) {
+      var s = document.createElement('script'); s.src = PS.root + 'vendor/gsap@3.15.0/gsap.min.js';
+      s.onload = function () { res(window.gsap); }; s.onerror = rej; document.head.appendChild(s);
+    });
+    return gsapP;
+  };
+  PS.loadGsapModule = function (url) {
+    if (!gsapMods[url]) gsapMods[url] = PS.loadGsap().then(function () { return fetch(url, { cache: 'no-cache' }); })
+      .then(function (r) { if (!r.ok) throw new Error('Couldn’t load ' + url); return r.text(); })
+      .then(function (src) {
+        var code = 'const gsap = window.gsap;\n' + src.replace(/^import \{ gsap \} from "gsap";[^\n]*$/m, '');
+        return import(URL.createObjectURL(new Blob([code], { type: 'text/javascript' })));
+      });
+    return gsapMods[url];
+  };
   /* Lottie: src (json url) · width · height · viewBox ('x y w h': crop) · intro [a, b] (played once) · loop [a, b] (then looped;
      with no intro / loop the file loops, or plays once and holds with once) · once · play (false: wait) · onDone · api (ref → the lottie item)
      active (false: holds its first frame; true again: plays from the start — a carousel's pages, owner: only the page on show plays, and

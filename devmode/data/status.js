@@ -4,12 +4,15 @@
 window.DM_STATUS = {
   default: { status: 'ready', since: 'v1.0' },
   pages: {
-    home: { status: 'changed', since: 'v1-20261116-n1' }
+    home: { status: 'changed', since: 'v1-20261116-n1' },
+    keep: { status: 'changed', since: 'v1-20261116-n2' }
   },
   components: {
     'APP.WdHero': { status: 'changed', since: 'v1-20261113-n1' },
     Card: { status: 'changed', since: 'v1-20261116-n1' },
     PaymentCard: { status: 'changed', since: 'v1-20261116-n1' },
-    HomeCoupons: { status: 'changed', since: 'v1-20261116-n1' }
+    HomeCoupons: { status: 'changed', since: 'v1-20261116-n1' },
+    CouponArt: { status: 'changed', since: 'v1-20261116-n2' },
+    Decision: { status: 'changed', since: 'v1-20261116-n2' }
   }
 };

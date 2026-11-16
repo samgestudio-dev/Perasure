@@ -168,6 +168,7 @@ html.ps-edge .ps-nav { padding-bottom: calc(var(--sb) + var(--spacing-section-lg
 .ps-art { display: block; flex: none; width: var(--ps-s, 2.25rem); height: var(--ps-s, 2.25rem); object-fit: contain; }
 .ps-cart { position: relative; display: block; flex: none; width: var(--ps-s, 5rem); height: var(--ps-s, 5rem); }
 .ps-cart > img { position: absolute; top: 0; left: -3.31%; width: 108.31%; height: 100%; max-width: none; }
+.ps-cart__anim { position: absolute; inset: 0; } /* the coupon animation: its 80-unit box is the picture's box (CouponArt animate) */
 
 .ps-amount { font-family: var(--ps-font-num); font-weight: var(--font-weight-bold); white-space: nowrap; }   /* Satoshi's own (proportional) figures, as in Figma: its tabular set draws other digits */
 .ps-amount__cur--body { font-family: var(--font-family-body); font-weight: var(--font-weight-medium); }

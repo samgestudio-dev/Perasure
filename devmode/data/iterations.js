@@ -12,6 +12,18 @@
    The page ids are devmode/data/pages.js's; the component names are PS.<Name> without "PS.". */
 window.DM_ITERATIONS = [
   {
+    id: 'v1-20261116-n2', label: 'v1 · 2026-11-16 · 无 Jira 单号', major: 1, date: '2026-11-16', jira: null,
+    title: { zh: '「保留优惠券？」弹窗：优惠券插图换成动画', en: 'Keep your coupon?: the coupon picture is now an animation' },
+    summary: { zh: '「保留优惠券？」弹窗里的优惠券插图改为播放新的 GSAP 动画（Playground → Animations 里的三个 Coupon 动画）：票券落下、印刷内容出现、徽章弹出，之后循环——百分比印章轻晃、₱ 硬币带厚度转一圈、箭头从凹槽飞出再回来。徽章按扁平风格绘制：一个右侧光源，硬阴影、单侧白边，没有渐变和 SVG 滤镜。其他地方（优惠券中心、首页、借款页的优惠券行）仍是静态插图。',
+      en: 'The coupon picture in the Keep your coupon? sheet now plays the new GSAP animations (the three Coupon animations in Playground → Animations): the ticket lands, its print fills in and the badge pops on, then it loops — the % seal rocks, the ₱ coin turns a full circle with its thickness showing, the arrow shoots up out of its recess and back. The badges are drawn flat: one light from the right, hard shadows, a white rim on one side, no gradients or SVG filters. Everywhere else (coupon centre, home, the loan page’s coupon rows) keeps the still pictures.' },
+    changes: [
+      { type: 'motion', action: 'add', pages: ['keep'], components: ['CouponArt', 'Decision'],
+        title: { zh: 'CouponArt 新增 animate；Decision 使用动画', en: 'New CouponArt prop animate; Decision uses it' },
+        detail: { zh: 'CouponArt：静态 SVG（≥ 40 px 带白描边，< 40 px 简版）→ 再加 animate（布尔，≥ 40 px）：播放 animations/coupon-percentage | coupon-amount | coupon-credit-limit 的 GSAP 模块（60 fps，intro 0–66 帧，loop 66–210 帧，减少动态效果时显示静止帧）。Decision：CouponArt { size: 80 } → { size: 80, animate: true }。新增 PS.loadGsapModule：页面没有 import map 时也能加载这些模块（vendor/gsap@3.15.0 + Blob URL）。文件 shared/ps-ui/coupon.js、core.js、ps-ui.css（.ps-cart__anim）。',
+          en: 'CouponArt: still SVG (40 px up with the white outline, below 40 px the plain one) → plus animate (boolean, 40 px up): plays the GSAP module of animations/coupon-percentage | coupon-amount | coupon-credit-limit (60 fps, intro frames 0–66, loop 66–210; reduced motion shows the resting frame). Decision: CouponArt { size: 80 } → { size: 80, animate: true }. New PS.loadGsapModule loads these modules on pages with no import map (vendor/gsap@3.15.0 + a Blob URL). Files: shared/ps-ui/coupon.js, core.js, ps-ui.css (.ps-cart__anim).' } }
+    ]
+  },
+  {
     id: 'v1-20261116-n1', label: 'v1 · 2026-11-16 · 无 Jira 单号', major: 1, date: '2026-11-16', jira: null,
     title: { zh: '卡片：白环和阴影可以一起用', en: 'Card: the white ring and the shadow together' },
     summary: { zh: '首页的还款卡是「白环 + 阴影」，但 PS.Card 的 variant 只能选一个，所以 PaymentCard 一直往 className 里塞 ps-card--raised，绕开了 Card 的接口；首页优惠券卡更是自己写了 Card 的类名。现在 Card 多了一个 raised 属性，任何样式都能加阴影；其他属性（role、aria、按压动效）会传给元素，as 可以用 m.div。PaymentCard 和 HomeCoupons 改为通过接口使用 Card。外观没有变化：首页 16 个状态和这两个组件的像素比对完全一致。',

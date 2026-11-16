@@ -31,6 +31,9 @@ shows still thumbnails.
 
 | Animation | Playback |
 | --- | --- |
+| Coupon · percentage discount | GSAP only · intro 0–66 → loop 66–210 (60 fps) |
+| Coupon · amount discount | GSAP only · intro 0–66 → loop 66–210 (60 fps) |
+| Coupon · credit limit increase | GSAP only · intro 0–66 → loop 66–210 (60 fps) |
 | Customer service chat | intro 0–36 → loop 36–96 |
 | Customer service | intro 0–45 → loop 45–105 |
 | Empty box | plays once, holds |
@@ -43,6 +46,12 @@ shows still thumbnails.
 Every animation also has a **GSAP version** (`animations/<name>/gsap/*.js`: inline SVG + one GSAP timeline,
 pixel-matched to the Lottie). The **Lottie / GSAP** switch in the animation's top-left corner changes renderer (background swatches sit top-right); the
 controls work the same for both and the current frame is kept when you switch.
+The coupon icons are GSAP only: animated straight from the Figma SVGs (Figma file `5nVoWWFTfqPDWrABYG6BsW`), with no
+Lottie file, so the player opens them in GSAP and greys out Lottie. Each badge is drawn as a flat-coloured object with real
+thickness (coin edge, recess, raised ₱ / % / arrow) and one light from the right — the side Figma's shadow on the ticket
+comes from — so every hard shadow and tone agrees with it while the badge turns. Like Figma, the recess is white on one
+side (its lit lip) and shadow on the other, and the ₱ / % / arrow are white with their shadow on one side. No SVG filters,
+no gradients.
 
 To add one: put the `.json` (plus `.lottie` and a `preview.png`) in `animations/<name>/`, the GSAP module (if
 any) in `animations/<name>/gsap/`, and add an entry to `animations/animations.js`. Rendered with

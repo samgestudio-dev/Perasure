@@ -7,11 +7,30 @@
   /* CouponArt: the coupon picture — Figma's own SVG exports (app file, "Coupon center": 80 px 52:16887 / 52:16857 / 52:16835; 36 px with the
      green badge 52:15586 / 52:15725 / 52:15780), only the canvas behind them taken out (owner: exported, not redrawn)
      type percent (% off) | amount (₱ off) | limit (credit limit increase) · size (px).
-     From 40 px up: the version with the white outline and the badge's shadow; below 40 px (the 36 px rows): the plain small one. */
+     From 40 px up: the version with the white outline and the badge's shadow; below 40 px (the 36 px rows): the plain small one.
+     animate (40 px up): plays the coupon animation instead (animations/coupon-percentage | coupon-amount | coupon-credit-limit, GSAP:
+     the ticket lands, the badge pops on, then it floats and the badge rocks / turns / its arrow shoots up). Owner: only in the
+     "Keep your coupon?" sheet (PS.Decision) — everywhere else the still. Reduced motion: the animation's resting frame. */
   var ART = { percent: 'coupon-percent', amount: 'coupon-amount', limit: 'coupon-limit' };
+  var ANIM = { percent: 'coupon-percentage', amount: 'coupon-amount', limit: 'coupon-credit-limit' };
+  function CouponAnim(p) {
+    var ref = R.useRef(null), slug = ANIM[p.type] || ANIM.percent;
+    R.useEffect(function () {
+      var dead = false, api = null;
+      PS.loadGsapModule(PS.root + 'animations/' + slug + '/gsap/' + slug + '.js').then(function (mod) {
+        if (dead || !ref.current) return;
+        var make = Object.keys(mod).filter(function (k) { return /^create/.test(k); })[0];
+        api = mod[make](ref.current, { autoplay: true });
+      }, function () {});
+      return function () { dead = true; if (api) api.destroy(); };
+    }, [slug]);
+    return h('span', { className: PS.cx('ps-cart', p.className), style: Object.assign({ '--ps-s': PS.rem(p.size) }, p.style), 'aria-hidden': true },
+      h('span', { className: 'ps-cart__anim', ref: ref }));
+  }
   PS.CouponArt = function CouponArt(p) {
     var s = p.size || 36, name = ART[p.type] || ART.percent;
     if (s < 40) return h(PS.Art, { name: name + '-sm', size: s, className: p.className, style: p.style });
+    if (p.animate) return h(CouponAnim, { type: p.type, size: s, className: p.className, style: p.style });
     /* the outline reaches 3.31 % left and 5 % right of the box (Figma insets), so the picture is drawn wider than its box */
     return h('span', { className: PS.cx('ps-cart', p.className), style: Object.assign({ '--ps-s': PS.rem(s) }, p.style), 'aria-hidden': true },
       h('img', { src: PS.asset('art/' + name + '.svg'), alt: '', draggable: false }));
@@ -153,13 +172,13 @@
       p.summary ? h('div', { className: 'ps-sheet__foot' }, p.summary) : null);
   };
 
-  /* Decision: the "Keep your coupon?" card sheet (PS.Sheet kind="card") · art (coupon type) · title · body · facts [{ label, value, tone: positive }]
-     primary { label, onClick } · secondary { label, onClick } · onClose */
+  /* Decision: the "Keep your coupon?" card sheet (PS.Sheet kind="card") · art (coupon type: its animation plays) · title · body
+     facts [{ label, value, tone: positive }] · primary { label, onClick } · secondary { label, onClick } · onClose */
   PS.Decision = function Decision(p) {
     return h('div', { className: 'ps-decide' },
       h('div', { className: 'ps-decide__close' }, h(PS.Close, { onClick: p.onClose })),
       h('div', { className: 'ps-decide__body' },
-        h(PS.CouponArt, { type: p.art, size: 80 }),
+        h(PS.CouponArt, { type: p.art, size: 80, animate: true }),
         h('div', { className: 'ps-decide__text' }, h('p', { className: 'ps-t-title-sm' }, p.title), p.body ? h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, p.body) : null),
         p.facts ? h('div', { className: 'ps-decide__facts' }, p.facts.map(function (f, i) {
           return h('div', { key: i }, h('span', { className: 'ps-t-caption-sm ps-c-tertiary' }, f.label),
