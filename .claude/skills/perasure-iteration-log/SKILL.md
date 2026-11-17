@@ -47,8 +47,10 @@ gets an overview folder and a developer brief — read `references/global-iterat
 7. **Snapshot:** `python3 tools/devmode-snapshot.py <id>` — a runnable copy of this version in `devmode/snapshots/<id>/`. It refuses an
    id that exists: a saved version is never changed. Make it after the code is final and before the commit.
 8. **Commit and push** everything (the message names the iteration and the ticket). Don't tag: the *Dev Mode* workflow
-   (`.github/workflows/devmode.yml`) tags `devmode-<id>` on the commit that added the snapshot (sessions can't push tags). Dev Mode links
+   (`.github/workflows/devmode.yml`) tags `devmode-<id>` on the commit that last wrote the snapshot (sessions can't push tags). Dev Mode links
    an older version's code to that tag; check the tag exists a minute after the push (`git ls-remote --tags origin devmode-<id>`).
+   When the owner asks for a fix inside the latest iteration (no new one), redo its snapshot (delete the folder, run the snapshot
+   script again), its overview pictures and its brief in one commit; the workflow then moves the tag there. Only with the owner's go-ahead.
 9. **Check in Dev Mode** (desktop viewport, `devmode/index.html`): the version menu lists the new label; Iterations shows the entry;
    the changed page / component's History tab lists it; Compare (previous → new) shows both frames and the changes with properties
    and code before → after; a few minutes after the push, Iterations → Unrecorded changes (the *Dev Mode visual check* workflow) is
