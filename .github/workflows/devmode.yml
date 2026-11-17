@@ -6,7 +6,7 @@ name: Dev Mode
 on:
   push:
     branches: [main]
-    paths: ['devmode/snapshots/**']
+    paths: ['devmode/snapshots/**', '.github/workflows/devmode.yml']
   workflow_dispatch:
 
 permissions:
@@ -30,8 +30,10 @@ jobs:
           for d in devmode/snapshots/*/; do
             id=$(basename "$d"); tag="devmode-$id"
             [ -f "${d}meta.json" ] || continue
-            if git ls-remote --exit-code --tags origin "refs/tags/$tag" > /dev/null; then echo "$tag already tagged."; continue; fi
-            sha=$(git log --diff-filter=A --format=%H -1 -- "${d}meta.json")
-            git tag "$tag" "$sha" && git push origin "$tag"
-            echo "Tagged $tag at ${sha:0:7}" >> "$GITHUB_STEP_SUMMARY"
+            # the last commit that wrote the snapshot: a snapshot redone within its own iteration (owner's go-ahead) moves its tag
+            sha=$(git log --format=%H -1 -- "${d}meta.json")
+            cur=$(git ls-remote --tags origin "refs/tags/$tag" | cut -f1)
+            if [ "$cur" = "$sha" ]; then echo "$tag already at ${sha:0:7}."; continue; fi
+            git tag -f "$tag" "$sha" && git push -f origin "refs/tags/$tag"
+            echo "Tagged $tag at ${sha:0:7}${cur:+ (moved from ${cur:0:7})}" >> "$GITHUB_STEP_SUMMARY"
           done
