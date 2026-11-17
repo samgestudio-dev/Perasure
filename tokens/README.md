@@ -36,7 +36,7 @@ Pick one — all three produce the same result.
 ## Using them
 
 ```html
-<link rel="stylesheet" href="../../assets/fonts/fonts.css">  <!-- the fonts themselves -->
+<link rel="stylesheet" href="../../assets/fonts/fonts-2026.11.17.css">  <!-- the fonts themselves -->
 <link rel="stylesheet" href="../../tokens/tokens.css">
 ```
 

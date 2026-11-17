@@ -11,6 +11,11 @@ shared component or a motion is recorded in the same piece of work** (owner's ru
 are not iterations. A change made without recording it (another session, a quick fix) shows up in Dev Mode under Iterations →
 Unrecorded changes (the visual check runs on every push): record those too when the owner asks.
 
+**One requirement = one iteration = one tag** (owner, 2026-11-17): everything done for one requirement — token update, global
+components, every page they touch, motion re-tuned because of it — goes into ONE entry, ONE snapshot and ONE tag, never split.
+A requirement that changes tokens or global components (bars, fonts, a shared atom used everywhere) is a **global iteration**: it also
+gets an overview folder and a developer brief — read `references/global-iteration.md` when that is the case.
+
 ## Names and versions (owner)
 
 - The version stays **v1** (the baseline is `v1.0`). Only a large redesign starts `v2.0` — never decide that yourself; ask.

@@ -25,11 +25,10 @@ React + Motion from `vendor/`, no build step (`PS.h` = `React.createElement`). P
   <script src="../../shared/ps-ui/tune.js"></script>               <!-- optional, prototype only: Tune panel -->
   <link rel="stylesheet" href="../../shared/ps-ui/tune.css">
   <script>PSTune.setup({ key: 'perasure.<slug>.tune', settings: [
-    { key: 'blur', label: 'Progressive blur (header and bottom bars)', options: [[1, 'On'], [0, 'Off']], def: 1 },
     { key: 'fit', label: 'Screen fit', options: [['cap', 'Capped zoom'], ['fit', '1:1'], ['scale', 'Full zoom']], def: 'cap' } ] });</script>
   <script src="../../shared/ps-ui/phone-fit.js"></script>          <!-- after Tune: responsive layout, fit mode, iOS 26 edge to edge -->
   <link rel="stylesheet" href="../../tokens/tokens.css">
-  <link rel="stylesheet" href="../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../assets/fonts/fonts-2026.11.17.css">
   <link rel="stylesheet" href="../../shared/ps-ui/ps-ui.css">
 </head>
 <body>
@@ -102,6 +101,32 @@ in form.js, `PS.Lottie{active}` / `PS.Anim{active}` (core.js: play from the star
 `PS.Popover` opens centred on the last tap (or `at`), 8 from the page's sides, growing from that point; without a tap, its right edge on the
 anchor's. `PS.Wheel`'s band is its highlight (it covers the wheel's own line: no double text) and it owns every touch on it.
 
+## Number font and bars (owner, tokens v2026.11.17)
+
+**Number font.** `--ps-font-num` = token `Font/Family/Number` = **Reddit Sans** (variable 200–900, with its own ₱;
+`assets/fonts/reddit-sans-var.woff2`, OFL). Before 2026.11.17 it was Satoshi with ₱ from Inter (`--font-family-satoshi`, now in
+`tokens/legacy/2026.11.12.css`).
+
+| Rule | How |
+|---|---|
+| Only **emphasised amounts** use it, always in a Number text style | `.ps-t-number-xs/sm/md/lg/xl/xxl` = DS `Number/*`: 16/20 +2 % · 18/24 +3 % · 24/32 0 · 32/40 +2 % · 36/100 % +4 % · 48/100 % +3 %, all Bold. `PS.Amount{ num: 'lg' }`, a smaller ".00" with `decNum: 'xs'` |
+| **Notes and labels** beside an amount stay **Inter** | Total credit, Used / Available, an old (struck) price, the intro's "+₱10,000 added" / "Previous limit" |
+| **Titles** keep their own font; **only the ₱** in them is the number font | `h(PS.Peso, null, '+₱5,000')` → `<span class="ps-peso">₱</span>` (coupon values on home, the coupon centre, the coupon picker) |
+| **List numbers** are not amounts | Tips' 1 2 3: Hanken |
+| A size with **no Number style** | the nearest style (OfferCard's 28 → md 24), or ask the owner |
+| **One glyph per box** (typed digits, the Withdraw morph) | boxes don't kern, so each box carries its pair's kern as a right margin: `PS.kern(a, b)` (em) from `PS.KERN`, Reddit Sans Bold's GPOS pairs; withdraw.js has the same table (`Component.KERN`) |
+
+Where it is used (2026.11.17): home credit card (xl + xs), payment card (md), coupon picker total (md), order / estimate amount
+card (lg), amount entry (₱ lg, digits xxl, ".00" xs), account credit limit card (xs), credit limit hub (lg + xs), pay page (lg), loan
+application (lg), payment tab instalments (sm) and total (md), loan history (sm), credit history (xs), guest hero (xl), More for you
+(md), the Credit limit increase's big number.
+
+**Bars** (`PS.TopBar`, `PS.BottomBar`, `PS.Navigator`, `PS.Bands`): no progressive blur — one token veil each. Tab pages: header
+`--gradient-top-nav-filled`, tab bar `--gradient-bottom-primary-nav-filled`; secondary pages (`PS.Screen{secondary}`): solid header,
+bottom `--gradient-bottom-secondary-nav-filled`; the amount entry and the order page: header `--gradient-top-nav-filled`, bottom
+`BottomBar{secondary}`; a page sheet's foot: `--gradient-bottom-secondary-nav-filled`. Table and reasons: `CLAUDE.md` → "Header and
+bottom bars".
+
 ## Rules for changing components
 
 - **Sizes are rem** (owner): 1rem = 16 design px at the default text size. Load `tokens-rem/tokens-rem.css` after `tokens/tokens.css`;
@@ -140,8 +165,8 @@ anchor's. `PS.Wheel`'s band is its highlight (it covers the wheel's own line: no
   52:16835, 36 px 52:15586 / 52:15725 / 52:15780) with the canvas behind them taken out — re-export them if they change; never redraw.
 - **Copy** in examples and defaults follows the `perasure-tone-of-voice` skill (sentence case, plain words).
 - **Phone rules** from `CLAUDE.md` hold here: `touch-action: manipulation`, no coloured overlay left in the page when a
-  sheet is closed (sheets unmount), the header blur runs only while content is under it, with blur off the bottom
-  gradient fades out at the end of the scroll.
+  sheet is closed (sheets unmount); the header veil comes in as content scrolls under it and the bottom one fades out at
+  the end of the scroll.
 - **Don't break consumers.** Renaming or removing a prop or a class: update every prototype that uses it
   (`grep -rl "PS\.<Name>" prototypes shared`) in the same commit, and the gallery.
 - **Caching:** links to these files carry `?v=<stamp>`; `python3 tools/stamp.py` updates them before a commit.

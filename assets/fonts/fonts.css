@@ -1,4 +1,7 @@
-/* PeraSure app fonts, shared by every prototype. Link it from a demo with
+/* FROZEN — the fonts before tokens v2026.11.17 (Satoshi numbers), kept for Dev Mode snapshots and legacy tokens.
+   New and current prototypes link fonts-2026.11.17.css (Reddit Sans numbers) instead.
+
+   PeraSure app fonts, shared by every prototype. Link it from a demo with
      <link rel="stylesheet" href="../../assets/fonts/fonts.css">
    The files are the same ones the app uses (Latin, incl. ñ and the peso sign ₱ where the font has it).
 

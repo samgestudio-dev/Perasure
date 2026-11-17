@@ -112,16 +112,33 @@
       style: Object.assign({ '--ps-s': PS.rem(p.size || 36) }, p.style), draggable: false });
   };
 
-  /* Amount: ₱ + digits in the number font (Satoshi; ₱ from Inter), as in the app. Numbers never animate.
-     value (number) · dec (2) · curFont: 'num' | 'body' (Inter Medium ₱, loan amount) · strike */
+  /* Number font (owner, tokens v2026.11.17): Reddit Sans (token Font/Family/Number), for EMPHASISED amounts only, in the Number
+     text styles (.ps-t-number-xs … xxl: 16 / 18 / 24 / 32 / 36 / 48, Bold). Small notes and labels next to an amount (Total credit,
+     Used / Available, an old price) are Inter; a title that contains ₱ (a coupon's "+₱5,000") draws only the ₱ in the number font
+     (PS.Peso). Rules: shared/README.md → "Number font".
+     KERN: Reddit Sans Bold kerning (1/2048 em) for the pairs an amount holds — for amounts drawn one glyph per box (typed digits),
+     which the browser can't kern; same table as the Withdraw demo's (withdraw.js Component.KERN). */
+  PS.KERN = {"01":-43,"02":-3,"03":-3,"04":-7,"05":-9,"07":-40,"0.":-43,"0,":-43,"10":7,"11":10,"12":-5,"14":17,"15":7,"16":7,"17":24,"18":7,"21":-19,"23":-25,"24":-33,"26":-24,"27":-3,"28":-24,"31":-54,"32":-41,"33":-29,"34":9,"35":-21,"36":-7,"37":-40,"38":-9,"39":-14,"3.":-21,"3,":-21,"40":24,"41":-22,"42":-14,"44":17,"45":-14,"46":13,"48":24,"51":-71,"52":-14,"54":17,"57":-3,"59":-9,"5.":-24,"5,":-24,"61":-61,"62":-41,"63":-9,"64":25,"65":-26,"67":-26,"69":-13,"6.":-3,"6,":-3,"70":-43,"71":-16,"72":-37,"73":-38,"74":-156,"75":-3,"76":-124,"77":13,"78":-57,"79":-9,"7.":-257,"7,":-257,"81":-54,"82":-41,"83":-29,"84":9,"85":-21,"86":-7,"87":-40,"88":-9,"89":-14,"8.":-21,"8,":-21,"91":-10,"93":-33,"94":-55,"96":-32,"97":-15,"9.":-196,"9,":-196,".0":-43,".1":-121,".4":17,".6":-3,".7":-47,".8":-21,".9":-80,"..":-14,".,":-14,",0":-43,",1":-121,",4":17,",6":-3,",7":-47,",8":-21,",9":-80,",.":-14,",,":-14};
+  PS.kern = function (a, b) { return a && b ? (PS.KERN[a + b] || 0) / 2048 : 0; };
+  /* Peso: a title's text with every ₱ in the number font (owner: titles stay in their own font, only the ₱ is Reddit Sans) */
+  PS.Peso = function Peso(p) {
+    var t = String(p.children == null ? '' : p.children);
+    if (t.indexOf('₱') < 0) return t;
+    return t.split('₱').reduce(function (out, part, i) { if (i) out.push(h('span', { key: 'p' + i, className: 'ps-peso' }, '₱')); if (part) out.push(part); return out; }, []);
+  };
+
+  /* Amount: ₱ + digits in the number font (Reddit Sans, its own ₱), as in the app. Numbers never animate.
+     value (number) · dec (2) · num: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl' (the Number text style; else the component's CSS sizes it)
+     · decNum: the style of ".00" when it is smaller (home card: xl + xs) · strike (an old price: Inter, never the number font)
+     · curFont: kept for old callers, no longer changes the font (the ₱ is Reddit Sans's own) */
   PS.Amount = function Amount(p) {
     var s = num(p.value, p.dec == null ? 2 : p.dec), neg = s.charAt(0) === '-';
     if (neg) s = s.slice(1);
     var parts = s.split('.'), kids = [];
-    kids.push(h('span', { key: 'c', className: p.curFont === 'body' ? 'ps-amount__cur ps-amount__cur--body' : 'ps-amount__cur' }, (neg ? '-' : '') + (p.prefix || '') + '₱'));
+    kids.push(h('span', { key: 'c', className: 'ps-amount__cur' }, (neg ? '-' : '') + (p.prefix || '') + '₱'));
     kids.push(h('span', { key: 'i', className: 'ps-amount__int' }, parts[0]));
-    if (parts[1] != null) kids.push(h('span', { key: 'd', className: 'ps-amount__dec' }, '.' + parts[1]));
-    return h('span', { className: PS.cx('ps-amount', p.strike && 'ps-amount--strike', p.className), style: p.style }, kids);
+    if (parts[1] != null) kids.push(h('span', { key: 'd', className: PS.cx('ps-amount__dec', p.decNum && 'ps-t-number-' + p.decNum) }, '.' + parts[1]));
+    return h('span', { className: PS.cx('ps-amount', !p.strike && p.num && 'ps-t-number-' + p.num, p.strike && 'ps-amount--strike', p.className), style: p.style }, kids);
   };
 
   /* Button: variant primary | text | inverse | shade (on the blue card) | outline (coupon "Use") · size lg | sm · block

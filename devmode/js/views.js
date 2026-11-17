@@ -70,6 +70,31 @@
           (c.components || []).map(function (n) { return h('button', { key: 'c' + n, type: 'button', className: 'dm-chip is-link is-comp', onClick: function () { p.onComp(n); } }, h(DM.Icon, { name: 'instance', size: 11 }), n); }),
           (c.figma || []).map(function (id) { return h('a', { key: 'f' + id, className: 'dm-chip is-link', href: DM.figmaUrl({ id: id }), target: '_blank', rel: 'noopener' }, h(DM.Icon, { name: 'figma', size: 12 }), id); }))));
   }
+  /* Overview (owner, 2026-11-17): a global iteration keeps, in devmode/iterations/<id>/, the visual check's before | after | difference for
+     every page state and component state it changed (visual/report.json + images) and README.md, the brief for developers' AI.
+     it.overview = that folder (relative to devmode/) */
+  function Overview(p) {
+    var it = p.it, s = R.useState(null), r = s[0];
+    R.useEffect(function () {
+      var on = true; s[1](null);
+      fetch(it.overview + 'visual/report.json', { cache: 'no-cache' }).then(function (x) { return x.ok ? x.json() : { none: true }; }).catch(function () { return { none: true }; })
+        .then(function (j) { if (on) s[1](j); });
+      return function () { on = false; };
+    }, [it.id]);
+    var base = it.overview + 'visual/', list = r && !r.none ? (r.changed || []).concat(r.added || []) : [];
+    var pages = list.filter(function (c) { return c.kind === 'page'; }), comps = list.filter(function (c) { return c.kind !== 'page'; });
+    var item = function (c) { return h(DM.VisualItem, { key: c.id, c: c, base: base, against: r.against, at: r.at, onPage: p.onPage, onComp: p.onComp }); };
+    return h(R.Fragment, null,
+      h('h2', null, t('iter.overview')),
+      h('div', { className: 'dm-itermeta' },
+        it.doc ? h('a', { className: 'dm-chip is-link', href: '../' + it.doc, target: '_blank', rel: 'noopener' }, h(DM.Icon, { name: 'code', size: 12 }), t('iter.doc')) : null,
+        it.tokens ? h('a', { className: 'dm-chip is-link', href: '../tokens/CHANGELOG.md', target: '_blank', rel: 'noopener' }, h(DM.Icon, { name: 'history', size: 12 }), t('iter.tokens') + ' · ' + it.tokens) : null,
+        r && !r.none ? h('span', { className: 'dm-chip' }, t('iter.ovPages') + ' ' + pages.length + ' · ' + t('iter.ovComps') + ' ' + comps.length) : null),
+      !r ? h(DM.Empty, null, t('iter.ovLoading')) : r.none ? h('div', { className: 'dm-card' }, h('div', { className: 'dm-card__pad dm-prose' }, t('iter.ovNone'))) : h(R.Fragment, null,
+        h('p', { className: 'dm-docview__sub' }, t('iter.overviewSub', { v: r.against })),
+        pages.length ? h(R.Fragment, null, h('h2', null, t('iter.ovPages') + ' · ' + pages.length), pages.map(item)) : null,
+        comps.length ? h(R.Fragment, null, h('h2', null, t('iter.ovComps') + ' · ' + comps.length), comps.map(item)) : null));
+  }
   DM.IterView = function IterView(p) {
     var its = DM.iterations(), it = DM.iteration(p.id) || its[0], idx = its.indexOf(it), older = its[idx + 1];
     var fs = R.useState('all'), f = fs[0];
@@ -95,6 +120,7 @@
           return h('button', { key: x[0], type: 'button', className: f === x[0] ? 'is-on' : '', onClick: function () { fs[1](x[0]); } }, x[1]);
         }))),
         h('div', { className: 'dm-card' }, ch.length ? ch.map(function (c, i) { return h(Change, { key: i, c: c, onPage: p.onPage, onComp: p.onComp }); }) : h(DM.Empty, null, t('iter.empty')))),
+      it.overview ? h(Overview, { it: it, onPage: p.onPage, onComp: p.onComp }) : null,
       h('h2', null, t('iter.all')),
       h('div', { className: 'dm-card' }, its.map(function (x, i) {
         var n = (x.changes || []).length;
@@ -136,7 +162,7 @@
     return m < 1 ? t('vis.now') : m < 60 ? t('vis.min', { n: m }) : m < 1440 ? t('vis.hour', { n: Math.round(m / 60) }) : t('vis.day', { n: Math.round(m / 1440) });
   }
   function Item(p) {
-    var c = p.c, pg = c.page ? window.DM_PAGES.byId[c.page] : null;
+    var c = p.c, pg = c.page ? window.DM_PAGES.byId[c.page] : null, RAW = p.base || DM.VISUAL;
     return h('div', { className: 'dm-vis' },
       h('div', { className: 'dm-vis__head' },
         h('span', { className: 'dm-chip ' + (c.kind === 'page' ? '' : 'is-comp') }, h(DM.Icon, { name: c.kind === 'page' ? 'frame' : 'component', size: 12 }), c.kind === 'page' ? t('page') : t('component')),
@@ -151,6 +177,7 @@
         c.components.map(function (n) { return /^APP\./.test(n) ? h('span', { key: n, className: 'dm-chip' }, n) : h('button', { key: n, type: 'button', className: 'dm-chip is-link is-comp', onClick: function () { p.onComp(n); } }, h(DM.Icon, { name: 'instance', size: 11 }), n); })) : null,
       c.error ? h('div', { className: 'dm-note' }, c.error) : null);
   }
+  DM.VisualItem = Item;   /* also the iteration overview's items (views.js → Overview), with base = the iteration's own folder */
   DM.VisualView = function VisualView(p) {
     var r = DM.useVisual();
     if (!r) return h('div', { className: 'dm-docview' }, h(DM.Empty, null, t('loading')));

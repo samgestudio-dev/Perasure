@@ -1,19 +1,17 @@
 /* Change co-maker — Tune panel (prototype only: delete this file, tune.css and their two lines in index.html; the page
-   then uses its defaults: progressive blur on, Smooth). Same kind of panel as the withdraw demo's.
-   Runs in <head>: reads the settings (this phone's saved values; ?blur=1|0 and ?feel= in the link win) into
-   window.CM_TUNE for co-maker.js, and marks <html data-blur="off"> before the page renders.
+   then uses its defaults: Smooth; no progressive blur since tokens v2026.11.17). Same kind of panel as the withdraw demo's.
+   Runs in <head>: reads the settings (this phone's saved values; ?feel= in the link wins) into
+   window.CM_TUNE for co-maker.js.
    Changing a setting saves it and reloads the page with it. */
 (function(){
   var KEY = 'perasure.comaker.tune', T = {}, root = document.documentElement;
   try { T = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { T = {}; }
   var saved = JSON.parse(JSON.stringify(T)), q = new URLSearchParams(location.search), fromLink = [];
-  if (q.has('blur')) { T.blur = q.get('blur') === '0' ? 0 : 1; fromLink.push('blur'); }
   if (q.has('feel')) { T.feel = q.get('feel'); fromLink.push('feel'); }
 
-  var DEF = { blur: 1, feel: 'Smooth' };
+  var DEF = { blur: 0, feel: 'Smooth' };
   var get = function(k){ return T[k] != null ? T[k] : DEF[k]; };
-  window.CM_TUNE = { blur: get('blur'), feel: get('feel') };
-  if (!get('blur')) root.setAttribute('data-blur', 'off');
+  window.CM_TUNE = { blur: 0, feel: get('feel') };   /* no progressive blur since tokens v2026.11.17 (owner) */
 
   function apply(patch){
     Object.keys(patch).forEach(function(k){ saved[k] = patch[k]; });
@@ -37,10 +35,9 @@
       });
       p.appendChild(row);
     }
-    seg('Progressive blur (header and bottom bars)', 'blur', [[1, 'On'], [0, 'Off']]);
     seg('Motion feel', 'feel', [['Smooth', 'Smooth'], ['Snappy', 'Snappy'], ['Gentle', 'Gentle']]);
     var note = document.createElement('div'); note.className = 'tn';
-    note.textContent = 'Blur off: the PeraSure bar gradients (no blur); the bottom one fades out as you scroll to the end. ' +
+    note.textContent = 'The bars are the PeraSure token gradients (no progressive blur); the bottom one fades out as you scroll to the end. ' +
       'Changing a setting reloads the page with it; values are kept on this phone.' + (fromLink.length ? ' Set by the link: ' + fromLink.join(', ') + '.' : '');
     p.appendChild(note);
     function open(){ p.classList.add('on'); catcher.classList.add('on'); }

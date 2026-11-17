@@ -1,19 +1,19 @@
 {
- "version": "2026.11.12",
- "exportedAt": "2026-11-12 17:37 (UTC+8)",
+ "version": "2026.11.17",
+ "exportedAt": "2026-11-17 16:04 (UTC+8)",
  "exportedBy": "Claude (Figma MCP)",
  "via": "mcp",
  "figmaFile": "PeraSure design system",
  "url": "https://www.figma.com/design/OBsvf42AiRapcRrasD7KNm",
  "counts": {
   "Primitive": 157,
-  "Semantic": 271,
+  "Semantic": 276,
   "Component": 18,
-  "styles": 36
+  "styles": 43
  },
  "styles": {
-  "text": 25,
+  "text": 31,
   "effect": 8,
-  "paint": 3
+  "paint": 4
  }
 }

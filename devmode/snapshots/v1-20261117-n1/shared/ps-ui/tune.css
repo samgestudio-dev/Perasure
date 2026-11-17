@@ -1,0 +1,19 @@
+/* PeraSure UI — Tune panel (prototype only; same look as the withdraw and co-maker Tune panels) */
+.ps-tune-btn { border: 0; border-radius: 999px; padding: 6px 12px; background: rgba(20, 30, 36, 0.78); color: #fff; font: 600 12px/1.2 Inter, system-ui, sans-serif;
+  touch-action: manipulation; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); white-space: nowrap; }
+.ps-tune-btn--float { position: fixed; right: 12px; top: 12px; z-index: 60; }
+#psTuneCatch { position: fixed; inset: 0; z-index: 61; display: none; }
+#psTuneCatch.on { display: block; }
+#psTune { position: fixed; left: 10px; right: 10px; bottom: calc(var(--sb, 0px) + 10px); z-index: 62; max-height: 70vh; overflow: auto; -webkit-overflow-scrolling: touch;
+  background: #ffffff; border-radius: 20px; padding: 12px 14px 14px; color: #141e24; font: 500 13px/1.3 Inter, system-ui, sans-serif; display: none;
+  box-shadow: 0 0 2px rgba(0, 1, 40, 0.16), 0 8px 32px rgba(0, 1, 40, 0.16); }
+#psTune.on { display: block; }
+#psTune .th { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+#psTune .th b { flex: 1; font: 700 14px/1.3 "Hanken Grotesk", Inter, sans-serif; }
+#psTune button { border: 0; border-radius: 999px; padding: 6px 11px; background: #eef1f2; color: #141e24; font: 600 12px/1.2 Inter, system-ui, sans-serif; touch-action: manipulation; }
+#psTune .tr { display: grid; grid-template-columns: 1fr; gap: 6px; margin: 10px 0; }
+#psTune .tr span { color: #6a757d; }
+#psTune .ts { display: flex; gap: 6px; }
+#psTune .ts button { flex: 1; }
+#psTune .ts button.on { background: #2c74be; color: #fff; }
+#psTune .tn { color: #6a757d; font-size: 12px; margin-top: 6px; }

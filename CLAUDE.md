@@ -41,7 +41,8 @@ content as possible.
 ```
 index.html                 picker ("Playground"): "Prototypes" tab (DEMOS array) + "Animations" tab (reads animations/animations.js)
 assets/playground-ui.js    shared Material UI theme + icons for the picker and the player (window.PG)
-assets/fonts/              the app's fonts (Hanken Grotesk, Inter, Satoshi 500/700) + fonts.css — shared by all prototypes
+assets/fonts/              the app's fonts (Hanken Grotesk, Inter, Reddit Sans; Satoshi kept for old versions) + fonts-2026.11.17.css —
+                           shared by all prototypes (fonts.css is the frozen version before 2026.11.17: old Dev Mode snapshots link it)
 prototypes/_template/index.html  starting point for a new prototype (links the shared fonts and libraries); not on the picker
 shared/ps-ui/              PeraSure UI components (React, configurable): ps-ui.css (tokens only), core.js, layout.js, home.js,
                            coupon.js, loan.js, account.js, phone-fit.js, tune.js/.css, assets/ — see "Shared components"
@@ -202,7 +203,7 @@ rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), buil
   shared pieces and hold the flow. A visual change to a piece is made in the component, so the gallery shows it too.
 - States that can't be reached by tapping are switched in Tune (account, loan, coupons, network, code / ID / selfie outcomes, inbox,
   rating). Also in Tune: Screen fit (default capped zoom 1.15×; "Capped zoom · rem" gives the same factor through the root font size), Text size
-  (default: the phone's setting) and progressive blur (default off).
+  (default: the phone's setting). (No progressive-blur setting any more: the bars have none since tokens v2026.11.17.)
 - **Text size follows the phone** (owner asked for rem): `<meta name="text-scale" content="scale">` (Chrome / Android WebView) and
   Dynamic Type (iOS, read through `-apple-system-body`) set the root size in `phone-fit.js` (`PS_FIT.text`). Up to 130 % the whole layout
   follows; above that only text grows (`--ps-tx`); the phone's setting is capped at 150 % until every component holds 200 %. The hosted
@@ -222,8 +223,9 @@ rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), buil
   full-page empty states (`PS.EmptyState{page}`) and the fallback put their picture at Order submit's height.
 - **Toasts sit at the top** (owner): under the header bar, like an iPhone notification (`PS.Toasts`). Every tap shows a new one at once (never
   queued or merged); the new one covers the old, which moves down a little, shrinks and fades (a stack of 3, not a list); a swipe left closes one.
-- **Secondary pages** (owner): every page except the Home / Payment / Account tabs has a solid header in the page colour (`PS.Screen{secondary}`);
-  the immersive amount entry and the order page are not secondary pages.
+- **Secondary pages** (owner): every page except the Home / Payment / Account tabs has a solid header in the page colour (`PS.Screen{secondary}`)
+  and the secondary bottom (`Gradient/Bottom-secondary-nav-filled`); the immersive amount entry and the order page are not secondary pages
+  (header `Gradient/Top-nav-filled`) but take the secondary bottom too (owner, 2026-11-17). Full rule: "Header and bottom bars" below.
 - **Lists in the application are popovers** (owner, DS 7201:12032 — the bottom-sheet lists are retired): `PS.FormField{menu}` / `PS.Popover`.
   Like an iPhone menu they open centred on where the finger tapped, kept 8 px from the page's sides, and grow out of that point on a
   light-bounce spring (`PS.MT.MENU`, the one thing that bounces), rows following one after another; a picked row lights up, then it folds away.
@@ -235,8 +237,14 @@ rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), buil
 - **The coupon picker** (owner, DS 10836:28988): tabs without counts; each coupon a white card (`PS.CouponOption`) — picking gives it a 1 px
   brand line inside (DS 10842:29606, over the strip too), the default shadow and the mark; the "Expires in" strip shows only with less than a day left, and only as the strip under the card (owner). Used by the app and
   the Coupon system demo. The coupon centre keeps its tickets (`PS.CouponTicket`).
-- **Fonts as Figma marks them** (owner): Satoshi only where the Figma node says Satoshi (`PS.Amount`, the keypad, the hero, payment card…);
-  amounts Figma sets in Inter or Hanken stay in Inter / Hanken. Check the node's font before changing one.
+- **Number font** (owner, tokens v2026.11.17): `Font/Family/Number` = **Reddit Sans** (it has its own ₱; before: Satoshi with ₱ from Inter).
+  It is only for **emphasised amounts**, always in a Number text style — `Number/xs 16/20 +2 %`, `sm 18/24 +3 %`, `md 24/32 0`,
+  `lg 32/40 +2 %`, `xl 36/100 % +4 %`, `xxl 48/100 % +3 %`, all Bold (`.ps-t-number-*`, `PS.Amount{num, decNum}`). Never for small notes
+  and labels beside an amount (Total credit, Used / Available, an old price, the credit limit pill's "+₱…", "Previous limit") — those
+  are Inter; never for list numbers (Tips 1 2 3 — Hanken). A title (a coupon's value "+₱5,000", "₱300 OFF") keeps its own font and
+  only its ₱ is the number font (`PS.Peso`). An amount Figma sets at a size with no Number style takes the nearest one (OfferCard 28 → md)
+  or asks the owner. Amounts drawn one glyph per box (typed digits, the Withdraw morph) carry Reddit Sans's kerning as margins
+  (`PS.KERN` / `PS.kern`, withdraw.js `Component.KERN`): split boxes don't kern. Details: `shared/README.md` → "Number font".
 - **Applying** (owner): Your loan estimate → Basic info → ID type + both sides → Check the details → selfie → trusted contact → Submit
   (`APP.apply()`). Addresses are the Philippines' real Region → Province → City list (`prototypes/app/ph-places.js`, PSA PSGC).
 - **Carousels of animations** (owner): only the card on screen plays, and it plays again from the start each time it is swiped to
@@ -280,6 +288,11 @@ The owner's tool for designers and developers (desktop, after Figma Dev Mode): e
 with hover spacing (padding / gaps labelled with the tokens the CSS uses), Alt redlines, specs, tokens, the code behind each piece (GitHub,
 at the version's tag), Figma nodes, statuses, the iteration record and version compare. Guide: `devmode/README.md`.
 
+- **One requirement, one iteration, one tag** (owner, 2026-11-17): every change made for one requirement — tokens, global components and
+  the pages they touch — is recorded as ONE iteration (one snapshot, one tag `devmode-<id>`). A global iteration also gets an
+  **overview** (`devmode/iterations/<id>/`: the visual check's before | after | difference for every changed page state and component
+  state, shown on the iteration's page in Dev Mode, and `README.md`, the brief for developers' AI — what changed, the rules, the token
+  changes, every page and component, how to build it; `get_iteration` returns it). Skill `perasure-iteration-log`.
 - **Every new requirement is recorded** (owner): a change to a page, a component or a motion gets an iteration entry — skill
   `perasure-iteration-log` (Jira key and title read from Jira; "无 Jira 单号" when there is none). The version stays v1 — iterations are
   labelled `v1 · YYYY-MM-DD · PHL-xxx`; only a large redesign starts v2.0. Each iteration keeps a runnable snapshot (`devmode/snapshots/<id>`)
@@ -353,33 +366,31 @@ bundle was unpacked onto the shared environment):
 - iOS Safari 26+ tints the status bar and toolbar from `position:fixed` layers that reach the screen edges.
   Don't leave a coloured fixed overlay (scrim, backdrop) in the page, even at `opacity:0`: use
   `display:none` when closed, and give tap-outside catchers no background.
-- **Header and bottom bars** (PeraSure standard; reference: `prototypes/co-maker-change/index.html`, `.pb`; withdraw's home
-  and loan screen follow it too). Two looks,
-  switchable in the demo's Tune panel (`?blur=1|0`):
-  - **Without progressive blur** — colour gradients only, from the tokens:
-    - header: `background: linear-gradient(180deg, var(--color-gradient-subtle-80) 0%, var(--color-gradient-subtle-40) 70%, var(--color-gradient-subtle-0) 100%);`
-    - bottom: `background: linear-gradient(180deg, var(--color-gradient-default-0) 0%, var(--color-gradient-default-60) 40%, var(--color-gradient-default-80) 100%);`
-    - **secondary pages (二级页面)** — e.g. the withdraw order details — bottom in #EBF0EF instead (no token holds it, so
-      written directly), same stops: `linear-gradient(180deg, rgba(235,240,239,0) 0%, rgba(235,240,239,0.6) 40%, rgba(235,240,239,0.8) 100%)`.
-      Whenever the owner calls a page a secondary page, use this.
-    - on a scrolling page the bottom gradient fades out over the last stretch of scroll (as tall as the bar, opacity tied
-      to the distance left to scroll), so at the very bottom — nothing left under the bar — it is gone; a page that does
-      not scroll shows none.
-  - **With progressive blur** — five backdrop-blur layers stacked under the veil, each stronger and masked to a narrower
-    band at the bar's outer edge: blur `--blur-backdrop-bg` × 0.06 / 0.14 / 0.3 / 0.55 / 1, each fully shown from the
-    outer edge to 84 / 66 / 48 / 28 / 10 % of the bar and fading out by 100 / 84 / 66 / 48 / 28 %; veil
-    `--gradient-top-nav-filled` / `--gradient-bottom-nav-filled`. The header's blur layers run only while content is
-    scrolled under it (a blur over the flat page looks the same as none and costs GPU time).
-  - Both extend behind the iOS status bar / search bar (see the iOS Safari 26+ notes above). Tune default: blur on.
-    Other existing prototypes keep their bars unless the owner asks.
+- **Header and bottom bars** (PeraSure standard since tokens v2026.11.17, owner; components `PS.TopBar` / `PS.BottomBar` / `PS.Navigator`
+  / `PS.Bands`): **no progressive blur** (the Figma effect styles Top/Bottom-nav-effect are off; the Tune setting and `?blur=` are gone).
+  Each bar is one token veil, chosen by the kind of page:
+
+  | Page | Header | Bottom |
+  |---|---|---|
+  | Primary (the Home / Payment / Account tabs) | `--gradient-top-nav-filled` (Ambient #F0F5F4 80 → 40 → 0) | tab bar `--gradient-bottom-primary-nav-filled` (white 0 → 60 → 80) |
+  | Secondary (二级页面: every other page) | solid page colour (`--color-surface-page-default`) | `--gradient-bottom-secondary-nav-filled` (Ambient 0 → 60 → 80) |
+  | Amount entry and order page (not secondary) | `--gradient-top-nav-filled` | `--gradient-bottom-secondary-nav-filled` (`BottomBar{secondary}`) |
+  | Page sheet's foot (the coupon picker's total + Confirm) | — | `--gradient-bottom-secondary-nav-filled` |
+
+  A bottom action bar on a tab page uses the primary gradient. The glass buttons and the tab bar's pill keep their own normal
+  background blur (that is the glass, not a progressive blur). The veils come and go with the scroll as before: the header's appears as
+  content scrolls under it; on a scrolling page the bottom one fades out over the last stretch of scroll (as tall as the bar), so at
+  the very bottom it is gone; a page that does not scroll shows none. Both extend behind the iOS status bar / search bar. The Withdraw
+  demo (its own bars in withdraw.js / withdraw.css, `BLUR = false`) and Change co-maker follow the same table.
+  The old #EBF0EF secondary bottom and `--gradient-bottom-nav-filled` are retired (`tokens/legacy/2026.11.12.css` keeps the old names).
 - Motion: prefer Motion (formerly Framer Motion; `vendor/motion@14.4.0/motion-react.js`) with `LazyMotion` + `m` (strict), drive continuous values with motion values
   instead of React state, animate only `transform` / `opacity` where possible, and respect
   `prefers-reduced-motion`.
 - Shared environment, not bundles (owner's rule for new prototypes): the app already ships its fonts, GSAP, React and
   Motion, so a prototype links them from the repo instead of inlining them — the page's own file then holds only
   what the prototype adds, which is what developers would actually ship. Fonts:
-  `<link rel="stylesheet" href="../../assets/fonts/fonts.css">` and `font-family: var(--ps-font-text | --ps-font-body |
-  --ps-font-num)` (amounts use `--ps-font-num`: Satoshi digits, ₱ from Inter, as in the app). Libraries:
+  `<link rel="stylesheet" href="../../assets/fonts/fonts-2026.11.17.css">` and `font-family: var(--ps-font-text | --ps-font-body |
+  --ps-font-num)` (emphasised amounts use `--ps-font-num`: Reddit Sans, ₱ included — see "Number font"). Libraries:
   `<script src="../../vendor/…">` with a relative path. Never a CDN at runtime, no build step, no base64 fonts or
   pasted library code in the page. Data and code specific to the prototype (a recording, an SVG) may stay inline or
   sit next to it in its folder. Existing prototypes that were made as single files stay as they are unless the owner
@@ -413,7 +424,10 @@ bundle was unpacked onto the shared environment):
   3. `{"unchanged":true}` → tell the owner nothing changed; stop. Otherwise save the result verbatim to a scratch
      file; if it says `"parts": N` with N > 1, run step 2 again with part 1 … N−1 and save each.
   4. `python3 tools/sync-tokens.py part0.json [part1.json …] --message-out /tmp/msg.txt`.
-- Then run `python3 tools/rem-tokens.py` (it remakes `tokens-rem/tokens-rem.css` from the new tokens) and commit `tokens/` + `tokens-rem/` with
+- Then run `python3 tools/rem-tokens.py` (it remakes `tokens-rem/tokens-rem.css` from the new tokens) and
+  `python3 tools/legacy-tokens.py tokens-v<previous version>` — **old CSS names and values stay usable** (owner, 2026-11-17): it writes
+  `tokens/legacy/<previous version>.css` with every name the update removed, renamed or gave a new value, at its old value (load it after
+  tokens.css to get the old look back). Then commit `tokens/` + `tokens-rem/` with
   `/tmp/msg.txt` as the message and push to `main`. Don't tag: the *Tokens* workflow
   tags `tokens-v<version>` on push. `stamp.py` is not needed for token-only changes.
 - Report the summary line and any removed / renamed CSS names (the *Developer impact* of the new

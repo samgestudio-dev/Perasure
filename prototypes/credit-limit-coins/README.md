@@ -35,7 +35,7 @@ credit-limit-coins/
 | `baked/baked-heap.js` | 13 / 11 KB |
 | `baked/baked.json` | 49 / 37 KB |
 
-The deliverable uses the shared environment, as the app would: the app's fonts (`assets/fonts/fonts.css` at the repo root) and GSAP (`vendor/gsap@3.15.0/`) are not part of it. Since the recording is fetched, open the page through a web server (GitHub Pages, or `python3 -m http.server` in the repo), not straight from disk. A host that already has the recording can set `window.CREDIT_LIMIT_BAKED = <the JSON>` before `baked-heap.js` instead, or point the script elsewhere with `data-recording="…"` on its tag.
+The deliverable uses the shared environment, as the app would: the app's fonts (`assets/fonts/fonts-2026.11.17.css` at the repo root) and GSAP (`vendor/gsap@3.15.0/`) are not part of it. Since the recording is fetched, open the page through a web server (GitHub Pages, or `python3 -m http.server` in the repo), not straight from disk. A host that already has the recording can set `window.CREDIT_LIMIT_BAKED = <the JSON>` before `baked-heap.js` instead, or point the script elsewhere with `data-recording="…"` on its tag.
 
 It plays a 3.4-second animation: the credit limit counts up from the old amount to the new one while gold coins drop onto three stacks, then the new amount lands with a burst. After that the `+increase` pill, the old amount (struck through) and the expiry pill appear.
 

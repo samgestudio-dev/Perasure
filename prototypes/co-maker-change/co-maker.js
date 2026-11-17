@@ -340,12 +340,13 @@
   document.addEventListener('focusout', function(){ setTimeout(function(){ var a = document.activeElement; if (!a || a.tagName !== 'INPUT') R.kb.style.height = '0px'; }, 320); });
   if (vv) vv.addEventListener('resize', keepVisible);
 
-  /* header blur bands only while the page is scrolled under the header (as withdraw's .ps-live) */
+  /* .live while the page is scrolled under the header */
   var topBar = document.getElementById('top'), live = false;
-  /* blur off (Tune): the bottom gradient fades out over the last stretch of scroll — as tall as the bar — tied to the
-     scroll position, so at the very bottom (nothing left under the bar) it is gone; a page that does not scroll shows none */
+  /* the bottom gradient fades out over the last stretch of scroll — as tall as the bar — tied to the scroll position, so at
+     the very bottom (nothing left under the bar) it is gone; a page that does not scroll shows none (no progressive blur
+     since tokens v2026.11.17, so this always runs) */
   var botVeil = document.querySelector('.pb-bot > .veil'), bar = document.querySelector('.bot');
-  var blurOff = document.documentElement.getAttribute('data-blur') === 'off';
+  var blurOff = true;
   function onScroll(){
     var sc = R.scroll, on = sc.scrollTop > 0;
     if (on !== live) { live = on; topBar.classList.toggle('live', on); }

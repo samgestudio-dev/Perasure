@@ -23,7 +23,7 @@ or `python3 -m http.server` in the repo): the page code is fetched, so opening t
 | `with-credit-limit-used.html` | credit partly used (额度部分已使用): the same intro, total credit going up (below) |
 | `intro.js`, `intro.css` | that intro: plays the Credit limit increase deliverable first, then closes it in to the home card |
 | `tune.js`, `tune.css` | **prototype only** — the Tune panel; delete them and their two lines in `index.html` for production |
-| `with-blur.html` | old link only: forwards to `index.html?blur=1` |
+| `with-blur.html` | old link only: forwards to `index.html` (no progressive blur since tokens v2026.11.17) |
 
 Shared from the repo (not part of this folder): the app's fonts (`assets/fonts/`), React 18.3.1 and Motion 14.4.0 (`vendor/`).
 
@@ -139,12 +139,14 @@ Home and the loan screen ("Apply a loan" and the order details) use the PeraSure
 "Header and bottom bars", same as the Change co-maker demo), from the tokens (`../../tokens/tokens.css`, loaded before
 `perasure-ds.css`, which keeps its own values and gains the names it lacks):
 
-- **Progressive blur on** (default): the five backdrop-blur bands under the token veils `--gradient-top-nav-filled` /
-  `--gradient-bottom-nav-filled`; the header's bands only while content is scrolled under it.
-- **Off**: the token gradients only — header subtle-80 → 40 → 0, bottom default-0 → 60 → 80 — and the bottom one fades
-  out over the last stretch of scroll (as tall as the bar), gone at the very bottom (home: `homeScroll`; order details:
-  `updEnd`). The order details are a secondary page (二级页面): their bottom gradient is #EBF0EF instead (same stops; no token holds that colour). On the order details the Confirm bar's veil is its own layer (the bar itself never fades: it hosts the blur
-  bands), in with the confirm chrome and out at the end of the scroll.
+Since tokens v2026.11.17 (owner) there is **no progressive blur**; each bar is one token veil:
+
+- home (a tab page): header `--gradient-top-nav-filled`, tab bar `--gradient-bottom-primary-nav-filled`;
+- the loan screen (amount entry and order details — not secondary pages, but the secondary bottom, owner): header
+  `--gradient-top-nav-filled`, Confirm bar `--gradient-bottom-secondary-nav-filled` (it replaced the hand-written #EBF0EF).
+- The bottom veil fades out over the last stretch of scroll (as tall as the bar), gone at the very bottom (home: `homeScroll`;
+  order details: `updEnd`). On the order details the Confirm bar's veil is its own layer, in with the confirm chrome and out
+  at the end of the scroll. The blur code (`BLUR`, `pblur`) is still in withdraw.js but switched off (`BLUR = false`).
 
 ## Credit partly used (`with-credit-limit-used.html`)
 
@@ -164,7 +166,6 @@ At rest every style and text is exactly the card's own again.
 
 ## Tune (bottom left on home; top right on the loan screen)
 
-Progressive blur on (default) / off — the two looks of the bars above, same as the Change co-maker demo's Tune (before,
-this was a separate "With gradient blur" page) — the card's available amount / total credit / temporary credit left, and the motion feel
-(Smooth / Snappy / Gentle). A change is saved on the phone and reloads the page with it. Links can set them too:
-`?blur=1` / `?blur=0`, `?available=45000`, `?total=50000`, `?temporary=10000`.
+The card's available amount / total credit / temporary credit left, and the motion feel (Smooth / Snappy / Gentle). (The
+progressive-blur setting was removed with tokens v2026.11.17.) A change is saved on the phone and reloads the page with it.
+Links can set them too: `?available=45000`, `?total=50000`, `?temporary=10000`.

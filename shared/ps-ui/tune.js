@@ -1,10 +1,11 @@
 /* PeraSure UI — Tune panel for prototypes (prototype only: production pages leave tune.js / tune.css out and use the defaults).
    Load in <head> after phone-fit.js, then describe the settings once:
      PSTune.setup({ key: 'perasure.<demo>.tune', settings: [
-       { key: 'blur', label: 'Progressive blur (header and bottom bars)', options: [[1, 'On'], [0, 'Off']], def: 1 },
+       { key: 'fit', label: 'Screen fit', options: [['cap', 'Capped zoom'], ['1', '1:1']], def: 'cap' },
        … ], note: 'One line on what the settings do.' });
-   Values: PSTune.get('blur') (also window.PS_TUNE). The link wins over saved values (?blur=0); changing a setting saves it
-   on this phone and reloads the page with it. blur = 0 marks <html data-blur="off"> before the page renders.
+   Values: PSTune.get('fit') (also window.PS_TUNE). The link wins over saved values (?fit=1); changing a setting saves it
+   on this phone and reloads the page with it. (The progressive-blur setting was removed with tokens v2026.11.17: bars have no
+   progressive blur any more — an old ?blur= in a link is ignored.)
    Open the panel with PSTune.open() — React pages use PS.TuneButton (layout.js); { button: true } adds a floating one. */
 (function () {
   var root = document.documentElement, cfg = null, T = {}, saved = {}, fromLink = [];
@@ -19,7 +20,6 @@
       var v = T[s.key] != null ? T[s.key] : s.def, hit = s.options.filter(function (o) { return str(o[0]) === str(v); })[0];
       window.PS_TUNE[s.key] = hit ? hit[0] : s.def;
     });
-    if (window.PS_TUNE.blur != null && !+window.PS_TUNE.blur) root.setAttribute('data-blur', 'off');
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build); else build();
   }
   function apply(patch) {

@@ -1,8 +1,7 @@
 /* Withdraw fund flow — Tune panel (prototype only: delete this file, tune.css and their two lines in index.html; the
-   page then uses its defaults: no blur, the numbers in data-props, Smooth — with the panel, blur is on by default, as
-   on the Change co-maker demo).
-   Runs in <head>: reads the settings (this phone's saved values; ?blur=1|0, ?available=, ?total=, ?temporary= in the
-   link win) into window.WD_TUNE for withdraw.js, and marks <html data-variant="blur"> before the page renders.
+   page then uses its defaults: the numbers in data-props, Smooth). No progressive-blur setting since tokens v2026.11.17.
+   Runs in <head>: reads the settings (this phone's saved values; ?available=, ?total=, ?temporary= in the
+   link win) into window.WD_TUNE for withdraw.js.
    Changing a setting saves it and reloads the page with it. */
 (function(){
   /* a variant may bring its own sample numbers (window.WD_PRESET, set by its page before this file): they are its
@@ -11,15 +10,13 @@
   var KEY = 'perasure.withdraw.tune' + (PRE && PRE.key ? '.' + PRE.key : ''), T = {}, root = document.documentElement;
   try { T = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { T = {}; }
   var saved = JSON.parse(JSON.stringify(T)), q = new URLSearchParams(location.search), fromLink = [];
-  if (q.has('blur')) { T.blur = q.get('blur') === '1' ? 1 : 0; fromLink.push('blur'); }
   ['available', 'total', 'temporary'].forEach(function(k){ if (q.has(k) && isFinite(+q.get(k))) { T[k] = +q.get(k); fromLink.push(k); } });
-  var DEF = { blur:1, available:40000, total:50000, temporary:10000, feel:'Smooth' };
+  var DEF = { blur:0, available:40000, total:50000, temporary:10000, feel:'Smooth' };
   if (PRE) ['available', 'total', 'temporary'].forEach(function(k){ if (PRE[k] != null) DEF[k] = PRE[k]; });
   var get = function(k){ return T[k] != null ? T[k] : DEF[k]; };
-  T.blur = get('blur');
+  T.blur = 0;   /* no progressive blur since tokens v2026.11.17 (owner): the setting is gone, an old ?blur= is ignored */
   if (PRE) ['available', 'total', 'temporary'].forEach(function(k){ T[k] = get(k); });
   window.WD_TUNE = T;
-  if (T.blur) root.setAttribute('data-variant', 'blur');
   function apply(patch){
     Object.keys(patch).forEach(function(k){ saved[k] = patch[k]; });
     try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {}
@@ -53,7 +50,6 @@
       inp.addEventListener('change', function(){ var x = {}; x[key] = +inp.value; apply(x); });
       show(); p.appendChild(row);
     }
-    seg('Progressive blur (header and bottom bars)', 'blur', [[1, 'On'], [0, 'Off']]);
     range('Available amount', 'available', 0, 200000, 500);
     range('Total credit', 'total', 1000, 200000, 1000);
     range('Temporary credit left', 'temporary', 0, 100000, 500);

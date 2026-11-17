@@ -1,7 +1,8 @@
 /* Withdraw fund flow — the page's code (both variants). Run by the Claude Design runtime (runtime/dc-runtime.js):
    index.html / with-blur.html put this text into their <script data-dc-script> and then start the runtime.
    BLUR: the With-blur variant (<html data-variant="blur">) adds the progressive backdrop-blur bands. */
-var BLUR = document.documentElement.getAttribute('data-variant') === 'blur';
+/* No progressive blur since tokens v2026.11.17 (owner): BLUR stays false, so the blur code below never runs; the bars are token veils only. */
+var BLUR = false;
 /* ---- Performance: partial re-render slots ------------------------------------
    Before, every setState (one per frame during the 420ms amount morph, two per
    key press) re-rendered the whole page: the static home template, the hero
@@ -353,12 +354,16 @@ class Component extends DCLogic {
   ty(from, to){ var c = this.cardSnap(), r3 = (v) => Math.round(v * 1000) / 1000; return 'translate(' + r3(c.rx) + 'px,' + r3(this.lerp(from, to) - from + c.ry) + 'px)'; }
   mpLabel(){ return { transform: this.ty(32, 0), color: this.mix('#3c4850', this.C.sub) }; }   /* text-secondary → the card's label grey */
   mpRow(){ return { transform: this.ty(68, 24), height: this.ll(44, 40) }; }
-  /* ₱ has no glyph in Satoshi — it renders from Inter, a variable font (wght
-     100–900), so the weight can ride the progress continuously. Quantised to 5
-     units: visually continuous, and the glyph cache sees ≤41 instances instead
-     of a new one every frame. Font-size already re-lays this span each frame,
-     so the weight adds no extra layout pass. */
-  pesoWeight(){ return Math.round((500 + 200 * this.k01()) / 5) * 5; }
+  /* Number font since tokens v2026.11.17: Reddit Sans (it has its own ₱), Bold in both states — Figma: entry ₱ Number/lg,
+     digits Number/xxl, ".00" Number/xs; card ₱45,000.00 Number/lg (one run). Before: Satoshi, with ₱ from Inter riding 500 → 700. */
+  pesoWeight(){ return 700; }
+  /* Reddit Sans Bold kerning (GPOS, wght 700, 1/2048 em) for the pairs an amount can hold. Every glyph of the row is its own box
+     (FLIP), and separate boxes don't kern, so each box carries its pair's kern as a right margin — the settled row then sits
+     exactly where the unsplit text would (Figma). Satoshi kerned only "." → "0"; Reddit Sans kerns most digit pairs (7. is −0.125 em).
+     Same table as PS.KERN in shared/ps-ui/core.js. */
+  static KERN = {"01":-43,"02":-3,"03":-3,"04":-7,"05":-9,"07":-40,"0.":-43,"0,":-43,"10":7,"11":10,"12":-5,"14":17,"15":7,"16":7,"17":24,"18":7,"21":-19,"23":-25,"24":-33,"26":-24,"27":-3,"28":-24,"31":-54,"32":-41,"33":-29,"34":9,"35":-21,"36":-7,"37":-40,"38":-9,"39":-14,"3.":-21,"3,":-21,"40":24,"41":-22,"42":-14,"44":17,"45":-14,"46":13,"48":24,"51":-71,"52":-14,"54":17,"57":-3,"59":-9,"5.":-24,"5,":-24,"61":-61,"62":-41,"63":-9,"64":25,"65":-26,"67":-26,"69":-13,"6.":-3,"6,":-3,"70":-43,"71":-16,"72":-37,"73":-38,"74":-156,"75":-3,"76":-124,"77":13,"78":-57,"79":-9,"7.":-257,"7,":-257,"81":-54,"82":-41,"83":-29,"84":9,"85":-21,"86":-7,"87":-40,"88":-9,"89":-14,"8.":-21,"8,":-21,"91":-10,"93":-33,"94":-55,"96":-32,"97":-15,"9.":-196,"9,":-196,".0":-43,".1":-121,".4":17,".6":-3,".7":-47,".8":-21,".9":-80,"..":-14,".,":-14,",0":-43,",1":-121,",4":17,",6":-3,",7":-47,",8":-21,",9":-80,",.":-14,",,":-14};
+  static kern(a, b){ return a && b ? (Component.KERN[a + b] || 0) / 2048 : 0; }
+  kStyle(a, b){ var k = Component.kern(a, b); return k ? { display:'inline-block', marginRight: k + 'em' } : null; }
   /* ---- amount row: layout frozen, glyphs FLIPped ----------------------------
      Animating font-size / line-height made Blink re-lay the row every frame,
      and Blink rounds a font's ascent/descent to whole pixels for the baseline:
@@ -374,25 +379,25 @@ class Component extends DCLogic {
   _lk = 0;
   ll(a, b){ return a + (b - a) * this._lk; }
   pxl(a, b){ return this.ll(a, b) + 'px'; }
-  mpPeso(){ return { fontWeight: this.pesoWeight(), fontSize: this.pxl(28, 32), lineHeight: this.pxl(28, 40), letterSpacing: this.pxl(0.84, -0.16), marginRight: this.ll(8, 0), color: this.mix('#97a0a6', this.C.blue) }; }
-  mpNum(){ return { fontSize: this.pxl(48, 32), lineHeight: this.pxl(44, 40), height: this.ll(44, 40), letterSpacing: this.pxl(1.44, -0.16), color: this.mix(this.C.ink, this.C.blue) }; }
+  mpPeso(){ return { fontWeight: this.pesoWeight(), fontSize: this.pxl(32, 32), lineHeight: this.pxl(40, 40), letterSpacing: this.pxl(0.64, 0.64), marginRight: this.ll(8, 0), color: this.mix('#97a0a6', this.C.blue) }; }
+  mpNum(){ return { fontSize: this.pxl(48, 32), lineHeight: this.pxl(44, 40), height: this.ll(44, 40), letterSpacing: this.pxl(1.44, 0.64), color: this.mix(this.C.ink, this.C.blue) }; }
   mpCaret(){ return { width: this.ll(1, 0), height: this.ll(44, 40), marginLeft: this.ll(2, 0) }; }
   /* The caret's fade lives on a plain wrapper, not on the layout node: a node with
      `layout` turns opacity into a Framer Motion value (stuck at 1), which used to
      swallow this fade. */
   mpCaretFade(){ return { opacity: 1 - this.k01() }; }
-  mpTail(){ return { marginLeft: this.ll(2, 0), color: this.mix('#97a0a6', this.C.blue) }; }
-  mpDec(){ return { fontSize: this.pxl(18, 32), lineHeight: this.pxl(24, 40), letterSpacing: this.pxl(0.54, -0.16), marginLeft: this.ll(4, 0), color: this.mix('#97a0a6', this.C.blue) }; }
+  /* the last typed digit kerns into the tail's "0" only once they are one run (the card); in the entry the caret sits between */
+  mpTail(){ var cs = this.chars(), last = cs.length ? cs[cs.length - 1].ch : ''; return { marginLeft: this.ll(2, Component.kern(last, '0') * 32), color: this.mix('#97a0a6', this.C.blue) }; }
+  /* ".00": Number/xs 16 in the entry, the card's Number/lg 32; in the card the tail's "0" kerns into "." (0. = −43/2048 em) */
+  mpDec(){ return { fontSize: this.pxl(16, 32), lineHeight: this.pxl(20, 40), letterSpacing: this.pxl(0.32, 0.64), marginLeft: this.ll(4, Component.kern('0', '.') * 32), color: this.mix('#97a0a6', this.C.blue) }; }
   /* glyph wrapper: inline-block box + an empty inline-block whose top sits
      exactly on the text baseline — what FLIP measures and scales around */
   static GLYPH = { display:'inline-block' };
-  /* Satoshi kerns "." → "0" by −36/1000 em; split into separate boxes the pair
-     no longer kerns, so the period carries that kern as a margin — the settled
-     ".00" lands exactly where the unsplit text did */
-  static GLYPH_DOT = { display:'inline-block', marginRight:'-0.036em' };
+  /* the period carries the "." → "0" kern as a margin (see KERN) — the settled ".00" lands exactly where the unsplit text did */
+  static GLYPH_DOT = { display:'inline-block', marginRight:(-43 / 2048) + 'em' };
   static BASE = { display:'inline-block', width:0, height:0 };
   glyph(id, text, st){ return React.createElement('span', { key:'g', 'data-g': id, style: st || Component.GLYPH }, [React.createElement('i', { key:'b', style: Component.BASE }), text]); }
-  fsOf(id, k){ var c = id.charAt(0), l = (a, b) => a + (b - a) * k; return c === 'p' ? l(28, 32) : c === 'x' ? l(18, 32) : l(48, 32); }
+  fsOf(id, k){ var c = id.charAt(0), l = (a, b) => a + (b - a) * k; return c === 'p' ? l(32, 32) : c === 'x' ? l(16, 32) : l(48, 32); }
   r3(v){ return Math.round(v * 1000) / 1000; }
   flipStart(from, target){
     var row = this._r.row; if (!row) { this._lk = target; return; }
@@ -1074,8 +1079,8 @@ class Component extends DCLogic {
         React.createElement('div', { key:'top', style:{ display:'flex', flexDirection:'row', gap:12, alignItems:'flex-start', padding:'0 4px' } }, [
           React.createElement('div', { key:'amt', style:{ flex:'1 1 auto', minWidth:0, display:'flex', flexDirection:'column', gap:2, whiteSpace:'nowrap' } }, [
             this.sp('Available amount', Object.assign({ fontFamily:'Inter, sans-serif', fontWeight:600, fontSize:11, lineHeight:'14px' }, dim), { key:'a', ref:this.ref('hcLabel') }),
-            /* Satoshi Bold; ₱ falls back to Inter, as in the app */
-            React.createElement('div', { key:'b', 'data-wd-amount':'1', ref:this.ref('hcAmt'), style:{ display:'flex', flexDirection:'row', alignItems:'baseline', color:'#ffffff', fontFamily:'Satoshi, Inter, sans-serif', fontWeight:700, lineHeight:1 } }, [
+            /* Number/xl (Reddit Sans Bold 36, +4 %) with ".00" Number/xs (16, +2 %) — tokens v2026.11.17; ₱ is Reddit Sans's own */
+            React.createElement('div', { key:'b', 'data-wd-amount':'1', ref:this.ref('hcAmt'), style:{ display:'flex', flexDirection:'row', alignItems:'baseline', color:'#ffffff', fontFamily:"'Reddit Sans', Inter, sans-serif", fontWeight:700, lineHeight:1 } }, [
               this.sp(availStr[0].charAt(0), { fontSize:36, lineHeight:1, letterSpacing:'0.72px' }, { key:'p' }),
               this.sp(availStr[0].slice(1), { fontSize:36, lineHeight:1, letterSpacing:'1.08px' }, { key:'x' }),
               this.sp('.' + availStr[1], { fontSize:16, lineHeight:1, letterSpacing:'0.48px' }, { key:'y', ref:this.ref('hcDec') })
@@ -1181,10 +1186,10 @@ class Component extends DCLogic {
       style:Object.assign({ position:'absolute', left:0, top:68 }, this.mpRow(), { display:'flex', flexDirection:'row', alignItems:'flex-end' })
     }, [
       this.el('span', Object.assign({ key:'peso', ref:this.ref('peso') }, this.an(Object.assign({
-        fontFamily:'Satoshi, Inter, sans-serif', whiteSpace:'nowrap'
+        fontFamily:"'Reddit Sans', Inter, sans-serif", whiteSpace:'nowrap'
       }, this.mpPeso()), {})), this.glyph('p', '₱')),
       this.el('span', Object.assign({ key:'num', ref:this.ref('num') }, this.an((() => { var s = this.mpNum(); return {
-        fontFamily:'Satoshi, Inter, sans-serif', whiteSpace:'nowrap',
+        fontFamily:"'Reddit Sans', Inter, sans-serif", whiteSpace:'nowrap',
         position:'relative', display:'inline-flex', flexDirection:'row', alignItems:'center', fontWeight:700,
         fontSize: s.fontSize, lineHeight: s.lineHeight, height: s.height, letterSpacing: s.letterSpacing,
         color: s.color
@@ -1200,7 +1205,8 @@ class Component extends DCLogic {
         (() => {
           var born = this._born || (this._born = {}), live = {}, fresh = this._freshSheet;
           this._freshSheet = false;
-          var out = this.chars().map((c) => {
+          var all = this.chars();
+          var out = all.map((c, ci) => {
             if (born[c.key] === undefined) born[c.key] = (fresh || cf) ? 'still' : 'typed';
             live[c.key] = 1;
             var still = born[c.key] === 'still';
@@ -1210,7 +1216,7 @@ class Component extends DCLogic {
           initial: still ? false : Component.DIGIT_IN.initial,
           animate: still ? Component.DIGIT_STILL : Component.DIGIT_IN.animate,
           style: { display:'inline-block', whiteSpace:'pre' }
-        }, this.glyph('c:' + c.key, c.ch));
+        }, this.glyph('c:' + c.key, c.ch, this.kStyle(c.ch, all[ci + 1] && all[ci + 1].ch)));
           });
           for (var k in born) if (!live[k]) delete born[k];
           return out;
@@ -1225,7 +1231,7 @@ class Component extends DCLogic {
         }, this.mpTail()), {})), [this.glyph('t:0', '0'), this.glyph('t:1', '0')].map((g, i) => React.cloneElement(g, { key: 't' + i })))
       ]),
       this.el('span', Object.assign({ key:'dec', ref:this.ref('dec'), layout: (this.state.morph || cf) ? false : 'position', layoutDependency: this.state.amt }, this.an(Object.assign({
-        fontFamily:'Satoshi, Inter, sans-serif', whiteSpace:'nowrap', flex:'none', fontWeight:700, alignSelf:'flex-end'
+        fontFamily:"'Reddit Sans', Inter, sans-serif", whiteSpace:'nowrap', flex:'none', fontWeight:700, alignSelf:'flex-end'
       }, this.mpDec()), {})), [this.glyph('x:0', '.', Component.GLYPH_DOT), this.glyph('x:1', '0'), this.glyph('x:2', '0')].map((g, i) => React.cloneElement(g, { key: 'x' + i }))),
       (() => { var s = this.mpEdit(); return React.createElement('div', {
           key:'editBox', ref:this.ref('editBox'),
@@ -1365,11 +1371,10 @@ class Component extends DCLogic {
         })
       }, [
         BLUR ? this.pblur('pb', { left:0, top:0, right:0, bottom:0, zIndex:-1 }, 10 * bk, 'bottom', 'pbc') : null,
-        /* the bar's colour veil — PeraSure standard (CLAUDE.md "Header and bottom bars"): the token nav gradient over the
-           blur layers; without blur the standard's stops (0 → 60 % → 80 %) in #EBF0EF — the colour for secondary pages
-           (二级页面, CLAUDE.md), which the order details are; no token holds it, so it is written here */
+        /* the bar's colour veil — PeraSure standard (CLAUDE.md "Header and bottom bars", tokens v2026.11.17): the amount entry and
+           the order details take the secondary bottom, Gradient/Bottom-secondary-nav-filled (owner) */
         React.createElement('div', { key:'veil', ref:this.ref('barVeil'), style:Object.assign({ position:'absolute', left:0, top:0, right:0, bottom:0, zIndex:-1, pointerEvents:'none',
-          background: BLUR ? 'var(--gradient-bottom-nav-filled)' : 'linear-gradient(180deg, rgba(235,240,239,0) 0%, rgba(235,240,239,0.6) 40%, rgba(235,240,239,0.8) 100%)' }, this.mpBar(bk)) }, null),
+          background: 'var(--gradient-bottom-secondary-nav-filled)' }, this.mpBar(bk)) }, null),
         /* slide + fade on a plain wrapper; the press scale stays on the m.div inside.
            On one node, whileTap's scale value took over `transform` and the slide
            was dropped for good after the first press. */
@@ -1438,8 +1443,8 @@ class Component extends DCLogic {
          of the sheet there is only flat background behind it (blur = no-op) */
       BLUR ? React.createElement('div', { key:'pbw', ref:this.ref('hdrBlur'), style:{ position:'absolute', left:0, top:0, width:360, height:116 + EE, display:'none' } },
         this.pblur('pb', { left:0, top:0, width:360, height:116 + EE }, 10, 'top')) : null,
-      /* header veil — PeraSure standard (CLAUDE.md "Header and bottom bars"), as on the home screen */
-      React.createElement('div', { key:'veil', style:{ position:'absolute', left:0, top:0, width:360, height:116 + EE, background: BLUR ? 'var(--gradient-top-nav-filled)' : 'linear-gradient(180deg, var(--color-gradient-subtle-80) 0%, var(--color-gradient-subtle-40) 70%, var(--color-gradient-subtle-0) 100%)' } }, null),
+      /* header veil — PeraSure standard (CLAUDE.md "Header and bottom bars"): Gradient/Top-nav-filled (not a secondary page) */
+      React.createElement('div', { key:'veil', style:{ position:'absolute', left:0, top:0, width:360, height:116 + EE, background: 'var(--gradient-top-nav-filled)' } }, null),
       React.createElement('div', { key:'sb', className:'ps-sb', style:{ position:'absolute', left:0, top:0, width:360, height:40, boxSizing:'border-box', padding:'0 20px', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between' } }, [
         this.el('span', Object.assign({ key:'t' }, this.mo({ fontFamily:'Inter, sans-serif', fontWeight:600, fontSize:13, lineHeight:'1', letterSpacing:'0.01em' }, { color: C.ink }, { duration:0.2 })), '9:30'),
         React.createElement('div', { key:'punch', style:{ position:'absolute', left:174, top:14, width:12, height:12, borderRadius:'50%', backgroundColor:'#0a1219' } }, null),

@@ -22,10 +22,11 @@
   /* the outermost page (PS.Pages) an element is in, or the element itself: what a full-screen cover fills, and where a page's scroll state is kept */
   PS.pageOf = function (el) { var pg = el.closest('.ps-page'), up; while (pg && (up = pg.parentElement && pg.parentElement.closest('.ps-page'))) pg = up; return pg || el; };
 
-  /* Bands: the progressive-blur layers + token veil of a bar (pos top | bot · secondary: #EBF0EF bottom of secondary pages) */
+  /* Bands: a bar's token veil (no progressive blur since tokens v2026.11.17 — owner) · pos top | bot
+     secondary: Gradient/Bottom-secondary-nav-filled (a secondary page, the amount entry, the order page); else the page decides (ps-ui.css) */
   PS.Bands = function Bands(p) {
     return h('div', { className: PS.cx('ps-pb', 'ps-pb--' + (p.pos || 'top'), p.secondary && 'ps-pb--secondary'), 'aria-hidden': true },
-      h('i'), h('i'), h('i'), h('i'), h('i'), h('i', { className: 'ps-veil' }));
+      h('i', { className: 'ps-veil' }));
   };
 
   /* TopBar: left (node) · title (text) · right (node) · extra (node under the 116 px bar, e.g. tabs) + extraHeight · solid (page colour, no blur) · live */
@@ -40,7 +41,8 @@
       p.extra ? h('div', { className: 'ps-top__extra' }, p.extra) : null);
   };
 
-  /* BottomBar: the bottom action area (primary button, links) · secondary: #EBF0EF gradient (secondary pages, blur off)
+  /* BottomBar: the bottom action area (primary button, links) · secondary: Gradient/Bottom-secondary-nav-filled (on a secondary page it
+     is that already; pass it on the amount entry and the order page, which are not secondary pages but take the secondary bottom — owner)
      note: a small line over the button (DS 5561:7317) · consent: an agreement line (PS.Consent) over a slightly narrower button (Login) */
   PS.BottomBar = function BottomBar(p) {
     return h('div', { className: PS.cx('ps-bot', p.note && 'ps-bot--note', p.consent && 'ps-bot--consent', p.className) }, h(PS.Bands, { pos: 'bot', secondary: p.secondary }),

@@ -1,5 +1,5 @@
 /* PeraSure Design System stylesheet (tokens + type roles), as exported with the Claude Design page.
-   The font files come from the shared ../../assets/fonts/fonts.css. */
+   The font files come from the shared ../../assets/fonts/fonts-2026.11.17.css. */
 /* PeraSure Design System — global entry point.
    Consumers link this one file. Import order: primitives → semantic → typography. */
 /* PeraSure — Primitive tokens (raw palette + scales).
@@ -498,7 +498,7 @@
   --stroke-width-heavy: var(--stroke-width-25);
 }
 
-/* PeraSure — Fonts (from ../../assets/fonts/fonts.css, the app's files) + typographic specimens.
+/* PeraSure — Fonts (from ../../assets/fonts/fonts-2026.11.17.css, the app's files) + typographic specimens.
    Hanken Grotesk = titles & display. Inter = body, labels, UI, numerals. */
 
 /* ---- Type role classes: apply family/size/line-height/weight in one hit ---- */

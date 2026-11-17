@@ -11,7 +11,6 @@
   --ps-expire-strip: #fff4ee;                /* Figma 10836:28988: the picked coupon's countdown strip — no token */
   --ps-laurel: #c8e5df;                      /* Figma: trust card laurels — no token (drawn in the PNG) */
   --ps-scrim: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.2) 100%); /* Figma: sheet scrim — no token */
-  --ps-secondary-bottom: 235, 240, 239;      /* #EBF0EF: bottom bar of secondary pages (CLAUDE.md) — no token */
   --ps-inset-80: color-mix(in srgb, var(--color-surface-inset-default) 80%, transparent);
   --ps-inset-0: color-mix(in srgb, var(--color-surface-inset-default) 0%, transparent);
   --ps-font-num: var(--font-family-number);
@@ -48,6 +47,15 @@ a { color: inherit; text-decoration: none; }
 .ps-t-title-md { font: var(--font-weight-bold) var(--font-size-title-md)/var(--font-line-height-title-md) var(--font-family-title); letter-spacing: -0.01em; }
 .ps-t-headline-sm { font: var(--font-weight-bold) var(--font-size-headline-sm)/var(--font-line-height-headline-sm) var(--font-family-title); }
 .ps-t-display-sm { font: var(--font-weight-black) var(--font-size-display-sm)/var(--font-line-height-display-sm) var(--font-family-display); letter-spacing: -0.005em; }
+/* Number text styles (DS, tokens v2026.11.17): Reddit Sans Bold, for emphasised amounts only — never for small notes / labels
+   (Inter) or titles (a title keeps its font; only its ₱ is the number font: .ps-peso). shared/README.md → "Number font" */
+.ps-t-number-xs { font: var(--font-weight-bold) var(--font-size-body-lg)/var(--font-line-height-body-md) var(--ps-font-num); letter-spacing: 0.02em; }      /* 16 / 20 */
+.ps-t-number-sm { font: var(--font-weight-bold) var(--font-size-title-sm)/var(--font-line-height-body-lg) var(--ps-font-num); letter-spacing: 0.03em; }     /* 18 / 24 */
+.ps-t-number-md { font: var(--font-weight-bold) var(--font-size-title-lg)/var(--font-line-height-title-lg) var(--ps-font-num); letter-spacing: 0; }         /* 24 / 32 */
+.ps-t-number-lg { font: var(--font-weight-bold) var(--font-size-display-sm)/var(--font-line-height-display-sm) var(--ps-font-num); letter-spacing: 0.02em; } /* 32 / 40 */
+.ps-t-number-xl { font: var(--font-weight-bold) var(--font-size-display-md)/1 var(--ps-font-num); letter-spacing: 0.04em; }                                 /* 36 / 100 % */
+.ps-t-number-xxl { font: var(--font-weight-bold) var(--font-size-display-xl)/1 var(--ps-font-num); letter-spacing: 0.03em; }                                /* 48 / 100 % */
+.ps-peso { font-family: var(--ps-font-num); }   /* a ₱ inside a title (PS.Peso): the number font, the title's size and weight */
 .ps-c-primary { color: var(--color-text-primary); } .ps-c-secondary { color: var(--color-text-secondary); }
 .ps-c-tertiary { color: var(--color-text-tertiary); } .ps-c-disabled { color: var(--color-text-disabled); }
 .ps-c-placeholder { color: var(--color-text-placeholder); } .ps-c-brand { color: var(--color-text-brand-default); }
@@ -85,37 +93,24 @@ html.ps-edge .ps-col { padding-top: calc(var(--ps-col-top, calc(40px + 4.75rem))
 /* --ps-bot-room (PS.Screen): the page's own bottom bar + 16, so content can always scroll out from under a bar that large text made tall */
 
 /* ======================================================================================= header and bottom bars
-   PeraSure standard (CLAUDE.md → "Header and bottom bars"): progressive blur = five backdrop-blur bands, each stronger and
-   masked to a narrower band at the bar's outer edge, under the token veil. Blur off (html[data-blur="off"]): the token
-   gradients only. The header bands run only while content is scrolled under it (.is-live). */
+   PeraSure standard since tokens v2026.11.17 (CLAUDE.md → "Header and bottom bars"; owner): no progressive blur — each bar is one
+   token gradient (its veil), chosen by the kind of page:
+     header   · the app's tabs (Home / Payment / Account) and the immersive amount entry / order page: Gradient/Top-nav-filled
+              · secondary pages (二级页面, PS.Screen{secondary}): solid page colour (.ps-top--solid), no veil
+     tab bar  · Gradient/Bottom-primary-nav-filled (white)
+     bottom   · BottomBar on a tab page: Gradient/Bottom-primary-nav-filled; on a secondary page, the amount entry and the order page
+                (BottomBar{secondary}, or any BottomBar inside .ps-screen--secondary): Gradient/Bottom-secondary-nav-filled (page colour)
+   The glass buttons and the tab bar's pill keep their own (normal) background blur: that is the glass, not a progressive blur. */
 .ps-pb { position: absolute; inset: 0; pointer-events: none; }
 /* no colour while a bar covers nothing: PS.Screen sets these from the scroll (header: 0 at the top; bottom: 0 at the end / on a page that doesn't scroll) */
 .ps-pb--top { opacity: var(--ps-top-fade, 1); }
 .ps-pb--bot { opacity: var(--ps-bot-fade, 1); }
-.ps-pb > i { position: absolute; inset: 0; display: block; }
-.ps-pb > i:nth-child(1) { -webkit-backdrop-filter: blur(calc(var(--blur-backdrop-bg) * 0.06)); backdrop-filter: blur(calc(var(--blur-backdrop-bg) * 0.06)); }
-.ps-pb > i:nth-child(2) { -webkit-backdrop-filter: blur(calc(var(--blur-backdrop-bg) * 0.14)); backdrop-filter: blur(calc(var(--blur-backdrop-bg) * 0.14)); }
-.ps-pb > i:nth-child(3) { -webkit-backdrop-filter: blur(calc(var(--blur-backdrop-bg) * 0.3)); backdrop-filter: blur(calc(var(--blur-backdrop-bg) * 0.3)); }
-.ps-pb > i:nth-child(4) { -webkit-backdrop-filter: blur(calc(var(--blur-backdrop-bg) * 0.55)); backdrop-filter: blur(calc(var(--blur-backdrop-bg) * 0.55)); }
-.ps-pb > i:nth-child(5) { -webkit-backdrop-filter: blur(var(--blur-backdrop-bg)); backdrop-filter: blur(var(--blur-backdrop-bg)); }
-.ps-pb--top > i:nth-child(1) { -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 84%, transparent 100%); mask-image: linear-gradient(to bottom, #000 0%, #000 84%, transparent 100%); }
-.ps-pb--top > i:nth-child(2) { -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 66%, transparent 84%); mask-image: linear-gradient(to bottom, #000 0%, #000 66%, transparent 84%); }
-.ps-pb--top > i:nth-child(3) { -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 48%, transparent 66%); mask-image: linear-gradient(to bottom, #000 0%, #000 48%, transparent 66%); }
-.ps-pb--top > i:nth-child(4) { -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 28%, transparent 48%); mask-image: linear-gradient(to bottom, #000 0%, #000 28%, transparent 48%); }
-.ps-pb--top > i:nth-child(5) { -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 10%, transparent 28%); mask-image: linear-gradient(to bottom, #000 0%, #000 10%, transparent 28%); }
-.ps-pb--bot > i:nth-child(1) { -webkit-mask-image: linear-gradient(to top, #000 0%, #000 84%, transparent 100%); mask-image: linear-gradient(to top, #000 0%, #000 84%, transparent 100%); }
-.ps-pb--bot > i:nth-child(2) { -webkit-mask-image: linear-gradient(to top, #000 0%, #000 66%, transparent 84%); mask-image: linear-gradient(to top, #000 0%, #000 66%, transparent 84%); }
-.ps-pb--bot > i:nth-child(3) { -webkit-mask-image: linear-gradient(to top, #000 0%, #000 48%, transparent 66%); mask-image: linear-gradient(to top, #000 0%, #000 48%, transparent 66%); }
-.ps-pb--bot > i:nth-child(4) { -webkit-mask-image: linear-gradient(to top, #000 0%, #000 28%, transparent 48%); mask-image: linear-gradient(to top, #000 0%, #000 28%, transparent 48%); }
-.ps-pb--bot > i:nth-child(5) { -webkit-mask-image: linear-gradient(to top, #000 0%, #000 10%, transparent 28%); mask-image: linear-gradient(to top, #000 0%, #000 10%, transparent 28%); }
+.ps-pb > .ps-veil { position: absolute; inset: 0; display: block; }
 .ps-pb--top > .ps-veil { background: var(--gradient-top-nav-filled); }
-.ps-pb--bot > .ps-veil { background: var(--gradient-bottom-nav-filled); }
-.ps-top:not(.is-live) .ps-pb > i:not(.ps-veil) { display: none; }
-html[data-blur="off"] .ps-pb > i:not(.ps-veil) { display: none; }
-html[data-blur="off"] .ps-pb--top > .ps-veil { background: linear-gradient(180deg, var(--color-gradient-subtle-80) 0%, var(--color-gradient-subtle-40) 70%, var(--color-gradient-subtle-0) 100%); }
-html[data-blur="off"] .ps-pb--bot > .ps-veil { background: linear-gradient(180deg, var(--color-gradient-default-0) 0%, var(--color-gradient-default-60) 40%, var(--color-gradient-default-80) 100%); }
-html[data-blur="off"] .ps-screen--secondary .ps-pb--bot > .ps-veil,
-html[data-blur="off"] .ps-pb--secondary > .ps-veil { background: linear-gradient(180deg, rgba(var(--ps-secondary-bottom), 0) 0%, rgba(var(--ps-secondary-bottom), 0.6) 40%, rgba(var(--ps-secondary-bottom), 0.8) 100%); }
+.ps-pb--bot > .ps-veil { background: var(--gradient-bottom-primary-nav-filled); }
+.ps-screen--secondary .ps-pb--bot > .ps-veil,
+.ps-pb--secondary > .ps-veil { background: var(--gradient-bottom-secondary-nav-filled); }
+.ps-nav .ps-pb--bot > .ps-veil { background: var(--gradient-bottom-primary-nav-filled); }   /* the tab bar is always primary */
 
 /* ---- header (Header Action Container, 116 px) ---- */
 .ps-top { position: absolute; left: 0; top: 0; width: 100%; height: var(--ps-top-h, calc(40px + 4.75rem)); z-index: 7; pointer-events: none; }
@@ -170,8 +165,7 @@ html.ps-edge .ps-nav { padding-bottom: calc(var(--sb) + var(--spacing-section-lg
 .ps-cart > img { position: absolute; top: 0; left: -3.31%; width: 108.31%; height: 100%; max-width: none; }
 .ps-cart__anim { position: absolute; inset: 0; } /* the coupon animation: its 80-unit box is the picture's box (CouponArt animate) */
 
-.ps-amount { font-family: var(--ps-font-num); font-weight: var(--font-weight-bold); white-space: nowrap; }   /* Satoshi's own (proportional) figures, as in Figma: its tabular set draws other digits */
-.ps-amount__cur--body { font-family: var(--font-family-body); font-weight: var(--font-weight-medium); }
+.ps-amount { font-family: var(--ps-font-num); font-weight: var(--font-weight-bold); white-space: nowrap; }   /* Reddit Sans's own (proportional) figures and ₱, as in Figma */
 .ps-amount--strike { font: var(--font-weight-regular) var(--font-size-caption-sm)/var(--font-line-height-caption-sm) var(--font-family-body);
   color: var(--color-text-disabled); text-decoration: line-through; }
 
@@ -307,7 +301,7 @@ html.ps-edge .ps-sheet--page { top: calc(40px + 4.75rem + var(--e)); }
 html.ps-edge .ps-sheet--page .ps-sheet__body { padding-bottom: calc(15rem + var(--sb)); }
 .ps-sheet--page .ps-sheet__body::-webkit-scrollbar { width: 0; }
 .ps-sheet--page .ps-sheet__foot { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: var(--spacing-padding-2xl) var(--spacing-padding-sm) var(--spacing-page-bottom-sm);
-  background: linear-gradient(180deg, var(--ps-inset-0) 0%, var(--ps-inset-80) 40%); }
+  background: var(--gradient-bottom-secondary-nav-filled); }   /* owner, Figma 13732:12513 (Frame 1940699447): the page sheet's foot = Bottom-secondary-nav-filled */
 html.ps-edge .ps-sheet--page .ps-sheet__foot { padding-bottom: calc(var(--sb) + var(--spacing-padding-xl)); }
 .ps-sheet--card { left: var(--spacing-gap-sm); right: var(--spacing-gap-sm); bottom: var(--spacing-section-sm); padding: var(--spacing-padding-lg);
   background: var(--color-surface-card-default); border-radius: var(--radius-xxl); filter: drop-shadow(0 0 1px var(--color-shadow-subtle-1)) drop-shadow(0 -4px 6px var(--color-shadow-subtle-2)); }
@@ -325,8 +319,8 @@ html.ps-edge .ps-sheet--plain { padding-bottom: calc(var(--sb) + var(--spacing-p
 .ps-credit__glow { position: absolute; left: calc(50% - 0.0312rem - 14.9875rem); bottom: -6.0812rem; width: 29.975rem; height: 11.1rem; pointer-events: none; max-width: none; }
 .ps-credit__top { position: relative; display: flex; gap: var(--spacing-gap-md); padding: 0 var(--spacing-padding-xs); }
 .ps-credit__label { opacity: var(--layer-opacity-secondary); font: var(--font-weight-semi-bold) var(--font-size-caption-xs)/var(--font-line-height-caption-xs) var(--font-family-body); }
-.ps-credit__amount { display: block; height: 2.25rem; line-height: calc(2.25rem * var(--ps-tx, 1)); margin-top: 0.125rem; font-size: calc(2.25rem * var(--ps-tx, 1)); letter-spacing: 0.03em; }
-.ps-credit__amount .ps-amount__dec { font-size: calc(1rem * var(--ps-tx, 1)); }
+.ps-credit__amount { display: block; height: 2.25rem; line-height: calc(2.25rem * var(--ps-tx, 1)); margin-top: 0.125rem; font-size: var(--font-size-display-md); letter-spacing: 0.04em; }   /* Number/xl */
+.ps-credit__amount .ps-amount__dec { font-size: var(--font-size-body-lg); letter-spacing: 0.02em; }   /* Number/xs */
 .ps-credit__legend { position: relative; display: flex; flex-direction: column; gap: var(--spacing-gap-2xs); margin-top: calc(-1 * var(--spacing-gap-sm)); }  /* app file 52:12969: 8 px under the amount (the card is 196 tall) */
 .ps-credit__legend p { display: flex; align-items: center; gap: var(--spacing-gap-xs); }
 .ps-credit__legend span { opacity: var(--layer-opacity-secondary); }
@@ -337,19 +331,18 @@ html.ps-edge .ps-sheet--plain { padding-bottom: calc(var(--sb) + var(--spacing-p
 .ps-credit__bar i:first-child { background: var(--color-icon-inverse); box-shadow: var(--shadow-focus); z-index: 2; margin-right: -0.25rem; }
 .ps-credit__bar i + i { background: var(--color-icon-positive-light); box-shadow: var(--shadow-default); z-index: 1; }
 .ps-credit .ps-btn--shade { position: relative; width: 100%; }
-/* without temporary credit (Figma 10789:29220): 12 px under the amount, "Total credit: ₱…" (Section-title/sm-light + Satoshi Medium 14/20, both at
-   the secondary opacity) and the bar 8 px under it */
+/* without temporary credit (Figma 10789:29220): 12 px under the amount, "Total credit: ₱…" (Section-title/sm-light + Inter SemiBold 14/20 — a note
+   beside the amount, not the number font: owner 2026-11-17 — both at the secondary opacity) and the bar 8 px under it */
 .ps-credit__one { position: relative; display: flex; flex-direction: column; gap: var(--spacing-gap-sm); margin-top: calc(-1 * var(--spacing-gap-xs)); }
 .ps-credit__one > p { display: flex; align-items: center; gap: var(--spacing-gap-sm); height: 1.25rem; opacity: var(--layer-opacity-secondary); color: var(--color-text-inverse); }
-.ps-credit__total { font-size: calc(0.875rem * var(--ps-tx, 1)); line-height: calc(1.25rem * var(--ps-tx, 1)); font-weight: var(--font-weight-medium); }
+.ps-credit__total { font-family: var(--font-family-body); font-size: calc(0.875rem * var(--ps-tx, 1)); line-height: calc(1.25rem * var(--ps-tx, 1)); font-weight: var(--font-weight-semi-bold); }
 .ps-credit__one .ps-credit__bar { margin-top: 0; }
 
 .ps-payment { gap: var(--spacing-gap-md); }
 .ps-payment__head, .ps-payment__foot { display: flex; align-items: center; justify-content: space-between; }
 .ps-payment__head { align-items: flex-start; }
 .ps-payment__amt { display: flex; align-items: flex-end; gap: var(--spacing-gap-xs); }
-.ps-payment__amt .ps-amount:first-child { font-size: calc(1.5rem * var(--ps-tx, 1)); line-height: 1; color: var(--color-text-brand-default); }
-.ps-payment__amt .ps-amount:first-child .ps-amount__cur { font-weight: var(--font-weight-medium); }   /* DS 9019:21549: ₱ Medium, digits Satoshi Bold 24 */
+.ps-payment__amt .ps-amount:first-child { font-size: var(--font-size-title-lg); line-height: 1; letter-spacing: 0; color: var(--color-text-brand-default); }   /* Number/md (₱ included, Bold) */
 .ps-payment__due { display: flex; flex-direction: column; gap: var(--spacing-gap-2xs); }
 .ps-payment__due > p:last-child { display: flex; align-items: center; gap: var(--spacing-gap-xs); color: var(--color-text-secondary); }
 
@@ -361,7 +354,7 @@ html.ps-edge .ps-sheet--plain { padding-bottom: calc(var(--sb) + var(--spacing-p
 .ps-hcoupon__in { position: relative; background: var(--color-surface-card-default); border-radius: var(--radius-sm); padding: var(--spacing-padding-sm);
   display: flex; flex-direction: column; gap: var(--spacing-gap-xs); }
 .ps-hcoupon__art { position: absolute; left: 50%; top: -2rem; margin-left: -1.25rem; }
-.ps-hcoupon__value { font: var(--font-weight-bold) var(--font-size-title-md)/var(--font-line-height-title-md) var(--ps-font-num); letter-spacing: -0.01em; color: var(--color-text-brand-default); }
+.ps-hcoupon__value { font: var(--font-weight-bold) var(--font-size-title-md)/var(--font-line-height-title-md) var(--font-family-title); letter-spacing: -0.01em; color: var(--color-text-brand-default); }
 /* one coupon (Figma 10750:61878): the title sits left; on the right a folder tab (gradient, top-right corner rounded) grows out of
    the panel through the curved connector; the panel's top-right corner is square under it */
 .ps-hcone { padding: var(--spacing-gap-sm) var(--spacing-padding-sm); gap: 0; }
@@ -377,7 +370,7 @@ html.ps-edge .ps-sheet--plain { padding-bottom: calc(var(--sb) + var(--spacing-p
 .ps-hcone__in { position: relative; display: flex; align-items: center; justify-content: center; gap: var(--spacing-gap-md); padding: var(--spacing-padding-sm);
   border-radius: var(--radius-sm); background: var(--color-surface-card-default); }
 .ps-hcone__lead { width: 6.875rem; flex: none; display: flex; flex-direction: column; text-align: center; }
-.ps-hcone__value { font: var(--font-weight-bold) var(--font-size-title-lg)/var(--font-line-height-title-lg) var(--ps-font-num); letter-spacing: -0.01em; color: var(--color-text-brand-default); }
+.ps-hcone__value { font: var(--font-weight-bold) var(--font-size-title-lg)/var(--font-line-height-title-lg) var(--font-family-title); letter-spacing: -0.01em; color: var(--color-text-brand-default); }
 .ps-hcone__body { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: var(--spacing-gap-2xs); padding-left: var(--spacing-padding-xs); }
 
 .ps-trust { gap: var(--spacing-gap-sm); overflow: hidden; }
@@ -447,7 +440,7 @@ button.ps-ticket { display: block; width: 100%; text-align: left; }
 .ps-summary__go { margin-top: var(--spacing-gap-md); }   /* DS 10836:28988: 12 above Confirm */
 .ps-summary__total { display: flex; flex-direction: column; }
 .ps-summary__total > div { display: flex; align-items: baseline; gap: var(--spacing-gap-xs); }
-.ps-summary__total .ps-amount:first-child { font-size: var(--font-size-20); line-height: var(--font-line-height-28); color: var(--color-text-primary); }   /* DS: Satoshi Bold 20 / 28 */
+.ps-summary__total .ps-amount:first-child { font-size: var(--font-size-title-lg); line-height: var(--font-line-height-title-lg); letter-spacing: 0; color: var(--color-text-primary); }   /* Number/md 24 / 32 (Figma 13733:14010) */
 /* CouponOption (DS 10840:29499): white card r20, 12 / 16 padding; Inter SemiBold 16 + Caption/sm; Best 24 high r12; picked: the default shadow */
 .ps-copt { display: block; width: 100%; flex: none; text-align: left; touch-action: manipulation; }
 .ps-copt__card { position: relative; display: flex; flex-direction: column; border-radius: var(--radius-lg); overflow: hidden; background: var(--color-surface-card-default); box-shadow: 0 0 0 transparent; transition: box-shadow 0.15s ease; }
@@ -483,7 +476,7 @@ button.ps-ticket { display: block; width: 100%; text-align: left; }
 /* ======================================================================================= loan */
 .ps-amountcard { box-shadow: var(--shadow-default); }
 .ps-amountcard__amt { display: flex; align-items: center; gap: 0.25rem; height: 2.5rem; color: var(--color-text-brand-default); }
-.ps-amountcard__amt .ps-amount { font-size: calc(2rem * var(--ps-tx, 1)); line-height: calc(2.5rem * var(--ps-tx, 1)); letter-spacing: -0.005em; }
+.ps-amountcard__amt .ps-amount { font-size: var(--font-size-display-sm); line-height: var(--font-line-height-display-sm); letter-spacing: 0.02em; }   /* Number/lg, ₱ included (Figma 13733:14030) */
 .ps-amountcard__edit { height: 1.75rem; display: flex; align-items: flex-end; color: var(--color-icon-brand-default); }
 .ps-slider { position: relative; height: 1.5625rem; }
 .ps-slider__track { position: absolute; left: 0; right: 0; bottom: 0.375rem; height: 0.5rem; border-radius: var(--radius-full); background: var(--color-surface-inset-default); overflow: hidden; isolation: isolate; }
@@ -555,7 +548,7 @@ html.ps-text-big .ps-kv > :last-child { min-width: 0; white-space: normal; text-
 .ps-limit__icon { width: 1.75rem; height: 1.75rem; border-radius: var(--radius-xs); background: var(--color-surface-icon-brand-default); display: flex; align-items: center; justify-content: center; color: var(--color-icon-inverse); }
 .ps-limit__nums { display: flex; padding: var(--spacing-padding-sm) 0; }
 .ps-limit__nums > div:not(.ps-divider) { flex: 1 1 0; display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-xs); white-space: nowrap; }
-.ps-limit__nums .ps-num { font: var(--font-weight-semi-bold) var(--font-size-section-title-md)/var(--font-line-height-section-title-md) var(--font-family-body); color: var(--color-text-primary); }
+.ps-limit__nums .ps-num { font: var(--font-weight-bold) var(--font-size-body-lg)/var(--font-line-height-body-md) var(--ps-font-num); letter-spacing: 0.02em; color: var(--color-text-primary); }   /* Number/xs (Figma 13733:14752) */
 .ps-menu { gap: var(--spacing-gap-xl); }
 .ps-menu__item { display: flex; align-items: center; justify-content: space-between; width: 100%; text-align: left; color: var(--color-text-primary); }
 .ps-menu__item > span { display: flex; align-items: center; gap: var(--spacing-gap-md); }
@@ -754,7 +747,7 @@ textarea.ps-field__value { white-space: normal; }
 .ps-offer__head { display: flex; align-items: center; justify-content: space-between; }
 .ps-offer__head > img { height: 1.5rem; width: auto; }
 .ps-offer__value { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-2xs); }
-.ps-offer__num { font: var(--font-weight-bold) calc(1.75rem * var(--ps-tx, 1))/calc(2.25rem * var(--ps-tx, 1)) var(--ps-font-num); color: var(--color-text-brand-default); }
+.ps-offer__num { font: var(--font-weight-bold) var(--font-size-title-lg)/var(--font-line-height-title-lg) var(--ps-font-num); letter-spacing: 0; color: var(--color-text-brand-default); }   /* Number/md (was 28: no Number style at 28 — owner 2026-11-17) */
 .ps-offer > .ps-btn { margin-top: var(--spacing-gap-xs); }
 .ps-banners { display: flex; gap: var(--spacing-gap-sm); overflow-x: auto; scrollbar-width: none; margin: 0 calc(-1 * var(--spacing-page-x-sm)); padding: 0 var(--spacing-page-x-sm); scroll-snap-type: x mandatory; }
 .ps-banners::-webkit-scrollbar { height: 0; }
@@ -762,7 +755,7 @@ textarea.ps-field__value { white-space: normal; }
   text-align: center; background: var(--color-surface-card-default); border-radius: var(--radius-xl); scroll-snap-align: center; color: var(--color-text-primary); }
 .ps-hero { border-radius: var(--radius-xl); background: var(--color-surface-card-default); box-shadow: var(--shadow-default); overflow: hidden; }
 .ps-hero__top { display: flex; flex-direction: column; align-items: center; padding: var(--spacing-padding-lg); background: var(--color-surface-card-brand); color: var(--color-text-inverse); }
-.ps-hero__amount { font-size: calc(2.25rem * var(--ps-tx, 1)); line-height: calc(2.8125rem * var(--ps-tx, 1)); }
+.ps-hero__amount { font-size: var(--font-size-display-md); line-height: calc(2.8125rem * var(--ps-tx, 1)); letter-spacing: 0.04em; }   /* Number/xl */
 .ps-hero__body { display: flex; flex-direction: column; align-items: stretch; gap: var(--spacing-gap-xl); padding: var(--spacing-padding-lg); text-align: center; }
 .ps-hero__body > p { font: var(--font-weight-semi-bold) var(--font-size-body-lg)/var(--font-line-height-body-lg) var(--font-family-title); }
 .ps-hero__stats { display: flex; align-items: stretch; padding: var(--spacing-padding-sm) 0; }
@@ -797,7 +790,7 @@ textarea.ps-field__value { white-space: normal; }
 .ps-inst__date > b { font: var(--font-weight-bold) calc(0.875rem * var(--ps-tx, 1))/calc(0.875rem * var(--ps-tx, 1)) var(--font-family-body); }
 .ps-inst.is-negative .ps-inst__date { background: var(--color-negative-100); color: var(--color-text-negative-default); }
 .ps-inst__main { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: var(--spacing-gap-xs); }
-.ps-inst__amount { font-size: calc(1.125rem * var(--ps-tx, 1)); line-height: calc(1.5rem * var(--ps-tx, 1)); height: 1.5rem; color: var(--color-text-primary); }
+.ps-inst__amount { font-size: var(--font-size-title-sm); line-height: var(--font-line-height-body-lg); letter-spacing: 0.03em; height: 1.5rem; color: var(--color-text-primary); }   /* Number/sm (Figma 13748:15839) */
 .ps-inst__sub { font: var(--font-weight-medium) var(--font-size-caption-xs)/var(--font-line-height-caption-xs) var(--font-family-body); color: var(--color-text-secondary); }
 .ps-inst.is-brand .ps-inst__sub { color: var(--color-text-brand-default); }
 .ps-inst.is-negative .ps-inst__sub { color: var(--color-text-negative-default); }
@@ -807,14 +800,14 @@ textarea.ps-field__value { white-space: normal; }
 .ps-inst__detail { display: inline-flex; align-items: center; font: var(--font-weight-semi-bold) var(--font-size-caption-xs)/var(--font-line-height-caption-xs) var(--font-family-body); }
 .ps-paybar { position: relative; display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-gap-md); padding: var(--spacing-padding-sm) var(--spacing-padding-xl); }
 .ps-paybar__amt { display: flex; align-items: flex-end; gap: var(--spacing-gap-xs); height: 2.25rem; }
-.ps-paybar__amt .ps-amount { font-family: var(--font-family-body); }   /* DS 10534:35615: the total in Inter Bold 28, the old total Inter Medium 12 */
-.ps-paybar__amt .ps-amount:first-child { font-size: calc(1.75rem * var(--ps-tx, 1)); line-height: calc(2.25rem * var(--ps-tx, 1)); color: var(--color-text-brand-default); }
+.ps-paybar__amt .ps-amount--strike { font-family: var(--font-family-body); }   /* the old total: Inter Medium 12 (a note, never the number font) */
+.ps-paybar__amt .ps-amount:first-child { font-size: var(--font-size-title-lg); line-height: var(--font-line-height-title-lg); letter-spacing: 0; color: var(--color-text-brand-default); }   /* Number/md (Figma 13750:15975 payment nav) */
 .ps-paybar__amt .ps-amount--strike { font-weight: var(--font-weight-medium); color: var(--color-text-placeholder); padding-bottom: 0.25rem; }
 .ps-paybar .ps-btn { height: 2.25rem; padding: var(--spacing-gap-sm) var(--spacing-padding-xl); }
 .ps-repay { gap: var(--spacing-gap-xl); }
 .ps-repay__head { display: flex; align-items: center; justify-content: space-between; }
 .ps-repay__head .ps-btn--outline { padding: var(--spacing-padding-2xs) var(--spacing-padding-sm); font-weight: var(--font-weight-regular); }
-.ps-repay__amount { font-family: var(--font-family-body); font-size: calc(2rem * var(--ps-tx, 1)); line-height: calc(2.5rem * var(--ps-tx, 1)); color: var(--color-text-brand-default); }   /* DS Payment (Transfer / App / QR): ₱2,000.00 in Inter Bold 32 */
+.ps-repay__amount { font-size: var(--font-size-display-sm); line-height: var(--font-line-height-display-sm); letter-spacing: 0.02em; color: var(--color-text-brand-default); }   /* Number/lg (Figma 13734:14775 / 14796 / 14815) */
 .ps-repay__due { margin-top: calc(-1 * var(--spacing-gap-lg)); color: var(--color-text-primary); }
 .ps-insetrows { display: flex; flex-direction: column; gap: var(--spacing-gap-md); padding: var(--spacing-padding-lg) var(--spacing-padding-md); border-radius: var(--radius-sm); background: var(--color-surface-inset-default); }
 .ps-repay > .ps-insetrows { margin-top: calc(-1 * var(--spacing-gap-xs)); }   /* 16 under the due date */
@@ -878,7 +871,7 @@ textarea.ps-field__value { white-space: normal; }
 .ps-activity__top { display: flex; align-items: center; gap: var(--spacing-gap-md); min-height: 2.5rem; }
 .ps-activity__top > div { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: var(--spacing-gap-2xs); }
 .ps-activity__title { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-gap-sm); min-height: 1.375rem; }
-.ps-activity__amt { flex: none; font: var(--font-weight-bold) var(--font-size-body-lg)/calc(1.375rem * var(--ps-tx, 1)) var(--font-family-body); color: var(--color-text-primary); }
+.ps-activity__amt { flex: none; font: var(--font-weight-bold) var(--font-size-body-lg)/calc(1.375rem * var(--ps-tx, 1)) var(--ps-font-num); letter-spacing: 0.02em; color: var(--color-text-primary); }   /* Number/xs (owner 2026-11-17) */
 .ps-activity__amt.is-up { color: var(--color-text-positive-default); }
 .ps-activity__foot { display: flex; justify-content: space-between; align-items: center; min-height: 1rem; color: var(--color-text-secondary); }
 .ps-activity__foot b { font-weight: var(--font-weight-semi-bold); }
@@ -894,15 +887,15 @@ textarea.ps-field__value { white-space: normal; }
 .ps-inboxitem__more { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 1.25rem; color: var(--color-text-brand-default); }
 .ps-histrow { flex-direction: row; align-items: center; justify-content: space-between; gap: var(--spacing-gap-sm); width: 100%; min-height: 3.5rem; border-radius: var(--radius-xl); text-align: left; }
 .ps-histrow > span:last-child { display: flex; align-items: center; gap: var(--spacing-gap-md); }
-.ps-histrow__amount { font: var(--font-weight-semi-bold) calc(1.125rem * var(--ps-tx, 1))/calc(1.5rem * var(--ps-tx, 1)) var(--font-family-body); color: var(--color-text-primary); }
+.ps-histrow__amount { font: var(--font-weight-bold) var(--font-size-title-sm)/var(--font-line-height-body-lg) var(--ps-font-num); letter-spacing: 0.03em; color: var(--color-text-primary); }   /* Number/sm (owner 2026-11-17) */
 .ps-hub { padding: var(--spacing-padding-lg) var(--spacing-padding-md); gap: var(--spacing-gap-xl); }
-.ps-hub__amount { line-height: calc(1.75rem * var(--ps-tx, 1)); height: 1.75rem; margin-top: var(--spacing-gap-xs); font-size: calc(1.75rem * var(--ps-tx, 1)); letter-spacing: 0.02em; display: block; }
-.ps-hub__amount .ps-amount__dec { font-size: calc(0.875rem * var(--ps-tx, 1)); }
+.ps-hub__amount { line-height: var(--font-line-height-display-sm); height: 2.5rem; margin-top: var(--spacing-gap-xs); font-size: var(--font-size-display-sm); letter-spacing: 0.02em; display: block; }   /* Number/lg (Figma 13732:13893) */
+.ps-hub__amount .ps-amount__dec { font-size: var(--font-size-body-lg); letter-spacing: 0.02em; }   /* Number/xs */
 .ps-hub__row { position: relative; display: flex; align-items: center; gap: var(--spacing-gap-sm); min-height: 2.25rem; }
 .ps-hub__row > svg { width: 1.5rem; height: 1.5rem; }
 .ps-credit .ps-hub__btn { width: auto; height: 2.25rem; padding: var(--spacing-gap-sm) var(--spacing-padding-md); font: var(--font-weight-semi-bold) var(--font-size-label-md)/var(--font-line-height-label-md) var(--font-family-label); }
 .ps-hub__row > div { flex: 1 1 0; display: flex; flex-direction: column; gap: var(--spacing-gap-2xs); }
-.ps-hub__row p { font-family: var(--ps-font-num); }   /* Figma: ₱40,000.00 in Satoshi Regular 12 */
+.ps-hub__row p { font-family: var(--font-family-body); }   /* Used / Available: a note beside the amount — Inter Regular 12 (owner 2026-11-17: notes are never the number font) */
 .ps-hub__row p > span { margin-right: var(--spacing-gap-sm); opacity: var(--layer-opacity-secondary); font-family: var(--font-family-body); font-weight: var(--font-weight-regular); }
 .ps-tiles { gap: var(--spacing-gap-lg); padding: var(--spacing-padding-lg); }
 .ps-tiles > div { display: flex; gap: var(--spacing-gap-sm); }
@@ -910,7 +903,7 @@ textarea.ps-field__value { white-space: normal; }
   text-align: center; color: var(--color-text-primary); }
 .ps-tips { gap: var(--spacing-gap-lg); padding: var(--spacing-padding-lg); }
 .ps-tip-row { display: flex; gap: var(--spacing-gap-md); }
-.ps-tip-row > b { flex: none; width: 1.125rem; font: var(--font-weight-bold) calc(1.25rem * var(--ps-tx, 1))/calc(1.5rem * var(--ps-tx, 1)) var(--ps-font-num); color: var(--color-text-link-light); }
+.ps-tip-row > b { flex: none; width: 1.125rem; font: var(--font-weight-bold) calc(1.25rem * var(--ps-tx, 1))/calc(1.5rem * var(--ps-tx, 1)) var(--font-family-title); color: var(--color-text-link-light); }   /* a list number, not an amount: Hanken (owner 2026-11-17) */
 .ps-tip-row > div { flex: 1 1 0; display: flex; flex-direction: column; gap: var(--spacing-gap-xs); }
 .ps-clamp2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
@@ -1223,7 +1216,7 @@ html.ps-edge .ps-bot--consent { padding-bottom: calc(var(--sb) + var(--spacing-p
 .ps-phero { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-md); margin-bottom: var(--spacing-gap-md); }
 /* ---- OrderHead · OrderStatus · PlanRows ---- */
 .ps-ohead { display: flex; flex-direction: column; gap: var(--spacing-gap-xs); padding: 0 var(--spacing-padding-sm); }
-.ps-ohead__amount { font-size: calc(2rem * var(--ps-tx, 1)); line-height: calc(2.5rem * var(--ps-tx, 1)); color: var(--color-text-brand-default); }
+.ps-ohead__amount { font-size: var(--font-size-display-sm); line-height: var(--font-line-height-display-sm); letter-spacing: 0.02em; color: var(--color-text-brand-default); }   /* Number/lg (Figma 13735:14974) */
 .ps-ohead__label { font: var(--font-weight-regular) calc(1rem * var(--ps-tx, 1))/calc(1.5rem * var(--ps-tx, 1)) var(--font-family-title); color: var(--color-text-secondary); }
 .ps-ostatus { flex-direction: row; align-items: center; gap: var(--spacing-gap-lg); padding: 0.625rem 0.875rem; }   /* 12 / 16 with the 2 px ring (Figma: 328 × 80) */
 .ps-ostatus > div { flex: 1 1 0; display: flex; flex-direction: column; gap: var(--spacing-gap-2xs); }
@@ -1236,11 +1229,11 @@ html.ps-edge .ps-bot--consent { padding-bottom: calc(var(--sb) + var(--spacing-p
 html.ps-edge .ps-aentry { padding-bottom: calc(var(--sb) + var(--spacing-padding-xl)); }
 .ps-aentry__top { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); padding: var(--spacing-padding-3xl) 0; }
 .ps-aentry__num { display: flex; align-items: flex-end; height: 2.75rem; font-family: var(--ps-font-num); font-weight: var(--font-weight-bold); }
-.ps-aentry__cur { font: var(--font-weight-medium) calc(1.75rem * var(--ps-tx, 1))/calc(1.75rem * var(--ps-tx, 1)) var(--font-family-body); color: var(--color-text-disabled); margin-right: var(--spacing-gap-sm); }
-.ps-aentry__typed { display: inline-flex; font-size: calc(3rem * var(--ps-tx, 1)); line-height: calc(2.75rem * var(--ps-tx, 1)); color: var(--color-text-primary); }
+.ps-aentry__cur { font: var(--font-weight-bold) var(--font-size-display-sm)/var(--font-line-height-display-sm) var(--ps-font-num); letter-spacing: 0.02em; color: var(--color-text-disabled); margin-right: var(--spacing-gap-sm); }   /* Number/lg */
+.ps-aentry__typed { display: inline-flex; font-size: var(--font-size-display-xl); line-height: calc(2.75rem * var(--ps-tx, 1)); letter-spacing: 0.03em; color: var(--color-text-primary); }   /* Number/xxl; each digit its own box, kerned by PS.kern */
 .ps-aentry__typed > span { display: inline-block; }
-.ps-aentry__rest { font-size: calc(3rem * var(--ps-tx, 1)); line-height: calc(2.75rem * var(--ps-tx, 1)); color: var(--color-text-disabled); margin-left: var(--spacing-gap-2xs); }
-.ps-aentry__dec { font-size: calc(1.125rem * var(--ps-tx, 1)); line-height: calc(1.5rem * var(--ps-tx, 1)); color: var(--color-text-disabled); margin-left: var(--spacing-gap-xs); }
+.ps-aentry__rest { font-size: var(--font-size-display-xl); line-height: calc(2.75rem * var(--ps-tx, 1)); letter-spacing: 0.03em; color: var(--color-text-disabled); margin-left: var(--spacing-gap-2xs); }
+.ps-aentry__dec { font-size: var(--font-size-body-lg); line-height: var(--font-line-height-body-md); letter-spacing: 0.02em; color: var(--color-text-disabled); margin-left: var(--spacing-gap-xs); }   /* Number/xs */
 .ps-aentry__caret { width: 0.125rem; height: 2.75rem; margin: 0 0.0625rem; background: var(--color-text-brand-default); animation: ps-caret 1.06s steps(1, end) infinite; }
 @keyframes ps-caret { 50% { opacity: 0; } }
 .ps-aentry__pad { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); }

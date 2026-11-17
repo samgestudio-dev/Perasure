@@ -1,10 +1,10 @@
 {
  "schema": 2,
  "source": {
-  "figmaFile": "Document",
+  "figmaFile": "PeraSure design system",
   "fileKey": "OBsvf42AiRapcRrasD7KNm",
-  "exportedAt": "2026-11-12T09:37:12.508Z",
-  "exportedBy": null,
+  "exportedAt": "2026-11-17T08:04:48.657Z",
+  "exportedBy": "Claude (Figma MCP)",
   "via": "mcp"
  },
  "collections": [
@@ -1353,9 +1353,9 @@
     },
     {
      "id": "VariableID:8951:33060",
-     "name": "Font/Family/Satoshi",
+     "name": "Font/Family/Reddit Sans",
      "type": "STRING",
-     "value": "Satoshi",
+     "value": "Reddit Sans",
      "scopes": [
       "ALL_SCOPES"
      ]
@@ -1655,7 +1655,9 @@
      "name": "Layer opacity/0",
      "type": "FLOAT",
      "value": 0,
-     "scopes": [],
+     "scopes": [
+      "COLOR_OPACITY"
+     ],
      "codeSyntax": {
       "WEB": "var(--layer-opacity-0)"
      }
@@ -1665,7 +1667,9 @@
      "name": "Layer opacity/8",
      "type": "FLOAT",
      "value": 8,
-     "scopes": [],
+     "scopes": [
+      "COLOR_OPACITY"
+     ],
      "codeSyntax": {
       "WEB": "var(--layer-opacity-8)"
      }
@@ -1675,7 +1679,9 @@
      "name": "Layer opacity/20",
      "type": "FLOAT",
      "value": 20,
-     "scopes": [],
+     "scopes": [
+      "COLOR_OPACITY"
+     ],
      "codeSyntax": {
       "WEB": "var(--layer-opacity-20)"
      }
@@ -1685,7 +1691,9 @@
      "name": "Layer opacity/40",
      "type": "FLOAT",
      "value": 40,
-     "scopes": [],
+     "scopes": [
+      "COLOR_OPACITY"
+     ],
      "codeSyntax": {
       "WEB": "var(--layer-opacity-40)"
      }
@@ -1695,7 +1703,9 @@
      "name": "Layer opacity/60",
      "type": "FLOAT",
      "value": 60,
-     "scopes": [],
+     "scopes": [
+      "COLOR_OPACITY"
+     ],
      "codeSyntax": {
       "WEB": "var(--layer-opacity-60)"
      }
@@ -1705,7 +1715,9 @@
      "name": "Layer opacity/80",
      "type": "FLOAT",
      "value": 80,
-     "scopes": [],
+     "scopes": [
+      "COLOR_OPACITY"
+     ],
      "codeSyntax": {
       "WEB": "var(--layer-opacity-80)"
      }
@@ -1715,7 +1727,9 @@
      "name": "Layer opacity/100",
      "type": "FLOAT",
      "value": 100,
-     "scopes": [],
+     "scopes": [
+      "COLOR_OPACITY"
+     ],
      "codeSyntax": {
       "WEB": "var(--layer-opacity-100)"
      }
@@ -2712,6 +2726,96 @@
      "codeSyntax": {
       "WEB": "var(--color-brand-950)"
      }
+    },
+    {
+     "id": "VariableID:10927:31245",
+     "name": "Color/Gradient/Ambient/0",
+     "type": "COLOR",
+     "value": {
+      "color": {
+       "type": "VARIABLE_ALIAS",
+       "id": "VariableID:3071:2070"
+      },
+      "opacity": {
+       "type": "VARIABLE_ALIAS",
+       "id": "VariableID:3426:2743"
+      }
+     },
+     "scopes": [
+      "ALL_SCOPES"
+     ]
+    },
+    {
+     "id": "VariableID:10928:31308",
+     "name": "Color/Gradient/Ambient/20",
+     "type": "COLOR",
+     "value": {
+      "color": {
+       "type": "VARIABLE_ALIAS",
+       "id": "VariableID:3071:2070"
+      },
+      "opacity": {
+       "type": "VARIABLE_ALIAS",
+       "id": "VariableID:3426:2744"
+      }
+     },
+     "scopes": [
+      "ALL_SCOPES"
+     ]
+    },
+    {
+     "id": "VariableID:10928:31309",
+     "name": "Color/Gradient/Ambient/40",
+     "type": "COLOR",
+     "value": {
+      "color": {
+       "type": "VARIABLE_ALIAS",
+       "id": "VariableID:3071:2070"
+      },
+      "opacity": {
+       "type": "VARIABLE_ALIAS",
+       "id": "VariableID:3426:2745"
+      }
+     },
+     "scopes": [
+      "ALL_SCOPES"
+     ]
+    },
+    {
+     "id": "VariableID:10928:31310",
+     "name": "Color/Gradient/Ambient/60",
+     "type": "COLOR",
+     "value": {
+      "color": {
+       "type": "VARIABLE_ALIAS",
+       "id": "VariableID:3071:2070"
+      },
+      "opacity": {
+       "type": "VARIABLE_ALIAS",
+       "id": "VariableID:3426:2746"
+      }
+     },
+     "scopes": [
+      "ALL_SCOPES"
+     ]
+    },
+    {
+     "id": "VariableID:10928:31311",
+     "name": "Color/Gradient/Ambient/80",
+     "type": "COLOR",
+     "value": {
+      "color": {
+       "type": "VARIABLE_ALIAS",
+       "id": "VariableID:3071:2070"
+      },
+      "opacity": {
+       "type": "VARIABLE_ALIAS",
+       "id": "VariableID:3426:2747"
+      }
+     },
+     "scopes": [
+      "ALL_SCOPES"
+     ]
     },
     {
      "id": "VariableID:3351:649",
@@ -4726,7 +4830,7 @@
      "name": "Font/Family/Number",
      "type": "STRING",
      "value": {
-      "alias": "Font/Family/Satoshi",
+      "alias": "Font/Family/Reddit Sans",
       "collection": "Primitive"
      },
      "scopes": [
@@ -6964,6 +7068,178 @@
     }
    },
    {
+    "id": "S:9ed114529b5a6c1451eb46f2d5fce9e731c3c3e2,",
+    "name": "Number/lg",
+    "fontName": {
+     "family": "Reddit Sans",
+     "style": "Bold",
+     "variationSettings": {
+      "wght": 700
+     }
+    },
+    "fontSize": 32,
+    "lineHeight": {
+     "unit": "PIXELS",
+     "value": 40
+    },
+    "letterSpacing": {
+     "unit": "PERCENT",
+     "value": 2
+    },
+    "paragraphSpacing": 0,
+    "textCase": "ORIGINAL",
+    "textDecoration": "NONE",
+    "bound": {
+     "fontSize": "Font/Size/display-sm",
+     "fontFamily": "Font/Family/Number",
+     "lineHeight": "Font/Line-height/Display/sm",
+     "fontWeight": "Font/Weight/Bold"
+    }
+   },
+   {
+    "id": "S:b6044d5f507dfebe85b9fe6a3e129ea07849de80,",
+    "name": "Number/md",
+    "fontName": {
+     "family": "Reddit Sans",
+     "style": "Bold",
+     "variationSettings": {
+      "wght": 700
+     }
+    },
+    "fontSize": 24,
+    "lineHeight": {
+     "unit": "PIXELS",
+     "value": 32
+    },
+    "letterSpacing": {
+     "unit": "PERCENT",
+     "value": 0
+    },
+    "paragraphSpacing": 0,
+    "textCase": "ORIGINAL",
+    "textDecoration": "NONE",
+    "bound": {
+     "fontSize": "Font/Size/title-lg",
+     "fontFamily": "Font/Family/Number",
+     "lineHeight": "Font/Line-height/Title/lg",
+     "fontWeight": "Font/Weight/Bold"
+    }
+   },
+   {
+    "id": "S:56c53a207ba9781bb438c1fd272a4967d5b827ca,",
+    "name": "Number/sm",
+    "fontName": {
+     "family": "Reddit Sans",
+     "style": "Bold",
+     "variationSettings": {
+      "wght": 700
+     }
+    },
+    "fontSize": 18,
+    "lineHeight": {
+     "unit": "PIXELS",
+     "value": 24
+    },
+    "letterSpacing": {
+     "unit": "PERCENT",
+     "value": 3
+    },
+    "paragraphSpacing": 0,
+    "textCase": "ORIGINAL",
+    "textDecoration": "NONE",
+    "bound": {
+     "fontSize": "Font/Size/title-sm",
+     "fontFamily": "Font/Family/Number",
+     "lineHeight": "Font/Line-height/Body/lg",
+     "fontWeight": "Font/Weight/Bold"
+    }
+   },
+   {
+    "id": "S:66cb108b26e70aa5320772ff7742c6853c87292c,",
+    "name": "Number/xl",
+    "fontName": {
+     "family": "Reddit Sans",
+     "style": "Bold",
+     "variationSettings": {
+      "wght": 700
+     }
+    },
+    "fontSize": 36,
+    "lineHeight": {
+     "unit": "PERCENT",
+     "value": 100
+    },
+    "letterSpacing": {
+     "unit": "PERCENT",
+     "value": 4
+    },
+    "paragraphSpacing": 0,
+    "textCase": "ORIGINAL",
+    "textDecoration": "NONE",
+    "bound": {
+     "fontSize": "Font/Size/display-md",
+     "fontFamily": "Font/Family/Reddit Sans",
+     "fontWeight": "Font/Weight/Bold"
+    }
+   },
+   {
+    "id": "S:e81a6ca66ec297ca61f7fdcfafa6b8b38eac620f,",
+    "name": "Number/xs",
+    "fontName": {
+     "family": "Reddit Sans",
+     "style": "Bold",
+     "variationSettings": {
+      "wght": 700
+     }
+    },
+    "fontSize": 16,
+    "lineHeight": {
+     "unit": "PIXELS",
+     "value": 20
+    },
+    "letterSpacing": {
+     "unit": "PERCENT",
+     "value": 2
+    },
+    "paragraphSpacing": 0,
+    "textCase": "ORIGINAL",
+    "textDecoration": "NONE",
+    "bound": {
+     "fontSize": "Font/Size/body-lg",
+     "fontFamily": "Font/Family/Number",
+     "lineHeight": "Font/Line-height/Body/md",
+     "fontWeight": "Font/Weight/Bold"
+    }
+   },
+   {
+    "id": "S:cb11d1c379bb58ac0b49069fc93f3db37a260192,",
+    "name": "Number/xxl",
+    "fontName": {
+     "family": "Reddit Sans",
+     "style": "Bold",
+     "variationSettings": {
+      "wght": 700
+     }
+    },
+    "fontSize": 48,
+    "lineHeight": {
+     "unit": "PERCENT",
+     "value": 100
+    },
+    "letterSpacing": {
+     "unit": "PERCENT",
+     "value": 3
+    },
+    "paragraphSpacing": 0,
+    "textCase": "ORIGINAL",
+    "textDecoration": "NONE",
+    "bound": {
+     "fontSize": "Font/Size/display-xl",
+     "fontFamily": "Font/Family/Number",
+     "fontWeight": "Font/Weight/Bold"
+    }
+   },
+   {
     "id": "S:d605cfbe975d33803db4c40093d7b31e61d08eaf,",
     "name": "Section-title/md",
     "fontName": {
@@ -7232,7 +7508,7 @@
     "effects": [
      {
       "type": "BACKGROUND_BLUR",
-      "visible": true,
+      "visible": false,
       "radius": 10,
       "boundVariables": {
        "radius": "Blur/Backdrop/bg"
@@ -7389,7 +7665,7 @@
     "effects": [
      {
       "type": "BACKGROUND_BLUR",
-      "visible": true,
+      "visible": false,
       "radius": 0,
       "blurType": "PROGRESSIVE",
       "startRadius": 10,
@@ -7558,7 +7834,7 @@
   "paint": [
    {
     "id": "S:46b62366edf9ccb4a3957001d555254f56b90ed2,",
-    "name": "Gradient/Bottom-nav-filled",
+    "name": "Gradient/Bottom-primary-nav-filled",
     "paints": [
      {
       "type": "GRADIENT_LINEAR",
@@ -7613,6 +7889,68 @@
         -10.149580955505371,
         3.3804896460088362e-15,
         5.5747904777526855
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "id": "S:62ac1a3628e7f80db7aa0d2af7d78168fc6a9ec2,",
+    "name": "Gradient/Bottom-secondary-nav-filled",
+    "paints": [
+     {
+      "type": "GRADIENT_LINEAR",
+      "visible": true,
+      "opacity": 1,
+      "blendMode": "NORMAL",
+      "gradientStops": [
+       {
+        "position": 0,
+        "color": {
+         "r": 0.94057,
+         "g": 0.96,
+         "b": 0.95611,
+         "a": 0
+        },
+        "bound": {
+         "color": "Color/Gradient/Ambient/0"
+        }
+       },
+       {
+        "position": 0.4000000059604645,
+        "color": {
+         "r": 0.94057,
+         "g": 0.96,
+         "b": 0.95611,
+         "a": 0.6
+        },
+        "bound": {
+         "color": "Color/Gradient/Ambient/60"
+        }
+       },
+       {
+        "position": 1,
+        "color": {
+         "r": 0.94057,
+         "g": 0.96,
+         "b": 0.95611,
+         "a": 0.8
+        },
+        "bound": {
+         "color": "Color/Gradient/Ambient/80"
+        }
+       }
+      ],
+      "gradientTransform": [
+       [
+        6.123234262925839e-17,
+        1,
+        0
+       ],
+       [
+        -1,
+        6.123234262925839e-17,
+        1
        ]
       ]
      }
@@ -7684,37 +8022,37 @@
        {
         "position": 0,
         "color": {
-         "r": 0.88235,
-         "g": 0.89412,
-         "b": 0.89804,
+         "r": 0.94057,
+         "g": 0.96,
+         "b": 0.95611,
          "a": 0.8
         },
         "bound": {
-         "color": "Color/Gradient/Default/80"
+         "color": "Color/Gradient/Ambient/80"
         }
        },
        {
         "position": 0.699999988079071,
         "color": {
-         "r": 0.88235,
-         "g": 0.89412,
-         "b": 0.89804,
+         "r": 0.94057,
+         "g": 0.96,
+         "b": 0.95611,
          "a": 0.4
         },
         "bound": {
-         "color": "Color/Gradient/Default/40"
+         "color": "Color/Gradient/Ambient/40"
         }
        },
        {
         "position": 1,
         "color": {
-         "r": 0.88235,
-         "g": 0.89412,
-         "b": 0.89804,
+         "r": 0.94057,
+         "g": 0.96,
+         "b": 0.95611,
          "a": 0
         },
         "bound": {
-         "color": "Color/Gradient/Default/0"
+         "color": "Color/Gradient/Ambient/0"
         }
        }
       ],

@@ -94,9 +94,15 @@ def apply_patch(old, patch):
 
 
 # ---- describing a change -----------------------------------------------------------------------
+ID_NAMES = {}  # variable id -> name, for colours made of two variables (filled in by diff())
+
+
 def show(v, rec_type=None, name=''):
     if isinstance(v, dict) and 'alias' in v:
         return '→ `%s`' % v['alias']
+    if isinstance(v, dict) and 'color' in v and 'opacity' in v:   # a colour at a layer opacity (two variables)
+        nm = lambda a: ID_NAMES.get((a or {}).get('id'), (a or {}).get('id'))
+        return '→ `%s` at `%s`' % (nm(v['color']), nm(v['opacity']))
     if isinstance(v, dict) and 'r' in v:
         return '`%s`' % bt.hexcolor(v)
     if isinstance(v, list):
@@ -163,6 +169,7 @@ def diff(old, new):
     rows, srows = [], []
     ov = {v['id']: (c['name'], v) for c in old['collections'] for v in c['variables']}
     nv = {v['id']: (c['name'], v) for c in new['collections'] for v in c['variables']}
+    ID_NAMES.update({i: x[1]['name'] for i, x in list(ov.items()) + list(nv.items())})
     count = {'added': 0, 'removed': 0, 'renamed': 0, 'changed': 0}
     for i, (c, v) in nv.items():
         if i not in ov:

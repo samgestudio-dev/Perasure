@@ -82,7 +82,7 @@
         h('div', { style: { display: 'flex', flexDirection: 'column', gap: 'var(--spacing-gap-xs)' } },
           h('p', { className: 'ps-t-body-md-em ps-c-tertiary' }, p.label || 'Disbursement amount'),
           h('div', { className: 'ps-amountcard__amt', 'aria-live': 'off' },
-            h('span', { className: 'ps-amount' }, h('span', { className: 'ps-amount__cur ps-amount__cur--body' }, '₱'),
+            h('span', { className: 'ps-amount' }, h('span', { className: 'ps-amount__cur' }, '₱'),
               h('span', { className: 'ps-amount__int', ref: intEl }, init.current[0]), h('span', { className: 'ps-amount__dec', ref: decEl }, '.' + init.current[1])),
             p.onEdit ? h(m.button, Object.assign({ type: 'button', className: 'ps-amountcard__edit', 'aria-label': 'Type the amount', onClick: p.onEdit }, PS.press(true)), h(PS.Icon, { name: 'edit', size: 20, color: 'brand' }))
               : h('span', { className: 'ps-amountcard__edit' }, h(PS.Icon, { name: 'edit', size: 20, color: 'brand' })))),
@@ -183,7 +183,8 @@
   PS.PlanRows = function PlanRows(p) {
     return h('div', { className: 'ps-planrows' }, p.rows.map(function (r) { return h(PS.KV, { key: r.label, label: r.label, value: r.value }); }));
   };
-  /* AmountEntry: the amount keypad page's white sheet (Figma 52:12744) — the amount as it is typed (₱ 28 Inter, digits 48 / 44 Satoshi, what is
+  /* AmountEntry: the amount keypad page's white sheet (Figma 52:12744; numbers 13732:11315) — the amount as it is typed (₱ Number/lg, digits
+     Number/xxl, ".00" Number/xs — Reddit Sans; each typed digit is its own box, kerned to the next by PS.kern), what is
      not typed yet in the disabled colour, a blinking caret; a typed digit rises in, a deleted one fades), a line that turns red for an amount out
      of range, the terms, the keypad. typed (the digits typed so far, with commas, '' for none) · amount (for screen readers) · label · hint
      · error (text) · terms · term · onTerm(t) · onKey */
@@ -194,8 +195,9 @@
         h('p', { className: 'ps-t-body-md-em ps-c-secondary' }, p.label || 'Disbursement amount'),
         h('div', { className: 'ps-aentry__num', 'aria-live': 'polite', 'aria-label': PS.money(p.amount) },
           h('span', { className: 'ps-aentry__cur' }, '₱'),
-          h('span', { className: 'ps-aentry__typed' }, h(AP, { initial: false, mode: 'popLayout' }, shown.split('').map(function (c, i) {
-            return h(m.span, { key: i + c, initial: { opacity: 0, y: MT.Y.digit, filter: 'blur(' + MT.BLUR + 'px)' }, animate: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.2, ease: MT.EASE_IN } },
+          h('span', { className: 'ps-aentry__typed' }, h(AP, { initial: false, mode: 'popLayout' }, shown.split('').map(function (c, i, all) {
+            var k = PS.kern(c, all[i + 1]);
+            return h(m.span, { key: i + c, style: k ? { marginRight: k + 'em' } : undefined, initial: { opacity: 0, y: MT.Y.digit, filter: 'blur(' + MT.BLUR + 'px)' }, animate: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.2, ease: MT.EASE_IN } },
               exit: { opacity: 0, transition: { duration: 0.08 } } }, c);
           }))), h('span', { className: 'ps-aentry__caret', 'aria-hidden': true }),
           h('span', { className: 'ps-aentry__rest' }, '00'), h('span', { className: 'ps-aentry__dec' }, '.00')),

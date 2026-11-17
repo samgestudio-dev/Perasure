@@ -77,7 +77,7 @@
         h('div', { className: 'ps-hcone__panel' },
           h(PS.CouponArt, { type: c.type, size: 80, className: 'ps-hcone__art' }),
           h('div', { className: 'ps-hcone__in' },
-            h('div', { className: 'ps-hcone__lead' }, h('p', { className: 'ps-hcone__value' }, c.value),
+            h('div', { className: 'ps-hcone__lead' }, h('p', { className: 'ps-hcone__value' }, h(PS.Peso, null, c.value)),
               h('p', { className: 'ps-t-section-xs ps-c-tertiary', style: { textTransform: 'uppercase' } }, c.kind)),
             h(PS.Divider, { vertical: true, dashed: true }),
             h('div', { className: 'ps-hcone__body' }, h('p', { className: 'ps-t-label-md-light ps-c-secondary' }, c.label),
@@ -88,7 +88,7 @@
       h('div', { className: 'ps-hcoupons__pair' }, list.slice(0, 2).map(function (c, i) {
         return h('div', { key: i, className: 'ps-hcoupon' }, h('div', { className: 'ps-hcoupon__in' },
           h(PS.CouponArt, { type: c.type, size: 40, className: 'ps-hcoupon__art' }),
-          h('p', { className: 'ps-hcoupon__value' }, c.value), h('p', { className: 'ps-t-caption-xs ps-c-tertiary' }, c.until)));
+          h('p', { className: 'ps-hcoupon__value' }, h(PS.Peso, null, c.value)), h('p', { className: 'ps-t-caption-xs ps-c-tertiary' }, c.until)));
       })));
   };
 

@@ -80,7 +80,7 @@
       h('div', { key: 'i', className: 'ps-ticket__in' },
         h('div', { className: 'ps-ticket__row' },
           h('div', { className: 'ps-ticket__head' },
-            h('div', { className: 'ps-ticket__value' }, h('p', { className: 'ps-t-title-md' }, p.value), p.best && !muted && !off ? h(PS.Tag, { tone: 'best' }, 'Best') : null),
+            h('div', { className: 'ps-ticket__value' }, h('p', { className: 'ps-t-title-md' }, h(PS.Peso, null, p.value)), p.best && !muted && !off ? h(PS.Tag, { tone: 'best' }, 'Best') : null),
             h('p', { className: 'ps-t-label-md ps-ticket__sub ps-ellipsis' }, p.label)),
           right),
         h('div', { className: 'ps-ticket__meta ps-t-caption-sm' }, h('p', null, rule), second))
@@ -130,7 +130,7 @@
     return h(m.button, Object.assign({ type: 'button', className: PS.cx('ps-copt', on && 'is-on', off && 'is-off', p.className), 'aria-pressed': on, 'aria-disabled': off || undefined, onClick: p.onPick }, PS.press()),
       h('span', { className: 'ps-copt__card' },
         h('span', { className: 'ps-copt__top' },
-          h('span', { className: 'ps-copt__text' }, h('span', { className: 'ps-copt__value ps-ellipsis' }, p.value), h('span', { className: 'ps-t-caption-sm ps-copt__label ps-ellipsis' }, p.label)),
+          h('span', { className: 'ps-copt__text' }, h('span', { className: 'ps-copt__value ps-ellipsis' }, h(PS.Peso, null, p.value)), h('span', { className: 'ps-t-caption-sm ps-copt__label ps-ellipsis' }, p.label)),
           p.best && !off ? h(PS.Tag, { tone: 'best' }, 'Best') : null,
           off ? h('span', { className: 'ps-t-label-sm ps-c-disabled' }, 'Unavailable') : h('span', { className: 'ps-copt__pick' }, h(PS.Check, { on: on }))),
         off && p.rule ? h('span', { className: 'ps-copt__rule' }, h(PS.Divider), h('span', { className: 'ps-t-caption-sm ps-c-secondary' }, p.rule)) : null,

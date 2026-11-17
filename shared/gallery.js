@@ -12,11 +12,16 @@
 
   var GROUPS = [
     { id: 'basics', title: 'Basics', items: [
-      { name: 'Amount', desc: 'Money in the number font: Satoshi digits, ₱ from Inter, as in the app.', props: 'value · dec (2 | 0) · curFont num | body · strike · className',
+      { name: 'Amount', desc: 'An emphasised amount in the number font (Reddit Sans, its own ₱) and a Number text style (tokens v2026.11.17). Notes beside an amount and old prices are Inter; a title keeps its font and only its ₱ is the number font (PS.Peso).', props: 'value · dec (2 | 0) · num xs | sm | md | lg | xl | xxl · decNum (a smaller ".00") · strike · className — PS.Peso children (a title with ₱)',
         states: [
-          ['Card', function () { return h(PS.Amount, { value: 800, style: { fontSize: 24, color: 'var(--color-text-brand-default)' } }); }],
-          ['Loan', function () { return h('div', { className: 'ps-amountcard__amt' }, h(PS.Amount, { value: 45000, curFont: 'body', style: { fontSize: 32, lineHeight: '40px' } })); }],
-          ['Struck', function () { return h(PS.Amount, { value: 46500, strike: true }); }]] },
+          ['Number/xs 16', function () { return h(PS.Amount, { value: 50000, num: 'xs' }); }],
+          ['Number/sm 18', function () { return h(PS.Amount, { value: 2000, num: 'sm' }); }],
+          ['Number/md 24', function () { return h(PS.Amount, { value: 800, num: 'md', style: { color: 'var(--color-text-brand-default)' } }); }],
+          ['Number/lg 32', function () { return h(PS.Amount, { value: 45000, num: 'lg', style: { color: 'var(--color-text-brand-default)' } }); }],
+          ['Number/xl 36 + xs', function () { return h(PS.Amount, { value: 40000, num: 'xl', decNum: 'xs' }); }],
+          ['Number/xxl 48', function () { return h(PS.Amount, { value: 12500, dec: 0, num: 'xxl' }); }],
+          ['Struck', function () { return h(PS.Amount, { value: 46500, strike: true }); }],
+          ['₱ in a title', function () { return h('p', { className: 'ps-t-title-md ps-c-brand' }, h(PS.Peso, null, '+₱5,000')); }]] },
       { name: 'Button', desc: 'Every pressable label. Press: spring scale.', props: 'variant primary | text | inverse | shade | outline | soft | ghost · size lg | md | sm · block · icon · disabled · inactive (looks disabled, still tappable: points at what is missing) · onClick',
         states: [
           ['Primary', function () { return h(PS.Button, { block: true }, 'Confirm'); }],
@@ -64,14 +69,16 @@
           ['Art', function () { return h('div', { className: 'g-row', style: { flexWrap: 'wrap', gap: 12 } }, h(PS.Art, { name: 'empty-box', size: 64 }), h(PS.Art, { name: 'stars', size: 64 }), h(PS.Art, { name: 'verified', size: 40 }), h(PS.Art, { name: 'protection', size: 40 })); }]] },
     ] },
     { id: 'layout', title: 'Layout', items: [
-      { name: 'TopBar', desc: 'Header: back or brand on the left, title, actions on the right; progressive blur while content is under it.', props: 'left · title · right · extra + extraHeight · solid · live',
-        states: [['Secondary page', function () { return frame(116, h(PS.TopBar, { left: h(PS.Back, {}), title: 'Apply a loan', live: true })); }],
+      { name: 'TopBar', desc: 'Header: back or brand on the left, title, actions on the right. No progressive blur (tokens v2026.11.17): on a tab page, the amount entry and the order page its veil is Gradient/Top-nav-filled; a secondary page has a solid header in the page colour (solid).', props: 'left · title · right · extra + extraHeight · solid · live',
+        states: [['Order page (veil)', function () { return frame(116, h(PS.TopBar, { left: h(PS.Back, {}), title: 'Apply a loan', live: true })); }],
+          ['Secondary page (solid)', function () { return frame(116, h(PS.TopBar, { left: h(PS.Back, {}), title: 'Loan history', solid: true })); }],
           ['Brand', function () { return frame(116, h(PS.TopBar, { left: h(PS.Brand), right: h(PS.HomeActions, { actions: [{ icon: 'bell' }, { icon: 'headset' }] }) })); }],
           ['With tabs', function () { return frame(174, h(PS.TopBar, { left: h(PS.Back, {}), title: 'Coupons', solid: true, extraHeight: 58,
             extra: h('div', { style: { padding: '2px 16px 16px' } }, h(Tabs3, {})) })); }]] },
-      { name: 'BottomBar · Navigator', desc: 'The bottom action area and the tab bar (the pill glides between tabs).', props: 'BottomBar children · secondary · note (a small line over the button, DS 5561:7317) · consent (an agreement line over a narrower button) — Navigator tabs [{ id, label, icon }] · value · onChange · id',
+      { name: 'BottomBar · Navigator', desc: 'The bottom action area and the tab bar (the pill glides between tabs). Veils (tokens v2026.11.17, no progressive blur): tab bar and a tab page’s bar Gradient/Bottom-primary-nav-filled; a secondary page, the amount entry and the order page Gradient/Bottom-secondary-nav-filled (secondary).', props: 'BottomBar children · secondary · note (a small line over the button, DS 5561:7317) · consent (an agreement line over a narrower button) — Navigator tabs [{ id, label, icon }] · value · onChange · id',
         states: [['Navigator', function () { return frame(110, h(Toggle, { init: 'home', render: function (v, set) { return h(PS.Navigator, { id: 'g-nav', value: v, onChange: set, tabs: [{ id: 'home', label: 'Home', icon: 'nav-home' }, { id: 'payment', label: 'Payment', icon: 'nav-payment' }, { id: 'account', label: 'Account', icon: 'nav-account' }] }); } })); }],
-          ['Bottom bar', function () { return frame(110, h(PS.BottomBar, null, h(PS.Button, { block: true }, 'Confirm'))); }],
+          ['Bottom bar · primary', function () { return frame(110, h(PS.BottomBar, null, h(PS.Button, { block: true }, 'Confirm'))); }],
+          ['Bottom bar · secondary', function () { return frame(110, h(PS.BottomBar, { secondary: true }, h(PS.Button, { block: true }, 'Confirm'))); }],
           ['With a note', function () { return frame(150, h(PS.BottomBar, { note: 'SEC rules ask us for an emergency contact. We only call them if a payment is overdue and we can’t reach you.' }, h(PS.Button, { block: true }, 'Submit'))); }],
           ['With consent', function () { return frame(170, h(Toggle, { render: function (on, set) { return h(PS.BottomBar, { consent: true }, h(PS.Consent, { on: on, onToggle: function () { set(!on); } }, 'By continuing, you agree to our ', h('b', null, 'Terms of Service'), ' and ', h('b', null, 'Privacy & Data Collection Policy'), '.'), h(PS.Button, { block: true }, 'Log in')); } })); }]] },
       { name: 'Sheet', desc: 'Three kinds: page (fills below the header), card (floating decision), plain (bottom). Drag the top edge down or tap outside to close.', props: 'open · kind page | card | plain · onClose · label · scrim',

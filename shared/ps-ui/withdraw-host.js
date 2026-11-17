@@ -183,8 +183,6 @@
     if (klass) return Promise.resolve(klass);
     if (!loading) loading = fetch(url('withdraw.js'), { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error(r.status + ' ' + r.url); return r.text(); })
       .then(function (src) {
-        /* the demo reads its progressive blur from <html data-variant="blur"> when its code runs: follow the host page's setting (tune.js marks off as data-blur="off") */
-        var root = document.documentElement; if (root.getAttribute('data-blur') !== 'off' && !root.hasAttribute('data-variant')) root.setAttribute('data-variant', 'blur');
         window.__resources = Object.assign({ motionTokens: url('motion-tokens.js'), framerMotion: '', mayaLogo: url('assets/maya-logo.png') }, window.__resources);
         var Base = new Function('React', 'DCLogic', patch(src) + '\n;return Component;')(R, DCLogic);
         klass = make(Base); return klass;

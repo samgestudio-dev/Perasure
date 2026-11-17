@@ -5,7 +5,7 @@
    Each of them passes a source: how to read a file now and at an older version, the data of devmode/data/*.js as JSON, the visual check.
    Keep in step with devmode/data/*.js and devmode/js/inspector.js when their formats change, and raise VERSION. */
 
-export const VERSION = '2.2.0';
+export const VERSION = '2.3.0';
 export const NAME = 'perasure-devmode';
 export const REPO = 'samgestudio-dev/Perasure';
 export const HOSTED = 'https://samge.studio/perasure/';
@@ -568,6 +568,9 @@ export function createDevmode(src) {
       `Dev Mode: ${dm('v=iterations&it=' + it.id)}`, '', '## Summary', tx(it.summary)];
     if (!(it.changes || []).length) out.push('', it.baseline ? 'Baseline: every later change is recorded from here.' : 'No changes recorded.');
     else out.push('', '## Changes', ...it.changes.map(c => `- **${c.type.toUpperCase()} · ${c.action}** ${tx(c.title)}${c.detail ? '\n  ' + tx(c.detail) : ''}${(c.components || []).length ? '\n  Components: ' + c.components.map(n => 'PS.' + n).join(', ') : ''}${(c.pages || []).length ? '\n  Pages: ' + c.pages.join(', ') : ''}${(c.figma || []).length ? '\n  Figma: ' + c.figma.join(', ') : ''}`));
+    /* a global iteration's brief for developers' AI (owner, 2026-11-17): devmode/iterations/<id>/README.md */
+    if (it.doc) { try { const md = await readAt(it.doc, it.id); out.push('', '---', '', typeof md === 'string' ? md : (md && md.text) || ''); } catch (e) { out.push('', `Developer brief: ${it.doc} (read_file)`); } }
+    if (it.overview) out.push('', `Before | after | difference pictures of every changed page and component: Dev Mode ${dm('v=iterations&it=' + it.id)} (files in devmode/${it.overview}visual/).`);
     return out.join('\n');
   }
   async function changesText(since, until) {

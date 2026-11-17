@@ -43,3 +43,11 @@ Use that project's component library and its catalogue (Storybook or similar) in
 start one (a components folder plus a page that shows each component's states) before building screens, and follow
 the PeraSure design tokens. Copy follows the `perasure-tone-of-voice` skill; card and page morphs follow
 `perasure-card-morph`.
+
+## Global look rules (owner, tokens v2026.11.17)
+
+- **Number font** (Reddit Sans, token Font/Family/Number) only for emphasised amounts, always in a Number style (`.ps-t-number-*`,
+  `PS.Amount{num}`); notes beside an amount are Inter; a title keeps its font and only its ₱ is the number font (`PS.Peso`).
+- **Bars**: no progressive blur. Tab pages: header Top-nav-filled, tab bar Bottom-primary-nav-filled. Secondary pages: solid header,
+  Bottom-secondary-nav-filled. Amount entry / order page: header Top-nav-filled, bottom secondary.
+- Full rules: the repo's `CLAUDE.md` ("Number font", "Header and bottom bars") and `shared/README.md`.

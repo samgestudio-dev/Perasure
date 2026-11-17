@@ -108,7 +108,7 @@ By hand:
    title, a one-line description, and one line per variant (the first one is shown as recommended).
 3. Add a row to the table above, commit to `main` and push. The live site updates in about a minute.
 
-There is nothing to build. New prototypes link the shared fonts (`assets/fonts/fonts.css`) and libraries
+There is nothing to build. New prototypes link the shared fonts (`assets/fonts/fonts-2026.11.17.css`) and libraries
 (`vendor/`) instead of packing them into the page, as the app already has them; the page itself then holds only
 the prototype's own code and data. Older demos are single self-contained files and keep working as they are.
 

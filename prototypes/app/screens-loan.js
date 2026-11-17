@@ -133,7 +133,8 @@
     }
     function confirm() { if (!S.agree) { pointAgree(); return; } APP.submitLoan(); }
     return h(PS.Screen, { tint: true, scrollRef: sc,   /* the order details: not a secondary page (owner) */ top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), title: 'Apply a loan', right: APP.tune() },
-      bottom: h(PS.BottomBar, null, h(PS.Button, { block: true, inactive: !S.agree, onClick: confirm }, 'Confirm')) },
+      /* not a secondary page, but the secondary bottom (owner, tokens v2026.11.17) */
+      bottom: h(PS.BottomBar, { secondary: true }, h(PS.Button, { block: true, inactive: !S.agree, onClick: confirm }, 'Confirm')) },
       [h(PS.AmountCard, { key: 'card', amount: l.amount, min: LOAN.min, max: C.max, step: LOAN.step, boost: !!Lm, terms: LOAN.terms, term: l.term, termNote: LOAN.days + ' days / term',
         onAmount: function (v) { setL(Object.assign({}, APP.S.L, { amount: v })); }, onCommit: function (v) { APP.loanCheck(Object.assign({}, APP.S.L, { amount: v })); },
         onTerm: function (t) { APP.loanCheck(Object.assign({}, APP.S.L, { term: t })); }, onEdit: function () { APP.go('amount', { edit: true }, 'rise'); } })].concat(P.blocks));
