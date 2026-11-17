@@ -5,7 +5,7 @@
    Each of them passes a source: how to read a file now and at an older version, the data of devmode/data/*.js as JSON, the visual check.
    Keep in step with devmode/data/*.js and devmode/js/inspector.js when their formats change, and raise VERSION. */
 
-export const VERSION = '2.3.0';
+export const VERSION = '2.4.0';
 export const NAME = 'perasure-devmode';
 export const REPO = 'samgestudio-dev/Perasure';
 export const HOSTED = 'https://samge.studio/perasure/';
@@ -134,10 +134,28 @@ export function createDevmode(src) {
         while ((m = rx.exec(body))) if (!map.has(m[1])) { map.set(m[1], m[2].trim()); from.set(m[1], src); }
       }
       const resolve = (v, d = 0) => (d > 8 ? v : v.replace(/var\((--[\w-]+)(?:,\s*([^)]+))?\)/g, (all, n, fb) => (map.has(n) ? resolve(map.get(n), d + 1) : fb || all)));
-      return { map, from, resolve };
+      /* text styles: the DS ones (.ps-text-*, tokens.css, made from Figma) and ps-ui's own rem copies (.ps-t-*) */
+      const styles = [], srx = /^\s*\.(ps-text-[\w-]+|ps-t-[\w-]+)\s*\{([^}]*)\}(.*)$/gm;
+      for (const [file, css] of [['tokens/tokens.css', t], ['shared/ps-ui/ps-ui.css', ui]]) { let m; while ((m = srx.exec(css))) styles.push({ name: '.' + m[1], body: m[2].trim(), note: (m[3].match(/\/\*\s*(.*?)\s*\*\//) || [])[1] || '', file }); }
+      return { map, from, resolve, styles };
     })();
     tokCache.set(key, p);
     return p;
+  }
+  /* tokens/legacy/<version>.css (tools/legacy-tokens.py): the old names and values of earlier token versions */
+  const legCache = new Map();
+  async function legacyTokens(ver) {
+    const key = ver || 'latest';
+    if (!legCache.has(key)) legCache.set(key, (async () => {
+      const tree = await treeAt(ver).catch(() => []), files = tree.map(f => f.path).filter(p => /^tokens\/legacy\/[^/]+\.css$/.test(p)).sort().reverse();
+      const T = await tokens(ver), rows = [];
+      for (const file of files) {
+        const css = await readAt(file, ver).catch(() => ''), body = css.replace(/\/\*[\s\S]*?\*\//g, ''), rx = /(--[\w-]+)\s*:\s*([^;]+);/g; let m;
+        while ((m = rx.exec(body))) rows.push({ name: m[1], value: m[2].trim(), file, removed: !T.map.has(m[1]) });
+      }
+      return { files, rows };
+    })());
+    return legCache.get(key);
   }
   function category(n) { return /^--(color|gradient)-/.test(n) ? 'color' : /^--spacing-/.test(n) ? 'spacing' : /^--radius-/.test(n) ? 'radius' : /^--font-/.test(n) ? 'type' : /^--(shadow|blur)-/.test(n) ? 'shadow' : /^--ps-/.test(n) ? 'ps' : 'other'; }
   function remOf(v) { const m = /^(-?\d*\.?\d+)px$/.exec(String(v).trim()); return m ? ` (${+(parseFloat(m[1]) / 16).toFixed(4)}rem)` : ''; }
@@ -442,7 +460,14 @@ export function createDevmode(src) {
         const T = await tokens(version), k = lc(query), want = names && names.map(n => (n.startsWith('--') ? n : '--' + n).replace(/^var\((.*)\)$/, '$1'));
         const rows = [...T.map.entries()].filter(([n, v]) => (!want || want.includes(n)) && (!cat || category(n) === cat) && (!k || lc(n).includes(k) || lc(v).includes(k) || lc(T.resolve(v)).includes(k)));
         const max = limit || 150;
-        return `${rows.length} token(s)${rows.length > max ? `, first ${max}` : ''} · source: tokens/tokens.css (made from Figma; never edit by hand)\n` + rows.slice(0, max).map(([n, v]) => { const r = T.resolve(v); return `- \`${n}\`: ${v}${r !== v ? ' → ' + r : ''}${remOf(r)}${T.from.get(n) !== 'tokens/tokens.css' ? ' · ' + T.from.get(n) : ''}`; }).join('\n');
+        /* text styles (Number/xs … xxl and the rest) and the legacy files (old names and values kept after a token update) */
+        const sts = (!cat || cat === 'type') && !want ? T.styles.filter(st => !k || lc(st.name).includes(k) || lc(st.body).includes(k) || lc(st.note).includes(k)) : [];
+        const legacy = await legacyTokens(version), old = legacy.rows.filter(r => (want ? want.includes(r.name) : k && (lc(r.name).includes(k) || lc(r.value).includes(k))) && (!cat || category(r.name) === cat));
+        const extra = [
+          sts.length ? `\n## Text styles (${sts.length}) — .ps-text-* from Figma (tokens/tokens.css), .ps-t-* = ps-ui's rem copies\n` + sts.slice(0, 60).map(st => `- \`${st.name}\` { ${st.body} }${st.note ? ' — ' + st.note : ''} · ${st.file}`).join('\n') : '',
+          old.length ? `\n## Old names and values (legacy, kept after a token update)\n` + old.map(r => `- \`${r.name}\`: ${r.value} · ${r.file}${r.removed ? ' (no longer in tokens.css)' : ' (tokens.css now has a new value)'}`).join('\n') : '',
+          legacy.files.length ? `\nLegacy files (load after tokens/tokens.css to keep old names or get an older look back): ${legacy.files.join(', ')}. Number font rules: shared/README.md → "Number font and bars".` : ''].filter(Boolean).join('\n');
+        return `${rows.length} token(s)${rows.length > max ? `, first ${max}` : ''} · source: tokens/tokens.css (made from Figma; never edit by hand)\n` + rows.slice(0, max).map(([n, v]) => { const r = T.resolve(v); return `- \`${n}\`: ${v}${r !== v ? ' → ' + r : ''}${remOf(r)}${T.from.get(n) !== 'tokens/tokens.css' ? ' · ' + T.from.get(n) : ''}`; }).join('\n') + (extra ? '\n' + extra : '');
       } },
     { name: 'get_motion', title: 'Get motion values',
       description: 'PeraSure motion values (PS.MT in shared/ps-ui/core.js): the spring, enter / leave tweens, press, rises, blur, menu springs — with the rules written next to them.',
@@ -456,6 +481,29 @@ export function createDevmode(src) {
       description: 'One iteration in full: Jira ticket, summary, and every change (UI or motion; added / edited / removed; pages and components; before → after; Figma nodes).',
       inputSchema: S({ id: { type: 'string', description: 'Iteration id; default the latest' } }),
       run: a => iterationText(a.id) },
+    { name: 'get_iteration_overview', title: 'Get an iteration\'s before / after pictures',
+      description: 'For an iteration with an overview (a global one: tokens or global components): every page state and component state it changed, with how much changed, the components where the change starts and its before | after | difference picture. Give item to get one picture itself.',
+      inputSchema: S({ id: { type: 'string', description: 'Iteration id; default the latest' }, kind: { type: 'string', enum: ['page', 'component'] }, query: { type: 'string', description: 'Words in a page / component name, e.g. "home", "Amount"' }, item: { type: 'string', description: 'An item id from the list, e.g. page-home-0: returns its picture' } }),
+      run: async a => {
+        const D = await data(), it = a.id ? D.iterations.find(i => i.id === a.id || i.label === a.id) : D.latest;
+        if (!it) throw new Error(`no iteration "${a.id}". Ids: ${D.iterations.map(i => i.id).join(', ')}`);
+        if (!it.overview) return `${it.label} has no overview pictures (only global iterations do: ${D.iterations.filter(i => i.overview).map(i => i.id).join(', ') || 'none yet'}). Use get_iteration "${it.id}".`;
+        const dir = 'devmode/' + it.overview + 'visual/';
+        const r = JSON.parse(await readAt(dir + 'report.json', it.id));
+        const items = (r.changed || []).map(c => Object.assign({ isNew: false }, c)).concat((r.added || []).map(c => Object.assign({ isNew: true }, c)));
+        if (a.item) {
+          const c = items.find(x => x.id === a.item);
+          if (!c) throw new Error(`no item "${a.item}". Ids: ${items.slice(0, 30).map(x => x.id).join(', ')}…`);
+          if (!c.image) return `${c.label}: new in this iteration, no before picture.`;
+          const pic = await binaryFile(dir + c.image, it.id === D.latest.id ? null : it.id);
+          const head = `${c.kind} **${c.label}**${c.ratio != null ? ` — ${(c.ratio * 100).toFixed(2)}% of pixels changed` : ''}; before (${r.against}) | after (${it.id}) | difference.`;
+          return Array.isArray(pic) ? [{ type: 'text', text: head }].concat(pic) : head + '\n' + pic;
+        }
+        const k = lc(a.query), list = items.filter(c => (!a.kind || (a.kind === 'page' ? c.kind === 'page' : c.kind !== 'page')) && (!k || lc(c.label + ' ' + (c.labelZh || '') + ' ' + (c.components || []).join(' ') + ' ' + c.id).includes(k)));
+        return [`# ${it.label} — before → after`, `Against ${r.against} · ${list.length} of ${items.length} item(s) · Dev Mode: ${dm('v=iterations&it=' + it.id)}${it.doc ? ' · brief: ' + it.doc : ''}`,
+          ...list.map(c => `- \`${c.id}\` ${c.kind === 'page' ? 'page' : 'component'} **${c.label}**${c.isNew ? ' (new state)' : c.ratio != null ? ` — ${(c.ratio * 100).toFixed(2)}%` : ''}${(c.components || []).length ? ' · starts at: ' + c.components.join(', ') : ''}${c.page ? ' · page id ' + c.page : ''}`),
+          '', 'One picture: get_iteration_overview with item "<id>" (or read_file ' + dir + 'images/<id>.webp).'].join('\n');
+      } },
     { name: 'get_changes', title: 'Get changes between versions',
       description: 'What changed from one version to another (default: from the previous version to the latest), grouped by component and page — use it to update an implementation to the newest design.',
       inputSchema: S({ since: { type: 'string', description: 'Older iteration id (exclusive)' }, until: { type: 'string', description: 'Newer iteration id (inclusive); default latest' } }),
@@ -580,13 +628,17 @@ export function createDevmode(src) {
     const list = D.iterations.slice(Math.min(hi, lo), Math.max(hi, lo)).filter(i => !i.baseline);
     const a = D.iterations[Math.max(hi, lo)], b = D.iterations[Math.min(hi, lo)];
     if (!list.length) return `No recorded changes from ${a.id} to ${b.id}.`;
-    const comps = {}, pages = {};
-    list.forEach(it => (it.changes || []).forEach(c => { (c.components || []).forEach(n => (comps[n] = comps[n] || []).push([it, c])); (c.pages || []).forEach(n => (pages[n] = pages[n] || []).push([it, c])); }));
-    const fmt = arr => arr.map(([it, c]) => `  - ${it.label}: ${c.type} · ${c.action} — ${tx(c.title)}${c.detail ? ' (' + tx(c.detail) + ')' : ''}`).join('\n');
-    return [`# Changes ${a.id} → ${b.id} (${list.length} iteration${list.length > 1 ? 's' : ''})`, `Compare in Dev Mode: ${dm('cmp=' + a.id + '..' + b.id)}`,
-      '', '## By component', ...Object.entries(comps).map(([n, arr]) => `- PS.${n} (get_component "${n}")\n${fmt(arr)}`),
-      '', '## By page', ...Object.entries(pages).map(([n, arr]) => `- ${n}\n${fmt(arr)}`),
-      '', '## Iterations', ...list.map(it => `- ${it.label} — ${tx(it.title)}`)].join('\n');
+    /* every change once, numbered, in full; by component / by page only point at the numbers (a global iteration touches dozens of
+       components: repeating each change's long detail under every one of them made the answer huge) */
+    const all = [], comps = {}, pages = {};
+    list.forEach(it => (it.changes || []).forEach(c => { const n = all.push([it, c]); (c.components || []).forEach(x => (comps[x] = comps[x] || []).push(n)); (c.pages || []).forEach(x => (pages[x] = pages[x] || []).push(n)); }));
+    const ref = ns => ns.map(n => `#${n}`).join(', ');
+    const docs = list.filter(it => it.doc).map(it => `- ${it.label}: developer brief ${it.doc} (get_iteration "${it.id}" returns it)${it.overview ? `; before | after pictures: get_iteration_overview "${it.id}"` : ''}`);
+    return [`# Changes ${a.id} → ${b.id} (${list.length} iteration${list.length > 1 ? 's' : ''}, ${all.length} change${all.length > 1 ? 's' : ''})`, `Compare in Dev Mode: ${dm('cmp=' + a.id + '..' + b.id)}`,
+      ...(docs.length ? ['', '## Briefs', ...docs] : []),
+      '', '## Changes', ...all.map(([it, c], k) => `${k + 1}. **${c.type.toUpperCase()} · ${c.action}** ${tx(c.title)} — ${it.label}${c.detail ? '\n   ' + tx(c.detail) : ''}${(c.figma || []).length ? '\n   Figma: ' + c.figma.join(', ') : ''}`),
+      '', '## By component (change numbers)', ...Object.entries(comps).map(([n, ns]) => `- ${/^APP\./.test(n) ? n : 'PS.' + n}: ${ref(ns)}`),
+      '', '## By page (change numbers)', ...Object.entries(pages).map(([n, ns]) => `- ${n}: ${ref(ns)}`)].join('\n');
   }
   const INSTRUCTIONS = 'PeraSure Dev Mode: the PeraSure app\'s pages and shared React components (PS.*) with code, CSS as written, design tokens, motion values, Figma nodes, statuses and iteration history. '
     + 'When the user pastes a Dev Mode link (…/devmode/index.html#…), call resolve_devmode_link; for a Figma link, find_by_figma. For a component call get_component; for a screen get_page; for what changed get_changes. '

@@ -53,9 +53,10 @@ node devmode/mcp/server.mjs --check
 | `list_pages` / `get_page` | pages and sheets; how to open one (link + script), its states, source code, components, Figma, history |
 | `list_components` / `get_component` | shared components; description, props, states, usage examples (the gallery entry), source, CSS as written, tokens with values, motion, assets, Figma, pages, history (`sections` to ask for less) |
 | `get_component_code` | just the JS source and CSS rules, at a version |
-| `get_tokens` | design tokens: raw value, resolved value, rem; by words, category or names |
+| `get_tokens` | design tokens: raw value, resolved value, rem; by words, category or names — plus the text styles (`.ps-text-*` from Figma, e.g. Number/xs–xxl, and ps-ui's `.ps-t-*`) and the old names / values kept in `tokens/legacy/*.css` |
 | `get_motion` | `PS.MT`: springs, tweens, press, rises, menus — with their rules |
-| `list_iterations` / `get_iteration` / `get_changes` | the iteration record; what changed between two versions, by component and page |
+| `list_iterations` / `get_iteration` / `get_changes` | the iteration record (a global iteration's `get_iteration` includes its developer brief, `devmode/iterations/<id>/README.md`); what changed between two versions — each change once, numbered, with by-component / by-page indexes |
+| `get_iteration_overview` | a global iteration's before \| after \| difference pictures: every changed page state and component state, how much changed, where it starts; `item` returns one picture |
 | `get_status` | Ready for dev / Changed / Completed |
 | `get_visual_changes` | the latest visual check: what changed since the latest iteration but isn't recorded, where it starts, picture links |
 | `find_by_figma` | a Figma link (or node id) → the PS components and pages built from it |
