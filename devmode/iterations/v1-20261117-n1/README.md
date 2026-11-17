@@ -38,7 +38,7 @@ are kept in a legacy file.
 4. **A title keeps its own font; only the ₱ inside it is the number font** — e.g. a coupon value "+₱5,000" or "₱300 OFF" stays
    Hanken Grotesk (or Inter where the title is Inter), with `<span class="ps-peso">₱</span>` (`PS.Peso`). "50% OFF" has no ₱: unchanged.
 5. List numbers are not amounts (the credit limit hub's tips 1 2 3 are Hanken now, they were Satoshi).
-6. An emphasised amount at a size with no Number style takes the nearest style (More for you's 28 → Number/md 24) — or ask design.
+6. An emphasised amount at a size with no Number style: ask design (More for you's 28 → Number/lg 32, design's choice).
 7. Kerning: Reddit Sans kerns most digit pairs (e.g. "7." −0.125 em). Where an amount is drawn one glyph per box (typed digits; the
    Withdraw morph), boxes don't kern, so each box gets its pair's kern as a right margin (`PS.KERN` / `PS.kern(a, b)` in core.js;
    `Component.KERN` in withdraw.js — the GPOS pair table at wght 700, 1/2048 em). Normal text kerns by itself.
@@ -108,7 +108,7 @@ as `color-mix(...)`; `tools/sync-tokens.py` shows it in the changelog as "`Color
 | `PS.HistoryRow` | loan history | Inter SemiBold 18 | Number/sm |
 | `PS.ActivityItem` | credit history | Inter Bold 16 | Number/xs (`.ps-activity__amt`) |
 | `PS.Hero` | home, guest / new user | Satoshi 36 | Number/xl (+4 %) |
-| `PS.OfferCard` | home, More for you | Satoshi Bold 28 / 36 | Number/md 24 / 32 (no style at 28: nearest) |
+| `PS.OfferCard` | home, More for you | Satoshi Bold 28 / 36 | Number/lg 32 / 40 (no style at 28: design chose lg) |
 | `PS.CouponTicket` / `PS.CouponOption` | coupon centre / picker | value Hanken / Inter | unchanged, only ₱ in Reddit Sans |
 | `tune.js` | prototypes | "Progressive blur" setting | removed (`?blur=` ignored) |
 

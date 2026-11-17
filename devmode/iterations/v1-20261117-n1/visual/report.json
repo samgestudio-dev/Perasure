@@ -1,1 +1,2322 @@
-{"against": "v1-20261116-n4", "at": "2026-11-17T08:24:24.804Z", "commit": "b1910f75400dfc735e27d5c1ca0d4072a3a9a6b5", "items": 299, "changed": [{"id": "page-opening-0", "kind": "page", "label": "Opening", "labelZh": "启动页", "page": "opening", "state": 0, "components": ["APP.WdHero"], "pixels": 4723, "ratio": 0.01682, "box": [32, 108, 268, 458], "image": "images/page-opening-0.webp", "first": [35, 108], "unsteady": 0}, {"id": "page-home-0", "kind": "page", "label": "Home · Credit ready · repaying", "labelZh": "首页 · 额度可用 · 还款中", "page": "home", "state": 0, "components": ["APP.WdHero"], "pixels": 4723, "ratio": 0.01682, "box": [32, 108, 268, 458], "image": "images/page-home-0.webp", "first": [35, 108], "unsteady": 0}, {"id": "page-home-1", "kind": "page", "label": "Home · Credit ready · no loan", "labelZh": "首页 · 额度可用 · 未借款", "page": "home", "state": 1, "components": ["APP.WdHero"], "pixels": 3992, "ratio": 0.01422, "box": [32, 108, 268, 286], "image": "images/page-home-1.webp", "first": [35, 108], "unsteady": 0}, {"id": "page-home-2", "kind": "page", "label": "Home · Overdue", "labelZh": "首页 · 逾期", "page": "home", "state": 2, "components": ["APP.WdHero"], "pixels": 4723, "ratio": 0.01682, "box": [32, 108, 268, 568], "image": "images/page-home-2.webp", "first": [35, 108], "unsteady": 0}, {"id": "page-home-4", "kind": "page", "label": "Home · Transfer failed", "labelZh": "首页 · 放款失败", "page": "home", "state": 4, "components": ["APP.WdHero"], "pixels": 3914, "ratio": 0.01394, "box": [32, 108, 268, 364], "image": "images/page-home-4.webp", "first": [35, 108], "unsteady": 0}, {"id": "page-home-3", "kind": "page", "label": "Home · Loan in review", "labelZh": "首页 · 借款审核中", "page": "home", "state": 3, "components": ["APP.WdHero"], "pixels": 3914, "ratio": 0.01394, "box": [32, 108, 268, 364], "image": "images/page-home-3.webp", "first": [35, 108], "unsteady": 0}, {"id": "page-home-5", "kind": "page", "label": "Home · Logged out", "labelZh": "首页 · 未登录", "page": "home", "state": 5, "components": ["Amount", "Hero"], "pixels": 1340, "ratio": 0.00477, "box": [102, 120, 155, 33], "image": "images/page-home-5.webp", "first": [160, 120], "unsteady": 0}, {"id": "page-home-6", "kind": "page", "label": "Home · New user", "labelZh": "首页 · 新用户", "page": "home", "state": 6, "components": ["Amount", "Hero"], "pixels": 1340, "ratio": 0.00477, "box": [102, 120, 155, 33], "image": "images/page-home-6.webp", "first": [160, 120], "unsteady": 0}, {"id": "page-home-7", "kind": "page", "label": "Home · Application in review", "labelZh": "首页 · 申请审核中", "page": "home", "state": 7, "components": ["Amount", "PaymentCard", "Card"], "pixels": 809, "ratio": 0.00288, "box": [32, 240, 104, 22], "image": "images/page-home-7.webp", "first": [35, 240], "unsteady": 0}, {"id": "page-home-10", "kind": "page", "label": "Home · Limit expired", "labelZh": "首页 · 额度已过期", "page": "home", "state": 10, "components": ["Amount", "PaymentCard", "Card"], "pixels": 809, "ratio": 0.00288, "box": [32, 298, 104, 22], "image": "images/page-home-10.webp", "first": [35, 298], "unsteady": 0}, {"id": "page-home-9", "kind": "page", "label": "Home · Not approved", "labelZh": "首页 · 申请未通过", "page": "home", "state": 9, "components": ["OfferCard", "Card"], "pixels": 11524, "ratio": 0.04104, "box": [32, 366, 296, 414], "image": "images/page-home-9.webp", "first": [134, 366], "unsteady": 0}, {"id": "page-home-11", "kind": "page", "label": "Home · Credit on hold", "labelZh": "首页 · 额度冻结", "page": "home", "state": 11, "components": ["Amount", "PaymentCard", "Card"], "pixels": 809, "ratio": 0.00288, "box": [32, 324, 104, 22], "image": "images/page-home-11.webp", "first": [35, 324], "unsteady": 0}, {"id": "page-amount-0", "kind": "page", "label": "Amount (fallback)", "labelZh": "输入金额（备用页）", "page": "amount", "state": 0, "components": ["Back", "Glass", "TopBar", "Bands"], "pixels": 1116, "ratio": 0.00397, "box": [24, 28, 134, 44], "image": "images/page-amount-0.webp", "first": [55, 28], "unsteady": 0}, {"id": "page-withdraw-0", "kind": "page", "label": "Amount (Withdraw)", "labelZh": "借款金额（Withdraw）", "page": "withdraw", "state": 0, "components": ["APP.WdHero"], "pixels": 2490, "ratio": 0.00887, "box": [24, 144, 233, 47], "image": "images/page-withdraw-0.webp", "first": [149, 144], "unsteady": 0}, {"id": "page-loan-0", "kind": "page", "label": "Loan details (fallback)", "labelZh": "借款详情（备用页）", "page": "loan", "state": 0, "components": ["AmountCard", "Card"], "pixels": 1850, "ratio": 0.00659, "box": [32, 123, 208, 29], "image": "images/page-loan-0.webp", "first": [83, 123], "unsteady": 0}, {"id": "page-order-0", "kind": "page", "label": "Loan application · In review", "labelZh": "借款申请状态 · 审核中", "page": "order", "state": 0, "components": ["Amount", "OrderHead", "APP.Loaded"], "pixels": 1835, "ratio": 0.00653, "box": [24, 111, 168, 29], "image": "images/page-order-0.webp", "first": [83, 111], "unsteady": 0}, {"id": "page-order-1", "kind": "page", "label": "Loan application · Transfer failed", "labelZh": "借款申请状态 · 放款失败", "page": "order", "state": 1, "components": ["Amount", "OrderHead", "APP.Loaded"], "pixels": 1835, "ratio": 0.00653, "box": [24, 111, 168, 29], "image": "images/page-order-1.webp", "first": [83, 111], "unsteady": 0}, {"id": "page-coupons-0", "kind": "page", "label": "Coupon centre · Six", "labelZh": "优惠券中心 · 6 张", "page": "coupons", "state": 0, "components": ["Peso", "CouponTicket"], "pixels": 2120, "ratio": 0.00755, "box": [40, 416, 88, 282], "image": "images/page-coupons-0.webp", "first": [42, 416], "unsteady": 0}, {"id": "page-coupons-1", "kind": "page", "label": "Coupon centre · One", "labelZh": "优惠券中心 · 1 张", "page": "coupons", "state": 1, "components": ["Peso", "APP.Loaded", "CouponTicket"], "pixels": 673, "ratio": 0.0024, "box": [51, 152, 62, 18], "image": "images/page-coupons-1.webp", "first": [53, 152], "unsteady": 0}, {"id": "page-keep-0", "kind": "page", "label": "Keep your coupon? · One coupon", "labelZh": "保留优惠券？ · 一张券", "page": "keep", "state": 0, "components": ["AmountCard", "Card"], "pixels": 1578, "ratio": 0.00562, "box": [32, 123, 185, 29], "image": "images/page-keep-0.webp", "first": [62, 123], "unsteady": 0}, {"id": "page-keep-1", "kind": "page", "label": "Keep your coupon? · Two coupons (swipe)", "labelZh": "保留优惠券？ · 两张券（左右滑）", "page": "keep", "state": 1, "components": ["AmountCard", "Card"], "pixels": 1578, "ratio": 0.00562, "box": [32, 123, 185, 29], "image": "images/page-keep-1.webp", "first": [62, 123], "unsteady": 0}, {"id": "page-picker-0", "kind": "page", "label": "Choose coupons", "labelZh": "选择优惠券", "page": "picker", "state": 0, "components": ["APP.WdHero"], "pixels": 2490, "ratio": 0.00887, "box": [24, 144, 233, 47], "image": "images/page-picker-0.webp", "first": [149, 144], "unsteady": 0}, {"id": "page-plan-0", "kind": "page", "label": "Repayment plan", "labelZh": "还款计划", "page": "plan", "state": 0, "components": ["AmountCard", "Card"], "pixels": 1850, "ratio": 0.00659, "box": [32, 123, 208, 29], "image": "images/page-plan-0.webp", "first": [83, 123], "unsteady": 0}, {"id": "page-payment-0", "kind": "page", "label": "Repay · Repaying", "labelZh": "还款 · 还款中", "page": "payment", "state": 0, "components": ["Amount", "Installment", "Card", "APP.Loaded"], "pixels": 3985, "ratio": 0.01419, "box": [20, 173, 154, 510], "image": "images/page-payment-0.webp", "first": [88, 173], "unsteady": 0}, {"id": "page-payment-1", "kind": "page", "label": "Repay · Overdue", "labelZh": "还款 · 逾期", "page": "payment", "state": 1, "components": ["Amount", "Installment", "Card", "APP.Loaded"], "pixels": 3987, "ratio": 0.0142, "box": [20, 173, 154, 510], "image": "images/page-payment-1.webp", "first": [88, 173], "unsteady": 0}, {"id": "page-pay-0", "kind": "page", "label": "Pay · App", "labelZh": "支付页 · App 支付", "page": "pay", "state": 0, "components": ["Amount", "RepayCard", "Card", "Section"], "pixels": 1985, "ratio": 0.00707, "box": [32, 123, 162, 29], "image": "images/page-pay-0.webp", "first": [35, 123], "unsteady": 0}, {"id": "page-pay-1", "kind": "page", "label": "Pay · QR code", "labelZh": "支付页 · 二维码", "page": "pay", "state": 1, "components": ["Amount", "RepayCard", "Card", "Section"], "pixels": 1985, "ratio": 0.00707, "box": [32, 123, 162, 29], "image": "images/page-pay-1.webp", "first": [35, 123], "unsteady": 0}, {"id": "page-pay-2", "kind": "page", "label": "Pay · Transfer", "labelZh": "支付页 · 转账", "page": "pay", "state": 2, "components": ["Amount", "RepayCard", "Card", "Section"], "pixels": 1985, "ratio": 0.00707, "box": [32, 123, 162, 29], "image": "images/page-pay-2.webp", "first": [35, 123], "unsteady": 0}, {"id": "page-paydetail-0", "kind": "page", "label": "Payment detail", "labelZh": "还款明细", "page": "paydetail", "state": 0, "components": ["Amount", "Installment", "Card", "APP.Loaded"], "pixels": 605, "ratio": 0.00215, "box": [86, 173, 81, 16], "image": "images/page-paydetail-0.webp", "first": [88, 173], "unsteady": 0}, {"id": "page-scams-0", "kind": "page", "label": "Anti-scam tips", "labelZh": "防诈骗提示", "page": "scams", "state": 0, "components": ["Amount", "Installment", "Card", "APP.Loaded"], "pixels": 1205, "ratio": 0.00429, "box": [86, 173, 88, 142], "image": "images/page-scams-0.webp", "first": [88, 173], "unsteady": 0}, {"id": "page-kyc-estimate-0", "kind": "page", "label": "Loan estimate", "labelZh": "借款估算", "page": "kyc-estimate", "state": 0, "components": ["AmountCard", "Card", "EstimateCard"], "pixels": 1798, "ratio": 0.0064, "box": [32, 375, 176, 29], "image": "images/page-kyc-estimate-0.webp", "first": [76, 375], "unsteady": 0}, {"id": "page-account-1", "kind": "page", "label": "Account · Logged out", "labelZh": "我的 · 未登录", "page": "account", "state": 1, "components": ["CreditLimitCard", "Card"], "pixels": 6597, "ratio": 0.02349, "box": [32, 358, 291, 422], "image": "images/page-account-1.webp", "first": [96, 358], "unsteady": 0}, {"id": "page-account-0", "kind": "page", "label": "Account · Logged in", "labelZh": "我的 · 已登录", "page": "account", "state": 0, "components": ["CreditLimitCard", "Card"], "pixels": 8344, "ratio": 0.02972, "box": [32, 295, 291, 485], "image": "images/page-account-0.webp", "first": [61, 295], "unsteady": 0}, {"id": "page-credit-0", "kind": "page", "label": "Credit history", "labelZh": "额度记录", "page": "credit", "state": 0, "components": ["ActivityItem", "Card", "APP.Loaded"], "pixels": 1296, "ratio": 0.00462, "box": [246, 152, 82, 296], "image": "images/page-credit-0.webp", "first": [265, 152], "unsteady": 0}, {"id": "page-hub-0", "kind": "page", "label": "Credit limit hub", "labelZh": "额度中心", "page": "hub", "state": 0, "components": ["Amount", "HubCard", "APP.Loaded"], "pixels": 34607, "ratio": 0.12324, "box": [16, 113, 328, 642], "image": "images/page-hub-0.webp", "first": [35, 113], "unsteady": 0}, {"id": "page-history-0", "kind": "page", "label": "Loan history", "labelZh": "借款记录", "page": "history", "state": 0, "components": ["Amount", "HistoryRow", "APP.Loaded"], "pixels": 3120, "ratio": 0.01111, "box": [32, 120, 93, 454], "image": "images/page-history-0.webp", "first": [49, 120], "unsteady": 0}, {"id": "page-loan-record-0", "kind": "page", "label": "Loan record", "labelZh": "借款详情", "page": "loan-record", "state": 0, "components": ["Amount", "OrderHead"], "pixels": 1848, "ratio": 0.00658, "box": [24, 111, 168, 29], "image": "images/page-loan-record-0.webp", "first": [55, 111], "unsteady": 0}, {"id": "page-logout-0", "kind": "page", "label": "Log out", "labelZh": "退出登录", "page": "logout", "state": 0, "components": ["CreditLimitCard", "Card"], "pixels": 6199, "ratio": 0.02208, "box": [32, 295, 291, 485], "image": "images/page-logout-0.webp", "first": [61, 295], "unsteady": 0}, {"id": "page-rating-0", "kind": "page", "label": "Rating", "labelZh": "评分", "page": "rating", "state": 0, "components": ["APP.WdHero"], "pixels": 3143, "ratio": 0.01119, "box": [32, 108, 188, 258], "image": "images/page-rating-0.webp", "first": [35, 108], "unsteady": 0}, {"id": "comp-Rise_Crossfade-0", "kind": "component", "label": "Rise · Crossfade · Rise", "labelZh": "Rise · Crossfade · Rise", "entry": "Rise · Crossfade", "state": 0, "components": ["Rise", "Crossfade"], "pixels": 1560, "ratio": 0.01484, "box": [32, 36, 93, 154], "image": "images/comp-Rise_Crossfade-0.webp", "first": [49, 36], "unsteady": 0}, {"id": "comp-Amount-0", "kind": "component", "label": "Amount · Number/xs 16", "labelZh": "Amount · Number/xs 16", "entry": "Amount", "state": 0, "components": ["Amount"], "pixels": 1318, "ratio": 0.03051, "box": [16, 20, 104, 22], "image": "images/comp-Amount-0.webp", "first": [17, 20], "unsteady": 0}, {"id": "comp-Amount-1", "kind": "component", "label": "Amount · Number/sm 18", "labelZh": "Amount · Number/sm 18", "entry": "Amount", "state": 1, "components": ["Amount"], "pixels": 2575, "ratio": 0.05961, "box": [16, 21, 186, 31], "image": "images/comp-Amount-1.webp", "first": [18, 21], "unsteady": 0}, {"id": "comp-Amount-2", "kind": "component", "label": "Amount · Number/md 24", "labelZh": "Amount · Number/md 24", "entry": "Amount", "state": 2, "components": ["Amount"], "pixels": 1079, "ratio": 0.02498, "box": [16, 22, 97, 19], "image": "images/comp-Amount-2.webp", "first": [19, 22], "unsteady": 0}, {"id": "comp-TopBar-1", "kind": "component", "label": "TopBar · Secondary page (solid)", "labelZh": "TopBar · Secondary page (solid)", "entry": "TopBar", "state": 1, "components": ["TopBar"], "pixels": 1739, "ratio": 0.03896, "box": [16, 62, 314, 28], "image": "images/comp-TopBar-1.webp", "first": [19, 62], "unsteady": 0}, {"id": "comp-TopBar-2", "kind": "component", "label": "TopBar · Brand", "labelZh": "TopBar · Brand", "entry": "TopBar", "state": 2, "components": ["TopBar"], "pixels": 6135, "ratio": 0.09364, "box": [15, 62, 330, 98], "image": "images/comp-TopBar-2.webp", "first": [19, 62], "unsteady": 0}, {"id": "comp-BottomBar_Navigator-2", "kind": "component", "label": "BottomBar · Navigator · Bottom bar · secondary", "labelZh": "BottomBar · Navigator · Bottom bar · secondary", "entry": "BottomBar · Navigator", "state": 2, "components": ["BottomBar", "Navigator"], "pixels": 21197, "ratio": 0.37266, "box": [34, 26, 292, 96], "image": "images/comp-BottomBar_Navigator-2.webp", "first": [126, 26], "unsteady": 0}, {"id": "comp-BottomBar_Navigator-3", "kind": "component", "label": "BottomBar · Navigator · With a note", "labelZh": "BottomBar · Navigator · With a note", "entry": "BottomBar · Navigator", "state": 3, "components": ["BottomBar", "Navigator"], "pixels": 14355, "ratio": 0.22402, "box": [32, 26, 294, 116], "image": "images/comp-BottomBar_Navigator-3.webp", "first": [126, 26], "unsteady": 0}, {"id": "comp-Sheet-2", "kind": "component", "label": "Sheet · Page", "labelZh": "Sheet · Page", "entry": "Sheet", "state": 2, "components": ["Sheet"], "pixels": 2344, "ratio": 0.01037, "box": [9, 444, 342, 41], "image": "images/comp-Sheet-2.webp", "first": [10, 444], "unsteady": 0}, {"id": "comp-CouponTicket-1", "kind": "component", "label": "CouponTicket · Long rule", "labelZh": "CouponTicket · Long rule", "entry": "CouponTicket", "state": 1, "components": ["CouponTicket"], "pixels": 772, "ratio": 0.01375, "box": [40, 34, 88, 16], "image": "images/comp-CouponTicket-1.webp", "first": [42, 34], "unsteady": 0}, {"id": "comp-CouponTicket-5", "kind": "component", "label": "CouponTicket · Expired", "labelZh": "CouponTicket · Expired", "entry": "CouponTicket", "state": 5, "components": ["CouponTicket"], "pixels": 616, "ratio": 0.01097, "box": [51, 34, 62, 18], "image": "images/comp-CouponTicket-5.webp", "first": [53, 34], "unsteady": 0}, {"id": "comp-Summary-0", "kind": "component", "label": "Summary · Both", "labelZh": "Summary · Both", "entry": "Summary", "state": 0, "components": ["Summary"], "pixels": 7904, "ratio": 0.10556, "box": [16, 51, 327, 130], "image": "images/comp-Summary-0.webp", "first": [31, 51], "unsteady": 0}, {"id": "comp-Summary-1", "kind": "component", "label": "Summary · Discount only", "labelZh": "Summary · Discount only", "entry": "Summary", "state": 1, "components": ["Summary"], "pixels": 6327, "ratio": 0.0845, "box": [16, 51, 327, 130], "image": "images/comp-Summary-1.webp", "first": [31, 51], "unsteady": 0}, {"id": "comp-Summary-2", "kind": "component", "label": "Summary · No coupon", "labelZh": "Summary · No coupon", "entry": "Summary", "state": 2, "components": ["Summary"], "pixels": 4713, "ratio": 0.07524, "box": [16, 51, 327, 96], "image": "images/comp-Summary-2.webp", "first": [31, 51], "unsteady": 0}, {"id": "comp-CreditCard-0", "kind": "component", "label": "CreditCard · Temporary credit", "labelZh": "CreditCard · Temporary credit", "entry": "CreditCard", "state": 0, "components": ["CreditCard"], "pixels": 2199, "ratio": 0.02567, "box": [32, 48, 193, 33], "image": "images/comp-CreditCard-0.webp", "first": [35, 48], "unsteady": 0}, {"id": "comp-PaymentCard-0", "kind": "component", "label": "PaymentCard · Default", "labelZh": "PaymentCard · Default", "entry": "PaymentCard", "state": 0, "components": ["PaymentCard"], "pixels": 1067, "ratio": 0.01536, "box": [32, 68, 104, 20], "image": "images/comp-PaymentCard-0.webp", "first": [35, 68], "unsteady": 0}, {"id": "comp-PaymentCard-1", "kind": "component", "label": "PaymentCard · Discounted", "labelZh": "PaymentCard · Discounted", "entry": "PaymentCard", "state": 1, "components": ["PaymentCard"], "pixels": 1320, "ratio": 0.019, "box": [32, 68, 154, 20], "image": "images/comp-PaymentCard-1.webp", "first": [35, 68], "unsteady": 0}, {"id": "comp-HomeCoupons-0", "kind": "component", "label": "HomeCoupons · Two", "labelZh": "HomeCoupons · Two", "entry": "HomeCoupons", "state": 0, "components": ["HomeCoupons"], "pixels": 1565, "ratio": 0.02241, "box": [59, 108, 241, 18], "image": "images/comp-HomeCoupons-0.webp", "first": [61, 108], "unsteady": 0}, {"id": "comp-PaymentCard-2", "kind": "component", "label": "PaymentCard · Overdue", "labelZh": "PaymentCard · Overdue", "entry": "PaymentCard", "state": 2, "components": ["PaymentCard"], "pixels": 954, "ratio": 0.00877, "box": [32, 68, 114, 22], "image": "images/comp-PaymentCard-2.webp", "first": [35, 68], "unsteady": 0}, {"id": "comp-CreditCard-1", "kind": "component", "label": "CreditCard · No temporary", "labelZh": "CreditCard · No temporary", "entry": "CreditCard", "state": 1, "components": ["CreditCard"], "pixels": 1848, "ratio": 0.02271, "box": [32, 48, 181, 62], "image": "images/comp-CreditCard-1.webp", "first": [35, 48], "unsteady": 0}, {"id": "comp-HomeCoupons-1", "kind": "component", "label": "HomeCoupons · Amount off", "labelZh": "HomeCoupons · Amount off", "entry": "HomeCoupons", "state": 1, "components": ["HomeCoupons"], "pixels": 1661, "ratio": 0.02378, "box": [54, 108, 248, 16], "image": "images/comp-HomeCoupons-1.webp", "first": [56, 108], "unsteady": 0}, {"id": "comp-HomeCoupons-2", "kind": "component", "label": "HomeCoupons · One", "labelZh": "HomeCoupons · One", "entry": "HomeCoupons", "state": 2, "components": ["HomeCoupons"], "pixels": 1086, "ratio": 0.01464, "box": [42, 116, 99, 22], "image": "images/comp-HomeCoupons-2.webp", "first": [63, 116], "unsteady": 0}, {"id": "comp-AmountCard-0", "kind": "component", "label": "AmountCard · Default", "labelZh": "AmountCard · Default", "entry": "AmountCard", "state": 0, "components": ["AmountCard"], "pixels": 1762, "ratio": 0.01705, "box": [32, 63, 206, 29], "image": "images/comp-AmountCard-0.webp", "first": [111, 63], "unsteady": 0}, {"id": "comp-AmountCard-1", "kind": "component", "label": "AmountCard · Limit coupon", "labelZh": "AmountCard · Limit coupon", "entry": "AmountCard", "state": 1, "components": ["AmountCard"], "pixels": 1762, "ratio": 0.01705, "box": [32, 63, 206, 29], "image": "images/comp-AmountCard-1.webp", "first": [111, 63], "unsteady": 0}, {"id": "comp-OrderHead_OrderStatus_PlanRows-0", "kind": "component", "label": "OrderHead · OrderStatus · PlanRows · In review", "labelZh": "OrderHead · OrderStatus · PlanRows · In review", "entry": "OrderHead · OrderStatus · PlanRows", "state": 0, "components": ["OrderHead", "OrderStatus", "PlanRows"], "pixels": 1474, "ratio": 0.01968, "box": [24, 51, 178, 29], "image": "images/comp-OrderHead_OrderStatus_PlanRows-0.webp", "first": [69, 51], "unsteady": 0}, {"id": "comp-AmountEntry-0", "kind": "component", "label": "AmountEntry · Type", "labelZh": "AmountEntry · Type", "entry": "AmountEntry", "state": 0, "components": ["AmountEntry"], "pixels": 3808, "ratio": 0.01684, "box": [24, 68, 224, 47], "image": "images/comp-AmountEntry-0.webp", "first": [142, 68], "unsteady": 0}, {"id": "comp-Profile_CreditLimitCard_GuestProfile-0", "kind": "component", "label": "Profile · CreditLimitCard · GuestProfile · Default", "labelZh": "Profile · CreditLimitCard · GuestProfile · Default", "entry": "Profile · CreditLimitCard · GuestProfile", "state": 0, "components": ["Profile", "CreditLimitCard", "GuestProfile"], "pixels": 1978, "ratio": 0.01761, "box": [59, 227, 239, 34], "image": "images/comp-Profile_CreditLimitCard_GuestProfile-0.webp", "first": [61, 227], "unsteady": 0}, {"id": "comp-Profile_CreditLimitCard_GuestProfile-1", "kind": "component", "label": "Profile · CreditLimitCard · GuestProfile · Not signed in", "labelZh": "Profile · CreditLimitCard · GuestProfile · Not signed in", "entry": "Profile · CreditLimitCard · GuestProfile", "state": 1, "components": ["Profile", "CreditLimitCard", "GuestProfile"], "pixels": 1553, "ratio": 0.01112, "box": [74, 302, 219, 35], "image": "images/comp-Profile_CreditLimitCard_GuestProfile-1.webp", "first": [96, 302], "unsteady": 0}, {"id": "comp-Hero_Reviews_OfferCard_PermissionCard-0", "kind": "component", "label": "Hero · Reviews · OfferCard · PermissionCard · Hero", "labelZh": "Hero · Reviews · OfferCard · PermissionCard · Hero", "entry": "Hero · Reviews · OfferCard · PermissionCard", "state": 0, "components": ["OfferCard", "Hero", "Reviews", "PermissionCard"], "pixels": 1340, "ratio": 0.01105, "box": [102, 60, 155, 33], "image": "images/comp-Hero_Reviews_OfferCard_PermissionCard-0.webp", "first": [160, 60], "unsteady": 0}, {"id": "comp-Hero_Reviews_OfferCard_PermissionCard-2", "kind": "component", "label": "Hero · Reviews · OfferCard · PermissionCard · Offer", "labelZh": "Hero · Reviews · OfferCard · PermissionCard · Offer", "entry": "Hero · Reviews · OfferCard · PermissionCard", "state": 2, "components": ["OfferCard", "Hero", "Reviews", "PermissionCard"], "pixels": 6070, "ratio": 0.06222, "box": [32, 96, 296, 134], "image": "images/comp-Hero_Reviews_OfferCard_PermissionCard-2.webp", "first": [134, 96], "unsteady": 0}, {"id": "comp-Installment_PayBar_PayDock_ScamStrip-1", "kind": "component", "label": "Installment · PayBar · PayDock · ScamStrip · Upcoming", "labelZh": "Installment · PayBar · PayDock · ScamStrip · Upcoming", "entry": "Installment · PayBar · PayDock · ScamStrip", "state": 1, "components": ["ScamStrip", "Installment", "PayBar", "PayDock"], "pixels": 597, "ratio": 0.0107, "box": [86, 37, 87, 16], "image": "images/comp-Installment_PayBar_PayDock_ScamStrip-1.webp", "first": [88, 37], "unsteady": 0}, {"id": "comp-Installment_PayBar_PayDock_ScamStrip-0", "kind": "component", "label": "Installment · PayBar · PayDock · ScamStrip · Overdue", "labelZh": "Installment · PayBar · PayDock · ScamStrip · Overdue", "entry": "Installment · PayBar · PayDock · ScamStrip", "state": 0, "components": ["ScamStrip", "Installment", "PayBar", "PayDock"], "pixels": 620, "ratio": 0.01111, "box": [86, 37, 93, 16], "image": "images/comp-Installment_PayBar_PayDock_ScamStrip-0.webp", "first": [88, 37], "unsteady": 0}, {"id": "comp-Installment_PayBar_PayDock_ScamStrip-2", "kind": "component", "label": "Installment · PayBar · PayDock · ScamStrip · Total", "labelZh": "Installment · PayBar · PayDock · ScamStrip · Total", "entry": "Installment · PayBar · PayDock · ScamStrip", "state": 2, "components": ["ScamStrip", "Installment", "PayBar", "PayDock"], "pixels": 1798, "ratio": 0.04162, "box": [36, 47, 138, 26], "image": "images/comp-Installment_PayBar_PayDock_ScamStrip-2.webp", "first": [39, 47], "unsteady": 0}, {"id": "comp-Installment_PayBar_PayDock_ScamStrip-4", "kind": "component", "label": "Installment · PayBar · PayDock · ScamStrip · Nothing picked", "labelZh": "Installment · PayBar · PayDock · ScamStrip · Nothing picked", "entry": "Installment · PayBar · PayDock · ScamStrip", "state": 4, "components": ["ScamStrip", "Installment", "PayBar", "PayDock"], "pixels": 1033, "ratio": 0.02391, "box": [36, 47, 79, 22], "image": "images/comp-Installment_PayBar_PayDock_ScamStrip-4.webp", "first": [39, 47], "unsteady": 0}, {"id": "comp-Installment_PayBar_PayDock_ScamStrip-5", "kind": "component", "label": "Installment · PayBar · PayDock · ScamStrip · Docked", "labelZh": "Installment · PayBar · PayDock · ScamStrip · Docked", "entry": "Installment · PayBar · PayDock · ScamStrip", "state": 5, "components": ["ScamStrip", "Installment", "PayBar", "PayDock"], "pixels": 1810, "ratio": 0.02417, "box": [20, 77, 138, 26], "image": "images/comp-Installment_PayBar_PayDock_ScamStrip-5.webp", "first": [23, 77], "unsteady": 0}, {"id": "comp-RepayCard_InsetRows_QrPanel_PayTimer_Accordion-0", "kind": "component", "label": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion · App", "labelZh": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion · App", "entry": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion", "state": 0, "components": ["RepayCard", "InsetRows", "PayTimer", "QrPanel", "Accordion"], "pixels": 1985, "ratio": 0.02418, "box": [32, 39, 162, 29], "image": "images/comp-RepayCard_InsetRows_QrPanel_PayTimer_Accordion-0.webp", "first": [35, 39], "unsteady": 0}, {"id": "comp-RepayCard_InsetRows_QrPanel_PayTimer_Accordion-1", "kind": "component", "label": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion · Transfer", "labelZh": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion · Transfer", "entry": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion", "state": 1, "components": ["RepayCard", "InsetRows", "PayTimer", "QrPanel", "Accordion"], "pixels": 1985, "ratio": 0.02214, "box": [32, 39, 162, 29], "image": "images/comp-RepayCard_InsetRows_QrPanel_PayTimer_Accordion-1.webp", "first": [35, 39], "unsteady": 0}, {"id": "comp-RepayCard_InsetRows_QrPanel_PayTimer_Accordion-2", "kind": "component", "label": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion · QR code", "labelZh": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion · QR code", "entry": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion", "state": 2, "components": ["RepayCard", "InsetRows", "PayTimer", "QrPanel", "Accordion"], "pixels": 1985, "ratio": 0.01128, "box": [32, 39, 162, 29], "image": "images/comp-RepayCard_InsetRows_QrPanel_PayTimer_Accordion-2.webp", "first": [35, 39], "unsteady": 0}, {"id": "comp-ActivityItem_InboxItem_HistoryRow-0", "kind": "component", "label": "ActivityItem · InboxItem · HistoryRow · Activity", "labelZh": "ActivityItem · InboxItem · HistoryRow · Activity", "entry": "ActivityItem · InboxItem · HistoryRow", "state": 0, "components": ["ActivityItem", "InboxItem", "HistoryRow"], "pixels": 400, "ratio": 0.00726, "box": [257, 36, 71, 16], "image": "images/comp-ActivityItem_InboxItem_HistoryRow-0.webp", "first": [273, 36], "unsteady": 0}, {"id": "comp-ActivityItem_InboxItem_HistoryRow-2", "kind": "component", "label": "ActivityItem · InboxItem · HistoryRow · History", "labelZh": "ActivityItem · InboxItem · HistoryRow · History", "entry": "ActivityItem · InboxItem · HistoryRow", "state": 2, "components": ["ActivityItem", "InboxItem", "HistoryRow"], "pixels": 2600, "ratio": 0.01963, "box": [32, 36, 93, 290], "image": "images/comp-ActivityItem_InboxItem_HistoryRow-2.webp", "first": [49, 36], "unsteady": 0}, {"id": "comp-HubCard_Tiles_Tips-0", "kind": "component", "label": "HubCard · Tiles · Tips · Hub", "labelZh": "HubCard · Tiles · Tips · Hub", "entry": "HubCard · Tiles · Tips", "state": 0, "components": ["HubCard", "Tiles", "Tips"], "pixels": 11441, "ratio": 0.17086, "box": [16, 53, 328, 109], "image": "images/comp-HubCard_Tiles_Tips-0.webp", "first": [35, 53], "unsteady": 0}, {"id": "comp-HubCard_Tiles_Tips-2", "kind": "component", "label": "HubCard · Tiles · Tips · Tips", "labelZh": "HubCard · Tiles · Tips · Tips", "entry": "HubCard · Tiles · Tips", "state": 2, "components": ["HubCard", "Tiles", "Tips"], "pixels": 131, "ratio": 0.00144, "box": [32, 72, 11, 103], "image": "images/comp-HubCard_Tiles_Tips-2.webp", "first": [32, 72], "unsteady": 0}, {"id": "comp-EstimateCard-0", "kind": "component", "label": "EstimateCard · Live", "labelZh": "EstimateCard · Live", "entry": "EstimateCard", "state": 0, "components": ["EstimateCard"], "pixels": 1798, "ratio": 0.00857, "box": [32, 63, 176, 29], "image": "images/comp-EstimateCard-0.webp", "first": [76, 63], "unsteady": 0}], "added": [{"id": "comp-Amount-3", "kind": "component", "label": "Amount · Number/lg 32", "labelZh": "Amount · Number/lg 32", "entry": "Amount", "state": 3, "components": ["Amount"]}, {"id": "comp-Amount-4", "kind": "component", "label": "Amount · Number/xl 36 + xs", "labelZh": "Amount · Number/xl 36 + xs", "entry": "Amount", "state": 4, "components": ["Amount"]}, {"id": "comp-Amount-5", "kind": "component", "label": "Amount · Number/xxl 48", "labelZh": "Amount · Number/xxl 48", "entry": "Amount", "state": 5, "components": ["Amount"]}, {"id": "comp-Amount-6", "kind": "component", "label": "Amount · Struck", "labelZh": "Amount · Struck", "entry": "Amount", "state": 6, "components": ["Amount"]}, {"id": "comp-Amount-7", "kind": "component", "label": "Amount · ₱ in a title", "labelZh": "Amount · ₱ in a title", "entry": "Amount", "state": 7, "components": ["Amount"]}, {"id": "comp-TopBar-3", "kind": "component", "label": "TopBar · With tabs", "labelZh": "TopBar · With tabs", "entry": "TopBar", "state": 3, "components": ["TopBar"]}, {"id": "comp-BottomBar_Navigator-4", "kind": "component", "label": "BottomBar · Navigator · With consent", "labelZh": "BottomBar · Navigator · With consent", "entry": "BottomBar · Navigator", "state": 4, "components": ["BottomBar", "Navigator"]}], "failed": [], "summary": {"components": ["Brand", "TopBar", "Bands", "APP.WdHero", "Amount", "Hero", "PaymentCard", "Card", "OfferCard", "Back", "Glass", "AmountCard", "OrderHead", "APP.Loaded", "Peso", "CouponTicket", "Installment", "RepayCard", "Section", "EstimateCard", "CreditLimitCard", "ActivityItem", "HubCard", "HistoryRow", "Rise", "Crossfade", "BottomBar", "Navigator", "Sheet", "Summary", "CreditCard", "HomeCoupons", "OrderStatus", "PlanRows", "AmountEntry", "Profile", "GuestProfile", "Reviews", "PermissionCard", "ScamStrip", "PayBar", "PayDock", "InsetRows", "PayTimer", "QrPanel", "Accordion", "InboxItem", "Tiles", "Tips"], "pages": ["opening", "home", "amount", "withdraw", "loan", "order", "coupons", "keep", "picker", "plan", "payment", "pay", "paydetail", "scams", "kyc-estimate", "account", "credit", "hub", "history", "loan-record", "logout", "rating"], "seconds": 245}}
+{
+ "against": "v1-20261116-n4",
+ "at": "2026-11-17T08:55:58.664Z",
+ "commit": "6ad29552394c149dbd85733adbf96fb6287ac0a1",
+ "items": 299,
+ "changed": [
+  {
+   "id": "page-home-0",
+   "kind": "page",
+   "label": "Home · Credit ready · repaying",
+   "labelZh": "首页 · 额度可用 · 还款中",
+   "page": "home",
+   "state": 0,
+   "components": [
+    "APP.WdHero"
+   ],
+   "pixels": 4723,
+   "ratio": 0.01682,
+   "box": [
+    32,
+    108,
+    268,
+    458
+   ],
+   "image": "images/page-home-0.webp",
+   "first": [
+    35,
+    108
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-home-1",
+   "kind": "page",
+   "label": "Home · Credit ready · no loan",
+   "labelZh": "首页 · 额度可用 · 未借款",
+   "page": "home",
+   "state": 1,
+   "components": [
+    "APP.WdHero"
+   ],
+   "pixels": 3992,
+   "ratio": 0.01422,
+   "box": [
+    32,
+    108,
+    268,
+    286
+   ],
+   "image": "images/page-home-1.webp",
+   "first": [
+    35,
+    108
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-home-2",
+   "kind": "page",
+   "label": "Home · Overdue",
+   "labelZh": "首页 · 逾期",
+   "page": "home",
+   "state": 2,
+   "components": [
+    "APP.WdHero"
+   ],
+   "pixels": 4723,
+   "ratio": 0.01682,
+   "box": [
+    32,
+    108,
+    268,
+    568
+   ],
+   "image": "images/page-home-2.webp",
+   "first": [
+    35,
+    108
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-home-4",
+   "kind": "page",
+   "label": "Home · Transfer failed",
+   "labelZh": "首页 · 放款失败",
+   "page": "home",
+   "state": 4,
+   "components": [
+    "APP.WdHero"
+   ],
+   "pixels": 3914,
+   "ratio": 0.01394,
+   "box": [
+    32,
+    108,
+    268,
+    364
+   ],
+   "image": "images/page-home-4.webp",
+   "first": [
+    35,
+    108
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-home-3",
+   "kind": "page",
+   "label": "Home · Loan in review",
+   "labelZh": "首页 · 借款审核中",
+   "page": "home",
+   "state": 3,
+   "components": [
+    "APP.WdHero"
+   ],
+   "pixels": 3914,
+   "ratio": 0.01394,
+   "box": [
+    32,
+    108,
+    268,
+    364
+   ],
+   "image": "images/page-home-3.webp",
+   "first": [
+    35,
+    108
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-home-5",
+   "kind": "page",
+   "label": "Home · Logged out",
+   "labelZh": "首页 · 未登录",
+   "page": "home",
+   "state": 5,
+   "components": [
+    "Amount",
+    "Hero"
+   ],
+   "pixels": 1340,
+   "ratio": 0.00477,
+   "box": [
+    102,
+    120,
+    155,
+    33
+   ],
+   "image": "images/page-home-5.webp",
+   "first": [
+    160,
+    120
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-home-6",
+   "kind": "page",
+   "label": "Home · New user",
+   "labelZh": "首页 · 新用户",
+   "page": "home",
+   "state": 6,
+   "components": [
+    "Amount",
+    "Hero"
+   ],
+   "pixels": 1340,
+   "ratio": 0.00477,
+   "box": [
+    102,
+    120,
+    155,
+    33
+   ],
+   "image": "images/page-home-6.webp",
+   "first": [
+    160,
+    120
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-home-7",
+   "kind": "page",
+   "label": "Home · Application in review",
+   "labelZh": "首页 · 申请审核中",
+   "page": "home",
+   "state": 7,
+   "components": [
+    "Amount",
+    "PaymentCard",
+    "Card"
+   ],
+   "pixels": 809,
+   "ratio": 0.00288,
+   "box": [
+    32,
+    240,
+    104,
+    22
+   ],
+   "image": "images/page-home-7.webp",
+   "first": [
+    35,
+    240
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-home-9",
+   "kind": "page",
+   "label": "Home · Not approved",
+   "labelZh": "首页 · 申请未通过",
+   "page": "home",
+   "state": 9,
+   "components": [
+    "OfferCard",
+    "Card"
+   ],
+   "pixels": 11920,
+   "ratio": 0.04245,
+   "box": [
+    32,
+    367,
+    296,
+    413
+   ],
+   "image": "images/page-home-9.webp",
+   "first": [
+    122,
+    367
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-home-10",
+   "kind": "page",
+   "label": "Home · Limit expired",
+   "labelZh": "首页 · 额度已过期",
+   "page": "home",
+   "state": 10,
+   "components": [
+    "Amount",
+    "PaymentCard",
+    "Card"
+   ],
+   "pixels": 809,
+   "ratio": 0.00288,
+   "box": [
+    32,
+    298,
+    104,
+    22
+   ],
+   "image": "images/page-home-10.webp",
+   "first": [
+    35,
+    298
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-home-11",
+   "kind": "page",
+   "label": "Home · Credit on hold",
+   "labelZh": "首页 · 额度冻结",
+   "page": "home",
+   "state": 11,
+   "components": [
+    "Amount",
+    "PaymentCard",
+    "Card"
+   ],
+   "pixels": 809,
+   "ratio": 0.00288,
+   "box": [
+    32,
+    324,
+    104,
+    22
+   ],
+   "image": "images/page-home-11.webp",
+   "first": [
+    35,
+    324
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-amount-0",
+   "kind": "page",
+   "label": "Amount (fallback)",
+   "labelZh": "输入金额（备用页）",
+   "page": "amount",
+   "state": 0,
+   "components": [
+    "Back",
+    "Glass",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 1116,
+   "ratio": 0.00397,
+   "box": [
+    24,
+    28,
+    134,
+    44
+   ],
+   "image": "images/page-amount-0.webp",
+   "first": [
+    55,
+    28
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-withdraw-0",
+   "kind": "page",
+   "label": "Amount (Withdraw)",
+   "labelZh": "借款金额（Withdraw）",
+   "page": "withdraw",
+   "state": 0,
+   "components": [
+    "APP.WdHero"
+   ],
+   "pixels": 2490,
+   "ratio": 0.00887,
+   "box": [
+    24,
+    144,
+    233,
+    47
+   ],
+   "image": "images/page-withdraw-0.webp",
+   "first": [
+    149,
+    144
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-loan-0",
+   "kind": "page",
+   "label": "Loan details (fallback)",
+   "labelZh": "借款详情（备用页）",
+   "page": "loan",
+   "state": 0,
+   "components": [
+    "AmountCard",
+    "Card"
+   ],
+   "pixels": 1850,
+   "ratio": 0.00659,
+   "box": [
+    32,
+    123,
+    208,
+    29
+   ],
+   "image": "images/page-loan-0.webp",
+   "first": [
+    83,
+    123
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-order-0",
+   "kind": "page",
+   "label": "Loan application · In review",
+   "labelZh": "借款申请状态 · 审核中",
+   "page": "order",
+   "state": 0,
+   "components": [
+    "Amount",
+    "OrderHead",
+    "APP.Loaded"
+   ],
+   "pixels": 1835,
+   "ratio": 0.00653,
+   "box": [
+    24,
+    111,
+    168,
+    29
+   ],
+   "image": "images/page-order-0.webp",
+   "first": [
+    83,
+    111
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-order-1",
+   "kind": "page",
+   "label": "Loan application · Transfer failed",
+   "labelZh": "借款申请状态 · 放款失败",
+   "page": "order",
+   "state": 1,
+   "components": [
+    "Amount",
+    "OrderHead",
+    "APP.Loaded"
+   ],
+   "pixels": 1835,
+   "ratio": 0.00653,
+   "box": [
+    24,
+    111,
+    168,
+    29
+   ],
+   "image": "images/page-order-1.webp",
+   "first": [
+    83,
+    111
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-coupons-0",
+   "kind": "page",
+   "label": "Coupon centre · Six",
+   "labelZh": "优惠券中心 · 6 张",
+   "page": "coupons",
+   "state": 0,
+   "components": [
+    "Peso",
+    "CouponTicket"
+   ],
+   "pixels": 2120,
+   "ratio": 0.00755,
+   "box": [
+    40,
+    416,
+    88,
+    282
+   ],
+   "image": "images/page-coupons-0.webp",
+   "first": [
+    42,
+    416
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-coupons-1",
+   "kind": "page",
+   "label": "Coupon centre · One",
+   "labelZh": "优惠券中心 · 1 张",
+   "page": "coupons",
+   "state": 1,
+   "components": [
+    "Peso",
+    "APP.Loaded",
+    "CouponTicket"
+   ],
+   "pixels": 673,
+   "ratio": 0.0024,
+   "box": [
+    51,
+    152,
+    62,
+    18
+   ],
+   "image": "images/page-coupons-1.webp",
+   "first": [
+    53,
+    152
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-keep-0",
+   "kind": "page",
+   "label": "Keep your coupon? · One coupon",
+   "labelZh": "保留优惠券？ · 一张券",
+   "page": "keep",
+   "state": 0,
+   "components": [
+    "AmountCard",
+    "Card"
+   ],
+   "pixels": 1578,
+   "ratio": 0.00562,
+   "box": [
+    32,
+    123,
+    185,
+    29
+   ],
+   "image": "images/page-keep-0.webp",
+   "first": [
+    62,
+    123
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-keep-1",
+   "kind": "page",
+   "label": "Keep your coupon? · Two coupons (swipe)",
+   "labelZh": "保留优惠券？ · 两张券（左右滑）",
+   "page": "keep",
+   "state": 1,
+   "components": [
+    "AmountCard",
+    "Card"
+   ],
+   "pixels": 1578,
+   "ratio": 0.00562,
+   "box": [
+    32,
+    123,
+    185,
+    29
+   ],
+   "image": "images/page-keep-1.webp",
+   "first": [
+    62,
+    123
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-picker-0",
+   "kind": "page",
+   "label": "Choose coupons",
+   "labelZh": "选择优惠券",
+   "page": "picker",
+   "state": 0,
+   "components": [
+    "APP.WdHero"
+   ],
+   "pixels": 2490,
+   "ratio": 0.00887,
+   "box": [
+    24,
+    144,
+    233,
+    47
+   ],
+   "image": "images/page-picker-0.webp",
+   "first": [
+    149,
+    144
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-plan-0",
+   "kind": "page",
+   "label": "Repayment plan",
+   "labelZh": "还款计划",
+   "page": "plan",
+   "state": 0,
+   "components": [
+    "AmountCard",
+    "Card"
+   ],
+   "pixels": 1850,
+   "ratio": 0.00659,
+   "box": [
+    32,
+    123,
+    208,
+    29
+   ],
+   "image": "images/page-plan-0.webp",
+   "first": [
+    83,
+    123
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-payment-0",
+   "kind": "page",
+   "label": "Repay · Repaying",
+   "labelZh": "还款 · 还款中",
+   "page": "payment",
+   "state": 0,
+   "components": [
+    "Amount",
+    "Installment",
+    "Card",
+    "APP.Loaded"
+   ],
+   "pixels": 3985,
+   "ratio": 0.01419,
+   "box": [
+    20,
+    173,
+    154,
+    510
+   ],
+   "image": "images/page-payment-0.webp",
+   "first": [
+    88,
+    173
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-payment-1",
+   "kind": "page",
+   "label": "Repay · Overdue",
+   "labelZh": "还款 · 逾期",
+   "page": "payment",
+   "state": 1,
+   "components": [
+    "Amount",
+    "Installment",
+    "Card",
+    "APP.Loaded"
+   ],
+   "pixels": 3987,
+   "ratio": 0.0142,
+   "box": [
+    20,
+    173,
+    154,
+    510
+   ],
+   "image": "images/page-payment-1.webp",
+   "first": [
+    88,
+    173
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-pay-0",
+   "kind": "page",
+   "label": "Pay · App",
+   "labelZh": "支付页 · App 支付",
+   "page": "pay",
+   "state": 0,
+   "components": [
+    "Amount",
+    "RepayCard",
+    "Card",
+    "Section"
+   ],
+   "pixels": 1985,
+   "ratio": 0.00707,
+   "box": [
+    32,
+    123,
+    162,
+    29
+   ],
+   "image": "images/page-pay-0.webp",
+   "first": [
+    35,
+    123
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-pay-1",
+   "kind": "page",
+   "label": "Pay · QR code",
+   "labelZh": "支付页 · 二维码",
+   "page": "pay",
+   "state": 1,
+   "components": [
+    "Amount",
+    "RepayCard",
+    "Card",
+    "Section"
+   ],
+   "pixels": 1985,
+   "ratio": 0.00707,
+   "box": [
+    32,
+    123,
+    162,
+    29
+   ],
+   "image": "images/page-pay-1.webp",
+   "first": [
+    35,
+    123
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-pay-2",
+   "kind": "page",
+   "label": "Pay · Transfer",
+   "labelZh": "支付页 · 转账",
+   "page": "pay",
+   "state": 2,
+   "components": [
+    "Amount",
+    "RepayCard",
+    "Card",
+    "Section"
+   ],
+   "pixels": 1985,
+   "ratio": 0.00707,
+   "box": [
+    32,
+    123,
+    162,
+    29
+   ],
+   "image": "images/page-pay-2.webp",
+   "first": [
+    35,
+    123
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-paydetail-0",
+   "kind": "page",
+   "label": "Payment detail",
+   "labelZh": "还款明细",
+   "page": "paydetail",
+   "state": 0,
+   "components": [
+    "Amount",
+    "Installment",
+    "Card",
+    "APP.Loaded"
+   ],
+   "pixels": 605,
+   "ratio": 0.00215,
+   "box": [
+    86,
+    173,
+    81,
+    16
+   ],
+   "image": "images/page-paydetail-0.webp",
+   "first": [
+    88,
+    173
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-scams-0",
+   "kind": "page",
+   "label": "Anti-scam tips",
+   "labelZh": "防诈骗提示",
+   "page": "scams",
+   "state": 0,
+   "components": [
+    "Amount",
+    "Installment",
+    "Card",
+    "APP.Loaded"
+   ],
+   "pixels": 1205,
+   "ratio": 0.00429,
+   "box": [
+    86,
+    173,
+    88,
+    142
+   ],
+   "image": "images/page-scams-0.webp",
+   "first": [
+    88,
+    173
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-kyc-estimate-0",
+   "kind": "page",
+   "label": "Loan estimate",
+   "labelZh": "借款估算",
+   "page": "kyc-estimate",
+   "state": 0,
+   "components": [
+    "AmountCard",
+    "Card",
+    "EstimateCard"
+   ],
+   "pixels": 1798,
+   "ratio": 0.0064,
+   "box": [
+    32,
+    375,
+    176,
+    29
+   ],
+   "image": "images/page-kyc-estimate-0.webp",
+   "first": [
+    76,
+    375
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-account-0",
+   "kind": "page",
+   "label": "Account · Logged in",
+   "labelZh": "我的 · 已登录",
+   "page": "account",
+   "state": 0,
+   "components": [
+    "CreditLimitCard",
+    "Card"
+   ],
+   "pixels": 8344,
+   "ratio": 0.02972,
+   "box": [
+    32,
+    295,
+    291,
+    485
+   ],
+   "image": "images/page-account-0.webp",
+   "first": [
+    61,
+    295
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-account-1",
+   "kind": "page",
+   "label": "Account · Logged out",
+   "labelZh": "我的 · 未登录",
+   "page": "account",
+   "state": 1,
+   "components": [
+    "CreditLimitCard",
+    "Card"
+   ],
+   "pixels": 6597,
+   "ratio": 0.02349,
+   "box": [
+    32,
+    358,
+    291,
+    422
+   ],
+   "image": "images/page-account-1.webp",
+   "first": [
+    96,
+    358
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-hub-0",
+   "kind": "page",
+   "label": "Credit limit hub",
+   "labelZh": "额度中心",
+   "page": "hub",
+   "state": 0,
+   "components": [
+    "Amount",
+    "HubCard",
+    "APP.Loaded"
+   ],
+   "pixels": 34607,
+   "ratio": 0.12324,
+   "box": [
+    16,
+    113,
+    328,
+    642
+   ],
+   "image": "images/page-hub-0.webp",
+   "first": [
+    35,
+    113
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-credit-0",
+   "kind": "page",
+   "label": "Credit history",
+   "labelZh": "额度记录",
+   "page": "credit",
+   "state": 0,
+   "components": [
+    "ActivityItem",
+    "Card",
+    "APP.Loaded"
+   ],
+   "pixels": 1296,
+   "ratio": 0.00462,
+   "box": [
+    246,
+    152,
+    82,
+    296
+   ],
+   "image": "images/page-credit-0.webp",
+   "first": [
+    265,
+    152
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-history-0",
+   "kind": "page",
+   "label": "Loan history",
+   "labelZh": "借款记录",
+   "page": "history",
+   "state": 0,
+   "components": [
+    "Amount",
+    "HistoryRow",
+    "APP.Loaded"
+   ],
+   "pixels": 3120,
+   "ratio": 0.01111,
+   "box": [
+    32,
+    120,
+    93,
+    454
+   ],
+   "image": "images/page-history-0.webp",
+   "first": [
+    49,
+    120
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-loan-record-0",
+   "kind": "page",
+   "label": "Loan record",
+   "labelZh": "借款详情",
+   "page": "loan-record",
+   "state": 0,
+   "components": [
+    "Amount",
+    "OrderHead"
+   ],
+   "pixels": 1848,
+   "ratio": 0.00658,
+   "box": [
+    24,
+    111,
+    168,
+    29
+   ],
+   "image": "images/page-loan-record-0.webp",
+   "first": [
+    55,
+    111
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-logout-0",
+   "kind": "page",
+   "label": "Log out",
+   "labelZh": "退出登录",
+   "page": "logout",
+   "state": 0,
+   "components": [
+    "CreditLimitCard",
+    "Card"
+   ],
+   "pixels": 6199,
+   "ratio": 0.02208,
+   "box": [
+    32,
+    295,
+    291,
+    485
+   ],
+   "image": "images/page-logout-0.webp",
+   "first": [
+    61,
+    295
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-rating-0",
+   "kind": "page",
+   "label": "Rating",
+   "labelZh": "评分",
+   "page": "rating",
+   "state": 0,
+   "components": [
+    "APP.WdHero"
+   ],
+   "pixels": 3143,
+   "ratio": 0.01119,
+   "box": [
+    32,
+    108,
+    188,
+    258
+   ],
+   "image": "images/page-rating-0.webp",
+   "first": [
+    35,
+    108
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Rise_Crossfade-0",
+   "kind": "component",
+   "label": "Rise · Crossfade · Rise",
+   "labelZh": "Rise · Crossfade · Rise",
+   "entry": "Rise · Crossfade",
+   "state": 0,
+   "components": [
+    "Rise",
+    "Crossfade"
+   ],
+   "pixels": 1560,
+   "ratio": 0.01484,
+   "box": [
+    32,
+    36,
+    93,
+    154
+   ],
+   "image": "images/comp-Rise_Crossfade-0.webp",
+   "first": [
+    49,
+    36
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Amount-0",
+   "kind": "component",
+   "label": "Amount · Number/xs 16",
+   "labelZh": "Amount · Number/xs 16",
+   "entry": "Amount",
+   "state": 0,
+   "components": [
+    "Amount"
+   ],
+   "pixels": 1318,
+   "ratio": 0.03051,
+   "box": [
+    16,
+    20,
+    104,
+    22
+   ],
+   "image": "images/comp-Amount-0.webp",
+   "first": [
+    17,
+    20
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Amount-1",
+   "kind": "component",
+   "label": "Amount · Number/sm 18",
+   "labelZh": "Amount · Number/sm 18",
+   "entry": "Amount",
+   "state": 1,
+   "components": [
+    "Amount"
+   ],
+   "pixels": 2575,
+   "ratio": 0.05961,
+   "box": [
+    16,
+    21,
+    186,
+    31
+   ],
+   "image": "images/comp-Amount-1.webp",
+   "first": [
+    18,
+    21
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Amount-2",
+   "kind": "component",
+   "label": "Amount · Number/md 24",
+   "labelZh": "Amount · Number/md 24",
+   "entry": "Amount",
+   "state": 2,
+   "components": [
+    "Amount"
+   ],
+   "pixels": 1079,
+   "ratio": 0.02498,
+   "box": [
+    16,
+    22,
+    97,
+    19
+   ],
+   "image": "images/comp-Amount-2.webp",
+   "first": [
+    19,
+    22
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-TopBar-1",
+   "kind": "component",
+   "label": "TopBar · Secondary page (solid)",
+   "labelZh": "TopBar · Secondary page (solid)",
+   "entry": "TopBar",
+   "state": 1,
+   "components": [
+    "TopBar"
+   ],
+   "pixels": 1739,
+   "ratio": 0.03896,
+   "box": [
+    16,
+    62,
+    314,
+    28
+   ],
+   "image": "images/comp-TopBar-1.webp",
+   "first": [
+    19,
+    62
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-TopBar-2",
+   "kind": "component",
+   "label": "TopBar · Brand",
+   "labelZh": "TopBar · Brand",
+   "entry": "TopBar",
+   "state": 2,
+   "components": [
+    "TopBar"
+   ],
+   "pixels": 6135,
+   "ratio": 0.09364,
+   "box": [
+    15,
+    62,
+    330,
+    98
+   ],
+   "image": "images/comp-TopBar-2.webp",
+   "first": [
+    19,
+    62
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-BottomBar_Navigator-2",
+   "kind": "component",
+   "label": "BottomBar · Navigator · Bottom bar · secondary",
+   "labelZh": "BottomBar · Navigator · Bottom bar · secondary",
+   "entry": "BottomBar · Navigator",
+   "state": 2,
+   "components": [
+    "BottomBar",
+    "Navigator"
+   ],
+   "pixels": 21197,
+   "ratio": 0.37266,
+   "box": [
+    34,
+    26,
+    292,
+    96
+   ],
+   "image": "images/comp-BottomBar_Navigator-2.webp",
+   "first": [
+    126,
+    26
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-BottomBar_Navigator-3",
+   "kind": "component",
+   "label": "BottomBar · Navigator · With a note",
+   "labelZh": "BottomBar · Navigator · With a note",
+   "entry": "BottomBar · Navigator",
+   "state": 3,
+   "components": [
+    "BottomBar",
+    "Navigator"
+   ],
+   "pixels": 14355,
+   "ratio": 0.22402,
+   "box": [
+    32,
+    26,
+    294,
+    116
+   ],
+   "image": "images/comp-BottomBar_Navigator-3.webp",
+   "first": [
+    126,
+    26
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Sheet-2",
+   "kind": "component",
+   "label": "Sheet · Page",
+   "labelZh": "Sheet · Page",
+   "entry": "Sheet",
+   "state": 2,
+   "components": [
+    "Sheet"
+   ],
+   "pixels": 2344,
+   "ratio": 0.01037,
+   "box": [
+    9,
+    444,
+    342,
+    41
+   ],
+   "image": "images/comp-Sheet-2.webp",
+   "first": [
+    10,
+    444
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-CouponTicket-1",
+   "kind": "component",
+   "label": "CouponTicket · Long rule",
+   "labelZh": "CouponTicket · Long rule",
+   "entry": "CouponTicket",
+   "state": 1,
+   "components": [
+    "CouponTicket"
+   ],
+   "pixels": 772,
+   "ratio": 0.01375,
+   "box": [
+    40,
+    34,
+    88,
+    16
+   ],
+   "image": "images/comp-CouponTicket-1.webp",
+   "first": [
+    42,
+    34
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-CouponTicket-5",
+   "kind": "component",
+   "label": "CouponTicket · Expired",
+   "labelZh": "CouponTicket · Expired",
+   "entry": "CouponTicket",
+   "state": 5,
+   "components": [
+    "CouponTicket"
+   ],
+   "pixels": 616,
+   "ratio": 0.01097,
+   "box": [
+    51,
+    34,
+    62,
+    18
+   ],
+   "image": "images/comp-CouponTicket-5.webp",
+   "first": [
+    53,
+    34
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Summary-0",
+   "kind": "component",
+   "label": "Summary · Both",
+   "labelZh": "Summary · Both",
+   "entry": "Summary",
+   "state": 0,
+   "components": [
+    "Summary"
+   ],
+   "pixels": 7904,
+   "ratio": 0.10556,
+   "box": [
+    16,
+    51,
+    327,
+    130
+   ],
+   "image": "images/comp-Summary-0.webp",
+   "first": [
+    31,
+    51
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Summary-1",
+   "kind": "component",
+   "label": "Summary · Discount only",
+   "labelZh": "Summary · Discount only",
+   "entry": "Summary",
+   "state": 1,
+   "components": [
+    "Summary"
+   ],
+   "pixels": 6327,
+   "ratio": 0.0845,
+   "box": [
+    16,
+    51,
+    327,
+    130
+   ],
+   "image": "images/comp-Summary-1.webp",
+   "first": [
+    31,
+    51
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Summary-2",
+   "kind": "component",
+   "label": "Summary · No coupon",
+   "labelZh": "Summary · No coupon",
+   "entry": "Summary",
+   "state": 2,
+   "components": [
+    "Summary"
+   ],
+   "pixels": 4713,
+   "ratio": 0.07524,
+   "box": [
+    16,
+    51,
+    327,
+    96
+   ],
+   "image": "images/comp-Summary-2.webp",
+   "first": [
+    31,
+    51
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-CreditCard-1",
+   "kind": "component",
+   "label": "CreditCard · No temporary",
+   "labelZh": "CreditCard · No temporary",
+   "entry": "CreditCard",
+   "state": 1,
+   "components": [
+    "CreditCard"
+   ],
+   "pixels": 1848,
+   "ratio": 0.02271,
+   "box": [
+    32,
+    48,
+    181,
+    62
+   ],
+   "image": "images/comp-CreditCard-1.webp",
+   "first": [
+    35,
+    48
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-CreditCard-0",
+   "kind": "component",
+   "label": "CreditCard · Temporary credit",
+   "labelZh": "CreditCard · Temporary credit",
+   "entry": "CreditCard",
+   "state": 0,
+   "components": [
+    "CreditCard"
+   ],
+   "pixels": 2199,
+   "ratio": 0.02567,
+   "box": [
+    32,
+    48,
+    193,
+    33
+   ],
+   "image": "images/comp-CreditCard-0.webp",
+   "first": [
+    35,
+    48
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-PaymentCard-0",
+   "kind": "component",
+   "label": "PaymentCard · Default",
+   "labelZh": "PaymentCard · Default",
+   "entry": "PaymentCard",
+   "state": 0,
+   "components": [
+    "PaymentCard"
+   ],
+   "pixels": 1067,
+   "ratio": 0.01536,
+   "box": [
+    32,
+    68,
+    104,
+    20
+   ],
+   "image": "images/comp-PaymentCard-0.webp",
+   "first": [
+    35,
+    68
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-PaymentCard-1",
+   "kind": "component",
+   "label": "PaymentCard · Discounted",
+   "labelZh": "PaymentCard · Discounted",
+   "entry": "PaymentCard",
+   "state": 1,
+   "components": [
+    "PaymentCard"
+   ],
+   "pixels": 1320,
+   "ratio": 0.019,
+   "box": [
+    32,
+    68,
+    154,
+    20
+   ],
+   "image": "images/comp-PaymentCard-1.webp",
+   "first": [
+    35,
+    68
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-PaymentCard-2",
+   "kind": "component",
+   "label": "PaymentCard · Overdue",
+   "labelZh": "PaymentCard · Overdue",
+   "entry": "PaymentCard",
+   "state": 2,
+   "components": [
+    "PaymentCard"
+   ],
+   "pixels": 954,
+   "ratio": 0.00877,
+   "box": [
+    32,
+    68,
+    114,
+    22
+   ],
+   "image": "images/comp-PaymentCard-2.webp",
+   "first": [
+    35,
+    68
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-HomeCoupons-0",
+   "kind": "component",
+   "label": "HomeCoupons · Two",
+   "labelZh": "HomeCoupons · Two",
+   "entry": "HomeCoupons",
+   "state": 0,
+   "components": [
+    "HomeCoupons"
+   ],
+   "pixels": 1565,
+   "ratio": 0.02241,
+   "box": [
+    59,
+    108,
+    241,
+    18
+   ],
+   "image": "images/comp-HomeCoupons-0.webp",
+   "first": [
+    61,
+    108
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-HomeCoupons-1",
+   "kind": "component",
+   "label": "HomeCoupons · Amount off",
+   "labelZh": "HomeCoupons · Amount off",
+   "entry": "HomeCoupons",
+   "state": 1,
+   "components": [
+    "HomeCoupons"
+   ],
+   "pixels": 1661,
+   "ratio": 0.02378,
+   "box": [
+    54,
+    108,
+    248,
+    16
+   ],
+   "image": "images/comp-HomeCoupons-1.webp",
+   "first": [
+    56,
+    108
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-HomeCoupons-2",
+   "kind": "component",
+   "label": "HomeCoupons · One",
+   "labelZh": "HomeCoupons · One",
+   "entry": "HomeCoupons",
+   "state": 2,
+   "components": [
+    "HomeCoupons"
+   ],
+   "pixels": 1086,
+   "ratio": 0.01464,
+   "box": [
+    42,
+    116,
+    99,
+    22
+   ],
+   "image": "images/comp-HomeCoupons-2.webp",
+   "first": [
+    63,
+    116
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-AmountCard-0",
+   "kind": "component",
+   "label": "AmountCard · Default",
+   "labelZh": "AmountCard · Default",
+   "entry": "AmountCard",
+   "state": 0,
+   "components": [
+    "AmountCard"
+   ],
+   "pixels": 1762,
+   "ratio": 0.01705,
+   "box": [
+    32,
+    63,
+    206,
+    29
+   ],
+   "image": "images/comp-AmountCard-0.webp",
+   "first": [
+    111,
+    63
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-AmountCard-1",
+   "kind": "component",
+   "label": "AmountCard · Limit coupon",
+   "labelZh": "AmountCard · Limit coupon",
+   "entry": "AmountCard",
+   "state": 1,
+   "components": [
+    "AmountCard"
+   ],
+   "pixels": 1762,
+   "ratio": 0.01705,
+   "box": [
+    32,
+    63,
+    206,
+    29
+   ],
+   "image": "images/comp-AmountCard-1.webp",
+   "first": [
+    111,
+    63
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-OrderHead_OrderStatus_PlanRows-0",
+   "kind": "component",
+   "label": "OrderHead · OrderStatus · PlanRows · In review",
+   "labelZh": "OrderHead · OrderStatus · PlanRows · In review",
+   "entry": "OrderHead · OrderStatus · PlanRows",
+   "state": 0,
+   "components": [
+    "OrderHead",
+    "OrderStatus",
+    "PlanRows"
+   ],
+   "pixels": 1474,
+   "ratio": 0.01968,
+   "box": [
+    24,
+    51,
+    178,
+    29
+   ],
+   "image": "images/comp-OrderHead_OrderStatus_PlanRows-0.webp",
+   "first": [
+    69,
+    51
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-AmountEntry-0",
+   "kind": "component",
+   "label": "AmountEntry · Type",
+   "labelZh": "AmountEntry · Type",
+   "entry": "AmountEntry",
+   "state": 0,
+   "components": [
+    "AmountEntry"
+   ],
+   "pixels": 3808,
+   "ratio": 0.01684,
+   "box": [
+    24,
+    68,
+    224,
+    47
+   ],
+   "image": "images/comp-AmountEntry-0.webp",
+   "first": [
+    142,
+    68
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Profile_CreditLimitCard_GuestProfile-0",
+   "kind": "component",
+   "label": "Profile · CreditLimitCard · GuestProfile · Default",
+   "labelZh": "Profile · CreditLimitCard · GuestProfile · Default",
+   "entry": "Profile · CreditLimitCard · GuestProfile",
+   "state": 0,
+   "components": [
+    "Profile",
+    "CreditLimitCard",
+    "GuestProfile"
+   ],
+   "pixels": 1978,
+   "ratio": 0.01761,
+   "box": [
+    59,
+    227,
+    239,
+    34
+   ],
+   "image": "images/comp-Profile_CreditLimitCard_GuestProfile-0.webp",
+   "first": [
+    61,
+    227
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Profile_CreditLimitCard_GuestProfile-1",
+   "kind": "component",
+   "label": "Profile · CreditLimitCard · GuestProfile · Not signed in",
+   "labelZh": "Profile · CreditLimitCard · GuestProfile · Not signed in",
+   "entry": "Profile · CreditLimitCard · GuestProfile",
+   "state": 1,
+   "components": [
+    "Profile",
+    "CreditLimitCard",
+    "GuestProfile"
+   ],
+   "pixels": 1553,
+   "ratio": 0.01112,
+   "box": [
+    74,
+    302,
+    219,
+    35
+   ],
+   "image": "images/comp-Profile_CreditLimitCard_GuestProfile-1.webp",
+   "first": [
+    96,
+    302
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Hero_Reviews_OfferCard_PermissionCard-0",
+   "kind": "component",
+   "label": "Hero · Reviews · OfferCard · PermissionCard · Hero",
+   "labelZh": "Hero · Reviews · OfferCard · PermissionCard · Hero",
+   "entry": "Hero · Reviews · OfferCard · PermissionCard",
+   "state": 0,
+   "components": [
+    "OfferCard",
+    "Hero",
+    "Reviews",
+    "PermissionCard"
+   ],
+   "pixels": 1340,
+   "ratio": 0.01105,
+   "box": [
+    102,
+    60,
+    155,
+    33
+   ],
+   "image": "images/comp-Hero_Reviews_OfferCard_PermissionCard-0.webp",
+   "first": [
+    160,
+    60
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Hero_Reviews_OfferCard_PermissionCard-2",
+   "kind": "component",
+   "label": "Hero · Reviews · OfferCard · PermissionCard · Offer",
+   "labelZh": "Hero · Reviews · OfferCard · PermissionCard · Offer",
+   "entry": "Hero · Reviews · OfferCard · PermissionCard",
+   "state": 2,
+   "components": [
+    "OfferCard",
+    "Hero",
+    "Reviews",
+    "PermissionCard"
+   ],
+   "pixels": 6365,
+   "ratio": 0.06429,
+   "box": [
+    32,
+    97,
+    296,
+    137
+   ],
+   "image": "images/comp-Hero_Reviews_OfferCard_PermissionCard-2.webp",
+   "first": [
+    122,
+    97
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Installment_PayBar_PayDock_ScamStrip-0",
+   "kind": "component",
+   "label": "Installment · PayBar · PayDock · ScamStrip · Overdue",
+   "labelZh": "Installment · PayBar · PayDock · ScamStrip · Overdue",
+   "entry": "Installment · PayBar · PayDock · ScamStrip",
+   "state": 0,
+   "components": [
+    "ScamStrip",
+    "Installment",
+    "PayBar",
+    "PayDock"
+   ],
+   "pixels": 620,
+   "ratio": 0.01111,
+   "box": [
+    86,
+    37,
+    93,
+    16
+   ],
+   "image": "images/comp-Installment_PayBar_PayDock_ScamStrip-0.webp",
+   "first": [
+    88,
+    37
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Installment_PayBar_PayDock_ScamStrip-1",
+   "kind": "component",
+   "label": "Installment · PayBar · PayDock · ScamStrip · Upcoming",
+   "labelZh": "Installment · PayBar · PayDock · ScamStrip · Upcoming",
+   "entry": "Installment · PayBar · PayDock · ScamStrip",
+   "state": 1,
+   "components": [
+    "ScamStrip",
+    "Installment",
+    "PayBar",
+    "PayDock"
+   ],
+   "pixels": 597,
+   "ratio": 0.0107,
+   "box": [
+    86,
+    37,
+    87,
+    16
+   ],
+   "image": "images/comp-Installment_PayBar_PayDock_ScamStrip-1.webp",
+   "first": [
+    88,
+    37
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Installment_PayBar_PayDock_ScamStrip-2",
+   "kind": "component",
+   "label": "Installment · PayBar · PayDock · ScamStrip · Total",
+   "labelZh": "Installment · PayBar · PayDock · ScamStrip · Total",
+   "entry": "Installment · PayBar · PayDock · ScamStrip",
+   "state": 2,
+   "components": [
+    "ScamStrip",
+    "Installment",
+    "PayBar",
+    "PayDock"
+   ],
+   "pixels": 1798,
+   "ratio": 0.04162,
+   "box": [
+    36,
+    47,
+    138,
+    26
+   ],
+   "image": "images/comp-Installment_PayBar_PayDock_ScamStrip-2.webp",
+   "first": [
+    39,
+    47
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Installment_PayBar_PayDock_ScamStrip-4",
+   "kind": "component",
+   "label": "Installment · PayBar · PayDock · ScamStrip · Nothing picked",
+   "labelZh": "Installment · PayBar · PayDock · ScamStrip · Nothing picked",
+   "entry": "Installment · PayBar · PayDock · ScamStrip",
+   "state": 4,
+   "components": [
+    "ScamStrip",
+    "Installment",
+    "PayBar",
+    "PayDock"
+   ],
+   "pixels": 1033,
+   "ratio": 0.02391,
+   "box": [
+    36,
+    47,
+    79,
+    22
+   ],
+   "image": "images/comp-Installment_PayBar_PayDock_ScamStrip-4.webp",
+   "first": [
+    39,
+    47
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Installment_PayBar_PayDock_ScamStrip-5",
+   "kind": "component",
+   "label": "Installment · PayBar · PayDock · ScamStrip · Docked",
+   "labelZh": "Installment · PayBar · PayDock · ScamStrip · Docked",
+   "entry": "Installment · PayBar · PayDock · ScamStrip",
+   "state": 5,
+   "components": [
+    "ScamStrip",
+    "Installment",
+    "PayBar",
+    "PayDock"
+   ],
+   "pixels": 1810,
+   "ratio": 0.02417,
+   "box": [
+    20,
+    77,
+    138,
+    26
+   ],
+   "image": "images/comp-Installment_PayBar_PayDock_ScamStrip-5.webp",
+   "first": [
+    23,
+    77
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-RepayCard_InsetRows_QrPanel_PayTimer_Accordion-1",
+   "kind": "component",
+   "label": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion · Transfer",
+   "labelZh": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion · Transfer",
+   "entry": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion",
+   "state": 1,
+   "components": [
+    "RepayCard",
+    "InsetRows",
+    "PayTimer",
+    "QrPanel",
+    "Accordion"
+   ],
+   "pixels": 1985,
+   "ratio": 0.02214,
+   "box": [
+    32,
+    39,
+    162,
+    29
+   ],
+   "image": "images/comp-RepayCard_InsetRows_QrPanel_PayTimer_Accordion-1.webp",
+   "first": [
+    35,
+    39
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-RepayCard_InsetRows_QrPanel_PayTimer_Accordion-2",
+   "kind": "component",
+   "label": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion · QR code",
+   "labelZh": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion · QR code",
+   "entry": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion",
+   "state": 2,
+   "components": [
+    "RepayCard",
+    "InsetRows",
+    "PayTimer",
+    "QrPanel",
+    "Accordion"
+   ],
+   "pixels": 1985,
+   "ratio": 0.01128,
+   "box": [
+    32,
+    39,
+    162,
+    29
+   ],
+   "image": "images/comp-RepayCard_InsetRows_QrPanel_PayTimer_Accordion-2.webp",
+   "first": [
+    35,
+    39
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-RepayCard_InsetRows_QrPanel_PayTimer_Accordion-0",
+   "kind": "component",
+   "label": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion · App",
+   "labelZh": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion · App",
+   "entry": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion",
+   "state": 0,
+   "components": [
+    "RepayCard",
+    "InsetRows",
+    "PayTimer",
+    "QrPanel",
+    "Accordion"
+   ],
+   "pixels": 1985,
+   "ratio": 0.02418,
+   "box": [
+    32,
+    39,
+    162,
+    29
+   ],
+   "image": "images/comp-RepayCard_InsetRows_QrPanel_PayTimer_Accordion-0.webp",
+   "first": [
+    35,
+    39
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-ActivityItem_InboxItem_HistoryRow-0",
+   "kind": "component",
+   "label": "ActivityItem · InboxItem · HistoryRow · Activity",
+   "labelZh": "ActivityItem · InboxItem · HistoryRow · Activity",
+   "entry": "ActivityItem · InboxItem · HistoryRow",
+   "state": 0,
+   "components": [
+    "ActivityItem",
+    "InboxItem",
+    "HistoryRow"
+   ],
+   "pixels": 400,
+   "ratio": 0.00726,
+   "box": [
+    257,
+    36,
+    71,
+    16
+   ],
+   "image": "images/comp-ActivityItem_InboxItem_HistoryRow-0.webp",
+   "first": [
+    273,
+    36
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-ActivityItem_InboxItem_HistoryRow-2",
+   "kind": "component",
+   "label": "ActivityItem · InboxItem · HistoryRow · History",
+   "labelZh": "ActivityItem · InboxItem · HistoryRow · History",
+   "entry": "ActivityItem · InboxItem · HistoryRow",
+   "state": 2,
+   "components": [
+    "ActivityItem",
+    "InboxItem",
+    "HistoryRow"
+   ],
+   "pixels": 2600,
+   "ratio": 0.01963,
+   "box": [
+    32,
+    36,
+    93,
+    290
+   ],
+   "image": "images/comp-ActivityItem_InboxItem_HistoryRow-2.webp",
+   "first": [
+    49,
+    36
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-HubCard_Tiles_Tips-0",
+   "kind": "component",
+   "label": "HubCard · Tiles · Tips · Hub",
+   "labelZh": "HubCard · Tiles · Tips · Hub",
+   "entry": "HubCard · Tiles · Tips",
+   "state": 0,
+   "components": [
+    "HubCard",
+    "Tiles",
+    "Tips"
+   ],
+   "pixels": 11441,
+   "ratio": 0.17086,
+   "box": [
+    16,
+    53,
+    328,
+    109
+   ],
+   "image": "images/comp-HubCard_Tiles_Tips-0.webp",
+   "first": [
+    35,
+    53
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-HubCard_Tiles_Tips-2",
+   "kind": "component",
+   "label": "HubCard · Tiles · Tips · Tips",
+   "labelZh": "HubCard · Tiles · Tips · Tips",
+   "entry": "HubCard · Tiles · Tips",
+   "state": 2,
+   "components": [
+    "HubCard",
+    "Tiles",
+    "Tips"
+   ],
+   "pixels": 131,
+   "ratio": 0.00144,
+   "box": [
+    32,
+    72,
+    11,
+    103
+   ],
+   "image": "images/comp-HubCard_Tiles_Tips-2.webp",
+   "first": [
+    32,
+    72
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-OrderSubmit-0",
+   "kind": "component",
+   "label": "OrderSubmit · Play",
+   "labelZh": "OrderSubmit · Play",
+   "entry": "OrderSubmit",
+   "state": 0,
+   "components": [
+    "OrderSubmit"
+   ],
+   "pixels": 64,
+   "ratio": 0.00044,
+   "box": [
+    44,
+    224,
+    29,
+    16
+   ],
+   "image": "images/comp-OrderSubmit-0.webp",
+   "first": [
+    46,
+    224
+   ],
+   "unsteady": 153
+  },
+  {
+   "id": "comp-EstimateCard-0",
+   "kind": "component",
+   "label": "EstimateCard · Live",
+   "labelZh": "EstimateCard · Live",
+   "entry": "EstimateCard",
+   "state": 0,
+   "components": [
+    "EstimateCard"
+   ],
+   "pixels": 1798,
+   "ratio": 0.00857,
+   "box": [
+    32,
+    63,
+    176,
+    29
+   ],
+   "image": "images/comp-EstimateCard-0.webp",
+   "first": [
+    76,
+    63
+   ],
+   "unsteady": 0
+  }
+ ],
+ "added": [
+  {
+   "id": "comp-Amount-3",
+   "kind": "component",
+   "label": "Amount · Number/lg 32",
+   "labelZh": "Amount · Number/lg 32",
+   "entry": "Amount",
+   "state": 3,
+   "components": [
+    "Amount"
+   ]
+  },
+  {
+   "id": "comp-Amount-4",
+   "kind": "component",
+   "label": "Amount · Number/xl 36 + xs",
+   "labelZh": "Amount · Number/xl 36 + xs",
+   "entry": "Amount",
+   "state": 4,
+   "components": [
+    "Amount"
+   ]
+  },
+  {
+   "id": "comp-Amount-5",
+   "kind": "component",
+   "label": "Amount · Number/xxl 48",
+   "labelZh": "Amount · Number/xxl 48",
+   "entry": "Amount",
+   "state": 5,
+   "components": [
+    "Amount"
+   ]
+  },
+  {
+   "id": "comp-Amount-6",
+   "kind": "component",
+   "label": "Amount · Struck",
+   "labelZh": "Amount · Struck",
+   "entry": "Amount",
+   "state": 6,
+   "components": [
+    "Amount"
+   ]
+  },
+  {
+   "id": "comp-Amount-7",
+   "kind": "component",
+   "label": "Amount · ₱ in a title",
+   "labelZh": "Amount · ₱ in a title",
+   "entry": "Amount",
+   "state": 7,
+   "components": [
+    "Amount"
+   ]
+  },
+  {
+   "id": "comp-TopBar-3",
+   "kind": "component",
+   "label": "TopBar · With tabs",
+   "labelZh": "TopBar · With tabs",
+   "entry": "TopBar",
+   "state": 3,
+   "components": [
+    "TopBar"
+   ]
+  },
+  {
+   "id": "comp-BottomBar_Navigator-4",
+   "kind": "component",
+   "label": "BottomBar · Navigator · With consent",
+   "labelZh": "BottomBar · Navigator · With consent",
+   "entry": "BottomBar · Navigator",
+   "state": 4,
+   "components": [
+    "BottomBar",
+    "Navigator"
+   ]
+  }
+ ],
+ "failed": [],
+ "summary": {
+  "components": [
+   "APP.WdHero",
+   "Amount",
+   "Hero",
+   "PaymentCard",
+   "Card",
+   "OfferCard",
+   "Back",
+   "Glass",
+   "TopBar",
+   "Bands",
+   "AmountCard",
+   "OrderHead",
+   "APP.Loaded",
+   "Peso",
+   "CouponTicket",
+   "Installment",
+   "RepayCard",
+   "Section",
+   "EstimateCard",
+   "CreditLimitCard",
+   "HubCard",
+   "ActivityItem",
+   "HistoryRow",
+   "Rise",
+   "Crossfade",
+   "BottomBar",
+   "Navigator",
+   "Sheet",
+   "Summary",
+   "CreditCard",
+   "HomeCoupons",
+   "OrderStatus",
+   "PlanRows",
+   "AmountEntry",
+   "Profile",
+   "GuestProfile",
+   "Reviews",
+   "PermissionCard",
+   "ScamStrip",
+   "PayBar",
+   "PayDock",
+   "InsetRows",
+   "PayTimer",
+   "QrPanel",
+   "Accordion",
+   "InboxItem",
+   "Tiles",
+   "Tips",
+   "OrderSubmit"
+  ],
+  "pages": [
+   "home",
+   "amount",
+   "withdraw",
+   "loan",
+   "order",
+   "coupons",
+   "keep",
+   "picker",
+   "plan",
+   "payment",
+   "pay",
+   "paydetail",
+   "scams",
+   "kyc-estimate",
+   "account",
+   "hub",
+   "credit",
+   "history",
+   "loan-record",
+   "logout",
+   "rating"
+  ],
+  "seconds": 245
+ }
+}

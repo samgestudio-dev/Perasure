@@ -113,13 +113,13 @@ anchor's. `PS.Wheel`'s band is its highlight (it covers the wheel's own line: no
 | **Notes and labels** beside an amount stay **Inter** | Total credit, Used / Available, an old (struck) price, the intro's "+₱10,000 added" / "Previous limit" |
 | **Titles** keep their own font; **only the ₱** in them is the number font | `h(PS.Peso, null, '+₱5,000')` → `<span class="ps-peso">₱</span>` (coupon values on home, the coupon centre, the coupon picker) |
 | **List numbers** are not amounts | Tips' 1 2 3: Hanken |
-| A size with **no Number style** | the nearest style (OfferCard's 28 → md 24), or ask the owner |
+| A size with **no Number style** | ask the owner (OfferCard's 28 → lg 32, owner's choice) |
 | **One glyph per box** (typed digits, the Withdraw morph) | boxes don't kern, so each box carries its pair's kern as a right margin: `PS.kern(a, b)` (em) from `PS.KERN`, Reddit Sans Bold's GPOS pairs; withdraw.js has the same table (`Component.KERN`) |
 
 Where it is used (2026.11.17): home credit card (xl + xs), payment card (md), coupon picker total (md), order / estimate amount
 card (lg), amount entry (₱ lg, digits xxl, ".00" xs), account credit limit card (xs), credit limit hub (lg + xs), pay page (lg), loan
 application (lg), payment tab instalments (sm) and total (md), loan history (sm), credit history (xs), guest hero (xl), More for you
-(md), the Credit limit increase's big number.
+(lg), the Credit limit increase's big number.
 
 **Bars** (`PS.TopBar`, `PS.BottomBar`, `PS.Navigator`, `PS.Bands`): no progressive blur — one token veil each. Tab pages: header
 `--gradient-top-nav-filled`, tab bar `--gradient-bottom-primary-nav-filled`; secondary pages (`PS.Screen{secondary}`): solid header,

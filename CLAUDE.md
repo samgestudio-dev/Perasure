@@ -242,8 +242,8 @@ rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), buil
   `lg 32/40 +2 %`, `xl 36/100 % +4 %`, `xxl 48/100 % +3 %`, all Bold (`.ps-t-number-*`, `PS.Amount{num, decNum}`). Never for small notes
   and labels beside an amount (Total credit, Used / Available, an old price, the credit limit pill's "+₱…", "Previous limit") — those
   are Inter; never for list numbers (Tips 1 2 3 — Hanken). A title (a coupon's value "+₱5,000", "₱300 OFF") keeps its own font and
-  only its ₱ is the number font (`PS.Peso`). An amount Figma sets at a size with no Number style takes the nearest one (OfferCard 28 → md)
-  or asks the owner. Amounts drawn one glyph per box (typed digits, the Withdraw morph) carry Reddit Sans's kerning as margins
+  only its ₱ is the number font (`PS.Peso`). An amount Figma sets at a size with no Number style takes the one the owner picks (OfferCard 28 → lg 32)
+  — ask the owner. Amounts drawn one glyph per box (typed digits, the Withdraw morph) carry Reddit Sans's kerning as margins
   (`PS.KERN` / `PS.kern`, withdraw.js `Component.KERN`): split boxes don't kern. Details: `shared/README.md` → "Number font".
 - **Applying** (owner): Your loan estimate → Basic info → ID type + both sides → Check the details → selfie → trusted contact → Submit
   (`APP.apply()`). Addresses are the Philippines' real Region → Province → City list (`prototypes/app/ph-places.js`, PSA PSGC).

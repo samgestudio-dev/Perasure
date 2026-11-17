@@ -747,7 +747,7 @@ textarea.ps-field__value { white-space: normal; }
 .ps-offer__head { display: flex; align-items: center; justify-content: space-between; }
 .ps-offer__head > img { height: 1.5rem; width: auto; }
 .ps-offer__value { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-2xs); }
-.ps-offer__num { font: var(--font-weight-bold) var(--font-size-title-lg)/var(--font-line-height-title-lg) var(--ps-font-num); letter-spacing: 0; color: var(--color-text-brand-default); }   /* Number/md (was 28: no Number style at 28 — owner 2026-11-17) */
+.ps-offer__num { font: var(--font-weight-bold) var(--font-size-display-sm)/var(--font-line-height-display-sm) var(--ps-font-num); letter-spacing: 0.02em; color: var(--color-text-brand-default); }   /* Number/lg 32 / 40 (was 28: no Number style at 28 — owner 2026-11-17 chose lg) */
 .ps-offer > .ps-btn { margin-top: var(--spacing-gap-xs); }
 .ps-banners { display: flex; gap: var(--spacing-gap-sm); overflow-x: auto; scrollbar-width: none; margin: 0 calc(-1 * var(--spacing-page-x-sm)); padding: 0 var(--spacing-page-x-sm); scroll-snap-type: x mandatory; }
 .ps-banners::-webkit-scrollbar { height: 0; }
