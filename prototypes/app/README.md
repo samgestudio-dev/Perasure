@@ -184,7 +184,7 @@ inconsistencies left as the system has them: the selfie frame's heading text is 
 ## Shared pieces and the gallery
 
 Every piece of the app's look is a shared component in `shared/ps-ui`, shown with its states in the
-[PeraSure Dev Mode → Components](../../devmode/index.html#v=components) (states in `shared/gallery.js` / `gallery-app.js`; owner: a new piece is made there first, then the page uses it). `app.css` only places
+[PeraSure Dev Mode → Components](https://samge.studio/devmode/?app=perasure#v=components) (states in `shared/gallery.js` / `gallery-app.js`; owner: a new piece is made there first, then the page uses it). `app.css` only places
 shared pieces (stacks, gaps, the Withdraw demo's layer); nothing in it restyles a component. Moved out of the app, each checked pixel for
 pixel against the screen it came from: `apply.js` (`PageHead`, `PageHero`, `IdCamera`, `IdSideCard`, `Selfie`, `FaceCamera`, `IdResult`,
 `FileList`, `SearchSheet`, `BankList`, `PlacePicker`, `EstimateCard`, `Article`, `Feedback`, `RelatedLinks`), `layout.js` (`SheetHead`,

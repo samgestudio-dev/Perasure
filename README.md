@@ -1,6 +1,6 @@
 # PeraSure Playground
 
-Phone-first motion prototypes. The repo is private; it is served at samge.studio behind a password ([`worker/`](worker/README.md)).
+Phone-first motion prototypes. The repo is private; it is served at samge.studio behind a password (the Worker is in the repo `devmode-platform`).
 
 **Open on your phone:** https://samge.studio/perasure/playground/ — a picker page with two tabs:
 **Prototypes** (interactive flows) and **Animations** (illustration animations, played one at a time as Lottie or GSAP).
@@ -12,7 +12,7 @@ Phone-first motion prototypes. The repo is private; it is served at samge.studio
 | First application | [Standard](prototypes/first-application/index.html) (log in → code → home before a limit → the application → Submit → credit limit ready, on the app's own screens; Tune: forms empty / filled in, after Submit, code / ID / selfie outcomes) · [guide](prototypes/first-application/README.md) |
 | PeraSure app | [Test app](prototypes/app/index.html) (the whole app as a test environment: every account and loan state in Tune, made-up loading; in progress) · [guide](prototypes/app/README.md) |
 | Coupon system | [Standard](prototypes/coupon-system/index.html) (home / account → coupon centre → apply a loan with coupons; Tune: blur, six / one / no coupons) · [guide](prototypes/coupon-system/README.md) |
-| PeraSure Dev Mode | [Desktop](devmode/index.html) (every page and shared component, inspected like Figma Dev Mode: specs, tokens, code, iterations, version compare) · [guide](devmode/README.md) · [MCP for AI tools](devmode/mcp/README.md) · [component docs](shared/README.md) |
+| PeraSure Dev Mode | [Desktop](https://samge.studio/devmode/?app=perasure) (every page and shared component, inspected like Figma Dev Mode: specs, tokens, code, iterations, version compare; platform repo `devmode-platform`) · [guide](devmode/README.md) · [component docs](shared/README.md) |
 | Change co-maker | [Standard](prototypes/co-maker-change/index.html) (Change → card morphs into the form; Cancel / Save morph back) · [guide](prototypes/co-maker-change/README.md) |
 | Credit limit increase | [Baked heap](prototypes/credit-limit-coins/baked/baked-heap.html) (deliverable) · [Baked heap + shockwave](prototypes/credit-limit-coins/baked/baked-shockwave.html) (variant) · [Physics tuner](prototypes/credit-limit-coins/physics-tuner/physics-tuner.html) (engineering file for tuning, not shipped) · [integration guide](prototypes/credit-limit-coins/README.md) |
 | Withdraw fund flow | [Standard](prototypes/withdraw-fund-flow/index.html) (Tune: gradient blur, card amounts, motion feel) · [Credit limit increase · credit unused](prototypes/withdraw-fund-flow/with-credit-limit.html) (the Credit limit animation first, closing in to the home card; the available amount carries over) · [Credit limit increase · credit partly used](prototypes/withdraw-fund-flow/with-credit-limit-used.html) (the total credit goes up and lands on "Total credit"; the available amount counts up) · [guide](prototypes/withdraw-fund-flow/README.md) |
@@ -70,7 +70,7 @@ export with the Figma plugin and upload into `tokens/inbox`, or ask Claude. Not 
 `shared/ps-ui/` holds the PeraSure screens' building blocks as configurable React components — header and bottom
 bars, tab bar, sheets, home cards, coupon tickets, the loan page cards, account rows and more — styled only with the
 design tokens. A prototype puts them together with its own data; change a component once and every prototype built on
-it changes with it. Live, with every state: [PeraSure Dev Mode → Components](devmode/index.html#v=components) · docs and props:
+it changes with it. Live, with every state: [PeraSure Dev Mode → Components](https://samge.studio/devmode/?app=perasure#v=components) · docs and props:
 [`shared/README.md`](shared/README.md). The Coupon system demo is the first one built this way; older demos keep
 their own code for now.
 

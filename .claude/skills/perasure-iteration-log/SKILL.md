@@ -51,11 +51,11 @@ gets an overview folder and a developer brief — read `references/global-iterat
    an older version's code to that tag; check the tag exists a minute after the push (`git ls-remote --tags origin devmode-<id>`).
    When the owner asks for a fix inside the latest iteration (no new one), redo its snapshot (delete the folder, run the snapshot
    script again), its overview pictures and its brief in one commit; the workflow then moves the tag there. Only with the owner's go-ahead.
-9. **Check in Dev Mode** (desktop viewport, `devmode/index.html`): the version menu lists the new label; Iterations shows the entry;
+9. **Check in Dev Mode** (desktop viewport, https://samge.studio/devmode/?app=perasure — locally, a devmode-platform clone served next to this repo): the version menu lists the new label; Iterations shows the entry;
    the changed page / component's History tab lists it; Compare (previous → new) shows both frames and the changes with properties
    and code before → after; a few minutes after the push, Iterations → Unrecorded changes (the *Dev Mode visual check* workflow) is
    back to zero. No console errors. Give the owner the Dev Mode link with the iteration open
-   (`devmode/index.html#v=iterations&it=<id>`).
+   (`https://samge.studio/devmode/?app=perasure#v=iterations&it=<id>`).
 
 ## Don'ts
 

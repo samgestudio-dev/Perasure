@@ -1,9 +1,9 @@
 # PeraSure Playground — agent guide
 
 Phone-first motion prototypes for PeraSure. The repo is private: a Cloudflare Worker serves `main` at samge.studio behind a password,
-read straight from GitHub (`worker/`, guide `worker/README.md`).
+read straight from GitHub (the Worker lives in the repo `samgestudio-dev/devmode-platform`, `worker/`, guide `worker/README.md`).
 
-- Live picker: https://samge.studio/perasure/playground/ · Dev Mode: https://samge.studio/perasure/devmode/
+- Live picker: https://samge.studio/perasure/playground/ · Dev Mode: https://samge.studio/devmode/?app=perasure
 - Each demo is opened and tested on a real phone (iOS Safari and Android Chrome).
 - The owner is a designer; reply in plain language and keep the picker page tidy.
 
@@ -53,10 +53,8 @@ shared/ps-ui/              PeraSure UI components (React, configurable): ps-ui.c
 shared/gallery.js, gallery-app.js  every shared component's states (one entry each: name, desc, props, states) — shown in Dev Mode
 shared/stage.html          draws one state of one entry (?entry=&state=): Dev Mode's canvas for a component
 shared/gallery.html        only forwards old links to Dev Mode → Components
-devmode/                   PeraSure Dev Mode ("PeraSure Dev Mode" on the picker, desktop): every page and component inspected like Figma Dev Mode,
-                           with code, specs, tokens, iterations and version compare — see "PeraSure Dev Mode" and devmode/README.md;
-                           devmode/mcp/: its MCP tools for developers' AI (core.mjs shared by the hosted and the local server)
-worker/                    the Cloudflare Worker serving the repo at samge.studio/perasure/ behind a password, and the hosted MCP server
+devmode/                   what PeraSure Dev Mode reads (the platform is the repo devmode-platform, at samge.studio/devmode/?app=perasure):
+                           app.js (adapter), data/, snapshots/, iterations/, inspector.js — see "PeraSure Dev Mode" and devmode/README.md;
 tools/devmode-index.py     makes devmode/data/index.js from the code (stamp.py runs it); devmode-snapshot.py saves a version's runnable copy
 shared/README.md           how to use the components, files, rules for changing them
 prototypes/app/            the whole app as a test environment ("PeraSure app") — see "The full app"
@@ -74,7 +72,7 @@ tools/figma-tokens/        Figma side of the token pipeline: core.js (export + d
 .github/workflows/tokens.yml  applies exports dropped in tokens/inbox/, tags tokens-v<version>, checks generated files
 .github/workflows/devmode.yml tags each Dev Mode snapshot's commit devmode-<id>
 .github/workflows/devmode-visual.yml  the Dev Mode visual check on every push (tools/devmode-visual.mjs) → branch devmode-visual
-.github/workflows/devmode-live.yml    Dev Mode data as JSON → branch devmode-mcp (for the hosted MCP); deploys worker/ when it changes
+.github/workflows/devmode-live.yml    Dev Mode data as JSON → branch devmode-mcp (for the hosted MCP in devmode-platform)
 vendor/<lib>@<version>/    pinned libraries: lottie-web, gsap (+ plugins; esm/ = ES modules), react, react-dom, mui-material,
                            motion (motion-react.js = React API, motion.js = vanilla; both set window.Motion), matter-js,
                            react-wheel-picker (the package's dist/index.js unchanged in a small wrapper → window.WheelPicker; + style.css)
@@ -282,7 +280,7 @@ rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), buil
   sets only its path in its own `flow.js` (wrapping `APP.go` / `swap` / `set`) — e.g. `prototypes/first-application/`. The names it relies on are
   listed at the top of its `flow.js`; when you rename an app screen, a user state or a form key, update those demos in the same commit.
 
-## PeraSure Dev Mode (`devmode/`)
+## PeraSure Dev Mode (`devmode/` — data only; the platform is the repo `devmode-platform`)
 
 The owner's tool for designers and developers (desktop, after Figma Dev Mode): every page of the app and every shared component, live,
 with hover spacing (padding / gaps labelled with the tokens the CSS uses), Alt redlines, specs, tokens, the code behind each piece (GitHub,
@@ -301,7 +299,7 @@ at the version's tag), Figma nodes, statuses, the iteration record and version c
   `devmode/data/pages.js` (how each page and state is opened) and `devmode/data/index.js` (made by `tools/devmode-index.py` from the code).
   A new screen → add it to `pages.js`; a new component → its gallery entry (it then has states in Dev Mode).
 - **The platform's own look is not PeraSure's** (owner): PeraSure tokens are data inside it (Inspect, the Tokens tab), never its styling.
-  It is bilingual (中 / EN, every text in `devmode/js/i18n.js`, data as `{ zh, en }`) and has light and dark themes.
+  It is bilingual (中 / EN, every text in devmode-platform's `js/i18n.js`, data as `{ zh, en }`) and has light and dark themes.
 - Don't read `tokens/tokens.css` into context for it: the Tokens tab parses the file in the browser.
 - **Unrecorded changes** (owner wanted a Chromatic-like check): `tools/devmode-visual.mjs diff` renders every page state and component
   state from the latest iteration's snapshot and from the code now and compares pixels (steady renders: fixed clock and random numbers,
@@ -311,19 +309,17 @@ at the version's tag), Figma nodes, statuses, the iteration record and version c
   render steadily (check with `--filter <id>` twice).
 - **Screen as on the phone** (owner): the canvas lays a page out and draws it as the chosen phone does — device, Screen fit (the app's
   Tune modes, default capped zoom) and Text size, in the toolbar's screen menu; the frame keeps one size and place on every page.
-  `DM.screenOf` (`devmode/js/canvas.js`) and `screenOf` in `devmode/mcp/core.mjs` mirror `shared/ps-ui/phone-fit.js`: when the fit
-  modes or the capped zoom change there, change both.
-- **Annotate, QA, Figma links** (owner): notes pinned on layers travel in links (`devmode/js/notes.js`); QA lays the developers'
+  `DM.screenOf` (devmode-platform `js/canvas.js`) and `screenOf` in its `mcp/core.mjs` mirror `shared/ps-ui/phone-fit.js`: when the fit
+  modes or the capped zoom change there, change both (and `zmax` in `devmode/app.js`).
+- **Annotate, QA, Figma links** (owner): notes pinned on layers travel in links (devmode-platform `js/notes.js`); QA lays the developers'
   screenshot over the demo (canvas); design-system components matched to PS components live in `devmode/data/figma-links.js` (only
   clear one-to-one matches). Writing links into the shared Figma file needs the owner's go-ahead (Code Connect needs an Organization plan).
-- **MCP for developers' AI** (owner): hosted at https://samge.studio/perasure/devmode/mcp (`worker/index.js`; signs in the MCP standard way — OAuth: the tool opens the PeraSure sign-in page once — or with the account and password as headers, and reads
-  any repo file through `read_file` / `list_files` / `search_code`, so developers never need GitHub; switches `SITE_LOGIN` / `MCP_LOGIN` in
-  `worker/README.md`) and
-  local in a clone (`devmode/mcp/server.mjs`, stdio, adds the Playwright tools); both run the tools in `devmode/mcp/core.mjs` (guide
-  `devmode/mcp/README.md`). The local one reads the
-  same data files, `shared/ps-ui`, the gallery entries and `tokens/tokens.css`, and injects `devmode/js/inspector.js` for live measurements.
-  When a data format, a page's opening (`pages.js`) or the inspector changes, update `core.mjs` in the same commit and raise its `VERSION`;
-  check with `node devmode/mcp/server.mjs --check`. Its setup dialog and "Copy for AI" are `devmode/js/ai.js`.
+- **MCP for developers' AI** (owner): hosted at https://samge.studio/devmode/mcp (one server for every app on the platform; each tool takes
+  `app`; OAuth sign-in or the account and password as headers; reads any repo file, so developers never need GitHub) and local
+  (`node mcp/server.mjs --app <Perasure clone>` in a devmode-platform clone, adds the Playwright tools). Guide: devmode-platform `mcp/README.md`.
+  The local one injects this repo's `devmode/inspector.js` (a copy of the platform's `js/inspector.js`: keep them the same). When a data
+  format or a page's opening (`pages.js`) changes, update the platform's `mcp/core.mjs` (`pagesFrom`) too, raise its `VERSION` and redeploy
+  the Worker.
 
 ## Withdraw: the two credit states of the Credit limit intro
 
@@ -446,12 +442,12 @@ bundle was unpacked onto the shared environment):
 The site asks browsers to check every file for a newer version, but phones still hold on to some. Before committing a change to the Playground pages,
 `animations/` or `assets/`, run `python3 tools/stamp.py`: it stamps the shared scripts (`?v=<stamp>`), and the
 index adds that stamp to every link and thumbnail, so phones load the new version right away. It also remakes Dev Mode's index
-(`devmode/data/index.js`) and stamps `devmode/index.html`. The player
+(`devmode/data/index.js`). The player
 fetches animation JSON with `cache: 'no-cache'` and loads GSAP modules with a per-load token.
 
 ## Publishing
 
 - Commit to `main` and push; samge.studio shows it within about 20 seconds (the Worker reads `main` from GitHub; nothing to deploy).
-  Only a change to `worker/` or `devmode/mcp/core.mjs` needs a Worker deploy (*Dev Mode live* workflow, or the Cloudflare connector).
+  The Worker and the Dev Mode platform live in `devmode-platform`; only a change there needs a Worker deploy.
 - The account, password and tokens are Cloudflare secrets: never write them into the repo.
 - Give the owner the direct demo link (https://samge.studio/perasure/playground/prototypes/…) as well as the picker link.

@@ -1,4 +1,4 @@
-/* PeraSure Dev Mode — reading the app in the canvas: its shared components (PS.*) are found in React's own tree, so nothing in the app
+/* Dev Mode — reading the app in the canvas: its shared components (PS.*, CS.* … — the adapter's ns) are found in React's own tree, so nothing in the app
    is marked by hand and a new component is picked up by itself. Works on the live app and on every snapshot (same origin).
    tree(win) → { node tree, byFiber } · nodeFor(win, element) → the innermost component under an element · rect(node) · props(node)
    specs(win, node) → measured values with the tokens they match · usage(node) → a JSX line for the component as it is used here. */
@@ -9,8 +9,8 @@
 
   function key(o, pre) { for (var k in o) if (k.indexOf(pre) === 0) return k; return null; }
   function maps(win) {
-    if (win.__dmMaps && win.__dmMaps.ps === win.PS) return win.__dmMaps;
-    var comp = new Map(), page = new Map(), app = new Map(), PS = win.PS || {}, APP = win.APP;
+    if (win.__dmMaps && win.__dmMaps.ps === win[DM.NS]) return win.__dmMaps;
+    var comp = new Map(), page = new Map(), app = new Map(), PS = win[DM.NS] || {}, APP = win.APP;
     Object.keys(PS).forEach(function (k) { if (/^[A-Z]/.test(k) && typeof PS[k] === 'function') comp.set(PS[k], k); });
     /* the app's own pieces (APP.WdHero: the Withdraw demo's home card …) are layers too */
     if (APP) Object.keys(APP).forEach(function (k) { if (/^[A-Z]/.test(k) && k !== 'App' && typeof APP[k] === 'function' && !comp.has(APP[k])) app.set(APP[k], k); });
@@ -19,7 +19,7 @@
     return (win.__dmMaps = { ps: PS, comp: comp, page: page, app: app });
   }
   I.ready = function (win) {
-    try { var el = win.document.getElementById('root'); return !!(el && key(el, '__reactContainer$') && win.PS); } catch (e) { return false; }
+    try { var el = win.document.getElementById('root'); return !!(el && key(el, '__reactContainer$') && win[DM.NS]); } catch (e) { return false; }
   };
   I.compName = function (win, fiber) { var M = maps(win); return fiber && typeof fiber.type === 'function' ? M.comp.get(fiber.type) : null; };
 
@@ -163,7 +163,7 @@
       if (v === true) parts.push(k); else if (v === undefined) return; else parts.push(k + '=' + jsx(v));
     });
     var ch = p.children, inner = typeof ch === 'string' ? ch : ch ? '{/* children */}' : null;
-    var tagn = (node.app ? '' : 'PS.') + node.name, open = '<' + tagn + (parts.length ? (parts.join(' ').length > 50 ? '\n  ' + parts.join('\n  ') + '\n' : ' ' + parts.join(' ')) : '');
+    var tagn = (node.app ? '' : DM.NS + '.') + node.name, open = '<' + tagn + (parts.length ? (parts.join(' ').length > 50 ? '\n  ' + parts.join('\n  ') + '\n' : ' ' + parts.join(' ')) : '');
     return inner ? open + '>' + inner + '</' + tagn + '>' : open + (parts.join(' ').length > 50 ? '/>' : ' />');
   };
   /* the same as a call, as the repo writes it (no JSX: React.createElement) */
@@ -175,7 +175,7 @@
       var v = p[k]; parts.push(k + ': ' + (typeof v === 'function' ? 'function () {}' : v && v.$$typeof ? 'null /* ' + preview(v, 0) + ' */' : preview(v, 0)));
     });
     var ch = p.children;
-    return 'h(' + (node.app ? '' : 'PS.') + node.name + ', ' + (parts.length ? '{ ' + parts.join(', ') + ' }' : 'null') + (typeof ch === 'string' ? ', ' + JSON.stringify(ch) : ch ? ', /* children */' : '') + ')';
+    return 'h(' + (node.app ? '' : DM.NS + '.') + node.name + ', ' + (parts.length ? '{ ' + parts.join(', ') + ' }' : 'null') + (typeof ch === 'string' ? ', ' + JSON.stringify(ch) : ch ? ', /* children */' : '') + ')';
   };
 
   /* ---- tokens: every custom property of the app's stylesheets, resolved once per window ---- */
@@ -237,10 +237,10 @@
     if (parseFloat(cs.borderTopWidth)) add('look', 'stroke', cs.borderTopWidth + ' ' + cs.borderTopStyle + ' ' + cs.borderTopColor, colTok(cs.borderTopColor, 'border-top-color'));
     if (cs.boxShadow && cs.boxShadow !== 'none' && !/^(rgba\(0, 0, 0, 0\) 0px 0px 0px 0px(, )?)+$/.test(cs.boxShadow)) { var sd = I.declared ? I.declared(win, el, 'box-shadow') : '', stk = I.tokenOf ? I.tokenOf(sd) : null; add('look', 'shadow', cs.boxShadow, stk || (sd && /var\(/.test(sd) ? null : (T.shadow[cs.boxShadow] || [])[0] || null), false, sd && /var\(/.test(sd) && !stk ? sd : null); }
     if (parseFloat(cs.opacity) < 0.99) add('look', 'opacity', Math.round(parseFloat(cs.opacity) * 100) / 100);
-    var tc = Array.prototype.filter.call(el.classList, function (c) { return /^ps-t-/.test(c); });
+    var tc = Array.prototype.filter.call(el.classList, function (c) { return c.indexOf(DM.A.textClass) === 0; });
     var txt = el.querySelector('*') && !el.textContent.trim() ? null : el;
     if (txt) {
-      var t = tc.length ? el : (el.querySelector('[class*="ps-t-"]') || el), ts = win.getComputedStyle(t), tcls = Array.prototype.filter.call(t.classList, function (c) { return /^ps-t-/.test(c); });
+      var t = tc.length ? el : (el.querySelector('[class*="' + DM.A.textClass + '"]') || el), ts = win.getComputedStyle(t), tcls = Array.prototype.filter.call(t.classList, function (c) { return c.indexOf(DM.A.textClass) === 0; });
       add('text', 'style', tcls[0] || '—', null);
       add('text', 'font', ts.fontFamily.split(',')[0].replace(/["']/g, '') + ' ' + ts.fontWeight);
       add('text', 'size', parseFloat(ts.fontSize), lenTok(ts.fontSize, 'font'), true);
@@ -257,7 +257,7 @@
 
   /* motion values of the version in the canvas (PS.MT): a spring, a tween, or a function of an index */
   I.motion = function (win, names) {
-    var MT = win.PS && win.PS.MT; if (!MT) return [];
+    var NSO = win[DM.NS], MT = NSO && NSO.MT; if (!MT) return [];
     return (names || []).map(function (n) {
       var v = MT[n]; var text;
       if (typeof v === 'function') { try { text = JSON.stringify(v(0)); } catch (e) { text = String(v); } text = '(i) → ' + text; }
@@ -402,7 +402,7 @@
     I.hosts(node).forEach(function (root) {
       [root].concat(Array.prototype.slice.call(root.querySelectorAll('*'))).slice(0, 600).forEach(function (e) {
         if (e.tagName === 'IMG' && e.currentSrc) add(e.currentSrc, 'img');
-        var src = e.style && e.style.getPropertyValue('--ps-src'); var m = src && /url\(["']?([^"')]+)/.exec(src); if (m) add(new win.URL(m[1], win.location.href).href, 'icon');
+        var src = e.style && e.style.getPropertyValue(DM.A.srcVar); var m = src && /url\(["']?([^"')]+)/.exec(src); if (m) add(new win.URL(m[1], win.location.href).href, 'icon');
         var bg = win.getComputedStyle(e).backgroundImage; var mb = bg && /url\(["']?([^"')]+)/.exec(bg); if (mb) add(mb[1], 'bg');
       });
     });

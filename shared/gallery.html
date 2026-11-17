@@ -2,18 +2,16 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PeraSure components → PeraSure Dev Mode</title>
-<!-- The component gallery now lives in PeraSure Dev Mode (devmode/index.html → Components): every component, its states, props, code
-     and specs. The states themselves are still written in gallery.js / gallery-app.js (shared/stage.html shows one of them). -->
-<meta http-equiv="refresh" content="0; url=../devmode/index.html#v=components">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PeraSure components</title>
+<!-- The component gallery lives in Dev Mode (https://samge.studio/devmode/?app=perasure → Components): every component, its states,
+     props, code and history. This page only forwards old links there. -->
+<meta http-equiv="refresh" content="0; url=/devmode/?app=perasure#v=components">
 <script>
-  /* old links pointed at a component (#c-couponoption): open the component list with it searched for */
-  (function () { var m = /^#c-([\w-]+)/.exec(location.hash); location.replace('../devmode/index.html#v=components' + (m ? '&find=' + encodeURIComponent(m[1]) : '')); })();
+  (function () { var m = /^#c-([\w-]+)/.exec(location.hash); location.replace('/devmode/?app=perasure#v=components' + (m ? '&find=' + encodeURIComponent(m[1]) : '')); })();
 </script>
-<style>body { font: 14px/20px -apple-system, 'Segoe UI', sans-serif; padding: 24px; color: #333; }</style>
 </head>
 <body>
-<p>The component gallery has moved to <a href="../devmode/index.html#v=components">PeraSure Dev Mode → Components</a>.</p>
+<p>The component gallery has moved to <a href="/devmode/?app=perasure#v=components">Dev Mode → Components</a>.</p>
 </body>
 </html>

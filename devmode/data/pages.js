@@ -108,8 +108,9 @@ window.DM_PAGES = (function () {
     if (p.page) q.set('page', p.page); else if (p.tab && p.tab !== 'home') q.set('page', p.tab);
     /* the deploy stamp (stamp.py) makes phones and browsers fetch a fresh app after an update, as the picker's links do */
     var me = (document.querySelector('script[src*="data/pages.js"]') || {}).src, v = me && /[?&]v=(\w+)/.exec(me);
-    if (v && (!root || root === '../')) q.set('v', v[1]);
-    return (root || '../') + 'prototypes/app/index.html?' + q.toString();
+    var top = window.DM_ROOT || '../';   /* the app repo's top folder as Dev Mode serves it (devmode-platform index.html) */
+    if (v && (!root || root === top)) q.set('v', v[1]);
+    return (root || top) + 'prototypes/app/index.html?' + q.toString();
   }
   return { BASE: BASE, sections: SECTIONS, byId: BY, url: url, js: function (p, st) { return (st && st.js) || p.js || ''; } };
 })();

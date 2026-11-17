@@ -1,8 +1,13 @@
 # PeraSure Dev Mode
 
 Every page of the PeraSure app and every shared component, live, inspected the way Figma Dev Mode inspects a design — so designers can
-see what each iteration changed and developers can pull the exact code. Desktop only. Open: [`devmode/index.html`](index.html)
+see what each iteration changed and developers can pull the exact code. Desktop only. Open: **https://samge.studio/devmode/?app=perasure**
 (on the picker as "PeraSure Dev Mode"). It replaced the component gallery (`shared/gallery.html` forwards here).
+
+**Since 2026-11-18 the platform itself (the page, `js/`, the MCP server and the Worker) is the repo `samgestudio-dev/devmode-platform`**,
+shared by every app (PeraSure, CashSaya). This folder holds only what the platform reads about PeraSure: `app.js` (the adapter: paths,
+namespace `PS`, zoom cap…), `data/`, `snapshots/`, `iterations/` and `inspector.js` (a copy of the platform's, for the visual check and the
+local MCP). The descriptions below still say what each part does; the platform's files are named as they are in that repo.
 
 ## What it does
 
@@ -45,21 +50,15 @@ see what each iteration changed and developers can pull the exact code. Desktop 
 
 | | |
 |---|---|
-| `index.html`, `devmode.css` | the page and the platform's look (its own colours, light and dark) |
-| `js/util.js` | React shorthands, icons, versions, links, statuses, small pieces |
-| `js/i18n.js` | every interface text in Chinese and English (`DM.t`), bilingual data (`DM.tx`) |
-| `js/inspector.js` | reads the app in the canvas: components from React's tree, sizes, props, specs, the CSS as written, assets |
-| `js/canvas.js` | the frame, the overlays (outlines, padding / gap hatching, redlines), modes, zoom, the screen menu (device, Screen fit, Text size) |
-| `js/sidebar.js`, `js/panels.js` | the left column (lists, layers) and Inspect / History |
-| `js/views.js`, `js/compare.js` | Tokens and Iterations pages; version compare (and the slow-motion clock) |
-| `js/app.js` | the shell: top bar, state in the address (`#p=home&sel=…`), theme, language |
+| `app.js` | `window.DM_APP`: what the platform needs to know about PeraSure (the platform reads it first) |
 | `data/pages.js` | how each app page and state is opened (Tune settings, `?page=`, a script) — add new screens here |
 | `data/index.js` | made by `tools/devmode-index.py` from the code (stamp.py runs it): components, pages, lines, CSS, tokens, Figma |
 | `data/iterations.js`, `data/status.js` | the iteration record and the dev statuses (rules: skill `perasure-iteration-log`) |
-| `js/notes.js` | Annotate: notes storage, link encoding, editor, Notes tab, task list |
 | `data/figma-links.js` | design-system components (Figma) ↔ PS components |
+| `inspector.js` | a copy of the platform's `js/inspector.js`, used by `tools/devmode-visual.mjs` and the local MCP server: keep it the same |
 | `../tools/devmode-visual.mjs`, `../.github/workflows/devmode-visual.yml` | the visual check and the workflow that publishes it (branch `devmode-visual`) |
-| `mcp/core.mjs`, `mcp/server.mjs`, `js/ai.js` | the MCP tools (shared by the hosted server, `../worker/index.js`, and the local one, `server.mjs`; guide `mcp/README.md`) and its setup dialog / Copy for AI |
+| `../tools/devmode-mcp-data.mjs`, `../.github/workflows/devmode-live.yml` | `data/*.js` as JSON on the branch `devmode-mcp`, for the hosted MCP server |
+| platform: `index.html`, `devmode.css`, `js/*.js`, `mcp/`, `worker/` | the page, its look, inspector, canvas, panels, compare, notes, AI setup; the MCP tools; the Worker (all in `devmode-platform`) |
 | `snapshots/<id>/` | a runnable copy of each iteration (`tools/devmode-snapshot.py <id>`); the *Dev Mode* workflow tags its commit `devmode-<id>` |
 
 `shared/stage.html?entry=<gallery entry>&state=<n>` draws one state of a component for the canvas; the states themselves are written

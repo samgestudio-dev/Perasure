@@ -108,8 +108,8 @@ async function shoot(ctx, it, root) {
     if (app) {
       /* where each component is drawn (for "what changed here") — Dev Mode's own inspector */
       try {
-        await page.addScriptTag({ content: 'window.DM = { IDX: function () { return window.__DMIDX; } }; window.__DMIDX = ' + JSON.stringify({ components: Object.fromEntries(Object.keys(INDEX.components).map(n => [n, 1])) }) + ';' });
-        await page.addScriptTag({ path: path.join(ROOT, 'devmode/js/inspector.js') });
+        await page.addScriptTag({ content: 'window.DM = { NS: "PS", A: { textClass: "ps-t-", srcVar: "--ps-src" }, IDX: function () { return window.__DMIDX; } }; window.__DMIDX = ' + JSON.stringify({ components: Object.fromEntries(Object.keys(INDEX.components).map(n => [n, 1])) }) + ';' });
+        await page.addScriptTag({ path: path.join(ROOT, 'devmode/inspector.js') });
         comps = await page.evaluate(() => { const I = window.DM.inspect, T = I.tree(window); return T.list.filter(n => n.kind === 'component').map(n => { const r = I.rect(n); return r && { name: n.name, path: n.path, r: [r.left, r.top, r.width, r.height].map(Math.round) }; }).filter(Boolean).slice(0, 400); });
       } catch {}
     }
@@ -173,7 +173,7 @@ async function main() {
   const pw = playwright(), srv = await serve(), browser = await pw.chromium.launch();
   const t0 = Date.now(), report = { against, at: new Date().toISOString(), commit: (() => { try { return execFileSync('git', ['rev-parse', 'HEAD'], { cwd: ROOT, encoding: 'utf8' }).trim(); } catch { return null; } })(), items: list.length, changed: [], added: [], failed: [] };
   fs.rmSync(OUT, { recursive: true, force: true }); fs.mkdirSync(path.join(OUT, 'images'), { recursive: true });
-  const cmpCtx = await browser.newContext(), cmpPage = await cmpCtx.newPage(); await cmpPage.goto(srv.base + 'devmode/index.html').catch(() => {});
+  const cmpCtx = await browser.newContext(), cmpPage = await cmpCtx.newPage(); await cmpPage.goto(srv.base + 'index.html').catch(() => {});
   let done = 0;
   async function worker(queue) {
     const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });

@@ -14,7 +14,7 @@ PAGES = ['index.html', 'animations/player.html']
 stamp = time.strftime('%Y%m%d%H%M', time.gmtime())
 # the rem version of the tokens (tokens-rem/) is made from tokens/tokens.css: keep it in step before anything is stamped
 subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'rem-tokens.py')], check=True)
-# PeraSure Dev Mode reads every component, page and Figma link from devmode/data/index.js: remake it from the code
+# Dev Mode (samge.studio/devmode, repo devmode-platform) reads every component, page and Figma link from devmode/data/index.js: remake it from the code
 subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'devmode-index.py')], check=True)
 pat = re.compile(r'((?:playground-ui|animations)\.js)\?v=[\w-]+')
 for rel in PAGES:
@@ -47,7 +47,7 @@ for f in os.listdir(os.path.join(ROOT, 'shared')):
         open(p, 'w', encoding='utf-8').write(s2)
         print('shared/%s: %d own file link(s) -> v=%s' % (f, n, stamp))
 
-# PeraSure Dev Mode (devmode/index.html) and its own files
+# (Dev Mode itself moved to the devmode-platform repo on 2026-11-18; old copies only)
 p = os.path.join(ROOT, 'devmode', 'index.html')
 if os.path.exists(p):
     s = open(p, encoding='utf-8').read()
