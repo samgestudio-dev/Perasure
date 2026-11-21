@@ -1,49 +1,49 @@
 {
- "version": "2026.11.17",
+ "version": "2026.11.21",
  "labels": {
   "collections": "Collections",
   "s:text": "Text styles",
   "s:effect": "Effect styles",
   "s:paint": "Paint styles",
-  "v:VariableCollectionId:1450:11892": "Primitive variables",
-  "v:VariableCollectionId:1020:5688": "Semantic variables",
-  "v:VariableCollectionId:198:8252": "Component variables"
+  "v:VariableCollectionId:10999:17": "Component variables",
+  "v:VariableCollectionId:10999:16": "Semantic variables",
+  "v:VariableCollectionId:10999:15": "Primitive variables"
  },
  "digest": {
   "collections": {
    "n": 3,
-   "h": "e4ade24a",
-   "b": ",,,,,,,,,,,,,,,,,d4c35a,,,,,69a9d4,c80948,,,,,,,,"
+   "h": "e663618f",
+   "b": ",,613480,,,,,,,,,,,,,,,,,,,85d0b2,,,,,,,8a8dc5,,,"
   },
-  "v:VariableCollectionId:1450:11892": {
-   "n": 157,
-   "h": "aa5cabe2",
-   "b": "7e443b,29459a,079fe9,142706,bb377c,de388b,af8bd2,6ca0b1,b25a96,90cd8f,2e299d,5460be,06961b,ae4260,bf5a5a,e62231,131bd8,a23512,3e2553,9d32f5,b71155,0c9670,d65070,76735c,4354cf,6a76f8,b6566f,b3c127,7044a6,7ee770,68bcc1,461394"
+  "v:VariableCollectionId:10999:17": {
+   "n": 39,
+   "h": "4af12813",
+   "b": "c42dae,0c2ed3,2e79ea,,31b4f5,347acc,f08937,52cc1d,c55f8b,,e6338b,ca01ee,1aac52,,70d65d,b1d385,,f24295,58783f,7f3fd7,3af922,4d4526,306156,23914b,d828dc,59a74a,6ca9b6,21cab2,0316e4,cc2b97,1b2ff2,758140"
   },
-  "v:VariableCollectionId:1020:5688": {
-   "n": 276,
-   "h": "8765b8e4",
-   "b": "9476b3,fd22a0,4c5507,41395e,7aaa23,3db6c0,c096bc,d031b2,166e8d,253687,282a77,47f48e,227069,cfba5f,a83abf,2bb5d0,f745df,c9cb91,45c3f1,ec0035,d60276,6e9d01,cfbe29,ce3458,843f53,5a320c,5f4aac,7c98c5,42da41,ab51a5,a83c6e,141d33"
+  "v:VariableCollectionId:10999:16": {
+   "n": 257,
+   "h": "a867a7ea",
+   "b": "64e783,0fcb54,88fc93,84afae,9a9394,68fb31,dee14e,6b5825,79ce88,dccb7b,ce1333,09e10c,3f9c45,f23f13,f234ed,58e1f3,154e5f,9e290c,b4b7b9,1b58a5,e46d23,da6b10,c35eb2,9e9c7a,a6670d,4eafec,723c7e,7a870f,dd14c5,e2544a,7b76dc,ea9102"
   },
-  "v:VariableCollectionId:198:8252": {
-   "n": 18,
-   "h": "9efee367",
-   "b": "65fa10,733c4c,,,,,,,0023e0,a5e7b7,444f5b,c24e0d,59eb88,,f61f19,,,,,e01632,,,ac989b,8923c0,e04113,,,d79016,,945e75,,"
+  "v:VariableCollectionId:10999:15": {
+   "n": 165,
+   "h": "9a88d758",
+   "b": "b4b00e,555911,37bd8f,c43db4,d0739c,a4f9c0,be0618,c1bef0,264855,0fb150,06caa5,c23540,32b683,28dff7,c74712,39aebe,485400,7b0000,c8603c,701252,25a90c,eb3507,812e8c,77223e,7505ad,11425b,adad38,78d24d,b29317,9a61ae,27e2dc,fdb573"
   },
   "s:text": {
-   "n": 31,
-   "h": "6d99c496",
-   "b": "280c9e,6f5999,ea99d6,fbffb2,d7042d,,affa6f,,,,,,bd4bac,1ca021,e39bbb,12d381,,,22189c,,309931,6ea7e0,4e2fb1,,d2cbe2,ed88b3,,a78205,b37143,660d54,d06321,e1f5ff"
+   "n": 35,
+   "h": "a05a2ca6",
+   "b": "7f7357,,,c49269,55e968,2e89df,0e0ddf,497af6,a636ee,74040a,e5a057,,80e283,a37956,81935b,,,40d7d1,a5a498,0aa5f9,1fdd27,3feacc,3f5a43,10a664,28784b,3a1c32,,0b512b,456825,,,"
   },
   "s:effect": {
-   "n": 8,
-   "h": "72c61389",
-   "b": ",a4edff,,,bf57c2,,,,fc3527,,,c58411,,,,,,,,7ae651,,,,2d256e,6fbd34,,,,,,f87e49,"
+   "n": 5,
+   "h": "d4360bcf",
+   "b": "997d2e,,,b52864,,,,,,5f9079,90bfd1,,,,,,,,,b4611e,,,,,,,,,,,,"
   },
   "s:paint": {
-   "n": 4,
-   "h": "7e24514b",
-   "b": ",,,,,,569256,,,,,,,,,,123af6,,,eb1e72,,,,8120b9,,,,,,,,"
+   "n": 6,
+   "h": "871c8b48",
+   "b": ",,a93f20,,,,,,,,,,,,,,62e6a8,,,50665c,,,,,445d7e,,,,,,,"
   }
  }
 }
