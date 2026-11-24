@@ -836,7 +836,7 @@ class Component extends DCLogic {
     set(box, 'background', 'transparent'); set(box, 'transformOrigin', '0 0'); set(box, 'willChange', 'transform');
     var flat = { position:'absolute', left:'0', top:'0', width:W + 'px', height:H + 'px', pointerEvents:'none' };
     var bgDark = div(box, box.firstChild, Object.assign({ background:'#0d1620', willChange:'transform' }, flat));
-    var bgBlue = div(box, bgDark.nextSibling, Object.assign({ background:self.C.brand, opacity:'0', willChange:'opacity' }, flat));
+    var bgBlue = div(box, bgDark.nextSibling, Object.assign({ background:self.tok('--gradient-brand-card', self.C.brand), opacity:'0', willChange:'opacity' }, flat));   /* ends as the card: its gradient */
     var inner = [];                                                     /* children shown unscaled: [el, extra y] */
     if (f) { f.style.background = 'transparent'; set(f, 'transformOrigin', '0 0'); set(f, 'willChange', 'transform'); inner.push([f, false]); }
     /* the glow: a copy at the real one's place, inside the box (under the card, so under the pill; clipped by the box) */
@@ -852,7 +852,7 @@ class Component extends DCLogic {
       set(R.hcGlow, 'visibility', 'hidden');
     }
     /* the card above the closing box, see-through (the box is its background); its shadow a layer that fades in */
-    set(card, 'zIndex', '101'); set(card, 'backgroundColor', 'transparent'); set(card, 'boxShadow', 'none'); set(card, 'overflow', 'visible');
+    set(card, 'zIndex', '101'); set(card, 'backgroundColor', 'transparent'); set(card, 'backgroundImage', 'none'); set(card, 'boxShadow', 'none'); set(card, 'overflow', 'visible');
     var shd = div(card, card.firstChild, { position:'absolute', left:'0', top:'0', right:'0', bottom:'0', borderRadius:'24px', zIndex:'-1',
       boxShadow:this.SH.card, opacity:'0', willChange:'opacity', pointerEvents:'none' });
     if (!used) { set(amt, 'transformOrigin', '0 0'); set(amt, 'willChange', 'transform'); }
@@ -1071,7 +1071,7 @@ class Component extends DCLogic {
 
     return this.el('div', Object.assign({ key:'hero', ref:this.ref('hc') }, this.mo({
       position:'relative', boxSizing:'border-box', overflow:'hidden', borderRadius:24,
-      backgroundColor:C.brand, boxShadow:this.SH.card, padding:12, display:'flex',
+      backgroundColor:C.brand, backgroundImage:this.tok('--gradient-brand-card', 'none'), boxShadow:this.SH.card, padding:12, display:'flex',   /* Figma Gradient/Brand-card (owner 2026-11-24) */
       flexDirection:'column', gap:16, justifyContent:'flex-end', flex:'none'
     }, { height: open ? 208 : 196 })), [
       /* the glow under the Withdraw pill (Figma asset), anchored to the card's bottom so it follows the pill (under it by

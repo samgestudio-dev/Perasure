@@ -12,38 +12,40 @@
    "visual": "false = same rendered value, only points an undefined token at a defined one (hygiene), or a test assertion",
    "needsOwner": "true = value chosen but the owner must confirm (see conflicts.md); apply.py --skip-owner-items leaves them out",
    "confidence": "design = a visual-changes row says so; inferred = rule applied by analogy",
-   "fallbacks": "var(--token, fallback) fallbacks of DEFINED tokens never render and are not listed; README step 8 cleans them up in one pass"
+   "fallbacks": "var(--token, fallback) fallbacks of DEFINED tokens never render and are not listed; README step 8 cleans them up in one pass",
+   "decided": "\"2026-11-24 <letter>\" = the design owner answered this on 2026-11-24 (OPEN-QUESTIONS.md, \"Decided 2026-11-24\"); needsOwner is then false",
+   "structural": "\"owner-approved\" = a small structural change (markup / state hook) the owner approved on 2026-11-24 (E023 + E542 tab icon, E543 + E400 overdue button); everything else stays purely visual"
   },
   "counts": {
-   "files": 127,
-   "edits": 541,
+   "files": 128,
+   "edits": 554,
    "byAction": {
     "token-step": 1,
-    "insert": 16,
-    "replace": 512,
+    "insert": 17,
+    "replace": 525,
     "delete": 7,
-    "manual": 3,
+    "manual": 2,
     "skip": 2
    },
-   "visualEdits": 452,
-   "needsOwner": 75,
+   "visualEdits": 465,
+   "needsOwner": 56,
    "doneByStep0": 2,
    "byGroup": {
     "1 Global (tokens, global.css, boot splash)": {
      "files": 3,
-     "edits": 15
+     "edits": 14
     },
     "2 App shell and shared controls (header, bars, sheets, toasts, loaders, buttons, inputs)": {
      "files": 22,
-     "edits": 74
+     "edits": 75
     },
     "3 Components and features": {
      "files": 49,
-     "edits": 225
+     "edits": 234
     },
     "4 Pages": {
-     "files": 33,
-     "edits": 171
+     "files": 34,
+     "edits": 175
     },
     "5 Animations (code-drawn colours)": {
      "files": 7,
@@ -57,7 +59,9 @@
      "files": 2,
      "edits": 18
     }
-   }
+   },
+   "structuralOwnerApproved": 4,
+   "decided20261124": 35
   },
   "precedence": "changes-by-file.json > 01-tokens/token-map.json > 01-tokens/unresolved.md. Where an edit and the token map touch the same line, the edit wins: it runs after step 0 and anchors on the renamed text."
  },
@@ -96,28 +100,6 @@
    "kind": "global",
    "applyGroup": "1 Global (tokens, global.css, boot splash)",
    "edits": [
-    {
-     "id": "E002",
-     "action": "insert",
-     "selector": ":focus-visible, button:focus:not(:focus-visible) (new rules at the end of the file)",
-     "property": "outline",
-     "line": 191,
-     "lineEnd": 192,
-     "insertAfterLine": 192,
-     "lineAfterStep0": 186,
-     "current": "font-size: 16px !important;\n}",
-     "currentAfterStep0": "font-size: 16px !important;\n}",
-     "anchor": "font-size: 16px !important;\n}",
-     "target": "\n:focus-visible {\n  outline: 2px solid var(--border-selected);\n  outline-offset: 2px;\n}\nbutton:focus:not(:focus-visible) {\n  outline: 0;\n}",
-     "doneByStep0": false,
-     "targetToken": "--border-selected",
-     "targetValue": "#76dc93",
-     "changeId": "G-033",
-     "reason": "keyboard focus ring 2px light green; production has no focus ring (button outline:0 at L108 for Android WebView) — adding one is a new visible state",
-     "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
-    },
     {
      "id": "E003",
      "action": "insert",
@@ -244,8 +226,9 @@
      "changeId": "G-029",
      "reason": "reveal plate must be the ground colour or a mist box shows",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 A (boot splash navy + white wordmark)"
     },
     {
      "id": "E009",
@@ -263,8 +246,9 @@
      "changeId": "G-029",
      "reason": "navy wordmark would vanish on the navy ground",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 A (boot splash navy + white wordmark)"
     },
     {
      "id": "E010",
@@ -282,8 +266,9 @@
      "changeId": "G-029",
      "reason": "the SVG paints its own ground; must match the page ground",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 A (boot splash navy + white wordmark)"
     },
     {
      "id": "E011",
@@ -339,8 +324,9 @@
      "changeId": "G-029, G-043",
      "reason": "status text on navy (was secondary grey on mist)",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 A (boot splash navy + white wordmark)"
     },
     {
      "id": "E014",
@@ -358,8 +344,9 @@
      "changeId": "G-029",
      "reason": "splash ground navy",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 A (boot splash navy + white wordmark)"
     },
     {
      "id": "E015",
@@ -377,8 +364,9 @@
      "changeId": "G-029",
      "reason": "boot/splash ground navy so there is no light flash before SplashPage (also navy)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 A (boot splash navy + white wordmark)"
     }
    ]
   },
@@ -461,6 +449,27 @@
    "kind": "component",
    "applyGroup": "2 App shell and shared controls (header, bars, sheets, toasts, loaders, buttons, inputs)",
    "edits": [
+    {
+     "id": "E542",
+     "action": "replace",
+     "selector": ".tabIcon",
+     "property": "background-color, mask",
+     "line": 90,
+     "lineAfterStep0": 90,
+     "current": "object-fit: fill;",
+     "currentAfterStep0": "object-fit: fill;",
+     "target": "background-color: currentcolor;\n  -webkit-mask-position: center;\n  mask-position: center;\n  -webkit-mask-repeat: no-repeat;\n  mask-repeat: no-repeat;\n  -webkit-mask-size: contain;\n  mask-size: contain;",
+     "doneByStep0": false,
+     "targetToken": "--fg-accent",
+     "targetValue": "#298648 active / --fg-default #000128 inactive (via currentColor)",
+     "changeId": "G-039",
+     "reason": "structural (owner-approved 2026-11-24 E): the icon is now a <span> (E023) painted with currentColor through the SVG mask; display / 18 × 18 px unchanged",
+     "confidence": "design",
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 E",
+     "structural": "owner-approved"
+    },
     {
      "id": "E019",
      "action": "insert",
@@ -551,23 +560,24 @@
    "edits": [
     {
      "id": "E023",
-     "action": "manual",
-     "selector": "<img className={styles.tabIcon}> in BottomNavigation/index.tsx",
-     "property": "color (icon)",
+     "action": "replace",
+     "selector": "<img className={styles.tabIcon}> in BottomNavigation/index.tsx → <span> with the SVG as CSS mask",
+     "property": "element (icon colour follows currentColor)",
      "line": 203,
      "lineAfterStep0": 203,
      "current": "<img alt=\"\" className={styles.tabIcon} src={item.icon} />",
      "currentAfterStep0": "<img alt=\"\" className={styles.tabIcon} src={item.icon} />",
-     "target": "(manual, see instruction)",
+     "target": "<span\n                aria-hidden=\"true\"\n                className={styles.tabIcon}\n                style={{\n                  WebkitMaskImage: `url(\"${item.icon}\")`,\n                  maskImage: `url(\"${item.icon}\")`,\n                }}\n              />",
      "doneByStep0": false,
      "targetToken": "--fg-accent",
-     "targetValue": "#298648",
+     "targetValue": "#298648 active / --fg-default #000128 inactive (via currentColor)",
      "changeId": "G-039",
-     "reason": "icons are <img> of nav-*.svg filled #141E24; an <img> cannot take the active green; asset recolour alone gives navy only",
-     "instruction": "Out of scope for this visual hand-off (structural): the tab icons are <img> files with a baked colour, so the active tab cannot take --fg-accent from CSS. If the owner wants it, render the nav icons with currentColor (CSS mask on the SVG + background: currentColor, or inline SVG) so the icon follows .tabButtonActive color: var(--fg-accent). Until then leave this line unchanged (OPEN-QUESTIONS 10).",
+     "reason": "structural (owner-approved 2026-11-24 E): the decorative <img alt=\"\"> (baked #141E24) becomes a <span aria-hidden> masked by the same SVG and filled with currentColor, so the icon follows .tabButton color (--fg-default) and .tabButtonActive color (--fg-accent, E019). Size stays 18 px (.tabIcon, E542).",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "structural": "owner-approved",
+     "decided": "2026-11-24 E"
     }
    ]
   },
@@ -677,8 +687,9 @@
      "changeId": "G-018,G-019",
      "reason": "sheet footer bottom padding 16; production 20 is not the demo before (32/24)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E029",
@@ -799,8 +810,9 @@
      "changeId": "G-003,C-001",
      "reason": "label on green primary is navy",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E035",
@@ -818,8 +830,9 @@
      "changeId": "G-003,C-001",
      "reason": "single dialog action = primary button (was dark slate)",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E036",
@@ -1157,8 +1170,9 @@
      "changeId": "G-025",
      "reason": "toast 8 under the top nav bar; production 80 is not the demo before (104)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     }
    ]
   },
@@ -1314,8 +1328,9 @@
      "changeId": "G-032",
      "reason": "token removed in rebrand (no replacement) so fallback renders; loading dots one colour",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E059",
@@ -1333,8 +1348,9 @@
      "changeId": "G-032",
      "reason": "loading dots one colour #298648",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E060",
@@ -1352,8 +1368,9 @@
      "changeId": "G-032",
      "reason": "loading dots #298648 (token map gives #5cd680)",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     }
    ]
   },
@@ -1812,8 +1829,9 @@
      "changeId": "C-050,G-035",
      "reason": "knob shadow token (same layers)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 A (slider knob green centre + knob elevation)"
     },
     {
      "id": "E082",
@@ -1831,8 +1849,9 @@
      "changeId": "C-065",
      "reason": "track on navy = white 20 % (as CreditCard track)",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 A (slider knob green centre + knob elevation)"
     },
     {
      "id": "E083",
@@ -1850,8 +1869,9 @@
      "changeId": "C-050",
      "reason": "filled track light green; default variant sits on the (now navy) amount panel",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 A (slider knob green centre + knob elevation)"
     },
     {
      "id": "E084",
@@ -1869,8 +1889,9 @@
      "changeId": "C-050",
      "reason": "knob centre green-700 with white ring",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 A (slider knob green centre + knob elevation)"
     }
    ]
   },
@@ -2000,7 +2021,8 @@
      "reason": "pressed text button; token map would make it green #36a65b",
      "confidence": "inferred",
      "needsOwner": false,
-     "visual": true
+     "visual": true,
+     "designPending": true
     },
     {
      "id": "E091",
@@ -2019,7 +2041,8 @@
      "reason": "no-fill secondary action = text button, navy label",
      "confidence": "inferred",
      "needsOwner": false,
-     "visual": true
+     "visual": true,
+     "designPending": true
     },
     {
      "id": "E092",
@@ -2038,9 +2061,11 @@
      "reason": "white label on green primary -> navy",
      "confidence": "design",
      "needsOwner": false,
-     "visual": true
+     "visual": true,
+     "designPending": true
     }
-   ]
+   ],
+   "designPending": true
   },
   {
    "file": "src/components/ui/AvailableCreditRing.tsx",
@@ -2064,8 +2089,9 @@
      "changeId": "C-096",
      "reason": "hub ring track = white 10 % (--bg-on-brand); host colour is white on navy",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     }
    ]
   },
@@ -2487,8 +2513,29 @@
      "changeId": "C-050",
      "reason": "knob centre green-700 with white ring (token map gives #76dc93)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 A (slider knob green centre + knob elevation)"
+    },
+    {
+     "id": "E545",
+     "action": "replace",
+     "selector": ".confirmAmount",
+     "property": "letter-spacing",
+     "line": 43,
+     "lineAfterStep0": 43,
+     "current": "letter-spacing: -0.005em;",
+     "currentAfterStep0": "letter-spacing: -0.005em;",
+     "target": "letter-spacing: 0.03em;",
+     "doneByStep0": false,
+     "targetToken": null,
+     "targetValue": "0.03em (Amount/lg, .ps-text-amount-lg)",
+     "changeId": "G-005",
+     "reason": "amount tracking: 32 px → Amount/lg +3 %, weight 700 (owner 2026-11-24 D)",
+     "confidence": "design",
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 D"
     },
     {
      "id": "E115",
@@ -2640,6 +2687,26 @@
      "visual": true
     },
     {
+     "id": "E546",
+     "action": "replace",
+     "selector": ".page[data-visual-variant='withdraw-flow'] .amountFraction",
+     "property": "letter-spacing",
+     "line": 518,
+     "lineAfterStep0": 518,
+     "current": "letter-spacing: 0.54px;",
+     "currentAfterStep0": "letter-spacing: 0.54px;",
+     "target": "letter-spacing: 0.03em;",
+     "doneByStep0": false,
+     "targetToken": null,
+     "targetValue": "0.03em (Amount/lg, .ps-text-amount-lg)",
+     "changeId": "G-005",
+     "reason": "amount tracking: 18 px → sm +3 % (Number/sm; Figma has no Amount/sm), weight 700 (owner 2026-11-24 D)",
+     "confidence": "design",
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 D"
+    },
+    {
      "id": "E122",
      "action": "replace",
      "selector": ".page[data-visual-variant='withdraw-flow'] .amountFraction",
@@ -2657,6 +2724,26 @@
      "confidence": "design",
      "needsOwner": false,
      "visual": true
+    },
+    {
+     "id": "E547",
+     "action": "replace",
+     "selector": ".page[data-visual-variant='withdraw-flow'] .amountInteger",
+     "property": "letter-spacing",
+     "line": 493,
+     "lineAfterStep0": 493,
+     "current": "letter-spacing: 1.44px;",
+     "currentAfterStep0": "letter-spacing: 1.44px;",
+     "target": "letter-spacing: 0.04em;",
+     "doneByStep0": false,
+     "targetToken": null,
+     "targetValue": "0.04em (Amount/xxl, .ps-text-amount-xxl)",
+     "changeId": "G-005",
+     "reason": "amount tracking: 48 px → Amount/xxl +4 %, weight 700 (owner 2026-11-24 D)",
+     "confidence": "design",
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 D"
     },
     {
      "id": "E123",
@@ -2712,8 +2799,9 @@
      "changeId": "none (undefined token)",
      "reason": "var(--shadow-subtle) is undefined with no fallback -> renders no shadow today; delete (or decide on --elevation-1), same as ApplicationStateCard",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": false
+     "needsOwner": false,
+     "visual": false,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E126",
@@ -2733,6 +2821,26 @@
      "confidence": "inferred",
      "needsOwner": false,
      "visual": true
+    },
+    {
+     "id": "E548",
+     "action": "replace",
+     "selector": ".keypadFixedDigits",
+     "property": "letter-spacing",
+     "line": 387,
+     "lineAfterStep0": 387,
+     "current": "letter-spacing: 1.44px;",
+     "currentAfterStep0": "letter-spacing: 1.44px;",
+     "target": "letter-spacing: 0.04em;",
+     "doneByStep0": false,
+     "targetToken": null,
+     "targetValue": "0.04em (Amount/xxl, .ps-text-amount-xxl)",
+     "changeId": "G-005",
+     "reason": "amount tracking: 48 px → Amount/xxl +4 %, weight 700 (owner 2026-11-24 D)",
+     "confidence": "design",
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 D"
     },
     {
      "id": "E127",
@@ -2809,6 +2917,26 @@
      "confidence": "design",
      "needsOwner": false,
      "visual": true
+    },
+    {
+     "id": "E549",
+     "action": "replace",
+     "selector": ".amountValue",
+     "property": "letter-spacing",
+     "line": 125,
+     "lineAfterStep0": 125,
+     "current": "letter-spacing: var(--display-sm-letter-spacing, -0.005em);",
+     "currentAfterStep0": "letter-spacing: -0.02em;",
+     "target": "letter-spacing: 0.03em;",
+     "doneByStep0": false,
+     "targetToken": null,
+     "targetValue": "0.03em (Amount/lg, .ps-text-amount-lg)",
+     "changeId": "G-005",
+     "reason": "amount tracking: 28–32 px (clamp) → Amount/lg +3 % (currency / integer / fraction inherit it), weight 700 (owner 2026-11-24 D)",
+     "confidence": "design",
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 D"
     },
     {
      "id": "E131",
@@ -2967,8 +3095,9 @@
      "changeId": "C-120",
      "reason": "AmountEntry decimals are fg-disabled; production uses lighter neutral-150, not the demo before",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E139",
@@ -2986,8 +3115,9 @@
      "changeId": "C-120",
      "reason": "AmountEntry rest digits are fg-disabled; production uses lighter neutral-150 (#cdd1d4), not the demo before (#97a0a6) — token map alone gives #d6d6dd",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E140",
@@ -3518,8 +3648,9 @@
      "changeId": "C-004",
      "reason": "secondary button label navy (token map gives fg-link green)",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E165",
@@ -3537,8 +3668,9 @@
      "changeId": "C-004",
      "reason": "outlined white action buttons with link-blue titles → secondary button (could also be read as choice cards, C-139, where only the line changes)",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     }
    ]
   },
@@ -4044,8 +4176,9 @@
      "changeId": "C-050,G-035",
      "reason": "removed blue-alpha glow token -> knob elevation (navy); rule alternative: 0 4px 12px rgb(0 1 40 / 0.4)",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 A (slider knob green centre + knob elevation)"
     },
     {
      "id": "E190",
@@ -4063,8 +4196,9 @@
      "changeId": "C-050",
      "reason": "captcha thumb is a slider knob (white grip lines need a dark green, not green-500)",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 A (slider knob green centre + knob elevation)"
     },
     {
      "id": "E191",
@@ -4128,8 +4262,9 @@
      "changeId": "G-001",
      "reason": "legacy positive green #58e09a -> green-500",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E194",
@@ -4147,8 +4282,9 @@
      "changeId": "G-001",
      "reason": "legacy blue puzzle-piece fill; green-700 keeps the piece visible on the light green canvas (rule default #76dc93 would vanish)",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E195",
@@ -4494,8 +4630,9 @@
      "changeId": "C-068",
      "reason": "'unavailable' state keeps the navy 30 % fill (keep opacity)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E211",
@@ -4516,8 +4653,9 @@
      "changeId": "C-068",
      "reason": "white label on the navy 30 % unavailable fill",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E212",
@@ -4634,6 +4772,46 @@
      "visual": true
     },
     {
+     "id": "E550",
+     "action": "replace",
+     "selector": ".fraction",
+     "property": "letter-spacing",
+     "line": 60,
+     "lineAfterStep0": 60,
+     "current": "letter-spacing: 0;",
+     "currentAfterStep0": "letter-spacing: 0;",
+     "target": "letter-spacing: 0.02em;",
+     "doneByStep0": false,
+     "targetToken": null,
+     "targetValue": "0.02em (Amount/md · xs, .ps-text-amount-md)",
+     "changeId": "G-005",
+     "reason": "amount tracking: 24 px fraction of the card amount → Amount/md +2 %, weight 700 (owner 2026-11-24 D)",
+     "confidence": "design",
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 D"
+    },
+    {
+     "id": "E551",
+     "action": "replace",
+     "selector": ".amount",
+     "property": "letter-spacing",
+     "line": 55,
+     "lineAfterStep0": 55,
+     "current": "letter-spacing: 0.72px;",
+     "currentAfterStep0": "letter-spacing: 0.72px;",
+     "target": "letter-spacing: 0.04em;",
+     "doneByStep0": false,
+     "targetToken": null,
+     "targetValue": "0.04em (Amount/xxl, .ps-text-amount-xxl)",
+     "changeId": "G-005",
+     "reason": "amount tracking: 36 px → xl +4 % (Number/xl; Figma has no Amount/xl), weight 700 (owner 2026-11-24 D)",
+     "confidence": "design",
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 D"
+    },
+    {
      "id": "E218",
      "action": "replace",
      "selector": ".amount",
@@ -4661,15 +4839,16 @@
      "lineAfterStep0": 11,
      "current": "var(--color-action-bg-primary-default)",
      "currentAfterStep0": "var(--bg-accent-emphasis)",
-     "target": "var(--bg-brand)",
+     "target": "var(--gradient-brand-card)",
      "doneByStep0": false,
-     "targetToken": "--bg-brand",
-     "targetValue": "#000128",
+     "targetToken": "--gradient-brand-card",
+     "targetValue": "linear-gradient(180deg, #000128 50%, #3d3e5c 100%)",
      "changeId": "C-064, G-002",
-     "reason": "home credit card ground navy flat (token map would make it green)",
+     "reason": "home credit card (CreditAmountCard): Figma Gradient/Brand-card (owner 2026-11-24 B; token map would make it green)",
      "confidence": "design",
      "needsOwner": false,
-     "visual": true
+     "visual": true,
+     "decided": "2026-11-24 B"
     },
     {
      "id": "E220",
@@ -4809,8 +4988,29 @@
      "changeId": "none (undefined token)",
      "reason": "var(--shadow-subtle) is undefined with no fallback → renders no shadow today; delete (or decide on --elevation-1)",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": false
+     "needsOwner": false,
+     "visual": false,
+     "decided": "2026-11-24 H (owner accepted the package value)"
+    },
+    {
+     "id": "E544",
+     "action": "replace",
+     "selector": ".card",
+     "property": "background",
+     "line": 7,
+     "lineAfterStep0": 7,
+     "current": "var(--color-surface-card-brand, #2c74be)",
+     "currentAfterStep0": "var(--bg-brand, #2c74be)",
+     "target": "var(--gradient-brand-card)",
+     "doneByStep0": false,
+     "targetToken": "--gradient-brand-card",
+     "targetValue": "linear-gradient(180deg, #000128 50%, #3d3e5c 100%)",
+     "changeId": "C-064, G-002",
+     "reason": "application / status card (Figma StateCard): Gradient/Brand-card instead of flat navy (owner 2026-11-24 B)",
+     "confidence": "design",
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 B"
     }
    ]
   },
@@ -5177,6 +5377,29 @@
      "confidence": "inferred",
      "needsOwner": false,
      "visual": true
+    },
+    {
+     "id": "E554",
+     "action": "insert",
+     "selector": ".amountValue",
+     "property": "letter-spacing (add)",
+     "line": 104,
+     "lineEnd": 104,
+     "insertAfterLine": 104,
+     "lineAfterStep0": 104,
+     "current": "'Satoshi', var(--font-family-title, 'Hanken Grotesk'), sans-serif;",
+     "currentAfterStep0": "'Satoshi', var(--font-family-title, 'Hanken Grotesk'), sans-serif;",
+     "anchor": "'Satoshi', var(--font-family-title, 'Hanken Grotesk'), sans-serif;",
+     "target": "  letter-spacing: 0.03em;",
+     "doneByStep0": false,
+     "targetToken": null,
+     "targetValue": "0.03em (Amount/lg, .ps-text-amount-lg)",
+     "changeId": "G-005",
+     "reason": "amount tracking: 28 px (.amountBlock strong) → Amount/lg +3 %, weight 700 (owner 2026-11-24 D)",
+     "confidence": "design",
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 D"
     },
     {
      "id": "E245",
@@ -5636,8 +5859,9 @@
      "changeId": "C-144",
      "reason": "empty-state line fg/subtle",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E268",
@@ -5655,8 +5879,9 @@
      "changeId": "C-144",
      "reason": "empty-state title navy (GuestPay rule applied to the no-loans state)",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     }
    ]
   },
@@ -5786,7 +6011,8 @@
      "reason": "undefined focus token renders #2C74BE",
      "confidence": "design",
      "needsOwner": false,
-     "visual": true
+     "visual": true,
+     "designPending": true
     },
     {
      "id": "E275",
@@ -5804,8 +6030,10 @@
      "changeId": "G-003, C-001",
      "reason": "navy label on green",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "designPending": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E276",
@@ -5823,8 +6051,10 @@
      "changeId": "G-003, C-001",
      "reason": "undefined --color-brand-primary renders near-black #0A1219; sole confirm → green primary",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "designPending": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E277",
@@ -5842,10 +6072,13 @@
      "changeId": "none (undefined token)",
      "reason": "undefined --color-semantic-warning renders amber #F59E0B; nearest rebrand role is attention orange #FF5E00 (or keep the literal)",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": false
+     "needsOwner": false,
+     "visual": false,
+     "designPending": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     }
-   ]
+   ],
+   "designPending": true
   },
   {
    "file": "src/pages/HomePage/Payment/components/PaymentListRecoveryState/index.module.css",
@@ -5870,7 +6103,8 @@
      "reason": "undefined focus token renders #2C74BE",
      "confidence": "design",
      "needsOwner": false,
-     "visual": true
+     "visual": true,
+     "designPending": true
     },
     {
      "id": "E279",
@@ -5889,7 +6123,8 @@
      "reason": "undefined --font-weight-semibold; only the 600 fallback renders → defined token, same value",
      "confidence": "inferred",
      "needsOwner": false,
-     "visual": false
+     "visual": false,
+     "designPending": true
     },
     {
      "id": "E280",
@@ -5908,7 +6143,8 @@
      "reason": "navy label on the green primary (token map keeps white)",
      "confidence": "design",
      "needsOwner": false,
-     "visual": true
+     "visual": true,
+     "designPending": true
     },
     {
      "id": "E281",
@@ -5926,8 +6162,10 @@
      "changeId": "none (undefined token)",
      "reason": "undefined warning token renders #B35C00; nearest rebrand role #FF5E00 (or keep the literal)",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": false
+     "needsOwner": false,
+     "visual": false,
+     "designPending": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E282",
@@ -5945,10 +6183,13 @@
      "changeId": "none (undefined token)",
      "reason": "undefined warning token renders #FFF4DB; nearest rebrand role #FFF4ED (or keep the literal)",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": false
+     "needsOwner": false,
+     "visual": false,
+     "designPending": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     }
-   ]
+   ],
+   "designPending": true
   },
   {
    "file": "src/pages/HomePage/Payment/components/PaymentMethodDrawer/index.module.css",
@@ -6012,8 +6253,9 @@
      "reason": "current filter paints the legacy blue #2C74BE",
      "instruction": "Recolour this icon to #298648 (--fg-accent). A CSS filter chain is an approximation: either compute a new brightness/invert/sepia/saturate/hue-rotate chain for #298648 and replace lines 350-351 with it, or (owner call, structural) replace the <img> + filter with a mask and background: currentColor.",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E286",
@@ -6033,8 +6275,9 @@
      "reason": "current filter paints the legacy grey #97A0A6 on black svgs",
      "instruction": "Recolour this icon to #8A8A9C (--fg-disabled). A CSS filter chain is an approximation: either compute a new brightness/invert/sepia/saturate/hue-rotate chain for #8A8A9C and replace lines 345-346 with it, or (owner call, structural) replace the <img> + filter with a mask and background: currentColor.",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E287",
@@ -6401,8 +6644,9 @@
      "changeId": "C-079",
      "reason": "Hero body block gets a 1.5px light-green line on sides + bottom",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E303",
@@ -6420,8 +6664,9 @@
      "changeId": "C-078",
      "reason": "Hero amount = Display/md-bold Hanken 700 36/36 -2 % (prod 36/45, no tracking); changes block height",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E304",
@@ -6494,8 +6739,9 @@
      "changeId": "C-004",
      "reason": "Secondary label (and ArrowLeft icon) navy",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E307",
@@ -6513,8 +6759,9 @@
      "changeId": "C-004",
      "reason": "blue-outlined 'Back' becomes Secondary (alternative: Neutral C-005, see conflicts)",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E308",
@@ -6635,8 +6882,9 @@
      "changeId": "C-110",
      "reason": "Copy pill padding 2/4 (prod 4/8 differs from the demo 'before' 2/8)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     }
    ]
   },
@@ -6728,8 +6976,9 @@
      "changeId": "G-014",
      "reason": "bottom action bar padding-bottom 20 → 16; this bar is 148 min-height (two stacked buttons), not the demo 108 → owner to confirm",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E318",
@@ -6831,8 +7080,9 @@
      "changeId": "G-014",
      "reason": "bottom action bar padding-bottom 20 → 16; bar min-height here 116 (two stacked buttons), not the demo 108 → owner to confirm",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E323",
@@ -6980,8 +7230,9 @@
      "changeId": "C-001, G-003",
      "reason": "label navy on the green primary",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E330",
@@ -6999,8 +7250,9 @@
      "changeId": "C-001, G-003",
      "reason": "confirm next to the neutral Cancel is the primary action; token map (--color-surface-card-brand → --bg-brand) would paint it navy",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E331",
@@ -7246,6 +7498,26 @@
      "confidence": "inferred",
      "needsOwner": false,
      "visual": true
+    },
+    {
+     "id": "E552",
+     "action": "replace",
+     "selector": ".amountValue",
+     "property": "letter-spacing",
+     "line": 142,
+     "lineAfterStep0": 142,
+     "current": "letter-spacing: inherit;",
+     "currentAfterStep0": "letter-spacing: inherit;",
+     "target": "letter-spacing: 0.03em;",
+     "doneByStep0": false,
+     "targetToken": null,
+     "targetValue": "0.03em (Amount/lg, .ps-text-amount-lg)",
+     "changeId": "G-005",
+     "reason": "amount tracking: 32 px → Amount/lg +3 %, weight 700 (owner 2026-11-24 D)",
+     "confidence": "design",
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 D"
     },
     {
      "id": "E342",
@@ -7640,8 +7912,9 @@
      "changeId": "C-045",
      "reason": "selected contact method ring --border-selected (token map gives --border-selected-muted #baeec9); C-045 is a Figma/code conflict",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 A (contact-method selected state = demo)"
     },
     {
      "id": "E361",
@@ -7659,8 +7932,9 @@
      "changeId": "C-045",
      "reason": "contact method label rest colour --fg-subtle (token map gives --fg-placeholder)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 A (contact-method selected state = demo)"
     }
    ]
   },
@@ -8001,6 +8275,26 @@
      "confidence": "design",
      "needsOwner": false,
      "visual": true
+    },
+    {
+     "id": "E553",
+     "action": "replace",
+     "selector": ".amount",
+     "property": "letter-spacing",
+     "line": 65,
+     "lineAfterStep0": 65,
+     "current": "letter-spacing: -0.16px;",
+     "currentAfterStep0": "letter-spacing: -0.16px;",
+     "target": "letter-spacing: 0.03em;",
+     "doneByStep0": false,
+     "targetToken": null,
+     "targetValue": "0.03em (Amount/lg, .ps-text-amount-lg)",
+     "changeId": "G-005",
+     "reason": "amount tracking: 32 px → Amount/lg +3 %, weight 700 (owner 2026-11-24 D)",
+     "confidence": "design",
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 D"
     },
     {
      "id": "E379",
@@ -8436,7 +8730,7 @@
     {
      "id": "E400",
      "action": "insert",
-     "selector": ".repaymentFooter:has(strong[data-overdue='true']) button (new rule after .repaymentFooter button)",
+     "selector": ".repaymentFooter button[data-overdue='true'] (new rule after .repaymentFooter button)",
      "property": "background / color",
      "line": 351,
      "lineEnd": 353,
@@ -8445,15 +8739,17 @@
      "current": "line-height: var(--line-height-body-md, 20px);\n  white-space: nowrap;\n}",
      "currentAfterStep0": "line-height: var(--line-height-body-md, 20px);\n  white-space: nowrap;\n}",
      "anchor": "line-height: var(--line-height-body-md, 20px);\n  white-space: nowrap;\n}",
-     "target": "\n.repaymentFooter:has(strong[data-overdue='true']) button {\n  background: var(--button-destructive-bg);\n  color: var(--button-destructive-fg);\n}",
+     "target": "\n.repaymentFooter button[data-overdue='true'] {\n  background: var(--button-destructive-bg);\n  color: var(--button-destructive-fg);\n}",
      "doneByStep0": false,
      "targetToken": "--button-destructive-bg",
      "targetValue": "#e00010",
      "changeId": "C-077",
-     "reason": "overdue stage: red destructive button; production has no overdue hook on the button (needs :has() or a data attribute in HomeComposite.tsx)",
+     "reason": "structural (owner-approved 2026-11-24 F): overdue stage = red destructive button; the button carries data-overdue={repayment.isRepaymentOverdue} (edit E543 in HomeComposite.tsx), replacing the :has() rule",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "structural": "owner-approved",
+     "decided": "2026-11-24 F"
     },
     {
      "id": "E401",
@@ -8511,6 +8807,29 @@
      "confidence": "design",
      "needsOwner": false,
      "visual": true
+    },
+    {
+     "id": "E555",
+     "action": "insert",
+     "selector": ".repaymentAmount",
+     "property": "letter-spacing (add)",
+     "line": 338,
+     "lineEnd": 338,
+     "insertAfterLine": 338,
+     "lineAfterStep0": 338,
+     "current": "line-height: 24px;",
+     "currentAfterStep0": "line-height: 24px;",
+     "anchor": "line-height: 24px;",
+     "target": "  letter-spacing: 0.02em;",
+     "doneByStep0": false,
+     "targetToken": null,
+     "targetValue": "0.02em (Amount/md · xs, .ps-text-amount-md)",
+     "changeId": "G-005",
+     "reason": "amount tracking: 24 px → Amount/md +2 %, weight 700 (owner 2026-11-24 D)",
+     "confidence": "design",
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 D"
     },
     {
      "id": "E404",
@@ -8844,15 +9163,16 @@
      "lineAfterStep0": 139,
      "current": "var(--color-brand-600, #2c74be)",
      "currentAfterStep0": "var(--palette-green-500, #2c74be)",
-     "target": "var(--bg-brand)",
+     "target": "var(--gradient-brand-card)",
      "doneByStep0": false,
-     "targetToken": "--bg-brand",
-     "targetValue": "#000128",
+     "targetToken": "--gradient-brand-card",
+     "targetValue": "linear-gradient(180deg, #000128 50%, #3d3e5c 100%)",
      "changeId": "G-002, C-064",
-     "reason": "expired card ground navy",
+     "reason": "Home expired state card (Figma StateCard): Gradient/Brand-card (owner 2026-11-24 B)",
      "confidence": "design",
      "needsOwner": false,
-     "visual": true
+     "visual": true,
+     "decided": "2026-11-24 B"
     },
     {
      "id": "E422",
@@ -8907,10 +9227,11 @@
      "targetToken": null,
      "targetValue": null,
      "changeId": "G-002",
-     "reason": "blue/green ellipse highlight on the brand card; rebrand card is flat (or remove the ::after)",
+     "reason": "the old blue/green ellipse highlight goes; the state card takes Gradient/Brand-card instead (owner 2026-11-24 B)",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 B"
     },
     {
      "id": "E425",
@@ -8922,15 +9243,45 @@
      "lineAfterStep0": 85,
      "current": "linear-gradient(\n    160deg,\n    var(--color-brand-600, #2c74be) 0%,\n    var(--color-brand-600, #2c74be) 62%,\n    var(--color-brand-400, #74b2f5) 140%\n  )",
      "currentAfterStep0": "linear-gradient(\n    160deg,\n    var(--palette-green-500, #2c74be) 0%,\n    var(--palette-green-500, #2c74be) 62%,\n    var(--palette-green-300, #74b2f5) 140%\n  )",
-     "target": "var(--bg-brand)",
+     "target": "var(--gradient-brand-card)",
      "doneByStep0": false,
-     "targetToken": "--bg-brand",
-     "targetValue": "#000128",
+     "targetToken": "--gradient-brand-card",
+     "targetValue": "linear-gradient(180deg, #000128 50%, #3d3e5c 100%)",
      "changeId": "G-002, C-064",
-     "reason": "expired/error home card: blue gradient → flat navy (token map would make a green gradient)",
+     "reason": "Home state card (.primaryCard: expired / error, Figma StateCard): blue gradient → Gradient/Brand-card (owner 2026-11-24 B)",
      "confidence": "design",
      "needsOwner": false,
-     "visual": true
+     "visual": true,
+     "decided": "2026-11-24 B"
+    }
+   ]
+  },
+  {
+   "file": "src/pages/HomePage/Home/HomeComposite.tsx",
+   "component": "HomeComposite",
+   "kind": "page",
+   "applyGroup": "4 Pages",
+   "edits": [
+    {
+     "id": "E543",
+     "action": "replace",
+     "selector": "<button> in .repaymentFooter (Home payment card \"Pay … now\")",
+     "property": "data-overdue (state hook)",
+     "line": 702,
+     "lineAfterStep0": 702,
+     "current": "<button onClick={onOpenPayment} type=\"button\">",
+     "currentAfterStep0": "<button onClick={onOpenPayment} type=\"button\">",
+     "target": "<button\n                  data-overdue={repayment.isRepaymentOverdue}\n                  onClick={onOpenPayment}\n                  type=\"button\"\n                >",
+     "doneByStep0": false,
+     "targetToken": "--button-destructive-bg",
+     "targetValue": "#e00010 (with E400)",
+     "changeId": "C-077",
+     "reason": "structural (owner-approved 2026-11-24 F): the same overdue flag the badge and due date already use (repayment.isRepaymentOverdue) goes on the button, so E400 can paint it red without :has()",
+     "confidence": "design",
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 F",
+     "structural": "owner-approved"
     }
    ]
   },
@@ -8997,8 +9348,9 @@
      "changeId": "C-079",
      "reason": "1.5px light-green line on sides + bottom, inside (card radius clips the bottom corners)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E429",
@@ -9476,8 +9828,9 @@
      "changeId": "C-058",
      "reason": "sheet shadow: production halves both blurs (1px / 6px); rebrand sheet = elevation-2",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E452",
@@ -10184,8 +10537,9 @@
      "changeId": "G-014",
      "reason": "sticky contact bar: button 16 from the bottom (not the shared BottomBar; top padding 32 differs from the demo)",
      "confidence": "inferred",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E485",
@@ -10694,8 +11048,9 @@
      "changeId": "G-008",
      "reason": "no line ends on a hyphen; wording unchanged; change only inside the displayed string (never keys, ids or autoComplete values)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     }
    ]
   },
@@ -10721,8 +11076,9 @@
      "changeId": "G-008",
      "reason": "no line ends on a hyphen; wording unchanged; change only inside the displayed string (never keys, ids or autoComplete values)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E509",
@@ -10740,8 +11096,9 @@
      "changeId": "G-008",
      "reason": "no line ends on a hyphen; wording unchanged; change only inside the displayed string (never keys, ids or autoComplete values)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E510",
@@ -10759,8 +11116,9 @@
      "changeId": "G-008",
      "reason": "no line ends on a hyphen; wording unchanged; change only inside the displayed string (never keys, ids or autoComplete values)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     }
    ]
   },
@@ -10786,8 +11144,9 @@
      "changeId": "G-008",
      "reason": "no line ends on a hyphen; wording unchanged; change only inside the displayed string (never keys, ids or autoComplete values)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     }
    ]
   },
@@ -10813,8 +11172,9 @@
      "changeId": "G-008",
      "reason": "no line ends on a hyphen; wording unchanged; change only inside the displayed string (never keys, ids or autoComplete values)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     }
    ]
   },
@@ -10840,8 +11200,9 @@
      "changeId": "G-008",
      "reason": "no line ends on a hyphen; wording unchanged; change only inside the displayed string (never keys, ids or autoComplete values)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     }
    ]
   },
@@ -10867,8 +11228,9 @@
      "changeId": "G-008",
      "reason": "no line ends on a hyphen; wording unchanged; change only inside the displayed string (never keys, ids or autoComplete values)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     }
    ]
   },
@@ -10894,8 +11256,9 @@
      "changeId": "G-008",
      "reason": "no line ends on a hyphen; wording unchanged; change only inside the displayed string (never keys, ids or autoComplete values)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     }
    ]
   },
@@ -10921,8 +11284,9 @@
      "changeId": "G-008",
      "reason": "no line ends on a hyphen; wording unchanged; change only inside the displayed string (never keys, ids or autoComplete values)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     }
    ]
   },
@@ -10948,8 +11312,9 @@
      "changeId": "G-008",
      "reason": "no line ends on a hyphen; wording unchanged; change only inside the displayed string (never keys, ids or autoComplete values)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     }
    ]
   },
@@ -10975,8 +11340,9 @@
      "changeId": "G-008",
      "reason": "no line ends on a hyphen; wording unchanged; change only inside the displayed string (never keys, ids or autoComplete values)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E519",
@@ -10994,8 +11360,9 @@
      "changeId": "G-008",
      "reason": "no line ends on a hyphen; wording unchanged; change only inside the displayed string (never keys, ids or autoComplete values)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E520",
@@ -11013,8 +11380,9 @@
      "changeId": "G-008",
      "reason": "no line ends on a hyphen; wording unchanged; change only inside the displayed string (never keys, ids or autoComplete values)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E521",
@@ -11032,8 +11400,9 @@
      "changeId": "G-008",
      "reason": "no line ends on a hyphen; wording unchanged; change only inside the displayed string (never keys, ids or autoComplete values)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     }
    ]
   },
@@ -11059,8 +11428,9 @@
      "changeId": "G-008",
      "reason": "no line ends on a hyphen; wording unchanged; change only inside the displayed string (never keys, ids or autoComplete values)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     },
     {
      "id": "E523",
@@ -11078,8 +11448,9 @@
      "changeId": "G-008",
      "reason": "no line ends on a hyphen; wording unchanged; change only inside the displayed string (never keys, ids or autoComplete values)",
      "confidence": "design",
-     "needsOwner": true,
-     "visual": true
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-24 H (owner accepted the package value)"
     }
    ]
   },
@@ -11289,12 +11660,12 @@
      "lineAfterStep0": 1016,
      "current": "background: var\\(--color-brand-600/",
      "currentAfterStep0": "background: var\\(--color-brand-600/",
-     "target": "background: var\\(--bg-brand\\)/",
+     "target": "background: var\\(--gradient-brand-card\\)/",
      "doneByStep0": false,
      "targetToken": null,
      "targetValue": null,
      "changeId": "tests",
-     "reason": "expired credit card is flat navy --bg-brand (edit on HomeComposite .primaryCard[credit-expired])",
+     "reason": "expired credit card takes the brand-card gradient (edit E421 on HomeComposite .primaryCard[credit-expired], owner 2026-11-24 B)",
      "confidence": "design",
      "needsOwner": false,
      "visual": false

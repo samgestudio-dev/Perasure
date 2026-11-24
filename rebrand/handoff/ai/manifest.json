@@ -14,7 +14,7 @@
   "tokensVersion": "2026.11.23"
  },
  "written": "2026-11-24",
- "scope": "purely visual: colour, typeface, type sizes/weights/tracking, radius, shadow, blur, spacing/position, icons, illustrations, animation colours. No structure, props, behaviour, flow or logic.",
+ "scope": "purely visual: colour, typeface, type sizes/weights/tracking, radius, shadow, blur, spacing/position, icons, illustrations, animation colours. No structure, props, behaviour, flow or logic. Exceptions, owner-approved 2026-11-24 (structural: \"owner-approved\"): E023 + E542 tab icon as masked <span> with currentColor; E543 + E400 data-overdue on the Home payment button.",
  "applyOrder": [
   {
    "step": 0,
@@ -59,21 +59,21 @@
  ],
  "schemas": {
   "01-tokens/token-map.json": "{meta, rows[], appLocal[]}; rows: old, oldValue, category, new, newValue, kind (same|renamed|value-changed|renamed+value-changed|removed), visualChange, confidence (exact|inferred), alternative?, replacement? (removed rows; for the 4 removed names still in use it equals the changes-by-file edit named in note), note, source, usesInProd, newClass?",
-  "02-changes/changes-by-file.json": "{meta{baseline, step0, precedence, conventions, counts}, files[]}; file: file, component, kind, applyGroup (\"1 …\"..\"7 …\"), edits[] in apply order (bottom-up). edit: id (E001…), action (replace|insert|delete|manual|skip|token-step), selector, property, line, lineEnd?, insertAfterLine? (insert: baseline line the target goes after), lineAfterStep0 (first line of the anchor after step 0), current (exact baseline text), currentAfterStep0 (exact text after step 0 = the anchor; delete: the full lines), anchor? (insert; = currentAfterStep0), target (replace: replacement text; insert: complete line(s) with indentation; delete: \"\"; manual/skip: placeholder), replaceAll? + expectedCount?, doneByStep0, step0? (\"0.0\"|\"0.2\"), targetToken (exists in 01-tokens/rebrand-tokens.css), targetValue, changeId (-> 03-design-intent), reason, instruction? (manual), skipReason? (skip), confidence, needsOwner, visual",
+  "02-changes/changes-by-file.json": "{meta{baseline, step0, precedence, conventions, counts}, files[]}; file: file, component, kind, applyGroup (\"1 …\"..\"7 …\"), edits[] in apply order (bottom-up). edit: id (E001…), action (replace|insert|delete|manual|skip|token-step), selector, property, line, lineEnd?, insertAfterLine? (insert: baseline line the target goes after), lineAfterStep0 (first line of the anchor after step 0), current (exact baseline text), currentAfterStep0 (exact text after step 0 = the anchor; delete: the full lines), anchor? (insert; = currentAfterStep0), target (replace: replacement text; insert: complete line(s) with indentation; delete: \"\"; manual/skip: placeholder), replaceAll? + expectedCount?, doneByStep0, step0? (\"0.0\"|\"0.2\"), targetToken (exists in 01-tokens/rebrand-tokens.css), targetValue, changeId (-> 03-design-intent), reason, instruction? (manual), skipReason? (skip), confidence, needsOwner, visual, decided? (\"2026-11-24 <A-F>\": owner answer applied), structural? (\"owner-approved\")",
   "03-design-intent/visual-changes.json": "rows: id (G-/C-/P-), area, designName, demoComponent, element, property, before, after, figmaNode, sourceEntry, ownerDecision, superseded?, note",
   "05-coverage/coverage.json": "(a) design rows with no production counterpart; (b) production components without explicit design: token map only | needs design",
   "04-assets/assets-to-replace.json": "production asset -> rebrand asset or in-code recolour; source paths are under 04-assets/files/",
   "tools/apply.py report": "{package, repo, step, dryRun, ownerItems, counts{status:n}, anchorMissing[], manual[], results[{id, file, group, action, lineAfterStep0, needsOwner, status (applied|already-done|anchor-missing|manual|skipped|skipped-owner), detail}], notDoneByThisScript[]}"
  },
- "openQuestions": "OPEN-QUESTIONS.md (package defaults already chosen; affected edits carry needsOwner: true; 3 edits are manual)",
+ "openQuestions": "OPEN-QUESTIONS.md (owner decisions of 2026-11-24 applied; open: only the 12 production pieces without a design; 56 edits still carry needsOwner: true with the package value; 2 edits are manual: E285, E286)",
  "files": [
   {
    "path": "OPEN-QUESTIONS.md",
-   "bytes": 3726
+   "bytes": 4275
   },
   {
    "path": "README.md",
-   "bytes": 19508
+   "bytes": 21341
   },
   {
    "path": "01-tokens/figma-tokens.header.css",
@@ -117,19 +117,19 @@
   },
   {
    "path": "01-tokens/unresolved.md",
-   "bytes": 18901
+   "bytes": 19111
   },
   {
    "path": "02-changes/changes-by-file.json",
-   "bytes": 388721
+   "bytes": 400804
   },
   {
    "path": "02-changes/changes-by-file.md",
-   "bytes": 179351
+   "bytes": 185534
   },
   {
    "path": "02-changes/conflicts.md",
-   "bytes": 19450
+   "bytes": 19502
   },
   {
    "path": "03-design-intent/excluded.md",
@@ -273,7 +273,7 @@
   },
   {
    "path": "05-coverage/coverage.json",
-   "bytes": 35769
+   "bytes": 35791
   },
   {
    "path": "06-production-audit/SUMMARY.md",
@@ -301,13 +301,14 @@
   },
   {
    "path": "tools/render_changes_md.py",
-   "bytes": 4733
+   "bytes": 5168
   }
  ],
  "precedence": "02-changes/changes-by-file.json > 01-tokens/token-map.json > 01-tokens/unresolved.md (the per-file edit wins; the others name the edit id where they overlap)",
  "tool": {
   "apply": "tools/apply.py <path-to-phi_h5_025> [--step 0|1..7|all] [--dry-run] [--include-owner-items|--skip-owner-items] [--report PATH] [--window N]",
   "renderMarkdown": "tools/render_changes_md.py (02-changes/changes-by-file.md from the JSON)",
-  "proof": "2026-11-24: --step all on a clean copy of 0d9bdd4: 534 edits + 3 step-0 operations applied, 2 already-done, 3 manual, 2 skipped, 0 anchor-missing; npm run build OK; npm test 927/927"
- }
+  "proof": "2026-11-24 (after the owner decisions): --step all on a clean copy of 0d9bdd4: 548 edits + 3 step-0 operations applied, 2 already-done, 2 manual, 2 skipped, 0 anchor-missing; npm run build OK; npm test 927/927"
+ },
+ "ownerDecisions": "2026-11-24: OPEN-QUESTIONS.md \"Decided 2026-11-24\" (A keep, B brand-card gradient, C no focus ring, D Amount tracking, E tab icon currentColor, F overdue button flag); open: only G (12 production pieces without a design)"
 }

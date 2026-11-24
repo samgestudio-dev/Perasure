@@ -5,12 +5,14 @@
 **Baseline:** GitLab `business_delivery_ph/phi_h5_025`, branch `master`, commit **`0d9bdd4`** (2026-11-23). Every `current` value and `line` in this package was read from that commit; every `currentAfterStep0` / `lineAfterStep0` was computed by running step 0 on it.
 **Design source:** Figma `kYyNV2MgxvH1w9bJ46A3yx` (pages *Design - Rebranding*, *Component - Rebranding*) and the rebrand demo (`samgestudio-dev/Perasure`, branch `tokens/rebrand-v3`). Rebrand tokens: **v2026.11.23**.
 **Written:** 2026-11-24. Supersedes `rebrand/DEV-HANDOFF.md` and `rebrand/tokens/MAPPING.md` (2026-11-19, tokens v2).
-**Proven:** the whole package was applied with `tools/apply.py --step all` to a clean copy of `0d9bdd4`: 534 edits applied plus the 3 step-0 operations, 2 edits already done by step 0, 3 manual, 2 skipped, **0 anchor-missing**; `npm run build` passes; `npm test` 927 / 927 pass.
+**Owner decisions:** the design owner answered the open questions on 2026-11-24 (`OPEN-QUESTIONS.md` → "Decided 2026-11-24"); they are applied here.
+**Proven (after the owner decisions, 2026-11-24):** the whole package was applied with `tools/apply.py --step all` to a clean copy of `0d9bdd4`: 548 edits applied plus the 3 step-0 operations, 2 edits already done by step 0, 2 manual, 2 skipped, **0 anchor-missing**; `npm run build` passes; `npm test` 927 / 927 pass.
 
 ## Scope — read carefully
 
 - **In scope: purely visual changes.** Colour, typeface, font size / weight / tracking, radius, shadow, blur, spacing and position, icons, illustrations, animation colours.
 - **Out of scope:** component structure, props, behaviour, flows, business logic, copy (except where listed as a visual copy fix). Do **not** restructure components to apply this. Where a look cannot be reached without a small structural hook, the edit is `manual` or marked `needsOwner` and listed in `OPEN-QUESTIONS.md`.
+- **Two exceptions, owner-approved (2026-11-24),** marked `structural: "owner-approved"` in the edit list: the Home tab icons become a masked `<span>` that takes `currentColor` (E023 + E542, `BottomNavigation`), and the Home payment button carries `data-overdue` for the red overdue look (E543 + E400, `HomeComposite`). Nothing else changes markup.
 - Things deliberately left out are listed in `03-design-intent/excluded.md` (e.g. the coupon selection logic, which is still being redesigned).
 
 ## One source of truth (precedence)
@@ -23,7 +25,7 @@ The token map is the file-wide default that step 0 applies with sed. Every place
 | Step | What | Where |
 |---|---|---|
 | 0 | **Tokens** (file-wide, mechanical; details below) | `01-tokens/` |
-| 1 | **Global edits** (`global.css` fonts / caret / focus, the boot splash in `index.html`) | `02-changes/changes-by-file.json`, `applyGroup` "1 …" |
+| 1 | **Global edits** (`global.css` fonts / caret, the boot splash in `index.html`; no focus ring) | `02-changes/changes-by-file.json`, `applyGroup` "1 …" |
 | 2 | **App shell and shared controls** (header / bottom bars, sheets, buttons, inputs, toasts, loaders) | group "2 …" |
 | 3 | **Components and features** | group "3 …" |
 | 4 | **Pages** | group "4 …" |
@@ -81,14 +83,14 @@ One pass with the three `-f` files gives the same result as three passes in that
 
 ### Steps 1–7: the edit list
 
-`02-changes/changes-by-file.json` (readable copy: `changes-by-file.md`, generated from it): 127 files, 541 edits — 512 replace, 16 insert, 7 delete, 3 manual, 2 skip, 1 token-step. 75 are `needsOwner` (`conflicts.md`). Each edit has an `id` (E001…).
+`02-changes/changes-by-file.json` (readable copy: `changes-by-file.md`, generated from it): 128 files, 554 edits — 525 replace, 17 insert, 7 delete, 2 manual, 2 skip, 1 token-step. 56 are still `needsOwner` (`conflicts.md`); 35 carry `decided: "2026-11-24 <letter>"` (the owner's answers), 4 of them `structural: "owner-approved"`. Each edit has an `id` (E001…E555; E002, the former focus ring, was removed).
 
 - **Anchor on `currentAfterStep0`, at `lineAfterStep0`.** `current` / `line` are the baseline text and line (for reference); after step 0 they may differ (renamed variables, global.css −5). If `currentAfterStep0` is not at `lineAfterStep0`, stop and report that edit; do not guess.
 - **Work in the listed order.** Files go by group; inside a file the edits are bottom-up (descending line, an insert before any other edit on its anchor line), so every `lineAfterStep0` stays valid while you go down the list and no edit changes the anchor of a later one.
 - **replace**: replace the first occurrence of `currentAfterStep0` in the line(s) starting at `lineAfterStep0` with `target` (both exact text, may span lines). `replaceAll: true` (coin SVG strings): replace every occurrence on that line; `expectedCount` says how many.
 - **insert**: `anchor` (= `currentAfterStep0`) is exact text starting at `lineAfterStep0`; add `target` — complete line(s), indentation included — directly after the anchor's last line. `selector` names the rule, or the new rule when the target is one.
 - **delete**: `currentAfterStep0` is the exact full text of the lines to remove, starting at `lineAfterStep0`.
-- **manual** (3): not scriptable; follow `instruction` (E023 tab icon colour: out of scope, structural; E285 / E286 icon `filter` chains). **skip** (2): E066 / E067 on `src/components/ui/Button/index.tsx`, a dead Tailwind component. **token-step** (E001): done by step 0.2.
+- **manual** (2): not scriptable; follow `instruction` (E285 / E286 icon `filter` chains). E023 (tab icon) is now a normal `replace` (owner-approved structural edit). **skip** (2): E066 / E067 on `src/components/ui/Button/index.tsx`, a dead Tailwind component. **token-step** (E001): done by step 0.2.
 - `doneByStep0: true` (E001, E005): step 0 already did it.
 - `targetToken` is the rebrand token the target renders and always exists in `01-tokens/rebrand-tokens.css`; in files that cannot read the token CSS (`index.html` boot splash, the CreditIncreaseIntro iframe material, SVG strings in TS) the target is that token's literal value. The only other variables in targets are production's own `--app-safe-area-top` / `--app-header-content-height`.
 
@@ -100,7 +102,7 @@ After steps 0–6, 8 of production's 927 tests fail because they pin the old loo
 |---|---|---|
 | `credit ring reflects updated available shares…` (`tests/credit-progress-ring.test.ts:18`), `零额度空态显示完整淡色圆环…` (:33), `credit ring bounds invalid…` (:48) | used-arc `opacity: 0.4` — edit E093 makes the hub ring track white 10 % (`strokeOpacity` 0.4 → 0.1, C-096) | `opacity: 0.1` on lines 21, 29, 36, 40, 44, 57 (E536–E541) |
 | `composite Home isolates credit loading…` (`tests/user-status-display.test.ts:797`) | expects `--color-text-negative-light` on the overdue date | `--fg-danger-muted` (line 860, E535) |
-| `active and expired credit cards share the final Home glow treatment` (:993) | expects `background: var(--color-brand-600` on the expired card | `background: var\(--bg-brand\)` (line 1016, E534) |
+| `active and expired credit cards share the final Home glow treatment` (:993) | expects `background: var(--color-brand-600` on the expired card | `background: var\(--gradient-brand-card\)` (line 1016, E534; owner decision B) |
 | `money typography uses self-hosted Satoshi…` (:1123) | expects the Satoshi `@font-face` and font files, `'Satoshi'` families, `--line-height-body-md` | renamed `…uses Hanken Grotesk (--font-family-number)…`; asserts no `/fonts/satoshi/` in global.css and the Hanken `@font-face`; `var(--font-family-number)`; `var(--font-line-height-body-md)` (E527–E533) |
 | `Figma font-weight tokens stay unitless CSS numbers` (:1256) | expects literal `--font-weight-bold: 700;` etc. | the rebrand file defines them as aliases: accepts `700` or `var(--font-weight-700)` (line 1274, E526) |
 | `withdraw amount guidance stays in the amount panel…` (:1548) | expects `--line-height-body-md, 20px` | `var(--font-line-height-body-md)` (lines 1578, 1582, E524–E525) |
@@ -112,7 +114,7 @@ After steps 0–6, 8 of production's 927 tests fail because they pin the old loo
 | Path | Format | What |
 |---|---|---|
 | `README.md` | md | this file |
-| `OPEN-QUESTIONS.md` | md | decisions that need the design owner before or while you apply; each says which value the package uses meanwhile |
+| `OPEN-QUESTIONS.md` | md | the owner's decisions of 2026-11-24 and what is still open (only the 12 production pieces without a design) |
 | `manifest.json` | json | machine index of this package (baseline, files, schemas, apply order, precedence) |
 | `tools/apply.py` | python | the reference applier (steps 0–7, report JSON) |
 | `tools/render_changes_md.py` | python | regenerates `02-changes/changes-by-file.md` from the JSON |
@@ -141,7 +143,7 @@ After steps 0–6, 8 of production's 927 tests fail because they pin the old loo
 These come from `03-design-intent/visual-changes.json` (ids in brackets). When an edit seems odd, check the rule.
 
 1. **Palette.** The logo colours replace the app's blue: every legacy brand blue becomes the green at the same step; red (danger) stays; navy `#000128` (`--bg-brand`) is the dark brand surface and the primary text colour. The neutral grey scale no longer exists in the rebrand set (see OPEN-QUESTIONS 1).
-2. **One typeface: Hanken Grotesk** for everything — body, titles and amounts. Inter and Satoshi go away (`--font-family-number` = Hanken Grotesk, weight 700 for emphasised amounts).
+2. **One typeface: Hanken Grotesk** for everything — body, titles and amounts. Inter and Satoshi go away (`--font-family-number` = Hanken Grotesk, weight 700 and the Amount tracking of rule 12 for emphasised amounts).
 3. **Header and bottom bars:** no progressive blur. Primary pages (Home / Payment / Account) use `--gradient-top-nav-filled` / `--gradient-bottom-primary-nav-filled`; secondary pages a solid page-colour header and `--gradient-bottom-secondary-nav-filled`. Glass buttons and the tab-bar pill keep their own backdrop blur.
 4. **Bottom distances (Android):** the primary button sits 16 px above the bottom of the webview, the tab bar 12 px, floating card sheets 8 px; iOS adds the safe-area inset on top (`env(safe-area-inset-bottom)` stays).
 5. **Sheets:** plain and card sheets use the gradient scrim (`--gradient-scrim`); full-page sheets use the flat scrim (`--overlay-scrim`, navy 40 %).
@@ -149,21 +151,25 @@ These come from `03-design-intent/visual-changes.json` (ids in brackets). When a
 7. **Loader and loan-submitting:** coin + dots centred in the visible screen; loan submitting sits 24 px above the middle and its coin never moves when the text wraps.
 8. **Coin and loading dots:** dark green `#298648` with a `#5CD680` highlight (was blue).
 9. **Splash:** navy to the screen edges (no light band under the status bar).
-10. **Primary button:** green fill with a navy label; the "Pay … now" button on Home's payment card is navy with a white label and no outline.
+10. **Primary button:** green fill with a navy label; the "Pay … now" button on Home's payment card is navy with a white label and no outline, and red (`--button-destructive-*`) when the payment is overdue (`button[data-overdue='true']`).
+11. **Brand cards (owner, 2026-11-24):** the home credit card, the application state card and the Home state card (expired / error) take `--gradient-brand-card` (Figma Gradient/Brand-card), like the credit-limit hub card; diversion / partner cards stay flat `--bg-brand`.
+12. **Amount tracking (owner, 2026-11-24):** emphasised amounts (`--font-family-number`, weight 700) use Figma's Amount tracking by size: xxl 48 / xl 36 `0.04em`, lg 32 `0.03em`, md 24 `0.02em`, sm 18 `0.03em`, xs 16 `0.02em`.
+13. **Focus (owner, 2026-11-24):** no focus ring is added; production keeps its no-outline rule. The text caret is `--fg-accent`.
+14. **Tab bar:** the active tab's icon and label are `--fg-accent`, inactive `--fg-default` (icons painted with `currentColor` through a CSS mask).
 
 ## Verify (checklist)
 
-- [ ] `tools/apply.py` report (or your own record): 0 `anchor-missing`; the 3 `manual` edits decided or left on purpose.
+- [ ] `tools/apply.py` report (or your own record): 0 `anchor-missing`; the 2 `manual` edits (E285, E286) decided or left on purpose.
 - [ ] `npm run build` passes and `npm test` passes (927 / 927 at `0d9bdd4` + this package).
 - [ ] No `var(--…)` name from `01-tokens/token-map.json` with `kind` ≠ `same` / `value-changed` is left in `src/` (except deliberate fallbacks), and no name from `unresolved.md` §6.
 - [ ] No hard-coded legacy blue (`#2c74be`, `#2b74bd`, Tailwind blues) remains; `06-production-audit/hardcoded.json` lists every colour literal to re-check.
 - [ ] Only Hanken Grotesk is loaded and used (no Inter, Satoshi, Nunito Sans, Roboto, Arial Black in computed styles); `public/fonts/inter` and `public/fonts/satoshi` removed per `04-assets/assets-to-replace.json`.
-- [ ] Open questions answered, or the package's default kept on purpose.
+- [ ] Owner decisions of 2026-11-24 applied (they are in the edit list); the remaining open item (12 pieces without a design) left as is.
 - [ ] Screens checked side by side with the Figma frames named in `03-design-intent/visual-changes.json` (`figmaNode`), at 360 and 390 px wide, Android WebView and iOS.
 
 ## Notes for the AI applying this
 
 - Anchor on `currentAfterStep0` at `lineAfterStep0` (after step 0, in the listed order). If it is not there, stop and report the edit id instead of guessing; `current` is only the baseline text before step 0.
 - If your branch is newer than `0d9bdd4`, run `tools/apply.py --dry-run` first: it searches ±40 lines and reports an edit it can't place unambiguously as `anchor-missing`.
-- Never change a component's structure or behaviour to apply a visual edit; `manual` edits and `OPEN-QUESTIONS.md` list the places where that would be needed.
+- Never change a component's structure or behaviour to apply a visual edit, apart from the four `structural: "owner-approved"` edits (E023, E542, E543, E400); `manual` edits and `OPEN-QUESTIONS.md` list the other places where that would be needed.
 - Prefer tokens over literals; every `targetToken` exists in `01-tokens/rebrand-tokens.css`.

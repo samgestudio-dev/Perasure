@@ -53,10 +53,10 @@ a { color: inherit; text-decoration: none; }
    (Inter) or titles (a title keeps its font; only its ₱ is the number font: .ps-peso). shared/README.md → "Number font" */
 .ps-t-number-xs { font: var(--font-weight-bold) var(--font-size-body-lg)/var(--font-line-height-body-md) var(--ps-font-num); letter-spacing: 0.02em; }      /* 16 / 20 */
 .ps-t-number-sm { font: var(--font-weight-bold) var(--font-size-title-sm)/var(--font-line-height-body-lg) var(--ps-font-num); letter-spacing: 0.03em; }     /* 18 / 24 */
-.ps-t-number-md { font: var(--font-weight-bold) var(--font-size-title-lg)/var(--font-line-height-title-lg) var(--ps-font-num); letter-spacing: 0; }         /* 24 / 32 */
-.ps-t-number-lg { font: var(--font-weight-bold) var(--font-size-display-sm)/var(--font-line-height-display-sm) var(--ps-font-num); letter-spacing: 0.02em; } /* 32 / 40 */
+.ps-t-number-md { font: var(--font-weight-bold) var(--font-size-title-lg)/var(--font-line-height-title-lg) var(--ps-font-num); letter-spacing: 0.02em; }      /* 24 / 32 · Figma Amount/md +2 % (owner 2026-11-24) */
+.ps-t-number-lg { font: var(--font-weight-bold) var(--font-size-display-sm)/var(--font-line-height-display-sm) var(--ps-font-num); letter-spacing: 0.03em; } /* 32 / 40 · Figma Amount/lg +3 % (owner 2026-11-24) */
 .ps-t-number-xl { font: var(--font-weight-bold) var(--font-size-display-md)/1 var(--ps-font-num); letter-spacing: 0.04em; }                                 /* 36 / 100 % */
-.ps-t-number-xxl { font: var(--font-weight-bold) var(--font-size-display-xl)/1 var(--ps-font-num); letter-spacing: 0.03em; }                                /* 48 / 100 % */
+.ps-t-number-xxl { font: var(--font-weight-bold) var(--font-size-display-xl)/1 var(--ps-font-num); letter-spacing: 0.04em; }                                /* 48 / 100 % · Figma Amount/xxl +4 % (owner 2026-11-24) */
 .ps-peso { font-family: var(--ps-font-num); }   /* a ₱ inside a title (PS.Peso): the number font, the title's size and weight */
 .ps-c-primary { color: var(--fg-default); } .ps-c-secondary { color: var(--fg-muted); }
 .ps-c-tertiary { color: var(--fg-subtle); } .ps-c-disabled { color: var(--fg-disabled); }
@@ -329,7 +329,7 @@ html.ps-edge .ps-sheet--plain { padding-bottom: calc(var(--sb) + var(--spacing-p
 .ps-close { width: 2.5rem; height: 2.5rem; padding: 0; flex: none; }
 
 /* ======================================================================================= home */
-.ps-credit { position: relative; overflow: hidden; background: var(--bg-brand); border-radius: var(--radius-xl); box-shadow: var(--elevation-1);
+.ps-credit { position: relative; overflow: hidden; background: var(--gradient-brand-card); border-radius: var(--radius-xl); box-shadow: var(--elevation-1);
   padding: var(--spacing-padding-md); display: flex; flex-direction: column; gap: var(--spacing-gap-lg); color: var(--fg-on-emphasis); }
 .ps-credit__glow { position: absolute; left: calc(50% - 0.0312rem - 14.9875rem); bottom: -6.0812rem; width: 29.975rem; height: 11.1rem; pointer-events: none; max-width: none; }
 .ps-credit__top { position: relative; display: flex; gap: var(--spacing-gap-md); padding: 0 var(--spacing-padding-xs); }
@@ -359,7 +359,7 @@ html.ps-edge .ps-sheet--plain { padding-bottom: calc(var(--sb) + var(--spacing-p
 .ps-payment__head, .ps-payment__foot { display: flex; align-items: center; justify-content: space-between; }
 .ps-payment__head { align-items: flex-start; }
 .ps-payment__amt { display: flex; align-items: flex-end; gap: var(--spacing-gap-xs); }
-.ps-payment__amt .ps-amount:first-child { font-size: var(--font-size-title-lg); line-height: 1; letter-spacing: 0; color: var(--fg-accent); }   /* Number/md (₱ included, Bold) */
+.ps-payment__amt .ps-amount:first-child { font-size: var(--font-size-title-lg); line-height: 1; letter-spacing: 0.02em; color: var(--fg-accent); }   /* Number/md (₱ included, Bold) */
 .ps-payment__due { display: flex; flex-direction: column; gap: var(--spacing-gap-2xs); }
 .ps-payment__due > p:last-child { display: flex; align-items: center; gap: var(--spacing-gap-xs); color: var(--fg-muted); }
 
@@ -458,7 +458,7 @@ button.ps-ticket { display: block; width: 100%; text-align: left; }
 .ps-summary__go { margin-top: var(--spacing-gap-md); }   /* DS 10836:28988: 12 above Confirm */
 .ps-summary__total { display: flex; flex-direction: column; }
 .ps-summary__total > div { display: flex; align-items: baseline; gap: var(--spacing-gap-xs); }
-.ps-summary__total .ps-amount:first-child { font-size: var(--font-size-title-lg); line-height: var(--font-line-height-title-lg); letter-spacing: 0; color: var(--fg-default); }   /* Number/md 24 / 32 (Figma 13733:14010) */
+.ps-summary__total .ps-amount:first-child { font-size: var(--font-size-title-lg); line-height: var(--font-line-height-title-lg); letter-spacing: 0.02em; color: var(--fg-default); }   /* Number/md 24 / 32 (Figma 13733:14010) */
 /* CouponOption (DS 10840:29499): white card r20, 12 / 16 padding; Inter SemiBold 16 + Caption/sm; Best 24 high r12; picked: the default shadow */
 .ps-copt { display: block; width: 100%; flex: none; text-align: left; touch-action: manipulation; }
 .ps-copt__card { position: relative; display: flex; flex-direction: column; border-radius: var(--radius-lg); overflow: hidden; background: var(--bg-default); box-shadow: 0 0 0 transparent; transition: box-shadow 0.15s ease; }
@@ -494,7 +494,7 @@ button.ps-ticket { display: block; width: 100%; text-align: left; }
 /* ======================================================================================= loan */
 .ps-amountcard { box-shadow: var(--elevation-1); }
 .ps-amountcard__amt { display: flex; align-items: center; gap: 0.25rem; height: 2.5rem; color: var(--fg-accent); }
-.ps-amountcard__amt .ps-amount { font-size: var(--font-size-display-sm); line-height: var(--font-line-height-display-sm); letter-spacing: 0.02em; }   /* Number/lg, ₱ included (Figma 13733:14030) */
+.ps-amountcard__amt .ps-amount { font-size: var(--font-size-display-sm); line-height: var(--font-line-height-display-sm); letter-spacing: 0.03em; }   /* Number/lg, ₱ included (Figma 13733:14030) */
 .ps-amountcard__edit { height: 1.75rem; display: flex; align-items: flex-end; color: var(--fg-accent); }
 .ps-slider { position: relative; height: 1.5625rem; }
 .ps-slider__track { position: absolute; left: 0; right: 0; bottom: 0.375rem; height: 0.5rem; border-radius: var(--radius-full); background: var(--bg-inset); overflow: hidden; isolation: isolate; }
@@ -791,7 +791,7 @@ html.ps-climit-on, html.ps-climit-on body, html.ps-climit-on .ps-frame { backgro
 .ps-offer__head { display: flex; align-items: center; justify-content: space-between; }
 .ps-offer__head > img { height: 1.5rem; width: auto; }
 .ps-offer__value { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-2xs); }
-.ps-offer__num { font: var(--font-weight-bold) var(--font-size-display-sm)/var(--font-line-height-display-sm) var(--ps-font-num); letter-spacing: 0.02em; color: var(--fg-accent); }   /* Number/lg 32 / 40 (was 28: no Number style at 28 — owner 2026-11-17 chose lg) */
+.ps-offer__num { font: var(--font-weight-bold) var(--font-size-display-sm)/var(--font-line-height-display-sm) var(--ps-font-num); letter-spacing: 0.03em; color: var(--fg-accent); }   /* Number/lg 32 / 40 (was 28: no Number style at 28 — owner 2026-11-17 chose lg) */
 .ps-offer > .ps-btn { margin-top: var(--spacing-gap-xs); }
 .ps-banners { display: flex; gap: var(--spacing-gap-sm); overflow-x: auto; scrollbar-width: none; margin: 0 calc(-1 * var(--spacing-page-x-sm)); padding: 0 var(--spacing-page-x-sm); scroll-snap-type: x mandatory; }
 .ps-banners::-webkit-scrollbar { height: 0; }
@@ -850,14 +850,14 @@ html.ps-climit-on, html.ps-climit-on body, html.ps-climit-on .ps-frame { backgro
 .ps-paybar { position: relative; display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-gap-md); padding: var(--spacing-padding-sm) var(--spacing-padding-xl); }
 .ps-paybar__amt { display: flex; align-items: flex-end; gap: var(--spacing-gap-xs); height: 2.25rem; }
 .ps-paybar__amt .ps-amount--strike { font-family: var(--font-family-body); }   /* the old total: Inter Medium 12 (a note, never the number font) */
-.ps-paybar__amt .ps-amount:first-child { font-size: var(--font-size-title-lg); line-height: var(--font-line-height-title-lg); letter-spacing: 0; color: var(--fg-accent); }   /* Number/md (Figma 13750:15975 payment nav) */
+.ps-paybar__amt .ps-amount:first-child { font-size: var(--font-size-title-lg); line-height: var(--font-line-height-title-lg); letter-spacing: 0.02em; color: var(--fg-accent); }   /* Number/md (Figma 13750:15975 payment nav) */
 .ps-paybar__amt .ps-amount--strike { font-weight: var(--font-weight-medium); color: var(--fg-placeholder); padding-bottom: 0.25rem; }
 .ps-paybar .ps-btn { height: 2.25rem; padding: var(--spacing-gap-sm) var(--spacing-padding-xl); }
 .ps-repay { gap: var(--spacing-gap-xl); }
 .ps-repay__head { display: flex; align-items: center; justify-content: space-between; }
 .ps-repay__head .ps-btn--outline { padding: var(--spacing-padding-2xs) var(--spacing-padding-xs); border-radius: var(--radius-xs); box-shadow: inset 0 0 0 var(--stroke-width-default) var(--border-accent-strong); color: var(--fg-accent);
   font: var(--ps-weight-light) var(--font-size-body-lg)/var(--font-line-height-body-lg) var(--font-family-body); }   /* Figma RepayCard Copy: Border/Accent-strong, Fg/Accent, Body/lg-light, radius 8 (owner, 2026-11-23) */
-.ps-repay__amount { font-size: var(--font-size-display-sm); line-height: var(--font-line-height-display-sm); letter-spacing: 0.02em; color: var(--fg-accent); }   /* Number/lg (Figma 13734:14775 / 14796 / 14815) */
+.ps-repay__amount { font-size: var(--font-size-display-sm); line-height: var(--font-line-height-display-sm); letter-spacing: 0.03em; color: var(--fg-accent); }   /* Number/lg (Figma 13734:14775 / 14796 / 14815) */
 .ps-repay__due { margin-top: calc(-1 * var(--spacing-gap-lg)); color: var(--fg-default); }
 .ps-insetrows { display: flex; flex-direction: column; gap: var(--spacing-gap-md); padding: var(--spacing-padding-lg) var(--spacing-padding-md); border-radius: var(--radius-sm); background: var(--bg-inset); }
 .ps-repay > .ps-insetrows { margin-top: calc(-1 * var(--spacing-gap-xs)); }   /* 16 under the due date */
@@ -943,7 +943,7 @@ html.ps-climit-on, html.ps-climit-on body, html.ps-climit-on .ps-frame { backgro
 .ps-histrow > span:last-child { display: flex; align-items: center; gap: var(--spacing-gap-md); }
 .ps-histrow__amount { font: var(--font-weight-bold) var(--font-size-title-sm)/var(--font-line-height-body-lg) var(--ps-font-num); letter-spacing: 0.03em; color: var(--fg-default); }   /* Number/sm (owner 2026-11-17) */
 .ps-hub { padding: var(--spacing-padding-lg) var(--spacing-padding-md); gap: var(--spacing-gap-md); background: linear-gradient(180deg, var(--bg-brand) 50%, var(--bg-brand-muted)); }   /* Figma HubCard: Bg/Brand → Bg/Brand-muted from the middle down, 12 between the rows (owner, 2026-11-23) */
-.ps-hub__amount { line-height: var(--font-line-height-display-sm); height: 2.5rem; margin-top: var(--spacing-gap-xs); font-size: var(--font-size-display-sm); letter-spacing: 0.02em; display: block; }   /* Number/lg (Figma 13732:13893) */
+.ps-hub__amount { line-height: var(--font-line-height-display-sm); height: 2.5rem; margin-top: var(--spacing-gap-xs); font-size: var(--font-size-display-sm); letter-spacing: 0.03em; display: block; }   /* Number/lg (Figma 13732:13893) */
 .ps-hub__amount .ps-amount__dec { font-size: var(--font-size-body-lg); letter-spacing: 0.02em; }   /* Number/xs */
 .ps-hub__row { position: relative; display: flex; align-items: center; gap: var(--spacing-gap-sm); min-height: 2.25rem; }
 .ps-hub__row > svg { flex: none; width: 1.5rem; height: 1.5rem; }
@@ -1277,7 +1277,7 @@ html.ps-splash-on, html.ps-splash-on body, html.ps-splash-on .ps-frame { backgro
 .ps-phero { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-md); margin-bottom: var(--spacing-gap-md); }
 /* ---- OrderHead · OrderStatus · PlanRows ---- */
 .ps-ohead { display: flex; flex-direction: column; gap: var(--spacing-gap-xs); padding: 0 var(--spacing-padding-sm); }
-.ps-ohead__amount { font-size: var(--font-size-display-sm); line-height: var(--font-line-height-display-sm); letter-spacing: 0.02em; color: var(--fg-accent); }   /* Number/lg (Figma 13735:14974) */
+.ps-ohead__amount { font-size: var(--font-size-display-sm); line-height: var(--font-line-height-display-sm); letter-spacing: 0.03em; color: var(--fg-accent); }   /* Number/lg (Figma 13735:14974) */
 .ps-ohead__label { font: var(--font-weight-regular) calc(1rem * var(--ps-tx, 1))/calc(1.5rem * var(--ps-tx, 1)) var(--font-family-title); color: var(--fg-muted); }
 .ps-ostatus { flex-direction: row; align-items: center; gap: var(--spacing-gap-lg); padding: 0.625rem 0.875rem; }   /* 12 / 16 with the 2 px ring (Figma: 328 × 80) */
 .ps-ostatus > div { flex: 1 1 0; display: flex; flex-direction: column; gap: var(--spacing-gap-2xs); }
@@ -1290,10 +1290,10 @@ html.ps-splash-on, html.ps-splash-on body, html.ps-splash-on .ps-frame { backgro
 html.ps-edge .ps-aentry { padding-bottom: calc(var(--sb) + var(--spacing-padding-lg)); }
 .ps-aentry__top { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); padding: var(--spacing-padding-3xl) 0; }
 .ps-aentry__num { display: flex; align-items: flex-end; height: 2.75rem; font-family: var(--ps-font-num); font-weight: var(--font-weight-bold); }
-.ps-aentry__cur { font: var(--font-weight-bold) var(--font-size-display-sm)/var(--font-line-height-display-sm) var(--ps-font-num); letter-spacing: 0.02em; color: var(--fg-disabled); margin-right: var(--spacing-gap-sm); }   /* Number/lg */
-.ps-aentry__typed { display: inline-flex; font-size: var(--font-size-display-xl); line-height: calc(2.75rem * var(--ps-tx, 1)); letter-spacing: 0.03em; color: var(--fg-default); }   /* Number/xxl; each digit its own box, kerned by PS.kern */
+.ps-aentry__cur { font: var(--font-weight-bold) var(--font-size-display-sm)/var(--font-line-height-display-sm) var(--ps-font-num); letter-spacing: 0.03em; color: var(--fg-disabled); margin-right: var(--spacing-gap-sm); }   /* Number/lg */
+.ps-aentry__typed { display: inline-flex; font-size: var(--font-size-display-xl); line-height: calc(2.75rem * var(--ps-tx, 1)); letter-spacing: 0.04em; color: var(--fg-default); }   /* Number/xxl; each digit its own box, kerned by PS.kern */
 .ps-aentry__typed > span { display: inline-block; }
-.ps-aentry__rest { font-size: var(--font-size-display-xl); line-height: calc(2.75rem * var(--ps-tx, 1)); letter-spacing: 0.03em; color: var(--fg-disabled); margin-left: var(--spacing-gap-2xs); }
+.ps-aentry__rest { font-size: var(--font-size-display-xl); line-height: calc(2.75rem * var(--ps-tx, 1)); letter-spacing: 0.04em; color: var(--fg-disabled); margin-left: var(--spacing-gap-2xs); }
 .ps-aentry__dec { font-size: var(--font-size-body-lg); line-height: var(--font-line-height-body-md); letter-spacing: 0.02em; color: var(--fg-disabled); margin-left: var(--spacing-gap-xs); }   /* Number/xs */
 .ps-aentry__caret { width: 0.125rem; height: 2.75rem; margin: 0 0.0625rem; background: var(--fg-accent); animation: ps-caret 1.06s steps(1, end) infinite; }
 @keyframes ps-caret { 50% { opacity: 0; } }

@@ -1,44 +1,55 @@
 # Open questions for the design owner
 
-The package already chooses a value for every item below (**Used**), so development can go ahead; an answer only changes that value.
-Full detail, with every affected file and line: `02-changes/conflicts.md` (items 1–10, sections C and D) and `01-tokens/unresolved.md`.
-Each edit affected carries `needsOwner: true` in `02-changes/changes-by-file.json` (75 edits; `apply.py --skip-owner-items` leaves them out). Three edits are `manual` (E023, E285, E286): nothing is applied there until the owner decides.
+The design owner answered on **2026-11-24**. The answers are applied in `02-changes/changes-by-file.json` (edits carry
+`decided: "2026-11-24 <letter>"` and `needsOwner: false`); details per file in `02-changes/conflicts.md`.
 
-## Colour system
+## Open
 
-1. **Grey text and lines become navy.** The current design deleted the neutral grey scale (design decision 42, 2026-11-21), so 34 production
-   grey tokens map to navy tokens (e.g. text `#141e24` → `#000128`). An earlier rule (2026-11-20) said "text keeps its neutral".
-   **Used:** navy (the current design). → `01-tokens/unresolved.md` §1
-2. **14 tokens where the current design departs from the "same step" colour rule** — the primary button's white label becomes navy;
-   glass goes from white 60 % to 80 %; the scrim from black 20 % to navy 40 %; brand-blue cards and icon discs become navy instead of
-   green; tag text and borders get darker. **Used:** the current design. Each row has an `alternative` keeping the legacy look.
-   → `01-tokens/unresolved.md` §2
-3. **Brand-card gradient.** Figma puts `Gradient/Brand-card` on the home credit card and the application state card; the demo paints them
-   flat navy. **Used:** flat navy (gradient only on the credit-limit hub). → `conflicts.md` 2
+- **Design side to fix in the rebrand token file:** `--duration-*` are emitted in px and `--easing-*` as quoted strings; don't use them
+  until fixed. → `01-tokens/unresolved.md` §7
+- **Waiting for design** (decision G): 02 AppEntryLanding showcase picture, 09 PaymentErrorModal, 10 PaymentListRecoveryState.
 
-## Components
+Nothing else is open. Two edits stay `manual` by nature (E285, E286: icon recolours through CSS filter chains, see their `target`).
 
-4. **"Best" pill** on coupons: orange (demo) or green (latest Figma). Production has no coupon UI yet, so nothing is edited. → `conflicts.md` 1
-5. **Contact-method selected state** (OTP page): green-700 label + green-400 ring (demo) or all green-600 (Figma). **Used:** demo. → `conflicts.md` 3
-6. **Amount tracking:** new Figma Amount tracking (xxl +4 %, lg +3 %, md +2 %) or the older values. **Used:** family and weight only, tracking unchanged. → `conflicts.md` 4
-7. **Slider knob:** dark-green centre + knob elevation (PS.Slider) or a plain white knob (Withdraw demo). **Used:** dark-green centre. → `conflicts.md` 5
-8. **Focus ring and caret:** a 2 px green focus ring (production removes outlines on purpose for Android WebView) and the caret colour.
-   **Used:** 2 px `--border-selected` on `:focus-visible`; caret `--fg-accent`. → `conflicts.md` 6, section C (`global.css:192`)
-9. **Boot splash in `index.html`:** navy ground needs a white wordmark. **Used:** navy + white. → `conflicts.md` 9
+## Decided 2026-11-24
 
-## Places where a look needs a small structural hook (flagged, not restructured)
+**H. Every other per-file call** (the 56 edits that were still `needsOwner`): the owner accepted the package's value for all of them
+(`decided: "2026-11-24 H …"`) — `conflicts.md` sections B (7, 10), C and D, the shared-rule buttons left as they are, the hyphen copy
+fixes E507–E523.
 
-10. Active tab icon colour (icons are `<img>` with a baked colour; needs `currentColor`; edit E023 is `manual`, out of scope). 11. The overdue red button (needs a state hook;
-    the package uses a `:has()` rule). 12. Buttons that share one rule but should differ (LoanDetail cancel vs document links; LoanEstimate
-    Cancel / Confirm). → `conflicts.md` section C and D
+**G. Production pieces with no rebrand design** (screenshots reviewed, before | after): **hold for a proper design before release** —
+02 AppEntryLanding (the showcase picture still shows the old blue app), 09 PaymentErrorModal, 10 PaymentListRecoveryState; their
+token-map edits may still be applied meanwhile (`designPending: true` in `changes-by-file.json`). **Ship as the package leaves them**
+(token map only) — 01 CreditIncreaseIntro, 03 NoticeTicker (backend colours: update the server palette to the rebrand colours),
+04 RiskVerifyCaptcha, 05 DisclosureStatementForm, 06 RejectDiversionCard, 07 FeedbackInvitationSheet, 08 FraudWarningSheet,
+11 Payment fraud ticker (backend colours), 12 ShortLinkRepay reloan banner. → `05-coverage/coverage.json` (b)
 
-## Production screens without a design
+**A. Keep as the package has them.**
+- **Grey text and lines become navy** (decision 42; 34 production grey tokens map to navy). → `unresolved.md` §1
+- **The 14 "current design" token rows** (primary label navy, glass 80 %, scrim navy 40 %, navy brand cards / icon discs, darker tag
+  text and borders). → `unresolved.md` §2, `conflicts.md` 8
+- **Contact-method selected state = demo:** label `--fg-accent`, ring `--border-selected` (E360, E361). → `conflicts.md` 3
+- **Slider knob = green centre + knob elevation** (E081–E084, E114; captcha thumb E189, E190). → `conflicts.md` 5
+- **Boot splash navy + white wordmark** (E008–E010, E013–E015). → `conflicts.md` 9
+- **"Best" pill = demo orange** (only matters when coupons are built; nothing is edited now). → `conflicts.md` 1
 
-13. 12 components need design before they can match the rebrand: the pink / lime fraud and feedback illustrations, the app-entry
-    showcase image, the reloan banner, the captcha bubble hues, the NoticeTicker and fraud-ticker colours (server config), the partner
-    offer card, two error states, the disclosure document, the credit-increase coin heap. 32 more are covered by the token map only.
-    → `05-coverage/coverage.json` (b)
+**B. Brand-card gradient.** Figma's Gradient/Brand-card (`--gradient-brand-card`) as `background` on the home credit card
+(CreditAmountCard, E219), the application state card (ApplicationStateCard, E544) and the Home state card `.primaryCard`
+(expired / error, E425, E421; its old ellipse highlight goes, E424). Diversion / partner cards stay flat navy. Test E534 follows.
+→ `conflicts.md` 2
 
-## Issues in the rebrand token file (design side to fix)
+**C. No focus ring.** The global `:focus-visible` ring (former E002, `global.css:192`) is removed from the package; production keeps
+its no-outline rule. Caret colours stay (E003 and the per-field caret edits). Existing per-control focus outlines in production only
+change colour, as before. → `conflicts.md` 6
 
-14. `--duration-*` are emitted in px and `--easing-*` as quoted strings: don't use them until fixed. → `unresolved.md` §7
+**D. Amount tracking = Figma Amount styles, weight 700, in em:** xxl `0.04em`, xl `0.04em`, lg `0.03em`, md `0.02em`, sm `0.03em`,
+xs `0.02em` (xl / sm: Figma has no Amount style, the Number values stay). Edits E545–E555 on every selector moved from Satoshi to
+`--font-family-number`. → `conflicts.md` 4
+
+**E. Home tab bar active icon — structural (owner-approved).** The decorative `<img>` becomes a `<span aria-hidden="true">` with the
+same SVG as CSS mask and `background-color: currentcolor` (E023 in `BottomNavigation/index.tsx`, E542 in its CSS); active
+`--fg-accent`, inactive `--fg-default`. → `conflicts.md` C
+
+**F. Overdue red button on Home — structural (owner-approved).** The payment button gets
+`data-overdue={repayment.isRepaymentOverdue}` (E543 in `HomeComposite.tsx`), and `.repaymentFooter button[data-overdue='true']`
+paints it with the destructive button tokens (E400); the `:has()` rule is gone. → `conflicts.md` C

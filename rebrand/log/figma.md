@@ -2659,3 +2659,9 @@ The owner asked for Android bottom distances instead of the old ones (they were 
 - `rebrand/handoff/ai/` (entry README.md): token map for all 691 production tokens → rebrand v2026.11.23, 541 edits in production files (exact anchors before and after the token step), design intent (251 changes), assets, coverage, production audit, open questions (75 owner items, 3 manual), and `tools/apply.py`.
 - Proven on a clean copy of phi_h5_025 master 0d9bdd4: 537 applied, 2 already done, 3 manual, 2 skipped, 0 missing; `npm run build` passes; `npm test` 927 / 927.
 - Supersedes `rebrand/DEV-HANDOFF.md` and `rebrand/tokens/MAPPING.md` (marked).
+
+## 82 · Hand-off open questions decided; demo follows (2026-11-24)
+
+- Owner answered every open question of `rebrand/handoff/ai/` (OPEN-QUESTIONS.md → "Decided 2026-11-24", A–H): navy greys and the 14 current-design token rows stay; brand-card gradient as Figma on the home credit card and the state cards; no focus ring; Figma amount tracking (xxl .04, lg .03, md .02 em); contact-method state, slider knob, boot splash as the package had them; the active tab icon (structural) and an overdue flag on the pay button (structural) approved; of the 12 undesigned production pieces (before | after screenshots reviewed) 02 AppEntryLanding, 09 PaymentErrorModal, 10 PaymentListRecoveryState wait for design, the rest ship token-map only; the 56 remaining small calls take the package's value.
+- Package re-proved on a clean phi_h5_025 0d9bdd4: 551 applied, 2 already done, 2 skipped, 2 manual, 0 missing; build passes; tests 927 / 927.
+- Demo follows: `.ps-credit` (credit card, state cards) and the Withdraw home card (+ the credit-limit intro's closing layer) on `--gradient-brand-card`; Number/md 0 → .02em, Number/lg .02 → .03em, Number/xxl .03 → .04em, plus the component copies of those sizes and the amount entry digits.

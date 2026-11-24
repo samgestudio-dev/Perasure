@@ -4,10 +4,14 @@ Target: PeraSure `tokens/tokens.css` v2026.11.23. Sections 1–5 are rows of `to
 
 ## 1. Neutral greys became navy (v3) — conflicts with "text keeps its neutral"
 
+**Decided 2026-11-24 (owner, OPEN-QUESTIONS A): navy, as mapped below.**
+
 The owner rule of 2026-11-20 says neutrals stay and text keeps its neutral. Decision 42 (2026-11-21, applied in Figma and in tokens v2026.11.21+) deleted the neutral scale: **navy replaces every grey** (`--color-text-primary` `#141e24` → `--fg-default` `#000128`; `#3c4850` → `#3d3e5c`; `#6a757d` → `#61627a`; dividers `#e0e3e5` → `#d6d6dd`).
 34 production tokens are affected (`note` says "Neutral grey -> navy"); they are mapped to the navy tokens because v2026.11.23 has no grey left. If the 11-20 rule must win, the design side has to bring the neutral values back; no token in the current file keeps them. The step mapping used is `rebrand/tokens/v3-map.json` `neutral_to` (300 and 400 both → navy-400, 500 and 600 both → navy-500).
 
 ## 2. v3 value departs from the owner rule: mapped to v3, alternative keeps the legacy step
+
+**Decided 2026-11-24 (owner, OPEN-QUESTIONS A): keep the v3 ("current design") value for all 14 rows; the alternatives are not used.**
 
 | production | uses | mapped to (v3 migration) | alternative (legacy look) | why |
 |---|---:|---|---|---|

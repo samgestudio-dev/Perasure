@@ -26,8 +26,10 @@ def main():
     out = ['# Rebrand: visual changes per production file', '',
            'Generated from `changes-by-file.json` by `tools/render_changes_md.py`; do not edit by hand. Baseline: production '
            '`phi_h5_025` master `0d9bdd4`. Rebrand: PeraSure tokens v2026.11.23. %d files, %d edits (%s). %d edits are marked '
-           '**owner** (see `conflicts.md`).' % (c['files'], c['edits'],
-                                                ', '.join('%d %s' % (v, k) for k, v in c['byAction'].items()), c['needsOwner']),
+           '**owner** (see `conflicts.md`); %d carry an owner decision of 2026-11-24 (_decided_), %d of them are small '
+           '**structural (owner-approved)** edits.' % (c['files'], c['edits'],
+                                                ', '.join('%d %s' % (v, k) for k, v in c['byAction'].items()), c['needsOwner'],
+                                                c.get('decided20261124', 0), c.get('structuralOwnerApproved', 0)),
            '', '## How to read this', '',
            '1. **Step 0 first** (README "Step 0"): delete the local `--gradient-modal-backdrop` block, run the three seds, overwrite '
            'the token file. "Now" below is the text **after step 0** (`currentAfterStep0`), the anchor to look for.',
@@ -70,6 +72,10 @@ def main():
                 flags.append('**done by step 0**')
             if e.get('needsOwner'):
                 flags.append('**owner**')
+            if e.get('structural'):
+                flags.append('**structural (owner-approved)**')
+            if e.get('decided'):
+                flags.append('_decided %s_' % e['decided'])
             if e.get('confidence') == 'inferred':
                 flags.append('_inferred_')
             if e.get('visual') is False:

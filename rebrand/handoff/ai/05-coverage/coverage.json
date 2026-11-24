@@ -777,7 +777,7 @@
    "path": "src/styles/global.css",
    "recommendation": "token map only",
    "editsInChangeList": true,
-   "note": "fonts, body family, scrim gradient, caret, focus ring"
+   "note": "fonts, body family, scrim gradient, caret (no focus ring: owner 2026-11-24)"
   },
   {
    "component": "Static boot splash",
@@ -789,9 +789,10 @@
   {
    "component": "CreditIncreaseIntro",
    "path": "src/pages/HomePage/CreditIncreaseIntro/adapter.ts",
-   "recommendation": "needs design",
+   "recommendation": "token map only (owner)",
    "editsInChangeList": true,
-   "note": "Follows the unwired rebrand copy (credit-limit-coins/baked); owner should confirm the copy is final."
+   "note": "Follows the unwired rebrand copy (credit-limit-coins/baked); owner should confirm the copy is final.",
+   "ownerDecision": "2026-11-24: ship as the package leaves it (token map only, the \"after\" screenshot); no separate design"
   },
   {
    "component": "UI copy with hyphenated words",
@@ -805,7 +806,8 @@
    "path": null,
    "recommendation": "needs design",
    "editsInChangeList": true,
-   "note": "Showcase image (app-entry-showcase.png/.webp) is a picture of the app; it will show the old blue UI until re-shot."
+   "note": "Showcase image (app-entry-showcase.png/.webp) is a picture of the app; it will show the old blue UI until re-shot.",
+   "ownerDecision": "2026-11-24: hold for a proper design before release; the token-map edits may be applied meanwhile (edits carry designPending: true)"
   },
   {
    "component": "ErrorBlock",
@@ -838,9 +840,10 @@
   {
    "component": "NoticeTicker",
    "path": null,
-   "recommendation": "needs design",
+   "recommendation": "token map only (owner)",
    "editsInChangeList": true,
-   "note": "Pill colours come from server notice data at runtime; the backend palette needs the rebrand colours."
+   "note": "Pill colours come from server notice data at runtime; the backend palette needs the rebrand colours.",
+   "ownerDecision": "2026-11-24: ship as the package leaves it (token map only, the \"after\" screenshot); no separate design"
   },
   {
    "component": "PageLoading",
@@ -908,16 +911,18 @@
   {
    "component": "RiskVerifyCaptcha",
    "path": "src/pages/AuthPage/components/RiskVerifyCaptcha/index.tsx",
-   "recommendation": "needs design",
+   "recommendation": "token map only (owner)",
    "editsInChangeList": true,
-   "note": "Canvas puzzle uses random teal-to-blue bubble hues (RiskVerifyCaptcha.tsx line 171)."
+   "note": "Canvas puzzle uses random teal-to-blue bubble hues (RiskVerifyCaptcha.tsx line 171).",
+   "ownerDecision": "2026-11-24: ship as the package leaves it (token map only, the \"after\" screenshot); no separate design"
   },
   {
    "component": "DisclosureStatementForm",
    "path": "src/pages/ConfirmPage/DisclosureLetterPage/DisclosureLetter/DisclosureStatementForm.tsx",
-   "recommendation": "needs design",
+   "recommendation": "token map only (owner)",
    "editsInChangeList": false,
-   "note": "Legal SEC document (Arial/Roboto, #111 ink); deliberately left as is."
+   "note": "Legal SEC document (Arial/Roboto, #111 ink); deliberately left as is.",
+   "ownerDecision": "2026-11-24: ship as the package leaves it (token map only, the \"after\" screenshot); no separate design"
   },
   {
    "component": "DisclosureLetterPage",
@@ -943,37 +948,42 @@
   {
    "component": "RejectDiversionCard",
    "path": "src/pages/HomePage/Home/components/RejectDiversionCard/index.tsx",
-   "recommendation": "needs design",
+   "recommendation": "token map only (owner)",
    "editsInChangeList": true,
-   "note": "Partner offer card (partner red #ed001c, partner logo); no design row."
+   "note": "Partner offer card (partner red #ed001c, partner logo); no design row.",
+   "ownerDecision": "2026-11-24: ship as the package leaves it (token map only, the \"after\" screenshot); no separate design"
   },
   {
    "component": "FeedbackInvitationSheet",
    "path": "src/pages/HomePage/Home/feedbackInvitation/FeedbackInvitationSheet.tsx",
-   "recommendation": "needs design",
+   "recommendation": "token map only (owner)",
    "editsInChangeList": true,
-   "note": "Pink/lime satisfaction/support illustrations have no rebrand version."
+   "note": "Pink/lime satisfaction/support illustrations have no rebrand version.",
+   "ownerDecision": "2026-11-24: ship as the package leaves it (token map only, the \"after\" screenshot); no separate design"
   },
   {
    "component": "FraudWarningSheet",
    "path": "src/pages/HomePage/Payment/components/FraudWarningSheet/index.tsx",
-   "recommendation": "needs design",
+   "recommendation": "token map only (owner)",
    "editsInChangeList": true,
-   "note": "Pink/lime/teal illustrations (customer-service, transaction, verification-code svgs) have no rebrand version."
+   "note": "Pink/lime/teal illustrations (customer-service, transaction, verification-code svgs) have no rebrand version.",
+   "ownerDecision": "2026-11-24: ship as the package leaves it (token map only, the \"after\" screenshot); no separate design"
   },
   {
    "component": "PaymentErrorModal",
    "path": "src/pages/HomePage/Payment/components/PaymentErrorModal/index.tsx",
    "recommendation": "needs design",
    "editsInChangeList": true,
-   "note": "No design row; production renders a near-black button and amber icon via undefined tokens."
+   "note": "No design row; production renders a near-black button and amber icon via undefined tokens.",
+   "ownerDecision": "2026-11-24: hold for a proper design before release; the token-map edits may be applied meanwhile (edits carry designPending: true)"
   },
   {
    "component": "PaymentListRecoveryState",
    "path": "src/pages/HomePage/Payment/components/PaymentListRecoveryState/index.tsx",
    "recommendation": "needs design",
    "editsInChangeList": true,
-   "note": "No design row; warning colours come from undefined tokens."
+   "note": "No design row; warning colours come from undefined tokens.",
+   "ownerDecision": "2026-11-24: hold for a proper design before release; the token-map edits may be applied meanwhile (edits carry designPending: true)"
   },
   {
    "component": "RepaymentList",
@@ -992,9 +1002,10 @@
   {
    "component": "Payment",
    "path": "src/pages/HomePage/Payment/index.tsx",
-   "recommendation": "needs design",
+   "recommendation": "token map only (owner)",
    "editsInChangeList": true,
-   "note": "Fraud ticker colours come from backend config (C-106 wants --bg-info-muted / --fg-info-strong)."
+   "note": "Fraud ticker colours come from backend config (C-106 wants --bg-info-muted / --fg-info-strong).",
+   "ownerDecision": "2026-11-24: ship as the package leaves it (token map only, the \"after\" screenshot); no separate design"
   },
   {
    "component": "WithdrawBankRoute",
@@ -1055,9 +1066,10 @@
   {
    "component": "ShortLinkRepay",
    "path": "src/pages/OutPages/ShortLink/Repay/index.tsx",
-   "recommendation": "needs design",
+   "recommendation": "token map only (owner)",
    "editsInChangeList": true,
-   "note": "reloan-banner.jpg is a blue marketing banner."
+   "note": "reloan-banner.jpg is a blue marketing banner.",
+   "ownerDecision": "2026-11-24: ship as the package leaves it (token map only, the \"after\" screenshot); no separate design"
   },
   {
    "component": "SplashPage",
