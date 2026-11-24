@@ -1,3 +1,5 @@
+> **Superseded (2026-11-24):** use `rebrand/handoff/ai/` (README.md there) — this file was written for tokens v2 against phi_h5_025 32268e1.
+
 # PeraSure rebrand: developer handoff for phi_h5_025 (tokens v2)
 
 This is for the developers of `phi_h5_025` (React + TS + Vite). Nothing in `phi_h5_025` has been changed by the design side.

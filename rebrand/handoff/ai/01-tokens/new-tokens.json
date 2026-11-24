@@ -1,0 +1,2217 @@
+{
+ "doc": "Rebrand tokens (tokens.css v2026.11.23) that production phi_h5_025 does not define by name and that the rebranded screens and components use. brandNewRole=true: no production token maps onto it (new UI role: build with it). mappedFromProduction: production tokens that token-map.json renames onto it. Values are as in tokens.css (raw) and resolved. `textStyles` are the .ps-text-* classes (v3 has no per-style variables). `otherAvailable`: remaining v3 names, mostly primitives; do not use primitives in components.",
+ "counts": {
+  "needed": 176,
+  "neededBrandNewRole": 145,
+  "textStyles": 35,
+  "otherAvailable": 55
+ },
+ "needed": [
+  {
+   "name": "--duration-80",
+   "value": "80px",
+   "resolved": "80px",
+   "category": "motion",
+   "whatFor": "Motion durations and easings. CAUTION: tokens.css v2026.11.23 emits durations as px and easings as quoted strings - not usable in CSS as is (see unresolved.md).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--duration-150",
+   "value": "150px",
+   "resolved": "150px",
+   "category": "motion",
+   "whatFor": "Motion durations and easings. CAUTION: tokens.css v2026.11.23 emits durations as px and easings as quoted strings - not usable in CSS as is (see unresolved.md).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--duration-240",
+   "value": "240px",
+   "resolved": "240px",
+   "category": "motion",
+   "whatFor": "Motion durations and easings. CAUTION: tokens.css v2026.11.23 emits durations as px and easings as quoted strings - not usable in CSS as is (see unresolved.md).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--duration-360",
+   "value": "360px",
+   "resolved": "360px",
+   "category": "motion",
+   "whatFor": "Motion durations and easings. CAUTION: tokens.css v2026.11.23 emits durations as px and easings as quoted strings - not usable in CSS as is (see unresolved.md).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--easing-accelerate",
+   "value": "\"cubic-bezier(0.3, 0, 1, 1)\"",
+   "resolved": "\"cubic-bezier(0.3, 0, 1, 1)\"",
+   "category": "motion",
+   "whatFor": "Motion durations and easings. CAUTION: tokens.css v2026.11.23 emits durations as px and easings as quoted strings - not usable in CSS as is (see unresolved.md).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--easing-decelerate",
+   "value": "\"cubic-bezier(0, 0, 0, 1)\"",
+   "resolved": "\"cubic-bezier(0, 0, 0, 1)\"",
+   "category": "motion",
+   "whatFor": "Motion durations and easings. CAUTION: tokens.css v2026.11.23 emits durations as px and easings as quoted strings - not usable in CSS as is (see unresolved.md).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--easing-standard",
+   "value": "\"cubic-bezier(0.2, 0, 0, 1)\"",
+   "resolved": "\"cubic-bezier(0.2, 0, 0, 1)\"",
+   "category": "motion",
+   "whatFor": "Motion durations and easings. CAUTION: tokens.css v2026.11.23 emits durations as px and easings as quoted strings - not usable in CSS as is (see unresolved.md).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--bg-accent-subtle",
+   "value": "var(--palette-green-50)",
+   "resolved": "#effbf2",
+   "category": "color",
+   "whatFor": "Semantic roles used by the rebranded components that no production token maps onto one-to-one.",
+   "mappedFromProduction": [
+    "--color-surface-card-brand-subtle"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--bg-attention-muted",
+   "value": "var(--palette-orange-100)",
+   "resolved": "#ffe6d5",
+   "category": "color/attention",
+   "whatFor": "Orange urgency: coupon countdown text/icon and the \"Best\" pill (not a warning colour).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--bg-attention-subtle",
+   "value": "var(--palette-orange-50)",
+   "resolved": "#fff4ed",
+   "category": "color/attention",
+   "whatFor": "Orange urgency: coupon countdown text/icon and the \"Best\" pill (not a warning colour).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--bg-brand",
+   "value": "var(--palette-navy-900)",
+   "resolved": "#000128",
+   "category": "color/brand-surface",
+   "whatFor": "Navy brand surfaces and what sits on them (green text, white 10% chips and borders).",
+   "mappedFromProduction": [
+    "--color-surface-card-brand",
+    "--color-surface-icon-brand-default"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--bg-brand-muted",
+   "value": "var(--palette-navy-600)",
+   "resolved": "#3d3e5c",
+   "category": "color/brand-surface",
+   "whatFor": "Navy brand surfaces and what sits on them (green text, white 10% chips and borders).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--bg-brand-pressed",
+   "value": "var(--palette-navy-800)",
+   "resolved": "#0b0f35",
+   "category": "color/brand-surface",
+   "whatFor": "Navy brand surfaces and what sits on them (green text, white 10% chips and borders).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--bg-glass",
+   "value": "var(--palette-alpha-white-80)",
+   "resolved": "rgb(255 255 255 / 0.8)",
+   "category": "glass",
+   "whatFor": "Glass buttons and the tab-bar pill: fill, backdrop blur, rim shadow, 161deg stroke.",
+   "mappedFromProduction": [
+    "--color-surface-elevated-glass"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--bg-glass-on-dark",
+   "value": "var(--palette-alpha-white-20)",
+   "resolved": "rgb(255 255 255 / 0.2)",
+   "category": "glass",
+   "whatFor": "Glass buttons and the tab-bar pill: fill, backdrop blur, rim shadow, 161deg stroke.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--bg-glass-subtle",
+   "value": "var(--palette-alpha-white-60)",
+   "resolved": "rgb(255 255 255 / 0.6)",
+   "category": "glass",
+   "whatFor": "Glass buttons and the tab-bar pill: fill, backdrop blur, rim shadow, 161deg stroke.",
+   "mappedFromProduction": [
+    "--color-surface-elevated-glass-blue"
+   ],
+   "alternativeFor": [
+    "--color-surface-elevated-glass"
+   ],
+   "brandNewRole": false
+  },
+  {
+   "name": "--bg-info-emphasis",
+   "value": "var(--palette-blue-600)",
+   "resolved": "#2c74be",
+   "category": "color/info",
+   "whatFor": "Info tone (the only blue kept in v3).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--bg-info-muted",
+   "value": "var(--palette-blue-100)",
+   "resolved": "#e4f0ff",
+   "category": "color/info",
+   "whatFor": "Info tone (the only blue kept in v3).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--bg-info-subtle",
+   "value": "var(--palette-blue-50)",
+   "resolved": "#f3f8ff",
+   "category": "color/info",
+   "whatFor": "Info tone (the only blue kept in v3).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--bg-on-brand",
+   "value": "var(--palette-alpha-white-10)",
+   "resolved": "rgb(255 255 255 / 0.1)",
+   "category": "color/brand-surface",
+   "whatFor": "Navy brand surfaces and what sits on them (green text, white 10% chips and borders).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--bg-success",
+   "value": "var(--palette-green-400)",
+   "resolved": "#76dc93",
+   "category": "color",
+   "whatFor": "Semantic roles used by the rebranded components that no production token maps onto one-to-one.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--bg-success-pressed",
+   "value": "var(--palette-green-500)",
+   "resolved": "#5cd680",
+   "category": "color",
+   "whatFor": "Semantic roles used by the rebranded components that no production token maps onto one-to-one.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--bg-tint",
+   "value": "var(--palette-mist-300)",
+   "resolved": "#d3e0dc",
+   "category": "color",
+   "whatFor": "Semantic roles used by the rebranded components that no production token maps onto one-to-one.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--border-accent-strong",
+   "value": "var(--palette-green-700)",
+   "resolved": "#298648",
+   "category": "color",
+   "whatFor": "Semantic roles used by the rebranded components that no production token maps onto one-to-one.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--border-attention",
+   "value": "var(--palette-orange-300)",
+   "resolved": "#ffa36f",
+   "category": "color/attention",
+   "whatFor": "Orange urgency: coupon countdown text/icon and the \"Best\" pill (not a warning colour).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--border-focus",
+   "value": "var(--palette-green-400)",
+   "resolved": "#76dc93",
+   "category": "focus",
+   "whatFor": "Focus ring colour (green-400) and width (2px).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--border-info",
+   "value": "var(--palette-blue-400)",
+   "resolved": "#74b2f5",
+   "category": "color/info",
+   "whatFor": "Info tone (the only blue kept in v3).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--border-info-muted",
+   "value": "var(--palette-blue-200)",
+   "resolved": "#c8deff",
+   "category": "color/info",
+   "whatFor": "Info tone (the only blue kept in v3).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--border-on-brand",
+   "value": "var(--palette-alpha-white-10)",
+   "resolved": "rgb(255 255 255 / 0.1)",
+   "category": "color/brand-surface",
+   "whatFor": "Navy brand surfaces and what sits on them (green text, white 10% chips and borders).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--border-on-emphasis",
+   "value": "var(--palette-base-white)",
+   "resolved": "#ffffff",
+   "category": "color/brand-surface",
+   "whatFor": "Navy brand surfaces and what sits on them (green text, white 10% chips and borders).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--border-selected",
+   "value": "var(--palette-green-400)",
+   "resolved": "#76dc93",
+   "category": "color",
+   "whatFor": "Semantic roles used by the rebranded components that no production token maps onto one-to-one.",
+   "mappedFromProduction": [
+    "--color-action-stroke-active",
+    "--color-stroke-brand-default"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--fg-accent-on-brand",
+   "value": "var(--palette-green-500)",
+   "resolved": "#5cd680",
+   "category": "color/brand-surface",
+   "whatFor": "Navy brand surfaces and what sits on them (green text, white 10% chips and borders).",
+   "mappedFromProduction": [
+    "--color-icon-positive-light",
+    "--color-text-positive-light"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--fg-accent-on-brand-pressed",
+   "value": "var(--palette-green-400)",
+   "resolved": "#76dc93",
+   "category": "color/brand-surface",
+   "whatFor": "Navy brand surfaces and what sits on them (green text, white 10% chips and borders).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--fg-attention",
+   "value": "var(--palette-orange-500)",
+   "resolved": "#ff5e00",
+   "category": "color/attention",
+   "whatFor": "Orange urgency: coupon countdown text/icon and the \"Best\" pill (not a warning colour).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--fg-danger-muted",
+   "value": "var(--palette-red-500)",
+   "resolved": "#ff0d19",
+   "category": "color",
+   "whatFor": "Semantic roles used by the rebranded components that no production token maps onto one-to-one.",
+   "mappedFromProduction": [
+    "--color-icon-negative-light",
+    "--color-text-negative-light"
+   ],
+   "alternativeFor": [
+    "--tag-color-negative-text-default"
+   ],
+   "brandNewRole": false
+  },
+  {
+   "name": "--fg-info",
+   "value": "var(--palette-blue-700)",
+   "resolved": "#20558d",
+   "category": "color/info",
+   "whatFor": "Info tone (the only blue kept in v3).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--fg-info-strong",
+   "value": "var(--palette-blue-800)",
+   "resolved": "#173d67",
+   "category": "color/info",
+   "whatFor": "Info tone (the only blue kept in v3).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--fg-on-accent",
+   "value": "var(--palette-navy-900)",
+   "resolved": "#000128",
+   "category": "color/text",
+   "whatFor": "Navy label on green fills (primary button, selected controls).",
+   "mappedFromProduction": [
+    "--color-action-text-default"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--fg-selected",
+   "value": "var(--palette-green-500)",
+   "resolved": "#5cd680",
+   "category": "color",
+   "whatFor": "Semantic roles used by the rebranded components that no production token maps onto one-to-one.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--font-family-amount",
+   "value": "var(--font-family-hanken-grotesk)",
+   "resolved": "\"Hanken Grotesk\", sans-serif",
+   "category": "typography/amount",
+   "whatFor": "Amount styles (Hanken Grotesk, 16-48px, 700, positive tracking). Use .ps-text-amount-*.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--font-family-number",
+   "value": "var(--font-family-hanken-grotesk)",
+   "resolved": "\"Hanken Grotesk\", sans-serif",
+   "category": "typography/amount",
+   "whatFor": "Amount styles (Hanken Grotesk, 16-48px, 700, positive tracking). Use .ps-text-amount-*.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--font-line-height-amount-lg",
+   "value": "var(--font-line-height-40)",
+   "resolved": "40px",
+   "category": "typography/amount",
+   "whatFor": "Amount styles (Hanken Grotesk, 16-48px, 700, positive tracking). Use .ps-text-amount-*.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--font-line-height-amount-md",
+   "value": "var(--font-line-height-32)",
+   "resolved": "32px",
+   "category": "typography/amount",
+   "whatFor": "Amount styles (Hanken Grotesk, 16-48px, 700, positive tracking). Use .ps-text-amount-*.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--font-line-height-amount-sm",
+   "value": "var(--font-line-height-24)",
+   "resolved": "24px",
+   "category": "typography/amount",
+   "whatFor": "Amount styles (Hanken Grotesk, 16-48px, 700, positive tracking). Use .ps-text-amount-*.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--font-line-height-amount-xl",
+   "value": "var(--font-line-height-36)",
+   "resolved": "36px",
+   "category": "typography/amount",
+   "whatFor": "Amount styles (Hanken Grotesk, 16-48px, 700, positive tracking). Use .ps-text-amount-*.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--font-line-height-amount-xs",
+   "value": "var(--font-line-height-20)",
+   "resolved": "20px",
+   "category": "typography/amount",
+   "whatFor": "Amount styles (Hanken Grotesk, 16-48px, 700, positive tracking). Use .ps-text-amount-*.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--font-line-height-amount-xxl",
+   "value": "var(--font-line-height-48)",
+   "resolved": "48px",
+   "category": "typography/amount",
+   "whatFor": "Amount styles (Hanken Grotesk, 16-48px, 700, positive tracking). Use .ps-text-amount-*.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--font-size-amount-lg",
+   "value": "var(--font-size-32)",
+   "resolved": "32px",
+   "category": "typography/amount",
+   "whatFor": "Amount styles (Hanken Grotesk, 16-48px, 700, positive tracking). Use .ps-text-amount-*.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--font-size-amount-md",
+   "value": "var(--font-size-24)",
+   "resolved": "24px",
+   "category": "typography/amount",
+   "whatFor": "Amount styles (Hanken Grotesk, 16-48px, 700, positive tracking). Use .ps-text-amount-*.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--font-size-amount-sm",
+   "value": "var(--font-size-18)",
+   "resolved": "18px",
+   "category": "typography/amount",
+   "whatFor": "Amount styles (Hanken Grotesk, 16-48px, 700, positive tracking). Use .ps-text-amount-*.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--font-size-amount-xl",
+   "value": "var(--font-size-36)",
+   "resolved": "36px",
+   "category": "typography/amount",
+   "whatFor": "Amount styles (Hanken Grotesk, 16-48px, 700, positive tracking). Use .ps-text-amount-*.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--font-size-amount-xs",
+   "value": "var(--font-size-16)",
+   "resolved": "16px",
+   "category": "typography/amount",
+   "whatFor": "Amount styles (Hanken Grotesk, 16-48px, 700, positive tracking). Use .ps-text-amount-*.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--font-size-amount-xxl",
+   "value": "var(--font-size-48)",
+   "resolved": "48px",
+   "category": "typography/amount",
+   "whatFor": "Amount styles (Hanken Grotesk, 16-48px, 700, positive tracking). Use .ps-text-amount-*.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--motion-duration-base",
+   "value": "var(--duration-240)",
+   "resolved": "240px",
+   "category": "motion",
+   "whatFor": "Motion durations and easings. CAUTION: tokens.css v2026.11.23 emits durations as px and easings as quoted strings - not usable in CSS as is (see unresolved.md).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--motion-duration-fast",
+   "value": "var(--duration-150)",
+   "resolved": "150px",
+   "category": "motion",
+   "whatFor": "Motion durations and easings. CAUTION: tokens.css v2026.11.23 emits durations as px and easings as quoted strings - not usable in CSS as is (see unresolved.md).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--motion-duration-instant",
+   "value": "var(--duration-80)",
+   "resolved": "80px",
+   "category": "motion",
+   "whatFor": "Motion durations and easings. CAUTION: tokens.css v2026.11.23 emits durations as px and easings as quoted strings - not usable in CSS as is (see unresolved.md).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--motion-duration-slow",
+   "value": "var(--duration-360)",
+   "resolved": "360px",
+   "category": "motion",
+   "whatFor": "Motion durations and easings. CAUTION: tokens.css v2026.11.23 emits durations as px and easings as quoted strings - not usable in CSS as is (see unresolved.md).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--motion-easing-enter",
+   "value": "var(--easing-decelerate)",
+   "resolved": "\"cubic-bezier(0, 0, 0, 1)\"",
+   "category": "motion",
+   "whatFor": "Motion durations and easings. CAUTION: tokens.css v2026.11.23 emits durations as px and easings as quoted strings - not usable in CSS as is (see unresolved.md).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--motion-easing-exit",
+   "value": "var(--easing-accelerate)",
+   "resolved": "\"cubic-bezier(0.3, 0, 1, 1)\"",
+   "category": "motion",
+   "whatFor": "Motion durations and easings. CAUTION: tokens.css v2026.11.23 emits durations as px and easings as quoted strings - not usable in CSS as is (see unresolved.md).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--motion-easing-standard",
+   "value": "var(--easing-standard)",
+   "resolved": "\"cubic-bezier(0.2, 0, 0, 1)\"",
+   "category": "motion",
+   "whatFor": "Motion durations and easings. CAUTION: tokens.css v2026.11.23 emits durations as px and easings as quoted strings - not usable in CSS as is (see unresolved.md).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--opacity-disabled",
+   "value": "var(--layer-opacity-40)",
+   "resolved": "0.4",
+   "category": "opacity",
+   "whatFor": "Disabled (0.4) and pressed (0.1) opacity.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--opacity-pressed",
+   "value": "var(--layer-opacity-10)",
+   "resolved": "0.1",
+   "category": "opacity",
+   "whatFor": "Disabled (0.4) and pressed (0.1) opacity.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--overlay-scrim",
+   "value": "var(--palette-alpha-navy-40)",
+   "resolved": "rgb(0 1 40 / 0.4)",
+   "category": "overlay",
+   "whatFor": "Modal/sheet scrims: solid navy scrim and the 3-stop scrim gradient (replaces the black 20% backdrop).",
+   "mappedFromProduction": [
+    "--color-overlay-scrim-default"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--overlay-scrim-bottom",
+   "value": "var(--palette-alpha-navy-56)",
+   "resolved": "rgb(0 1 40 / 0.56)",
+   "category": "overlay",
+   "whatFor": "Modal/sheet scrims: solid navy scrim and the 3-stop scrim gradient (replaces the black 20% backdrop).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--overlay-scrim-mid",
+   "value": "var(--palette-alpha-navy-32)",
+   "resolved": "rgb(0 1 40 / 0.32)",
+   "category": "overlay",
+   "whatFor": "Modal/sheet scrims: solid navy scrim and the 3-stop scrim gradient (replaces the black 20% backdrop).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--overlay-scrim-top",
+   "value": "var(--palette-alpha-navy-0)",
+   "resolved": "rgb(0 1 40 / 0)",
+   "category": "overlay",
+   "whatFor": "Modal/sheet scrims: solid navy scrim and the 3-stop scrim gradient (replaces the black 20% backdrop).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--overlay-shade",
+   "value": "var(--palette-navy-950)",
+   "resolved": "#00011a",
+   "category": "overlay",
+   "whatFor": "Modal/sheet scrims: solid navy scrim and the 3-stop scrim gradient (replaces the black 20% backdrop).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--radius-card",
+   "value": "var(--radius-24)",
+   "resolved": "24px",
+   "category": "radius",
+   "whatFor": "Component radii: card 24, control pill, sheet 32, tooltip 12.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--radius-control",
+   "value": "var(--radius-999)",
+   "resolved": "999px",
+   "category": "radius",
+   "whatFor": "Component radii: card 24, control pill, sheet 32, tooltip 12.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--radius-sheet",
+   "value": "var(--radius-32)",
+   "resolved": "32px",
+   "category": "radius",
+   "whatFor": "Component radii: card 24, control pill, sheet 32, tooltip 12.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--radius-tooltip",
+   "value": "var(--radius-12)",
+   "resolved": "12px",
+   "category": "radius",
+   "whatFor": "Component radii: card 24, control pill, sheet 32, tooltip 12.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--size-control-lg",
+   "value": "var(--spacing-48)",
+   "resolved": "48px",
+   "category": "size",
+   "whatFor": "Control heights (36/44/48), icon sizes (16-32), 44px touch minimum.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--size-control-md",
+   "value": "var(--spacing-44)",
+   "resolved": "44px",
+   "category": "size",
+   "whatFor": "Control heights (36/44/48), icon sizes (16-32), 44px touch minimum.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--size-control-sm",
+   "value": "var(--spacing-36)",
+   "resolved": "36px",
+   "category": "size",
+   "whatFor": "Control heights (36/44/48), icon sizes (16-32), 44px touch minimum.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--size-icon-lg",
+   "value": "var(--spacing-32)",
+   "resolved": "32px",
+   "category": "size",
+   "whatFor": "Control heights (36/44/48), icon sizes (16-32), 44px touch minimum.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--size-icon-md",
+   "value": "var(--spacing-24)",
+   "resolved": "24px",
+   "category": "size",
+   "whatFor": "Control heights (36/44/48), icon sizes (16-32), 44px touch minimum.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--size-icon-sm",
+   "value": "var(--spacing-20)",
+   "resolved": "20px",
+   "category": "size",
+   "whatFor": "Control heights (36/44/48), icon sizes (16-32), 44px touch minimum.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--size-icon-xs",
+   "value": "var(--spacing-16)",
+   "resolved": "16px",
+   "category": "size",
+   "whatFor": "Control heights (36/44/48), icon sizes (16-32), 44px touch minimum.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--size-touch-min",
+   "value": "var(--spacing-44)",
+   "resolved": "44px",
+   "category": "size",
+   "whatFor": "Control heights (36/44/48), icon sizes (16-32), 44px touch minimum.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--stroke-width-focus",
+   "value": "var(--stroke-width-20)",
+   "resolved": "2px",
+   "category": "focus",
+   "whatFor": "Focus ring colour (green-400) and width (2px).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-destructive-bg",
+   "value": "var(--bg-danger-emphasis)",
+   "resolved": "#e00010",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-destructive-bg-disabled",
+   "value": "var(--bg-disabled)",
+   "resolved": "#ebebee",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-destructive-bg-pressed",
+   "value": "var(--bg-danger-emphasis-pressed)",
+   "resolved": "#b8000d",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-destructive-fg",
+   "value": "var(--fg-on-emphasis)",
+   "resolved": "#ffffff",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-destructive-fg-disabled",
+   "value": "var(--fg-disabled)",
+   "resolved": "#8a8a9c",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-glass-bg",
+   "value": "var(--bg-default)",
+   "resolved": "#ffffff",
+   "category": "glass",
+   "whatFor": "Glass buttons and the tab-bar pill: fill, backdrop blur, rim shadow, 161deg stroke.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-glass-fg",
+   "value": "var(--fg-default)",
+   "resolved": "#000128",
+   "category": "glass",
+   "whatFor": "Glass buttons and the tab-bar pill: fill, backdrop blur, rim shadow, 161deg stroke.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-glass-fg-subtle",
+   "value": "var(--fg-subtle)",
+   "resolved": "#61627a",
+   "category": "glass",
+   "whatFor": "Glass buttons and the tab-bar pill: fill, backdrop blur, rim shadow, 161deg stroke.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-inverse-bg-pressed",
+   "value": "var(--bg-glass-on-dark)",
+   "resolved": "rgb(255 255 255 / 0.2)",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-inverse-border",
+   "value": "var(--border-on-emphasis)",
+   "resolved": "#ffffff",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-inverse-border-disabled",
+   "value": "var(--border-emphasis)",
+   "resolved": "#8a8a9c",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-inverse-fg",
+   "value": "var(--fg-on-emphasis)",
+   "resolved": "#ffffff",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-inverse-fg-disabled",
+   "value": "var(--fg-disabled)",
+   "resolved": "#8a8a9c",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-navy-bg",
+   "value": "var(--bg-brand)",
+   "resolved": "#000128",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-navy-bg-disabled",
+   "value": "var(--bg-disabled)",
+   "resolved": "#ebebee",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-navy-bg-pressed",
+   "value": "var(--bg-brand-pressed)",
+   "resolved": "#0b0f35",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-navy-fg",
+   "value": "var(--fg-on-emphasis)",
+   "resolved": "#ffffff",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-navy-fg-disabled",
+   "value": "var(--fg-disabled)",
+   "resolved": "#8a8a9c",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-neutral-bg",
+   "value": "var(--bg-muted)",
+   "resolved": "#ebebee",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-neutral-bg-disabled",
+   "value": "var(--bg-disabled)",
+   "resolved": "#ebebee",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-neutral-bg-pressed",
+   "value": "var(--bg-neutral-emphasis)",
+   "resolved": "#8a8a9c",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-neutral-fg",
+   "value": "var(--fg-default)",
+   "resolved": "#000128",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-neutral-fg-disabled",
+   "value": "var(--fg-disabled)",
+   "resolved": "#8a8a9c",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-plain-bg",
+   "value": "var(--bg-default)",
+   "resolved": "#ffffff",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-plain-bg-disabled",
+   "value": "var(--bg-disabled)",
+   "resolved": "#ebebee",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-plain-bg-pressed",
+   "value": "var(--bg-muted)",
+   "resolved": "#ebebee",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-plain-fg",
+   "value": "var(--fg-default)",
+   "resolved": "#000128",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-plain-fg-disabled",
+   "value": "var(--fg-disabled)",
+   "resolved": "#8a8a9c",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-primary-bg",
+   "value": "var(--bg-accent-emphasis)",
+   "resolved": "#5cd680",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-primary-bg-disabled",
+   "value": "var(--bg-disabled)",
+   "resolved": "#ebebee",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-primary-bg-pressed",
+   "value": "var(--bg-accent-emphasis-pressed)",
+   "resolved": "#36a65b",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-primary-fg",
+   "value": "var(--fg-on-accent)",
+   "resolved": "#000128",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-primary-fg-disabled",
+   "value": "var(--fg-disabled)",
+   "resolved": "#8a8a9c",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-secondary-bg",
+   "value": "var(--bg-default)",
+   "resolved": "#ffffff",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-secondary-bg-pressed",
+   "value": "var(--bg-inset)",
+   "resolved": "#f0f5f4",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-secondary-border",
+   "value": "var(--border-default)",
+   "resolved": "#b2b3be",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-secondary-border-disabled",
+   "value": "var(--border-muted)",
+   "resolved": "#d6d6dd",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-secondary-fg",
+   "value": "var(--fg-default)",
+   "resolved": "#000128",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-secondary-fg-disabled",
+   "value": "var(--fg-disabled)",
+   "resolved": "#8a8a9c",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-secondary-fg-subtle",
+   "value": "var(--fg-subtle)",
+   "resolved": "#61627a",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-text-bg-pressed",
+   "value": "var(--bg-inset)",
+   "resolved": "#f0f5f4",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-text-fg",
+   "value": "var(--fg-default)",
+   "resolved": "#000128",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-text-fg-disabled",
+   "value": "var(--fg-disabled)",
+   "resolved": "#8a8a9c",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--button-text-fg-subtle",
+   "value": "var(--fg-subtle)",
+   "resolved": "#61627a",
+   "category": "component/button",
+   "whatFor": "Button component tokens (primary green + navy label, navy, secondary, neutral, plain, text, inverse, glass, destructive) incl. pressed/disabled.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--check-on-bg",
+   "value": "var(--bg-brand)",
+   "resolved": "#000128",
+   "category": "component/check",
+   "whatFor": "Checked checkbox: navy box, white tick.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--check-on-border",
+   "value": "var(--bg-brand)",
+   "resolved": "#000128",
+   "category": "component/check",
+   "whatFor": "Checked checkbox: navy box, white tick.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--check-on-fg",
+   "value": "var(--fg-on-emphasis)",
+   "resolved": "#ffffff",
+   "category": "component/check",
+   "whatFor": "Checked checkbox: navy box, white tick.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--control-checked-bg",
+   "value": "var(--palette-green-500)",
+   "resolved": "#5cd680",
+   "category": "component/control",
+   "whatFor": "Checked radio / toggle fill (green-500).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--coupon-gradient-bottom",
+   "value": "var(--palette-green-100)",
+   "resolved": "#daf6e2",
+   "category": "component/coupon",
+   "whatFor": "Coupon card green gradient stops.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--coupon-gradient-mid",
+   "value": "var(--palette-green-300)",
+   "resolved": "#8de2a6",
+   "category": "component/coupon",
+   "whatFor": "Coupon card green gradient stops.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--coupon-gradient-top",
+   "value": "var(--palette-green-600)",
+   "resolved": "#36a65b",
+   "category": "component/coupon",
+   "whatFor": "Coupon card green gradient stops.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--coupon-gradient-upper",
+   "value": "var(--palette-green-500)",
+   "resolved": "#5cd680",
+   "category": "component/coupon",
+   "whatFor": "Coupon card green gradient stops.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--slider-knob-center",
+   "value": "var(--fg-accent)",
+   "resolved": "#298648",
+   "category": "component/slider",
+   "whatFor": "Slider knob centre dot and knob shadow.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--tag-accent-bg",
+   "value": "var(--bg-accent-muted)",
+   "resolved": "#daf6e2",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [
+    "--tag-color-brand-bg-default"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--tag-accent-bg-emphasis",
+   "value": "var(--bg-accent-emphasis)",
+   "resolved": "#5cd680",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--tag-accent-bg-muted",
+   "value": "var(--palette-green-200)",
+   "resolved": "#baeec9",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--tag-accent-bg-subtle",
+   "value": "var(--bg-accent-subtle)",
+   "resolved": "#effbf2",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [
+    "--tag-color-brand-bg-subtle"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--tag-accent-border",
+   "value": "var(--palette-green-400)",
+   "resolved": "#76dc93",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [
+    "--tag-color-brand-stroke-default"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--tag-accent-fg",
+   "value": "var(--fg-accent-strong)",
+   "resolved": "#1d6334",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [
+    "--tag-color-brand-text-default"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--tag-accent-fg-on-emphasis",
+   "value": "var(--fg-on-accent)",
+   "resolved": "#000128",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--tag-brand-bg",
+   "value": "var(--palette-mist-100)",
+   "resolved": "#f0f5f4",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--tag-brand-bg-emphasis",
+   "value": "var(--bg-brand)",
+   "resolved": "#000128",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--tag-brand-bg-subtle",
+   "value": "var(--palette-mist-50)",
+   "resolved": "#f7faf9",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--tag-brand-border",
+   "value": "var(--palette-navy-900)",
+   "resolved": "#000128",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--tag-brand-fg",
+   "value": "var(--fg-default)",
+   "resolved": "#000128",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--tag-brand-fg-on-emphasis",
+   "value": "var(--fg-on-emphasis)",
+   "resolved": "#ffffff",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--tag-danger-bg",
+   "value": "var(--palette-red-100)",
+   "resolved": "#ffe0e2",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [
+    "--tag-color-negative-bg-default"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--tag-danger-bg-emphasis",
+   "value": "var(--bg-danger-emphasis)",
+   "resolved": "#e00010",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--tag-danger-bg-muted",
+   "value": "var(--palette-red-200)",
+   "resolved": "#ffbfc3",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--tag-danger-bg-subtle",
+   "value": "var(--bg-danger-muted)",
+   "resolved": "#fff5f5",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [
+    "--tag-color-negative-bg-subtle"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--tag-danger-border",
+   "value": "var(--border-danger)",
+   "resolved": "#ff0d19",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [
+    "--tag-color-negative-stroke-default"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--tag-danger-fg",
+   "value": "var(--fg-danger-strong)",
+   "resolved": "#b8000d",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [
+    "--tag-color-negative-text-default"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--tag-danger-fg-on-emphasis",
+   "value": "var(--fg-on-emphasis)",
+   "resolved": "#ffffff",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--tag-neutral-bg",
+   "value": "var(--bg-muted)",
+   "resolved": "#ebebee",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [
+    "--tag-color-neutral-bg-default"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--tag-neutral-bg-alpha",
+   "value": "var(--bg-default)",
+   "resolved": "#ffffff",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [
+    "--tag-color-neutral-bg-alpha"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--tag-neutral-bg-emphasis",
+   "value": "var(--palette-navy-600)",
+   "resolved": "#3d3e5c",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--tag-neutral-bg-inverse",
+   "value": "var(--bg-default)",
+   "resolved": "#ffffff",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [
+    "--tag-color-neutral-bg-inverse"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--tag-neutral-bg-subtle",
+   "value": "var(--bg-subtle)",
+   "resolved": "#f5f5f6",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [
+    "--tag-color-neutral-bg-subtle"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--tag-neutral-border",
+   "value": "var(--border-emphasis)",
+   "resolved": "#8a8a9c",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [
+    "--tag-color-neutral-stroke-default"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--tag-neutral-fg",
+   "value": "var(--fg-muted)",
+   "resolved": "#3d3e5c",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [
+    "--tag-color-neutral-text-default"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--tag-neutral-fg-on-emphasis",
+   "value": "var(--fg-on-emphasis)",
+   "resolved": "#ffffff",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--tag-success-bg",
+   "value": "var(--bg-success-muted)",
+   "resolved": "#daf6e2",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [
+    "--tag-color-positive-bg-default"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--tag-success-bg-emphasis",
+   "value": "var(--bg-success-emphasis)",
+   "resolved": "#5cd680",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--tag-success-bg-subtle",
+   "value": "var(--bg-success-subtle)",
+   "resolved": "#effbf2",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [
+    "--tag-color-positive-bg-subtle"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--tag-success-border",
+   "value": "var(--border-success)",
+   "resolved": "#76dc93",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [
+    "--tag-color-positive-stroke-default"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--tag-success-fg",
+   "value": "var(--fg-success-strong)",
+   "resolved": "#1d6334",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [
+    "--tag-color-positive-text-default"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--tag-success-fg-on-emphasis",
+   "value": "var(--fg-on-accent)",
+   "resolved": "#000128",
+   "category": "component/tag",
+   "whatFor": "Tag tones and emphases production lacks (bg-emphasis, fg-on-emphasis, bg-muted, brand tone).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--blur-glass-shadow",
+   "value": "0px 0px var(--blur-shadow-default-2) 0px var(--shadow-default-2), 0px 0px var(--blur-shadow-default-1) 0px var(--shadow-default-1)",
+   "resolved": "0px 0px 12px 0px rgb(0 1 40 / 0.08), 0px 0px 2px 0px rgb(0 1 40 / 0.16)",
+   "category": "glass",
+   "whatFor": "Glass buttons and the tab-bar pill: fill, backdrop blur, rim shadow, 161deg stroke.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--blur-glass",
+   "value": "blur(var(--blur-backdrop-bg))",
+   "resolved": "blur(10px)",
+   "category": "glass",
+   "whatFor": "Glass buttons and the tab-bar pill: fill, backdrop blur, rim shadow, 161deg stroke.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--elevation-knob",
+   "value": "0px 0px 4px 0px var(--shadow-default-1), 0px 8px 32px 0px var(--shadow-subtle-1)",
+   "resolved": "0px 0px 4px 0px rgb(0 1 40 / 0.16), 0px 8px 32px 0px rgb(0 1 40 / 0.12)",
+   "category": "component/slider",
+   "whatFor": "Slider knob centre dot and knob shadow.",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--gradient-brand-card",
+   "value": "linear-gradient(180deg, var(--bg-brand) 50%, var(--bg-brand-muted) 100%)",
+   "resolved": "linear-gradient(180deg, #000128 50%, #3d3e5c 100%)",
+   "category": "gradient",
+   "whatFor": "Dark brand cards (navy 900 -> navy 600).",
+   "mappedFromProduction": [],
+   "alternativeFor": [],
+   "brandNewRole": true
+  },
+  {
+   "name": "--gradient-glass-stroke",
+   "value": "linear-gradient(161deg, var(--gradient-white-100) 0%, var(--gradient-white-0) 50%, var(--gradient-white-100) 100%)",
+   "resolved": "linear-gradient(161deg, #ffffff 0%, rgb(255 255 255 / 0) 50%, #ffffff 100%)",
+   "category": "glass",
+   "whatFor": "Glass buttons and the tab-bar pill: fill, backdrop blur, rim shadow, 161deg stroke.",
+   "mappedFromProduction": [
+    "--gradient-glass-nav-stroke"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--gradient-nav-bottom",
+   "value": "linear-gradient(180deg, var(--gradient-white-0) 0%, var(--gradient-white-60) 40%, var(--gradient-white-80) 100%)",
+   "resolved": "linear-gradient(180deg, rgb(255 255 255 / 0) 0%, rgb(255 255 255 / 0.6) 40%, rgb(255 255 255 / 0.8) 100%)",
+   "category": "gradient",
+   "whatFor": "Top and bottom nav fades (mist / white).",
+   "mappedFromProduction": [
+    "--gradient-bottom-nav-filled"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--gradient-nav-bottom-mist",
+   "value": "linear-gradient(180deg, var(--gradient-mist-0) 0%, var(--gradient-mist-60) 40%, var(--gradient-mist-80) 100%)",
+   "resolved": "linear-gradient(180deg, rgb(240 245 244 / 0) 0%, rgb(240 245 244 / 0.6) 40%, rgb(240 245 244 / 0.8) 100%)",
+   "category": "gradient",
+   "whatFor": "Top and bottom nav fades (mist / white).",
+   "mappedFromProduction": [],
+   "alternativeFor": [
+    "--gradient-bottom-nav-filled"
+   ],
+   "brandNewRole": true
+  },
+  {
+   "name": "--gradient-nav-top",
+   "value": "linear-gradient(180deg, var(--gradient-mist-80) 0%, var(--gradient-mist-40) 70%, var(--gradient-mist-0) 100%)",
+   "resolved": "linear-gradient(180deg, rgb(240 245 244 / 0.8) 0%, rgb(240 245 244 / 0.4) 70%, rgb(240 245 244 / 0) 100%)",
+   "category": "gradient",
+   "whatFor": "Top and bottom nav fades (mist / white).",
+   "mappedFromProduction": [
+    "--gradient-top-nav-filled"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  },
+  {
+   "name": "--gradient-scrim",
+   "value": "linear-gradient(180deg, var(--overlay-scrim-top) 0%, var(--overlay-scrim-mid) 28%, var(--overlay-scrim-bottom) 100%)",
+   "resolved": "linear-gradient(180deg, rgb(0 1 40 / 0) 0%, rgb(0 1 40 / 0.32) 28%, rgb(0 1 40 / 0.56) 100%)",
+   "category": "overlay",
+   "whatFor": "Modal/sheet scrims: solid navy scrim and the 3-stop scrim gradient (replaces the black 20% backdrop).",
+   "mappedFromProduction": [
+    "--gradient-modal-backdrop"
+   ],
+   "alternativeFor": [],
+   "brandNewRole": false
+  }
+ ],
+ "textStyles": [
+  {
+   "class": ".ps-text-amount-lg",
+   "font-family": "var(--font-family-amount)",
+   "font-weight": "700",
+   "font-size": "32px",
+   "line-height": "40px",
+   "letter-spacing": "0.03em",
+   "replacesProductionStyle": false
+  },
+  {
+   "class": ".ps-text-amount-md",
+   "font-family": "var(--font-family-amount)",
+   "font-weight": "700",
+   "font-size": "24px",
+   "line-height": "32px",
+   "letter-spacing": "0.02em",
+   "replacesProductionStyle": false
+  },
+  {
+   "class": ".ps-text-amount-md-semibold",
+   "font-family": "var(--font-family-amount)",
+   "font-weight": "600",
+   "font-size": "24px",
+   "line-height": "32px",
+   "letter-spacing": "0.02em",
+   "replacesProductionStyle": false
+  },
+  {
+   "class": ".ps-text-amount-xs",
+   "font-family": "var(--font-family-amount)",
+   "font-weight": "700",
+   "font-size": "16px",
+   "line-height": "20px",
+   "letter-spacing": "0.02em",
+   "replacesProductionStyle": false
+  },
+  {
+   "class": ".ps-text-amount-xxl",
+   "font-family": "var(--font-family-amount)",
+   "font-weight": "700",
+   "font-size": "48px",
+   "line-height": "48px",
+   "letter-spacing": "0.04em",
+   "replacesProductionStyle": false
+  },
+  {
+   "class": ".ps-text-body-lg",
+   "font-family": "var(--font-family-body)",
+   "font-weight": "400",
+   "font-size": "16px",
+   "line-height": "24px",
+   "letter-spacing": "0",
+   "replacesProductionStyle": true
+  },
+  {
+   "class": ".ps-text-body-lg-light",
+   "font-family": "var(--font-family-body)",
+   "font-weight": "300",
+   "font-size": "16px",
+   "line-height": "24px",
+   "letter-spacing": "0",
+   "replacesProductionStyle": false
+  },
+  {
+   "class": ".ps-text-body-lg-strong",
+   "font-family": "var(--font-family-body)",
+   "font-weight": "500",
+   "font-size": "16px",
+   "line-height": "24px",
+   "letter-spacing": "0",
+   "replacesProductionStyle": true
+  },
+  {
+   "class": ".ps-text-body-md",
+   "font-family": "var(--font-family-body)",
+   "font-weight": "400",
+   "font-size": "14px",
+   "line-height": "20px",
+   "letter-spacing": "0",
+   "replacesProductionStyle": true
+  },
+  {
+   "class": ".ps-text-body-md-strong",
+   "font-family": "var(--font-family-body)",
+   "font-weight": "500",
+   "font-size": "14px",
+   "line-height": "20px",
+   "letter-spacing": "0",
+   "replacesProductionStyle": true
+  },
+  {
+   "class": ".ps-text-body-sm",
+   "font-family": "var(--font-family-body)",
+   "font-weight": "400",
+   "font-size": "12px",
+   "line-height": "16px",
+   "letter-spacing": "0",
+   "replacesProductionStyle": true
+  },
+  {
+   "class": ".ps-text-body-xs",
+   "font-family": "var(--font-family-body)",
+   "font-weight": "400",
+   "font-size": "11px",
+   "line-height": "14px",
+   "letter-spacing": "0",
+   "replacesProductionStyle": true
+  },
+  {
+   "class": ".ps-text-caption-sm",
+   "font-family": "var(--font-family-body)",
+   "font-weight": "500",
+   "font-size": "12px",
+   "line-height": "16px",
+   "letter-spacing": "0",
+   "replacesProductionStyle": true
+  },
+  {
+   "class": ".ps-text-caption-sm-light",
+   "font-family": "var(--font-family-body)",
+   "font-weight": "300",
+   "font-size": "12px",
+   "line-height": "16px",
+   "letter-spacing": "0",
+   "replacesProductionStyle": false
+  },
+  {
+   "class": ".ps-text-caption-xs",
+   "font-family": "var(--font-family-body)",
+   "font-weight": "500",
+   "font-size": "11px",
+   "line-height": "14px",
+   "letter-spacing": "0",
+   "replacesProductionStyle": true
+  },
+  {
+   "class": ".ps-text-display-md",
+   "font-family": "var(--font-family-display)",
+   "font-weight": "800",
+   "font-size": "36px",
+   "line-height": "44px",
+   "letter-spacing": "-0.02em",
+   "replacesProductionStyle": true
+  },
+  {
+   "class": ".ps-text-display-md-bold",
+   "font-family": "var(--font-family-display)",
+   "font-weight": "700",
+   "font-size": "36px",
+   "line-height": "44px",
+   "letter-spacing": "-0.02em",
+   "replacesProductionStyle": true
+  },
+  {
+   "class": ".ps-text-display-sm",
+   "font-family": "var(--font-family-display)",
+   "font-weight": "800",
+   "font-size": "32px",
+   "line-height": "40px",
+   "letter-spacing": "-0.02em",
+   "replacesProductionStyle": true
+  },
+  {
+   "class": ".ps-text-headline-sm",
+   "font-family": "var(--font-family-display)",
+   "font-weight": "800",
+   "font-size": "28px",
+   "line-height": "36px",
+   "letter-spacing": "-0.01em",
+   "replacesProductionStyle": false
+  },
+  {
+   "class": ".ps-text-headline-sm-bold",
+   "font-family": "var(--font-family-display)",
+   "font-weight": "700",
+   "font-size": "28px",
+   "line-height": "36px",
+   "letter-spacing": "-0.01em",
+   "replacesProductionStyle": true
+  },
+  {
+   "class": ".ps-text-headline-sm-medium",
+   "font-family": "var(--font-family-display)",
+   "font-weight": "500",
+   "font-size": "28px",
+   "line-height": "36px",
+   "letter-spacing": "-0.01em",
+   "replacesProductionStyle": false
+  },
+  {
+   "class": ".ps-text-label-md",
+   "font-family": "var(--font-family-label)",
+   "font-weight": "600",
+   "font-size": "14px",
+   "line-height": "20px",
+   "letter-spacing": "0",
+   "replacesProductionStyle": true
+  },
+  {
+   "class": ".ps-text-label-md-bold",
+   "font-family": "var(--font-family-label)",
+   "font-weight": "700",
+   "font-size": "14px",
+   "line-height": "20px",
+   "letter-spacing": "0",
+   "replacesProductionStyle": false
+  },
+  {
+   "class": ".ps-text-label-sm",
+   "font-family": "var(--font-family-label)",
+   "font-weight": "600",
+   "font-size": "12px",
+   "line-height": "16px",
+   "letter-spacing": "0",
+   "replacesProductionStyle": true
+  },
+  {
+   "class": ".ps-text-label-sm-bold",
+   "font-family": "var(--font-family-label)",
+   "font-weight": "700",
+   "font-size": "12px",
+   "line-height": "16px",
+   "letter-spacing": "0",
+   "replacesProductionStyle": false
+  },
+  {
+   "class": ".ps-text-label-xs",
+   "font-family": "var(--font-family-body)",
+   "font-weight": "600",
+   "font-size": "11px",
+   "line-height": "14px",
+   "letter-spacing": "0",
+   "replacesProductionStyle": true
+  },
+  {
+   "class": ".ps-text-label-xs-bold",
+   "font-family": "var(--font-family-body)",
+   "font-weight": "700",
+   "font-size": "11px",
+   "line-height": "14px",
+   "letter-spacing": "0",
+   "replacesProductionStyle": false
+  },
+  {
+   "class": ".ps-text-title-lg",
+   "font-family": "var(--font-family-title)",
+   "font-weight": "700",
+   "font-size": "24px",
+   "line-height": "32px",
+   "letter-spacing": "-0.005em",
+   "replacesProductionStyle": true
+  },
+  {
+   "class": ".ps-text-title-lg-extrabold",
+   "font-family": "var(--font-family-title)",
+   "font-weight": "800",
+   "font-size": "24px",
+   "line-height": "32px",
+   "letter-spacing": "-0.005em",
+   "replacesProductionStyle": false
+  },
+  {
+   "class": ".ps-text-title-lg-medium",
+   "font-family": "var(--font-family-title)",
+   "font-weight": "500",
+   "font-size": "24px",
+   "line-height": "32px",
+   "letter-spacing": "-0.005em",
+   "replacesProductionStyle": false
+  },
+  {
+   "class": ".ps-text-title-md",
+   "font-family": "var(--font-family-title)",
+   "font-weight": "700",
+   "font-size": "20px",
+   "line-height": "28px",
+   "letter-spacing": "-0.005em",
+   "replacesProductionStyle": true
+  },
+  {
+   "class": ".ps-text-title-md-medium",
+   "font-family": "var(--font-family-title)",
+   "font-weight": "500",
+   "font-size": "20px",
+   "line-height": "28px",
+   "letter-spacing": "-0.005em",
+   "replacesProductionStyle": false
+  },
+  {
+   "class": ".ps-text-title-sm",
+   "font-family": "var(--font-family-title)",
+   "font-weight": "700",
+   "font-size": "18px",
+   "line-height": "24px",
+   "letter-spacing": "-0.005em",
+   "replacesProductionStyle": true
+  },
+  {
+   "class": ".ps-text-title-sm-semibold",
+   "font-family": "var(--font-family-title)",
+   "font-weight": "600",
+   "font-size": "18px",
+   "line-height": "24px",
+   "letter-spacing": "-0.005em",
+   "replacesProductionStyle": false
+  },
+  {
+   "class": ".ps-text-title-xs",
+   "font-family": "var(--font-family-title)",
+   "font-weight": "600",
+   "font-size": "16px",
+   "line-height": "22px",
+   "letter-spacing": "0",
+   "replacesProductionStyle": true
+  }
+ ],
+ "otherAvailable": [
+  "--bg-danger-emphasis-pressed",
+  "--bg-inverse",
+  "--font-family-reddit-sans",
+  "--font-line-height-link",
+  "--font-line-height-section-title-xs",
+  "--font-size-link",
+  "--font-size-section-title-xs",
+  "--gradient-mist-0",
+  "--gradient-mist-20",
+  "--gradient-mist-40",
+  "--gradient-mist-60",
+  "--gradient-mist-80",
+  "--gradient-white-100",
+  "--layer-opacity-10",
+  "--palette-alpha-mist-0",
+  "--palette-alpha-mist-20",
+  "--palette-alpha-mist-40",
+  "--palette-alpha-mist-60",
+  "--palette-alpha-mist-80",
+  "--palette-alpha-navy-0",
+  "--palette-alpha-navy-32",
+  "--palette-alpha-navy-56",
+  "--palette-alpha-white-10",
+  "--palette-base-black",
+  "--palette-blue-100",
+  "--palette-blue-200",
+  "--palette-blue-300",
+  "--palette-blue-400",
+  "--palette-blue-50",
+  "--palette-blue-500",
+  "--palette-blue-600",
+  "--palette-blue-700",
+  "--palette-blue-800",
+  "--palette-blue-900",
+  "--palette-blue-950",
+  "--palette-mist-300",
+  "--palette-mist-400",
+  "--palette-mist-500",
+  "--palette-mist-600",
+  "--palette-mist-700",
+  "--palette-mist-800",
+  "--palette-mist-900",
+  "--palette-mist-950",
+  "--palette-navy-800",
+  "--palette-orange-100",
+  "--palette-orange-200",
+  "--palette-orange-300",
+  "--palette-orange-400",
+  "--palette-orange-50",
+  "--palette-orange-500",
+  "--palette-orange-600",
+  "--palette-orange-700",
+  "--palette-orange-800",
+  "--palette-orange-900",
+  "--palette-orange-950"
+ ]
+}

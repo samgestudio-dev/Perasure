@@ -2646,3 +2646,16 @@ The owner asked for Android bottom distances instead of the old ones (they were 
 
 - Owner: save the whole coupon discussion; the logic may change; continue later.
 - Saved in `rebrand/log/coupon-logic-2026-11-24.md`: the owner's messages verbatim, what is built (entries 74–78), what conflicts with the latest discussion (auto-pairing, See all without Unavailable, limit coupons' amount minimums, the special case's +₱2,000), the gaps and suggestions, and the logic as understood (not built). Nothing changed in code or Figma.
+
+## 80 · Dev Mode: "PeraSure · Rebrand" as its own app (2026-11-24)
+
+- Owner: keep the old demo; a separate rebranding app in Dev Mode.
+- devmode-platform 72909eb (pushed to main, Worker deployed, version 4d784780): a site may name its branch; `perasure-rebrand` serves this repo's branch `tokens/rebrand-v3` at https://samge.studio/perasure-rebrand/playground/ (redirects and source viewer as PeraSure). The picker lists "PeraSure · Rebrand" (https://samge.studio/devmode/?app=perasure-rebrand). PeraSure (main) unchanged. Secrets and switches kept (9 bindings checked).
+- Not done: the MCP server still lists only PeraSure (main).
+
+## 81 · AI hand-off package for production (2026-11-24)
+
+- Owner: package the rebrand's token mapping and purely visual UI changes so developers' AI can apply them; baseline = GitLab phi_h5_025 (not the old demo).
+- `rebrand/handoff/ai/` (entry README.md): token map for all 691 production tokens → rebrand v2026.11.23, 541 edits in production files (exact anchors before and after the token step), design intent (251 changes), assets, coverage, production audit, open questions (75 owner items, 3 manual), and `tools/apply.py`.
+- Proven on a clean copy of phi_h5_025 master 0d9bdd4: 537 applied, 2 already done, 3 manual, 2 skipped, 0 missing; `npm run build` passes; `npm test` 927 / 927.
+- Supersedes `rebrand/DEV-HANDOFF.md` and `rebrand/tokens/MAPPING.md` (marked).

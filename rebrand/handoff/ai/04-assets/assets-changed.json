@@ -1,0 +1,281 @@
+[
+ {
+  "path": "rebrand/animations/coins-loading/loading-coin.json",
+  "what": "Lottie: spinning coin (PS.Loader, PS.Coin)",
+  "change": "new rebrand copy, recoloured (motion unchanged); wired in shared/ps-ui/feedback.js",
+  "coloursBefore": "body #2B74BD ×10, face #F6F9F8",
+  "coloursAfter": "body #298648 (Green/700), face #F6F9F8",
+  "sourceEntry": "log 66",
+  "note": "Legacy stays in animations/coins-loading/ (main demo)."
+ },
+ {
+  "path": "rebrand/animations/coins-loading/success-coin.json",
+  "what": "Lottie: coin success (Order submit)",
+  "change": "new rebrand copy, recoloured",
+  "coloursBefore": "body #2B74BD ×32, highlight #78AAE2 ×8, face #F6F9F8",
+  "coloursAfter": "body #298648, highlight #5CD680, face #F6F9F8",
+  "sourceEntry": "log 66",
+  "note": "Supersedes BRIEF 12 / CHANGES 2026-11-19 (#5CD680 body, #99E8AB highlight)."
+ },
+ {
+  "path": "rebrand/animations/coins-loading/gsap/loading-coin.js",
+  "what": "GSAP version of the loading coin",
+  "change": "new rebrand copy, recoloured",
+  "coloursBefore": "rgb(43,116,189), rgb(246,249,248)",
+  "coloursAfter": "rgb(41,134,72), rgb(246,249,248)",
+  "sourceEntry": "log 66",
+  "note": null
+ },
+ {
+  "path": "rebrand/animations/coins-loading/gsap/success-coin.js",
+  "what": "GSAP version of the success coin",
+  "change": "new rebrand copy, recoloured",
+  "coloursBefore": "rgb(43,116,189), rgb(120,170,226), rgb(246,249,248)",
+  "coloursAfter": "rgb(41,134,72), rgb(92,214,128), rgb(246,249,248)",
+  "sourceEntry": "log 66",
+  "note": null
+ },
+ {
+  "path": "rebrand/animations/coins-loading/perasure-coins.lottie",
+  "what": "dotLottie hand-off of the coins",
+  "change": "new rebrand copy, recoloured (same as the JSON)",
+  "coloursBefore": "#2B74BD / #78AAE2",
+  "coloursAfter": "#298648 / #5CD680",
+  "sourceEntry": "log 66",
+  "note": "Not unpacked/verified here."
+ },
+ {
+  "path": "rebrand/animations/coins-loading/preview.png",
+  "what": "still preview",
+  "change": "copied, NOT regenerated",
+  "coloursBefore": "blue coin",
+  "coloursAfter": "still shows the old preview",
+  "sourceEntry": "log 66",
+  "note": "Regenerate before hand-off."
+ },
+ {
+  "path": "shared/ps-ui/assets/lottie/loading-dots.json",
+  "what": "Lottie: loading dots under the coin (PS.Dots)",
+  "change": "recoloured in place (4 fills), motion unchanged",
+  "coloursBefore": "#2C74BE ×4",
+  "coloursAfter": "#298648 ×4",
+  "sourceEntry": "log 66",
+  "note": "BRIEF 12 'third exception' said #5CD680 — superseded."
+ },
+ {
+  "path": "rebrand/prototypes/credit-limit-coins/baked/baked-heap.css + .js + .html",
+  "what": "Credit limit increase (coins, burst, pills)",
+  "change": "rebrand copy: accent blue → green, one typeface",
+  "coloursBefore": "accent #3FA0F0, increase text #6FB8F5, text #EEF5EF, muted #9AA7B0 / #B4BCC1 / #7D878E; Inter / Reddit Sans",
+  "coloursAfter": "accent var(--content-accent) (#5CD680 in JS), increase text --palette-green-300 #8DE2A6, text/muted white alphas; Hanken; ground #0D1620 and pills #16304A / #1B2834 unchanged",
+  "sourceEntry": "BRIEF 12 second exception; CHANGES 2026-11-20",
+  "note": "NOT WIRED: PS.CreditLimitIntro (fx.js) still loads prototypes/credit-limit-coins/baked (legacy blue). The copy's CSS uses v2 names (--content-accent, --content-inverse, --amount-xxl-letter-spacing) that do not exist in tokens v2026.11.23."
+ },
+ {
+  "path": "shared/ps-ui/assets/art/coupon-amount-sm.svg",
+  "what": "Illustration: small coupon art (amount)",
+  "change": "recoloured badge",
+  "coloursBefore": "#3BCB84 ×2",
+  "coloursAfter": "#5CD680 ×2",
+  "sourceEntry": "diff (BRIEF 12/32 coupon art = Figma export with green badge)",
+  "note": "Rest of the art unchanged (#FF96DD, #FFC7EC, #442339)."
+ },
+ {
+  "path": "shared/ps-ui/assets/art/coupon-limit-sm.svg",
+  "what": "Illustration: small coupon art (limit)",
+  "change": "recoloured badge",
+  "coloursBefore": "#3BCB84 ×2",
+  "coloursAfter": "#5CD680 ×2",
+  "sourceEntry": "diff",
+  "note": null
+ },
+ {
+  "path": "shared/ps-ui/assets/art/coupon-percent-sm.svg",
+  "what": "Illustration: small coupon art (percent)",
+  "change": "recoloured badge",
+  "coloursBefore": "#3BCB84 ×2",
+  "coloursAfter": "#5CD680 ×2",
+  "sourceEntry": "diff",
+  "note": null
+ },
+ {
+  "path": "shared/ps-ui/assets/art/dot-schedule.svg",
+  "what": "Schedule rail dot",
+  "change": "recoloured",
+  "coloursBefore": "#3FA0F0",
+  "coloursAfter": "#76DC93",
+  "sourceEntry": "diff",
+  "note": null
+ },
+ {
+  "path": "shared/ps-ui/assets/art/tab-connector.svg",
+  "what": "HomeCoupons tab connector",
+  "change": "recoloured (blue → green gradient stops)",
+  "coloursBefore": "#2C74BE, #20558D",
+  "coloursAfter": "#36A65B, #298648",
+  "sourceEntry": "diff",
+  "note": null
+ },
+ {
+  "path": "shared/ps-ui/assets/art/verified.svg",
+  "what": "Verified badge art",
+  "change": "recoloured; no longer shown in the UI (Profile mark removed)",
+  "coloursBefore": "star #3BCB84, check white",
+  "coloursAfter": "star #5CD680, check/details #000128",
+  "sourceEntry": "log 58",
+  "note": "Kept for old Dev Mode snapshots."
+ },
+ {
+  "path": "shared/ps-ui/assets/art/quote.svg",
+  "what": "Quote mark vector (Reviews)",
+  "change": "NEW: Figma vector, used as a CSS mask",
+  "coloursBefore": "(was a font glyph ” in #F0F5F4)",
+  "coloursAfter": "#000 shape, tinted --palette-navy-200 #D6D6DD by CSS",
+  "sourceEntry": "log 60",
+  "note": null
+ },
+ {
+  "path": "shared/ps-ui/assets/art/review-avatars.png",
+  "what": "Review avatars (3 Figma photos)",
+  "change": "NEW image",
+  "coloursBefore": "(cut from art/avatars.png)",
+  "coloursAfter": "3 photos, 28 px each",
+  "sourceEntry": "log 60",
+  "note": null
+ },
+ {
+  "path": "shared/ps-ui/assets/logos/sec-shape.svg",
+  "what": "Trust card SEC seal",
+  "change": "recoloured",
+  "coloursBefore": "#2C74BE",
+  "coloursAfter": "#298648",
+  "sourceEntry": "diff (TrustCard fg/accent)",
+  "note": null
+ },
+ {
+  "path": "prototypes/withdraw-fund-flow/assets/perasure-logo.svg",
+  "what": "PeraSure logo (Withdraw demo)",
+  "change": "wordmark recoloured",
+  "coloursBefore": "wordmark #141E24",
+  "coloursAfter": "wordmark #000128",
+  "sourceEntry": "diff",
+  "note": "Logo greens (#53C574, #70FF99, #6EE317) unchanged."
+ },
+ {
+  "path": "shared/ps-ui/assets/icons/arrow-up.svg",
+  "what": "Icon: arrow up",
+  "change": "fill → currentColor (colour from CSS)",
+  "coloursBefore": "#2C74BE",
+  "coloursAfter": "currentColor",
+  "sourceEntry": "BRIEF 32",
+  "note": "Glyph unchanged."
+ },
+ {
+  "path": "shared/ps-ui/assets/icons/chat.svg",
+  "what": "Icon: chat",
+  "change": "fill → currentColor",
+  "coloursBefore": "#141E24 ×4",
+  "coloursAfter": "currentColor",
+  "sourceEntry": "BRIEF 32",
+  "note": "Glyph unchanged."
+ },
+ {
+  "path": "shared/ps-ui/assets/icons/check-sm.svg",
+  "what": "Icon: small check",
+  "change": "fill → currentColor",
+  "coloursBefore": "#2EAE6E",
+  "coloursAfter": "currentColor",
+  "sourceEntry": "BRIEF 32",
+  "note": null
+ },
+ {
+  "path": "shared/ps-ui/assets/icons/chevron-left.svg",
+  "what": "Icon: back (legacy nav/chevron-left)",
+  "change": "fill → currentColor",
+  "coloursBefore": "#141E24 ×2",
+  "coloursAfter": "currentColor",
+  "sourceEntry": "BRIEF 26, 32",
+  "note": "Glyph = legacy back icon."
+ },
+ {
+  "path": "shared/ps-ui/assets/icons/close.svg",
+  "what": "Icon: close",
+  "change": "fill → currentColor",
+  "coloursBefore": "#141E24",
+  "coloursAfter": "currentColor",
+  "sourceEntry": "BRIEF 32",
+  "note": null
+ },
+ {
+  "path": "shared/ps-ui/assets/icons/help.svg",
+  "what": "Icon: help (headset)",
+  "change": "fill → currentColor",
+  "coloursBefore": "#141E24 ×3",
+  "coloursAfter": "currentColor",
+  "sourceEntry": "BRIEF 32",
+  "note": null
+ },
+ {
+  "path": "shared/ps-ui/assets/icons/nav-account.svg",
+  "what": "Icon: tab bar Account",
+  "change": "fill → currentColor (active tab now green)",
+  "coloursBefore": "#141E24",
+  "coloursAfter": "currentColor",
+  "sourceEntry": "log 57",
+  "note": null
+ },
+ {
+  "path": "shared/ps-ui/assets/icons/nav-home.svg",
+  "what": "Icon: tab bar Home",
+  "change": "fill → currentColor",
+  "coloursBefore": "#141E24",
+  "coloursAfter": "currentColor",
+  "sourceEntry": "log 57",
+  "note": null
+ },
+ {
+  "path": "shared/ps-ui/assets/icons/nav-payment.svg",
+  "what": "Icon: tab bar Payment",
+  "change": "fill → currentColor",
+  "coloursBefore": "#141E24 ×2",
+  "coloursAfter": "currentColor",
+  "sourceEntry": "log 57",
+  "note": null
+ },
+ {
+  "path": "shared/ps-ui/assets/icons/info-filled.svg",
+  "what": "Icon: info, Filled",
+  "change": "NEW (Figma Filled twin, exported)",
+  "coloursBefore": "—",
+  "coloursAfter": "#000 path, coloured by CSS (--fg-default)",
+  "sourceEntry": "BRIEF 22; status.js Strip",
+  "note": "Used by bare Strip icons."
+ },
+ {
+  "path": "shared/ps-ui/assets/icons/support-chat-filled.svg",
+  "what": "Icon: support chat, Filled",
+  "change": "NEW (Figma Filled twin)",
+  "coloursBefore": "—",
+  "coloursAfter": "#000 path, coloured by CSS",
+  "sourceEntry": "BRIEF 22",
+  "note": null
+ },
+ {
+  "path": "shared/ps-ui/assets/icons/wallet-filled.svg",
+  "what": "Icon: wallet, Filled",
+  "change": "NEW (Figma Filled twin)",
+  "coloursBefore": "—",
+  "coloursAfter": "#000 path, coloured by CSS",
+  "sourceEntry": "BRIEF 22",
+  "note": "CreditLimitCard now uses the OUTLINED wallet on a navy tile (log 57); the filled file is unused there."
+ },
+ {
+  "path": "prototypes/withdraw-fund-flow/withdraw.js (inline 'edit' icon)",
+  "what": "Inline pencil icon in the Withdraw demo",
+  "change": "inline SVG fill recoloured",
+  "coloursBefore": "#2C74BE",
+  "coloursAfter": "#298648",
+  "sourceEntry": "diff",
+  "note": "Glyph unchanged."
+ }
+]

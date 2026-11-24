@@ -1,3 +1,5 @@
+> **Superseded (2026-11-24):** use `rebrand/handoff/ai/` (README.md there) — this file was written for tokens v2 against phi_h5_025 32268e1.
+
 # PeraSure rebrand — colour token mapping (old → new)
 
 > **Superseded (2026-11-19):** the owner decided to rebuild the whole token system with a new structure and new names, so this table

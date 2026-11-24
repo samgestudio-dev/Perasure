@@ -45,3 +45,8 @@ How to add an entry: one line under today's date, `area: what changed (pages · 
 
 - Home credit card: no gap under it at larger text sizes. (v1-20261113-n1)
 - **v1.0 baseline** recorded in Dev Mode.
+
+## 2026-11-24 · AI hand-off package for phi_h5_025 (visual only)
+
+- New `rebrand/handoff/ai/`: token map (production → rebrand v2026.11.23), 514 edits in 124 production files (against phi_h5_025 master 0d9bdd4), design intent (251 visual changes), assets, coverage, production audit, open questions. Supersedes `rebrand/DEV-HANDOFF.md` and `rebrand/tokens/MAPPING.md` (tokens v2). Entry point: `rebrand/handoff/ai/README.md`.
+- `rebrand/handoff/ai/` made apply-ready after a cold test: one source of truth (changes-by-file > token-map > unresolved.md; undefined and removed names are edits, not step 0), every edit anchored on `currentAfterStep0` at `lineAfterStep0` in bottom-up order, inserts / manual / skip normalised, test edits (group 7), exact step-0 commands, `tools/apply.py` + `tools/render_changes_md.py`. 541 edits in 127 files; applied to a clean 0d9bdd4 with 0 anchor-missing, build OK, tests 927/927.

@@ -1,0 +1,313 @@
+{
+ "package": "PeraSure rebrand — visual hand-off for phi_h5_025",
+ "readFirst": "README.md",
+ "baseline": {
+  "repo": "git.kuainiujinke.com:business_delivery_ph/phi_h5_025",
+  "branch": "master",
+  "commit": "0d9bdd4",
+  "date": "2026-11-23"
+ },
+ "design": {
+  "figmaFile": "kYyNV2MgxvH1w9bJ46A3yx",
+  "demoRepo": "samgestudio-dev/Perasure",
+  "demoBranch": "tokens/rebrand-v3",
+  "tokensVersion": "2026.11.23"
+ },
+ "written": "2026-11-24",
+ "scope": "purely visual: colour, typeface, type sizes/weights/tracking, radius, shadow, blur, spacing/position, icons, illustrations, animation colours. No structure, props, behaviour, flow or logic.",
+ "applyOrder": [
+  {
+   "step": 0,
+   "what": "tokens, file-wide: 0.0 delete src/styles/global.css lines 50-54 (local --gradient-modal-backdrop) BEFORE the seds; 0.1 sed -E with 01-tokens/rename.sed, rename-value-changes.sed, removed-literals.sed (that order) on src/**/*.{css,scss,ts,tsx}; 0.2 overwrite src/styles/figma-tokens.css with 01-tokens/figma-tokens.header.css + rebrand-tokens.css from line 5 (px only). Undefined and removed names are NOT step 0: they are edits."
+  },
+  {
+   "step": 1,
+   "what": "02-changes/changes-by-file.json files with applyGroup starting '1' (global.css, index.html)"
+  },
+  {
+   "step": 2,
+   "what": "applyGroup '2' (app shell, shared controls)"
+  },
+  {
+   "step": 3,
+   "what": "applyGroup '3' (components, features)"
+  },
+  {
+   "step": 4,
+   "what": "applyGroup '4' (pages)"
+  },
+  {
+   "step": 5,
+   "what": "applyGroup '5' (animations drawn in code), then 04-assets/ file swaps (not scripted)"
+  },
+  {
+   "step": 6,
+   "what": "applyGroup '6' (visual copy characters)"
+  },
+  {
+   "step": 7,
+   "what": "applyGroup '7' (tests that pin old token names, fonts or values; npm test then passes 927/927)"
+  },
+  {
+   "step": 8,
+   "what": "remove stale var() fallbacks (06-production-audit/hardcoded.json)"
+  },
+  {
+   "step": 9,
+   "what": "verify with the README checklist"
+  }
+ ],
+ "schemas": {
+  "01-tokens/token-map.json": "{meta, rows[], appLocal[]}; rows: old, oldValue, category, new, newValue, kind (same|renamed|value-changed|renamed+value-changed|removed), visualChange, confidence (exact|inferred), alternative?, replacement? (removed rows; for the 4 removed names still in use it equals the changes-by-file edit named in note), note, source, usesInProd, newClass?",
+  "02-changes/changes-by-file.json": "{meta{baseline, step0, precedence, conventions, counts}, files[]}; file: file, component, kind, applyGroup (\"1 …\"..\"7 …\"), edits[] in apply order (bottom-up). edit: id (E001…), action (replace|insert|delete|manual|skip|token-step), selector, property, line, lineEnd?, insertAfterLine? (insert: baseline line the target goes after), lineAfterStep0 (first line of the anchor after step 0), current (exact baseline text), currentAfterStep0 (exact text after step 0 = the anchor; delete: the full lines), anchor? (insert; = currentAfterStep0), target (replace: replacement text; insert: complete line(s) with indentation; delete: \"\"; manual/skip: placeholder), replaceAll? + expectedCount?, doneByStep0, step0? (\"0.0\"|\"0.2\"), targetToken (exists in 01-tokens/rebrand-tokens.css), targetValue, changeId (-> 03-design-intent), reason, instruction? (manual), skipReason? (skip), confidence, needsOwner, visual",
+  "03-design-intent/visual-changes.json": "rows: id (G-/C-/P-), area, designName, demoComponent, element, property, before, after, figmaNode, sourceEntry, ownerDecision, superseded?, note",
+  "05-coverage/coverage.json": "(a) design rows with no production counterpart; (b) production components without explicit design: token map only | needs design",
+  "04-assets/assets-to-replace.json": "production asset -> rebrand asset or in-code recolour; source paths are under 04-assets/files/",
+  "tools/apply.py report": "{package, repo, step, dryRun, ownerItems, counts{status:n}, anchorMissing[], manual[], results[{id, file, group, action, lineAfterStep0, needsOwner, status (applied|already-done|anchor-missing|manual|skipped|skipped-owner), detail}], notDoneByThisScript[]}"
+ },
+ "openQuestions": "OPEN-QUESTIONS.md (package defaults already chosen; affected edits carry needsOwner: true; 3 edits are manual)",
+ "files": [
+  {
+   "path": "OPEN-QUESTIONS.md",
+   "bytes": 3726
+  },
+  {
+   "path": "README.md",
+   "bytes": 19508
+  },
+  {
+   "path": "01-tokens/figma-tokens.header.css",
+   "bytes": 511
+  },
+  {
+   "path": "01-tokens/new-tokens.json",
+   "bytes": 72312
+  },
+  {
+   "path": "01-tokens/rebrand-tokens-rem.css",
+   "bytes": 2034
+  },
+  {
+   "path": "01-tokens/rebrand-tokens.css",
+   "bytes": 32278
+  },
+  {
+   "path": "01-tokens/removed-literals.sed",
+   "bytes": 2621
+  },
+  {
+   "path": "01-tokens/rename-value-changes.sed",
+   "bytes": 12427
+  },
+  {
+   "path": "01-tokens/rename.json",
+   "bytes": 19588
+  },
+  {
+   "path": "01-tokens/rename.sed",
+   "bytes": 12974
+  },
+  {
+   "path": "01-tokens/token-map.json",
+   "bytes": 287736
+  },
+  {
+   "path": "01-tokens/token-map.md",
+   "bytes": 96628
+  },
+  {
+   "path": "01-tokens/unresolved.md",
+   "bytes": 18901
+  },
+  {
+   "path": "02-changes/changes-by-file.json",
+   "bytes": 388721
+  },
+  {
+   "path": "02-changes/changes-by-file.md",
+   "bytes": 179351
+  },
+  {
+   "path": "02-changes/conflicts.md",
+   "bytes": 19450
+  },
+  {
+   "path": "03-design-intent/excluded.md",
+   "bytes": 6841
+  },
+  {
+   "path": "03-design-intent/visual-changes.json",
+   "bytes": 128708
+  },
+  {
+   "path": "03-design-intent/visual-changes.md",
+   "bytes": 76602
+  },
+  {
+   "path": "04-assets/assets-changed.json",
+   "bytes": 9663
+  },
+  {
+   "path": "04-assets/assets-to-replace.json",
+   "bytes": 42390
+  },
+  {
+   "path": "04-assets/files/assets/fonts/hanken-grotesk-var.woff2",
+   "bytes": 37148
+  },
+  {
+   "path": "04-assets/files/prototypes/withdraw-fund-flow/assets/perasure-logo.svg",
+   "bytes": 24530
+  },
+  {
+   "path": "04-assets/files/rebrand/animations/coins-loading/gsap/loading-coin.js",
+   "bytes": 15850
+  },
+  {
+   "path": "04-assets/files/rebrand/animations/coins-loading/gsap/success-coin.js",
+   "bytes": 52642
+  },
+  {
+   "path": "04-assets/files/rebrand/animations/coins-loading/loading-coin.json",
+   "bytes": 13105
+  },
+  {
+   "path": "04-assets/files/rebrand/animations/coins-loading/perasure-coins.lottie",
+   "bytes": 8635
+  },
+  {
+   "path": "04-assets/files/rebrand/animations/coins-loading/preview.png",
+   "bytes": 13107
+  },
+  {
+   "path": "04-assets/files/rebrand/animations/coins-loading/success-coin.json",
+   "bytes": 54766
+  },
+  {
+   "path": "04-assets/files/shared/ps-ui/assets/art/coupon-amount-sm.svg",
+   "bytes": 4446
+  },
+  {
+   "path": "04-assets/files/shared/ps-ui/assets/art/coupon-limit-sm.svg",
+   "bytes": 3683
+  },
+  {
+   "path": "04-assets/files/shared/ps-ui/assets/art/coupon-percent-sm.svg",
+   "bytes": 7549
+  },
+  {
+   "path": "04-assets/files/shared/ps-ui/assets/art/dot-schedule.svg",
+   "bytes": 185
+  },
+  {
+   "path": "04-assets/files/shared/ps-ui/assets/art/quote.svg",
+   "bytes": 1915
+  },
+  {
+   "path": "04-assets/files/shared/ps-ui/assets/art/review-avatars.png",
+   "bytes": 44057
+  },
+  {
+   "path": "04-assets/files/shared/ps-ui/assets/art/tab-connector.svg",
+   "bytes": 590
+  },
+  {
+   "path": "04-assets/files/shared/ps-ui/assets/art/verified.svg",
+   "bytes": 2675
+  },
+  {
+   "path": "04-assets/files/shared/ps-ui/assets/icons/arrow-up.svg",
+   "bytes": 1151
+  },
+  {
+   "path": "04-assets/files/shared/ps-ui/assets/icons/chat.svg",
+   "bytes": 997
+  },
+  {
+   "path": "04-assets/files/shared/ps-ui/assets/icons/check-sm.svg",
+   "bytes": 535
+  },
+  {
+   "path": "04-assets/files/shared/ps-ui/assets/icons/chevron-left.svg",
+   "bytes": 764
+  },
+  {
+   "path": "04-assets/files/shared/ps-ui/assets/icons/close.svg",
+   "bytes": 212
+  },
+  {
+   "path": "04-assets/files/shared/ps-ui/assets/icons/help.svg",
+   "bytes": 3041
+  },
+  {
+   "path": "04-assets/files/shared/ps-ui/assets/icons/info-filled.svg",
+   "bytes": 908
+  },
+  {
+   "path": "04-assets/files/shared/ps-ui/assets/icons/nav-account.svg",
+   "bytes": 1292
+  },
+  {
+   "path": "04-assets/files/shared/ps-ui/assets/icons/nav-home.svg",
+   "bytes": 967
+  },
+  {
+   "path": "04-assets/files/shared/ps-ui/assets/icons/nav-payment.svg",
+   "bytes": 2484
+  },
+  {
+   "path": "04-assets/files/shared/ps-ui/assets/icons/support-chat-filled.svg",
+   "bytes": 663
+  },
+  {
+   "path": "04-assets/files/shared/ps-ui/assets/icons/wallet-filled.svg",
+   "bytes": 3391
+  },
+  {
+   "path": "04-assets/files/shared/ps-ui/assets/logos/sec-shape.svg",
+   "bytes": 2784
+  },
+  {
+   "path": "04-assets/files/shared/ps-ui/assets/lottie/loading-dots.json",
+   "bytes": 6244
+  },
+  {
+   "path": "05-coverage/coverage.json",
+   "bytes": 35769
+  },
+  {
+   "path": "06-production-audit/SUMMARY.md",
+   "bytes": 7116
+  },
+  {
+   "path": "06-production-audit/assets.json",
+   "bytes": 147066
+  },
+  {
+   "path": "06-production-audit/components.json",
+   "bytes": 249181
+  },
+  {
+   "path": "06-production-audit/hardcoded.json",
+   "bytes": 2364141
+  },
+  {
+   "path": "06-production-audit/prod-tokens.json",
+   "bytes": 663666
+  },
+  {
+   "path": "tools/apply.py",
+   "bytes": 15342
+  },
+  {
+   "path": "tools/render_changes_md.py",
+   "bytes": 4733
+  }
+ ],
+ "precedence": "02-changes/changes-by-file.json > 01-tokens/token-map.json > 01-tokens/unresolved.md (the per-file edit wins; the others name the edit id where they overlap)",
+ "tool": {
+  "apply": "tools/apply.py <path-to-phi_h5_025> [--step 0|1..7|all] [--dry-run] [--include-owner-items|--skip-owner-items] [--report PATH] [--window N]",
+  "renderMarkdown": "tools/render_changes_md.py (02-changes/changes-by-file.md from the JSON)",
+  "proof": "2026-11-24: --step all on a clean copy of 0d9bdd4: 534 edits + 3 step-0 operations applied, 2 already-done, 3 manual, 2 skipped, 0 anchor-missing; npm run build OK; npm test 927/927"
+ }
+}

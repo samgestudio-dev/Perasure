@@ -1,0 +1,1084 @@
+{
+ "meta": {
+  "baseline": "production phi_h5_025 master 0d9bdd4",
+  "visualChangeRows": 251,
+  "rowsWithPerFileEdits": 99,
+  "rowsWithoutProductionCounterpart": 44,
+  "rowsReachedWithoutPerFileEdit": 108,
+  "componentsNotExplicitlyCovered": 44
+ },
+ "a_rowsWithoutProductionCounterpart": [
+  {
+   "changeId": "G-006",
+   "designName": "Amount kerning",
+   "why": "Production draws amounts as plain text; it has no pair-kerning table (PS.kern/Component.kern) to remove."
+  },
+  {
+   "changeId": "G-015",
+   "designName": "Bottom distance: note bar / consent bar",
+   "why": "No note/consent bottom bar in production; AgreementConsent sits in the page flow."
+  },
+  {
+   "changeId": "G-022",
+   "designName": "Bottom distance: Withdraw order Confirm bar",
+   "why": "Demo withdraw.js Confirm bar geometry; production WithdrawMainRoute uses the shared BottomActionButton (G-014 applied there)."
+  },
+  {
+   "changeId": "G-027",
+   "designName": "Loader centring",
+   "why": "Demo PS.Loader coin+dots box; production loaders (Loading spinner, PageLoading dots, SubmissionStatus coin) are built differently. Only colours (G-031/G-032) carried over."
+  },
+  {
+   "changeId": "G-028",
+   "designName": "Order submit / Loan submitting position",
+   "why": "Demo PS.OrderSubmit layout; production SubmissionStatus has its own layout (no 2-line text box). Not mapped; ask design if the group should be re-centred."
+  },
+  {
+   "changeId": "G-030",
+   "designName": "Credit limit intro page edge",
+   "why": "Demo mechanism (html.ps-climit-on edge colour); production CreditIncreaseIntro is a full-screen overlay that already paints #0d1620."
+  },
+  {
+   "changeId": "G-036",
+   "designName": "Corners rule",
+   "why": "Figma only (component corners); not seen in demo code."
+  },
+  {
+   "changeId": "G-037",
+   "designName": "Shadowed components don't clip",
+   "why": "Figma/demo principle (no clip on shadowed frames); no production element found clipping a shadow that the rebrand changes."
+  },
+  {
+   "changeId": "C-007",
+   "designName": "Button / Inverse",
+   "why": "No black camera screen in production (liveness shows the selfie inside a ring on a light page)."
+  },
+  {
+   "changeId": "C-010",
+   "designName": "Button / Secondary XS (coupon Use)",
+   "why": "Coupons are not in production (coupon \"Use\" button)."
+  },
+  {
+   "changeId": "C-015",
+   "designName": "Tag / Urgent Subtle ('Best')",
+   "why": "Coupons are not in production (\"Best\" pill on CouponTicket/CouponOption)."
+  },
+  {
+   "changeId": "C-018",
+   "designName": "Tag / Navy Strong ('Due today')",
+   "why": "\"Due today\" stage (PaymentCard stage prop) does not exist in production."
+  },
+  {
+   "changeId": "C-019",
+   "designName": "Tag / positive",
+   "why": "Permission card not in production."
+  },
+  {
+   "changeId": "C-020",
+   "designName": "Tag / muted",
+   "why": "No muted tag tone in production."
+  },
+  {
+   "changeId": "C-021",
+   "designName": "Tag / Small Muted (Negative, Accent)",
+   "why": "Figma only."
+  },
+  {
+   "changeId": "C-023",
+   "designName": "Chip / brand",
+   "why": "No brand chip in production."
+  },
+  {
+   "changeId": "C-024",
+   "designName": "Chip",
+   "why": "Figma only."
+  },
+  {
+   "changeId": "C-025",
+   "designName": "Count badge",
+   "why": "Production Inbox/credit-history tabs show no count badge."
+  },
+  {
+   "changeId": "C-035",
+   "designName": "Tabs fade (inbox, credit history)",
+   "why": "Production tabs have no spring-gliding pill; motion row has nothing to retime."
+  },
+  {
+   "changeId": "C-043",
+   "designName": "Mask (hidden phone digits)",
+   "why": "Production shows the masked phone as plain text, not a bullet mask."
+  },
+  {
+   "changeId": "C-059",
+   "designName": "Pop-up close",
+   "why": "No change: demo already matched the legacy close icon size."
+  },
+  {
+   "changeId": "C-070",
+   "designName": "StateCard (navy banners)",
+   "why": "\"Time remaining\" pill is not on production ApplicationStateCard."
+  },
+  {
+   "changeId": "C-076",
+   "designName": "PaymentCard (Next payment)",
+   "why": "\"Due today\" stage does not exist in production."
+  },
+  {
+   "changeId": "C-086",
+   "designName": "HomeCoupons",
+   "why": "Home coupons block not in production."
+  },
+  {
+   "changeId": "C-087",
+   "designName": "HomeCoupons",
+   "why": "Home coupons block not in production."
+  },
+  {
+   "changeId": "C-099",
+   "designName": "Credit history tiles",
+   "why": "Production credit-limit page has no picture tiles with labels."
+  },
+  {
+   "changeId": "C-112",
+   "designName": "PayTimer",
+   "why": "Production QR countdown sits centred under the QR (layout); not changed. Ask design if it should be left-aligned like PayTimer."
+  },
+  {
+   "changeId": "C-131",
+   "designName": "UploadTile",
+   "why": "No upload tile with a veil icon in production (ID upload card handled under C-132)."
+  },
+  {
+   "changeId": "C-133",
+   "designName": "Camera side label",
+   "why": "No camera side label in production."
+  },
+  {
+   "changeId": "C-135",
+   "designName": "Face camera",
+   "why": "No in-app face camera screen in production."
+  },
+  {
+   "changeId": "C-136",
+   "designName": "Face camera",
+   "why": "No in-app face camera screen in production."
+  },
+  {
+   "changeId": "C-137",
+   "designName": "Glass buttons on black screens",
+   "why": "Figma only (glass buttons on black screens)."
+  },
+  {
+   "changeId": "C-138",
+   "designName": "PermissionCard",
+   "why": "Figma only (PermissionCard)."
+  },
+  {
+   "changeId": "C-140",
+   "designName": "Protect tips picture",
+   "why": "Protect-tips picture not in production."
+  },
+  {
+   "changeId": "C-143",
+   "designName": "Vote chips (help article)",
+   "why": "No vote chips on production FAQ article view."
+  },
+  {
+   "changeId": "C-147",
+   "designName": "CouponTicket",
+   "why": "Coupons are not in production."
+  },
+  {
+   "changeId": "C-148",
+   "designName": "CouponTicket Used = Expired",
+   "why": "Coupons are not in production."
+  },
+  {
+   "changeId": "C-149",
+   "designName": "CouponOption (coupon picker)",
+   "why": "Coupons are not in production."
+  },
+  {
+   "changeId": "C-150",
+   "designName": "CouponOption (coupon picker)",
+   "why": "Coupons are not in production."
+  },
+  {
+   "changeId": "C-151",
+   "designName": "CouponPickCard countdown",
+   "why": "Figma only (CouponPickCard)."
+  },
+  {
+   "changeId": "C-152",
+   "designName": "Coupon row (order page)",
+   "why": "Coupons are not in production."
+  },
+  {
+   "changeId": "C-153",
+   "designName": "Coupon illustrations (small)",
+   "why": "Coupon art is not in production."
+  },
+  {
+   "changeId": "C-154",
+   "designName": "CouponPayCard tags",
+   "why": "Figma only."
+  },
+  {
+   "changeId": "C-155",
+   "designName": "LoanStateCard",
+   "why": "Figma only."
+  }
+ ],
+ "a2_rowsWithCounterpartButNoPerFileEdit": [
+  {
+   "changeId": "G-009",
+   "designName": "Text styles added",
+   "how": "Token layer: new text styles come with the token deliverable (new-tokens.json); no per-file edit."
+  },
+  {
+   "changeId": "G-010",
+   "designName": "Header bar veil (primary pages)",
+   "how": "reached by the token map in: HeaderActionContainer"
+  },
+  {
+   "changeId": "G-011",
+   "designName": "Bottom bar veils",
+   "how": "reached by the token map in: AccountDeletionReason, FaqPage, ProgressiveBlur"
+  },
+  {
+   "changeId": "G-012",
+   "designName": "Glass buttons' blur on primary headers",
+   "how": "reached by the token map in: CreditFlowHeader, HeaderActionContainer"
+  },
+  {
+   "changeId": "G-021",
+   "designName": "Bottom distance: amount entry",
+   "how": "Closest production twin is AmountEditDrawer (a drawer, different geometry); its colours are edited (C-120), bottom padding left alone."
+  },
+  {
+   "changeId": "G-038",
+   "designName": "Icon colour by token",
+   "how": "reached by the token map in: BottomNavigation"
+  },
+  {
+   "changeId": "G-044",
+   "designName": "Token mapping: --color-text-tertiary → --fg-subtle",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-045",
+   "designName": "Token mapping: --color-text-placeholder → --fg-placeholder",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-046",
+   "designName": "Token mapping: --color-text-disabled → --fg-disabled",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-047",
+   "designName": "Token mapping: --color-stroke-subtle → --border-muted",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-048",
+   "designName": "Token mapping: --color-icon-brand-default → --fg-accent",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-049",
+   "designName": "Token mapping: --color-stroke-brand-default → --border-selected",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-050",
+   "designName": "Token mapping: --color-text-positive-heavy → --fg-success-strong",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-051",
+   "designName": "Token mapping: --color-surface-card-brand → --bg-brand",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-052",
+   "designName": "Token mapping: --color-surface-card-brand-subtle → --bg-accent-subtle",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-053",
+   "designName": "Token mapping: --color-text-brand-light → --fg-accent",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-054",
+   "designName": "Token mapping: --color-neutral-950 → --palette-navy-950",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-055",
+   "designName": "Token mapping: --color-stroke-default → --border-default",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-056",
+   "designName": "Token mapping: --color-icon-brand-light → --fg-accent",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-058",
+   "designName": "Token mapping: --color-stroke-brand-strong → --border-accent-emphasis",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-059",
+   "designName": "Token mapping: --color-stroke-brand-subtle → --border-accent-muted",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-060",
+   "designName": "Token mapping: --color-brand-200 → --palette-green-200",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-061",
+   "designName": "Token mapping: --color-brand-600 → --palette-green-600",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-062",
+   "designName": "Token mapping: --color-action-bg-positive-default → --bg-success-emphasis",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-063",
+   "designName": "Token mapping: --color-positive-100 → --palette-green-100",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-064",
+   "designName": "Token mapping: --color-stroke-positive-default → --border-success",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-065",
+   "designName": "Token mapping: --color-surface-icon-brand-default → --bg-brand",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-066",
+   "designName": "Token mapping: --color-neutral-150 → --palette-navy-200",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-067",
+   "designName": "Token mapping: --color-neutral-50 → --palette-navy-50",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-068",
+   "designName": "Token mapping: --color-stroke-divider → --border-muted",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-069",
+   "designName": "Token mapping: --color-icon-placeholder → --fg-placeholder",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-070",
+   "designName": "Token mapping: --color-action-bg-primary-default → --bg-accent-emphasis",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-071",
+   "designName": "Token mapping: --color-icon-primary → --fg-default",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-072",
+   "designName": "Token mapping: --color-text-brand-heavy → --fg-accent-strong",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-073",
+   "designName": "Token mapping: --color-surface-page-heavy → --bg-page-strong",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-074",
+   "designName": "Token mapping: --color-icon-positive-light → --fg-accent-on-brand",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-075",
+   "designName": "Token mapping: --color-brand-700 → --palette-green-700",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-076",
+   "designName": "Token mapping: --color-brand-400 → --palette-green-400",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-077",
+   "designName": "Token mapping: --color-text-positive-default → --fg-success",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-078",
+   "designName": "Token mapping: --color-text-link-light → --fg-accent",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-079",
+   "designName": "Token mapping: --color-surface-icon-positive-default → --bg-success-emphasis",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-080",
+   "designName": "Token mapping: --color-icon-tertiary → --fg-subtle",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-081",
+   "designName": "Token mapping: --color-icon-positive-heavy → --fg-success-strong",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-082",
+   "designName": "Token mapping: --color-action-bg-primary-disabled → --bg-disabled",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-083",
+   "designName": "Token mapping: --color-surface-card-positive-subtle → --bg-success-subtle",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-084",
+   "designName": "Token mapping: --color-neutral-100 → --palette-navy-100",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-085",
+   "designName": "Token mapping: --color-surface-card-muted → --bg-muted",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-086",
+   "designName": "Token mapping: --color-surface-card-positive → --bg-success-emphasis",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-087",
+   "designName": "Token mapping: --color-brand-100 → --palette-green-100",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-088",
+   "designName": "Token mapping: --color-neutral-600 → --palette-navy-500",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-089",
+   "designName": "Token mapping: --color-neutral-200 → --palette-navy-300",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-090",
+   "designName": "Token mapping: --tag-color-neutral-stroke-default → --tag-neutral-border",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "G-091",
+   "designName": "Token mapping: --color-neutral-800 → --palette-navy-700",
+   "how": "token map row (01-tokens/token-map.json)"
+  },
+  {
+   "changeId": "C-008",
+   "designName": "Button / Navy",
+   "how": "Navy button look reached through C-075 (HomeComposite Pay) and C-098 (CreditLimitPage Use)."
+  },
+  {
+   "changeId": "C-012",
+   "designName": "Button / Soft",
+   "how": "reached by the token map in: IdentityUploadCard"
+  },
+  {
+   "changeId": "C-022",
+   "designName": "Chip / positive",
+   "how": "reached by the token map in: IdentityIdTypeSelect"
+  },
+  {
+   "changeId": "C-026",
+   "designName": "Check / On",
+   "how": "reached by the token map in: RepaymentCard"
+  },
+  {
+   "changeId": "C-027",
+   "designName": "Check / Off",
+   "how": "reached by the token map in: RepaymentCard"
+  },
+  {
+   "changeId": "C-031",
+   "designName": "Segmented (E-Wallet | Online bank)",
+   "how": "reached by the token map in: BankCard"
+  },
+  {
+   "changeId": "C-033",
+   "designName": "Tabs / Filter (split: inbox)",
+   "how": "reached by the token map in: Inbox"
+  },
+  {
+   "changeId": "C-039",
+   "designName": "FormField (application form)",
+   "how": "reached by the token map in: BasicInformation, Contact, DiversionBasicInformation, EmailField, RecognizedIdentityDetails, Select, WorkLocationField"
+  },
+  {
+   "changeId": "C-046",
+   "designName": "Search",
+   "how": "reached by the token map in: BankSearchSelect, CityCascadeSheet, FaqPage, HeaderActionContainer, PaymentMethodDrawer"
+  },
+  {
+   "changeId": "C-049",
+   "designName": "Keypad key",
+   "how": "QuoteForm keypad digits reach --fg-default through the token map."
+  },
+  {
+   "changeId": "C-054",
+   "designName": "Wheel picker",
+   "how": "reached by the token map in: DatePickerSheet"
+  },
+  {
+   "changeId": "C-055",
+   "designName": "Popover / menu",
+   "how": "reached by the token map in: Popover, Select, WorkDocumentsField"
+  },
+  {
+   "changeId": "C-056",
+   "designName": "Popover / menu motion",
+   "how": "reached by the token map in: Popover"
+  },
+  {
+   "changeId": "C-060",
+   "designName": "Tooltip (with icon)",
+   "how": "reached by the token map in: CreditValidityTooltip"
+  },
+  {
+   "changeId": "C-061",
+   "designName": "Tooltip (with icon)",
+   "how": "reached by the token map in: CreditValidityTooltip"
+  },
+  {
+   "changeId": "C-073",
+   "designName": "StateCard (navy banners)",
+   "how": "Structure (drop an icon): out of scope."
+  },
+  {
+   "changeId": "C-080",
+   "designName": "Hero (home before a limit)",
+   "how": "reached by the token map in: NewCustomer, NewCustomerCard"
+  },
+  {
+   "changeId": "C-081",
+   "designName": "Hero (home before a limit)",
+   "how": "reached by the token map in: NewCustomerCard"
+  },
+  {
+   "changeId": "C-082",
+   "designName": "Reviews ('What customers say')",
+   "how": "reached by the token map in: HomeMarketingSections, HomePromotionSection"
+  },
+  {
+   "changeId": "C-084",
+   "designName": "Reviews ('What customers say')",
+   "how": "reached by the token map in: HomeMarketingSections"
+  },
+  {
+   "changeId": "C-085",
+   "designName": "TrustCard",
+   "how": "reached by the token map in: DiversionMadeForFilipinos, MadeForFilipinos"
+  },
+  {
+   "changeId": "C-088",
+   "designName": "Strip ('You have updates')",
+   "how": "Structure (tile → bare icon): out of scope; colours follow the token map."
+  },
+  {
+   "changeId": "C-089",
+   "designName": "Strip ('You have updates')",
+   "how": "reached by the token map in: HomeComposite"
+  },
+  {
+   "changeId": "C-090",
+   "designName": "OrderStatus",
+   "how": "Structure (tile → bare icon): out of scope."
+  },
+  {
+   "changeId": "C-091",
+   "designName": "Profile",
+   "how": "Removal of the verified mark is structure; production Account shows none."
+  },
+  {
+   "changeId": "C-092",
+   "designName": "Profile",
+   "how": "Avatar ring/initials reach the design through the token map."
+  },
+  {
+   "changeId": "C-093",
+   "designName": "CreditLimitCard",
+   "how": "reached by the token map in: Account"
+  },
+  {
+   "changeId": "C-094",
+   "designName": "CreditLimitCard",
+   "how": "Number font handled by the G-005 font edits; colour via token map."
+  },
+  {
+   "changeId": "C-097",
+   "designName": "HubCard (Credit limit hub)",
+   "how": "reached by the token map in: CreditLimitPage"
+  },
+  {
+   "changeId": "C-101",
+   "designName": "ActivityItem (credit history)",
+   "how": "reached by the token map in: CreditHistoryPage"
+  },
+  {
+   "changeId": "C-102",
+   "designName": "History row",
+   "how": "History amounts: G-005 font edits; colour via token map."
+  },
+  {
+   "changeId": "C-104",
+   "designName": "LinkRow (help)",
+   "how": "reached by the token map in: AboutPage, CustomerServicePage, FaqPage"
+  },
+  {
+   "changeId": "C-105",
+   "designName": "Menu (account)",
+   "how": "reached by the token map in: AccountDeletion"
+  },
+  {
+   "changeId": "C-106",
+   "designName": "ScamStrip",
+   "how": "reached by the token map in: Payment"
+  },
+  {
+   "changeId": "C-107",
+   "designName": "Installment",
+   "how": "Installment/date tiles reach the design through the token map."
+  },
+  {
+   "changeId": "C-108",
+   "designName": "Installment",
+   "how": "reached by the token map in: RepaymentCard"
+  },
+  {
+   "changeId": "C-109",
+   "designName": "PayBar",
+   "how": "reached by the token map in: RepaymentSummaryBar"
+  },
+  {
+   "changeId": "C-111",
+   "designName": "RepayCard",
+   "how": "reached by the token map in: RepayDetailShell"
+  },
+  {
+   "changeId": "C-113",
+   "designName": "QrPanel",
+   "how": "reached by the token map in: QrCodePayment"
+  },
+  {
+   "changeId": "C-114",
+   "designName": "QrPanel",
+   "how": "reached by the token map in: QrCodePayment"
+  },
+  {
+   "changeId": "C-117",
+   "designName": "Accordion (small)",
+   "how": "reached by the token map in: RepayDetailShell"
+  },
+  {
+   "changeId": "C-118",
+   "designName": "AmountCard / OrderAmountCard",
+   "how": "reached by the token map in: LoanQuote"
+  },
+  {
+   "changeId": "C-119",
+   "designName": "Loan estimate",
+   "how": "reached by the token map in: LoanEstimate, LoanQuote"
+  },
+  {
+   "changeId": "C-122",
+   "designName": "KV rows",
+   "how": "reached by the token map in: LoanPlanCard, NormalPayment, PaymentDetailDrawer"
+  },
+  {
+   "changeId": "C-123",
+   "designName": "Plan (repayment plan)",
+   "how": "reached by the token map in: RepaymentPlanDrawer"
+  },
+  {
+   "changeId": "C-124",
+   "designName": "Divider",
+   "how": "Divider: --color-stroke-divider → --border-muted (token map)."
+  },
+  {
+   "changeId": "C-126",
+   "designName": "Withdraw order Confirm",
+   "how": "Withdraw Confirm = shared primary (G-003/C-001 edits)."
+  },
+  {
+   "changeId": "C-127",
+   "designName": "Withdraw agreement line",
+   "how": "Agreement links: AgreementConsent (C-029/C-030) and --fg-link via token map."
+  },
+  {
+   "changeId": "C-130",
+   "designName": "DocCard add button",
+   "how": "reached by the token map in: WorkDocumentsField"
+  },
+  {
+   "changeId": "C-139",
+   "designName": "ChoiceButton / choice card",
+   "how": "Choice card line --border-muted via token map (IdentityInUseDialog: see conflicts)."
+  },
+  {
+   "changeId": "C-141",
+   "designName": "Status notice",
+   "how": "Info/neutral notices reach the design through the token map."
+  },
+  {
+   "changeId": "C-145",
+   "designName": "Screen tint",
+   "how": "reached by the token map in: WithdrawMainRoute"
+  },
+  {
+   "changeId": "C-146",
+   "designName": "Brand mark / logo",
+   "how": "reached by the token map in: BrandLogo, DiversionHomeShell"
+  },
+  {
+   "changeId": "C-156",
+   "designName": "Legal / foot / bullets / labels",
+   "how": "reached by the token map in: DiversionHomeTrustSection, SecRegistrationPage"
+  },
+  {
+   "changeId": "P-003",
+   "designName": "Payment (logged out)",
+   "how": "reached by the token map in: EmptyPaymentState"
+  }
+ ],
+ "b_productionComponentsNotExplicitlyCoveredByDesign": [
+  {
+   "component": "Global styles",
+   "path": "src/styles/global.css",
+   "recommendation": "token map only",
+   "editsInChangeList": true,
+   "note": "fonts, body family, scrim gradient, caret, focus ring"
+  },
+  {
+   "component": "Static boot splash",
+   "path": "index.html",
+   "recommendation": "token map only",
+   "editsInChangeList": true,
+   "note": "navy ground needs owner OK (G-029 is for PS.Splash; boot screen is its production twin)"
+  },
+  {
+   "component": "CreditIncreaseIntro",
+   "path": "src/pages/HomePage/CreditIncreaseIntro/adapter.ts",
+   "recommendation": "needs design",
+   "editsInChangeList": true,
+   "note": "Follows the unwired rebrand copy (credit-limit-coins/baked); owner should confirm the copy is final."
+  },
+  {
+   "component": "UI copy with hyphenated words",
+   "path": "src/**/locales, faqData.ts, SecRegistrationPage",
+   "recommendation": "token map only",
+   "editsInChangeList": true,
+   "note": "17 display strings; code comments, keys and autoComplete=\"one-time-code\" left alone"
+  },
+  {
+   "component": "AppEntryLanding",
+   "path": null,
+   "recommendation": "needs design",
+   "editsInChangeList": true,
+   "note": "Showcase image (app-entry-showcase.png/.webp) is a picture of the app; it will show the old blue UI until re-shot."
+  },
+  {
+   "component": "ErrorBlock",
+   "path": null,
+   "recommendation": "token map only",
+   "editsInChangeList": true,
+   "note": "All slate literals -> navy scale. Used by DiversionExceptionState."
+  },
+  {
+   "component": "FullScreenLayer",
+   "path": null,
+   "recommendation": "token map only",
+   "editsInChangeList": false,
+   "note": "Mist page surface only; undefined vars are runtime layout heights."
+  },
+  {
+   "component": "Loading",
+   "path": null,
+   "recommendation": "token map only",
+   "editsInChangeList": true,
+   "note": "Slate spinner/text literals -> navy; spinner arc -> #298648."
+  },
+  {
+   "component": "MobileModal",
+   "path": null,
+   "recommendation": "token map only",
+   "editsInChangeList": true,
+   "note": "Slate literals -> navy scale; footer bottom padding 20 -> 16 (needsOwner). Scrim via token map."
+  },
+  {
+   "component": "NoticeTicker",
+   "path": null,
+   "recommendation": "needs design",
+   "editsInChangeList": true,
+   "note": "Pill colours come from server notice data at runtime; the backend palette needs the rebrand colours."
+  },
+  {
+   "component": "PageLoading",
+   "path": null,
+   "recommendation": "token map only",
+   "editsInChangeList": true,
+   "note": "Four dots (brand/positive/light/warning) -> one #298648; warning token is removed in rebrand so its fallback would render. Logo via BrandLogo."
+  },
+  {
+   "component": "PageToast",
+   "path": null,
+   "recommendation": "token map only",
+   "editsInChangeList": true,
+   "note": "Slate pill -> navy 90 %, shadow -> elevation-3, icon green literal -> --bg-success."
+  },
+  {
+   "component": "PaymentMethodIcon",
+   "path": null,
+   "recommendation": "token map only",
+   "editsInChangeList": false,
+   "note": "Account fallback tile green-100 + accent icon via token map; channel logos are partner art. default-wallet.svg fills var(--fill-0, #7D878E) (undefined) -> old grey: assets file."
+  },
+  {
+   "component": "ProgressiveBlur",
+   "path": null,
+   "recommendation": "token map only",
+   "editsInChangeList": false,
+   "note": "Black rgba values in model.ts are mask alphas, not paint; tint passed by callers."
+  },
+  {
+   "component": "RouteLoading",
+   "path": null,
+   "recommendation": "token map only",
+   "editsInChangeList": false,
+   "note": "Blank mist page with muted text."
+  },
+  {
+   "component": "Toast",
+   "path": null,
+   "recommendation": "token map only",
+   "editsInChangeList": true,
+   "note": "Black toast fill -> navy 80 %; top position 80 -> 8 under the header (needsOwner)."
+  },
+  {
+   "component": "IdentityUploadCards",
+   "path": "src/pages/AuthPage/Identity/components/IdentityUploadCards/index.tsx",
+   "recommendation": "token map only",
+   "editsInChangeList": false,
+   "note": "Layout wrapper only; passes id-front-preview.png / id-back-preview.png to the cards."
+  },
+  {
+   "component": "Identity",
+   "path": "src/pages/AuthPage/Identity/index.tsx",
+   "recommendation": "token map only",
+   "editsInChangeList": false,
+   "note": "Hero title/description reached by the map; bottom action is shared BottomActionButton."
+  },
+  {
+   "component": "Liveness",
+   "path": "src/pages/AuthPage/Liveness/index.tsx",
+   "recommendation": "token map only",
+   "editsInChangeList": true,
+   "note": "Instruction label grey literal + undefined weight token; teal photo gradient #f0f5f4->#add4cc kept (mist tint, not legacy brand); good/bad check badges keep token-map green-700/red with white glyph; bottom action is shared BottomActionButton. Images: front-straight.png, well-lighted.png, no-covering-face.png."
+  },
+  {
+   "component": "RiskVerifyCaptcha",
+   "path": "src/pages/AuthPage/components/RiskVerifyCaptcha/index.tsx",
+   "recommendation": "needs design",
+   "editsInChangeList": true,
+   "note": "Canvas puzzle uses random teal-to-blue bubble hues (RiskVerifyCaptcha.tsx line 171)."
+  },
+  {
+   "component": "DisclosureStatementForm",
+   "path": "src/pages/ConfirmPage/DisclosureLetterPage/DisclosureLetter/DisclosureStatementForm.tsx",
+   "recommendation": "needs design",
+   "editsInChangeList": false,
+   "note": "Legal SEC document (Arial/Roboto, #111 ink); deliberately left as is."
+  },
+  {
+   "component": "DisclosureLetterPage",
+   "path": "src/pages/ConfirmPage/DisclosureLetterPage/index.tsx",
+   "recommendation": "token map only",
+   "editsInChangeList": true,
+   "note": "Zoom control literals (old neutrals) -> navy tokens; #e9f0ef pressed mist tint kept; white viewer ground kept."
+  },
+  {
+   "component": "BottomNavigation",
+   "path": "src/pages/HomePage/BottomNavigation/index.tsx",
+   "recommendation": "token map only",
+   "editsInChangeList": true,
+   "note": "Tab bar bottom 24→12, pill navy-950 8 %, active label green; active icon needs currentColor rendering (needsOwner). Images: nav-home/payment/account.svg (#141E24 → navy in assets)."
+  },
+  {
+   "component": "HomeTrustSection",
+   "path": "src/pages/HomePage/Home/components/HomeTrustSection/index.tsx",
+   "recommendation": "token map only",
+   "editsInChangeList": true,
+   "note": "One undefined --font-weight-semibold; rest token map."
+  },
+  {
+   "component": "RejectDiversionCard",
+   "path": "src/pages/HomePage/Home/components/RejectDiversionCard/index.tsx",
+   "recommendation": "needs design",
+   "editsInChangeList": true,
+   "note": "Partner offer card (partner red #ed001c, partner logo); no design row."
+  },
+  {
+   "component": "FeedbackInvitationSheet",
+   "path": "src/pages/HomePage/Home/feedbackInvitation/FeedbackInvitationSheet.tsx",
+   "recommendation": "needs design",
+   "editsInChangeList": true,
+   "note": "Pink/lime satisfaction/support illustrations have no rebrand version."
+  },
+  {
+   "component": "FraudWarningSheet",
+   "path": "src/pages/HomePage/Payment/components/FraudWarningSheet/index.tsx",
+   "recommendation": "needs design",
+   "editsInChangeList": true,
+   "note": "Pink/lime/teal illustrations (customer-service, transaction, verification-code svgs) have no rebrand version."
+  },
+  {
+   "component": "PaymentErrorModal",
+   "path": "src/pages/HomePage/Payment/components/PaymentErrorModal/index.tsx",
+   "recommendation": "needs design",
+   "editsInChangeList": true,
+   "note": "No design row; production renders a near-black button and amber icon via undefined tokens."
+  },
+  {
+   "component": "PaymentListRecoveryState",
+   "path": "src/pages/HomePage/Payment/components/PaymentListRecoveryState/index.tsx",
+   "recommendation": "needs design",
+   "editsInChangeList": true,
+   "note": "No design row; warning colours come from undefined tokens."
+  },
+  {
+   "component": "RepaymentList",
+   "path": "src/pages/HomePage/Payment/components/RepaymentList/index.tsx",
+   "recommendation": "token map only",
+   "editsInChangeList": false,
+   "note": "Layout wrapper only."
+  },
+  {
+   "component": "RepaymentListSkeleton",
+   "path": "src/pages/HomePage/Payment/components/RepaymentListSkeleton/index.tsx",
+   "recommendation": "token map only",
+   "editsInChangeList": false,
+   "note": "Grey shimmer via --bg-inset; summary offset follows --payment-bottom-nav-height (edited in Payment/index.module.css)."
+  },
+  {
+   "component": "Payment",
+   "path": "src/pages/HomePage/Payment/index.tsx",
+   "recommendation": "needs design",
+   "editsInChangeList": true,
+   "note": "Fraud ticker colours come from backend config (C-106 wants --bg-info-muted / --fg-info-strong)."
+  },
+  {
+   "component": "WithdrawBankRoute",
+   "path": "src/pages/HomePage/WithdrawBankRoute/index.tsx",
+   "recommendation": "token map only",
+   "editsInChangeList": true,
+   "note": "Undefined --color-surface (white renders) → --bg-default; no colour change."
+  },
+  {
+   "component": "WithdrawDisclosureRoute",
+   "path": "src/pages/HomePage/WithdrawDisclosureRoute/index.tsx",
+   "recommendation": "token map only",
+   "editsInChangeList": true,
+   "note": "Undefined --color-primary renders purple #6222CC on the retry button → green primary; header white token."
+  },
+  {
+   "component": "WithdrawFlowLayout",
+   "path": "src/pages/HomePage/WithdrawFlowLayout/index.tsx",
+   "recommendation": "token map only",
+   "editsInChangeList": true,
+   "note": "Submission notice button navy label (undefined token rendered white) + undefined type tokens."
+  },
+  {
+   "component": "SubmissionStatus",
+   "path": "src/pages/HomePage/WithdrawMainRoute/SubmissionStatus.tsx",
+   "recommendation": "token map only",
+   "editsInChangeList": true,
+   "note": "One undefined line-height token; title fg/accent via token map. Coin/dots animation lives in motion/ (coordinator)."
+  },
+  {
+   "component": "HomePage",
+   "path": "src/pages/HomePage/index.tsx",
+   "recommendation": "token map only",
+   "editsInChangeList": false,
+   "note": "Shell bg/unread dot map cleanly; header icons are SVG assets (inbox.svg, customer-service.svg, gift) + BrandLogo navigation — colours come from assets file."
+  },
+  {
+   "component": "DiversionApplicationCard",
+   "path": "src/pages/OutPages/DiversionPage/Home/components/DiversionApplicationCard/index.tsx",
+   "recommendation": "token map only",
+   "editsInChangeList": true,
+   "note": "Blue gradient card -> flat navy, white text kept. Shows clock ring/vector SVG assets (application-state-clock-*.svg) and lucide CircleX (currentColor white)."
+  },
+  {
+   "component": "DiversionHomeSkeleton",
+   "path": "src/pages/OutPages/DiversionPage/Home/components/DiversionHomeSkeleton/index.tsx",
+   "recommendation": "token map only",
+   "editsInChangeList": false,
+   "note": "Neutral skeleton; shadow already navy alpha (= --elevation-1 value), white shimmer left alone."
+  },
+  {
+   "component": "DiversionLandingLoading",
+   "path": "src/pages/OutPages/DiversionPage/Landing/components/DiversionLandingLoading/index.tsx",
+   "recommendation": "token map only",
+   "editsInChangeList": true,
+   "note": "Brand tile/name already navy via --color-brand-950; dots -> #298648. Brand mark is an SVG asset (Group 393.svg)."
+  },
+  {
+   "component": "ShortLinkRepay",
+   "path": "src/pages/OutPages/ShortLink/Repay/index.tsx",
+   "recommendation": "needs design",
+   "editsInChangeList": true,
+   "note": "reloan-banner.jpg is a blue marketing banner."
+  },
+  {
+   "component": "SplashPage",
+   "path": "src/pages/SplashPage/index.tsx",
+   "recommendation": "token map only",
+   "editsInChangeList": true,
+   "note": "Slate gradient -> navy; slate greys -> navy scale. BrandLogo inside a white-10 % glass shell (kept). Title has no font-family (inherits body = Hanken via map)."
+  },
+  {
+   "component": "BirRegistrationPage",
+   "path": "src/pages/SupportPage/BirRegistrationPage/index.tsx",
+   "recommendation": "token map only",
+   "editsInChangeList": true,
+   "note": "Undefined label colour + focus ring fixed. Badge image bir-registration.webp (official document, keep)."
+  },
+  {
+   "component": "TestPage",
+   "path": "src/pages/TestPage/index.tsx",
+   "recommendation": "token map only",
+   "editsInChangeList": false,
+   "note": "Internal debug page; map is enough."
+  }
+ ]
+}

@@ -1,0 +1,33 @@
+# Removed tokens with a literal replacement (31): letter-spacing. v3 keeps tracking in the .ps-text-* classes.
+# Usage: sed -E -i.bak -f removed-literals.sed <files>   (replaces the whole var(...) incl. any fallback)
+s/var\([[:space:]]*--section-title-md-light-letter-spacing[[:space:]]*(,[^()]*)?\)/0/g
+s/var\([[:space:]]*--section-title-sm-light-letter-spacing[[:space:]]*(,[^()]*)?\)/0/g
+s/var\([[:space:]]*--section-title-xs-light-letter-spacing[[:space:]]*(,[^()]*)?\)/0/g
+s/var\([[:space:]]*--body-lg-emphasis-letter-spacing[[:space:]]*(,[^()]*)?\)/0/g
+s/var\([[:space:]]*--body-md-emphasis-letter-spacing[[:space:]]*(,[^()]*)?\)/0/g
+s/var\([[:space:]]*--section-title-md-letter-spacing[[:space:]]*(,[^()]*)?\)/0/g
+s/var\([[:space:]]*--section-title-sm-letter-spacing[[:space:]]*(,[^()]*)?\)/0/g
+s/var\([[:space:]]*--section-title-xs-letter-spacing[[:space:]]*(,[^()]*)?\)/0/g
+s/var\([[:space:]]*--label-md-light-letter-spacing[[:space:]]*(,[^()]*)?\)/0/g
+s/var\([[:space:]]*--label-sm-light-letter-spacing[[:space:]]*(,[^()]*)?\)/0/g
+s/var\([[:space:]]*--headline-sm-letter-spacing[[:space:]]*(,[^()]*)?\)/-0.01em/g
+s/var\([[:space:]]*--caption-sm-letter-spacing[[:space:]]*(,[^()]*)?\)/0/g
+s/var\([[:space:]]*--caption-xs-letter-spacing[[:space:]]*(,[^()]*)?\)/0/g
+s/var\([[:space:]]*--display-lg-letter-spacing[[:space:]]*(,[^()]*)?\)/-0.02em/g
+s/var\([[:space:]]*--display-md-letter-spacing[[:space:]]*(,[^()]*)?\)/-0.02em/g
+s/var\([[:space:]]*--display-sm-letter-spacing[[:space:]]*(,[^()]*)?\)/-0.02em/g
+s/var\([[:space:]]*--display-xl-letter-spacing[[:space:]]*(,[^()]*)?\)/-0.02em/g
+s/var\([[:space:]]*--label-md-letter-spacing[[:space:]]*(,[^()]*)?\)/0/g
+s/var\([[:space:]]*--label-sm-letter-spacing[[:space:]]*(,[^()]*)?\)/0/g
+s/var\([[:space:]]*--title-lg-letter-spacing[[:space:]]*(,[^()]*)?\)/-0.005em/g
+s/var\([[:space:]]*--title-md-letter-spacing[[:space:]]*(,[^()]*)?\)/-0.005em/g
+s/var\([[:space:]]*--title-sm-letter-spacing[[:space:]]*(,[^()]*)?\)/-0.005em/g
+s/var\([[:space:]]*--body-lg-letter-spacing[[:space:]]*(,[^()]*)?\)/0/g
+s/var\([[:space:]]*--body-md-letter-spacing[[:space:]]*(,[^()]*)?\)/0/g
+s/var\([[:space:]]*--letter-spacing-0[[:space:]]*(,[^()]*)?\)/0/g
+s/var\([[:space:]]*--letter-spacing-1[[:space:]]*(,[^()]*)?\)/0/g
+s/var\([[:space:]]*--letter-spacing-2[[:space:]]*(,[^()]*)?\)/0.02em/g
+s/var\([[:space:]]*--letter-spacing-3[[:space:]]*(,[^()]*)?\)/-0.01em/g
+s/var\([[:space:]]*--letter-spacing-4[[:space:]]*(,[^()]*)?\)/-0.005em/g
+s/var\([[:space:]]*--letter-spacing-5[[:space:]]*(,[^()]*)?\)/-0.003em/g
+s/var\([[:space:]]*--letter-spacing-6[[:space:]]*(,[^()]*)?\)/-0.012em/g

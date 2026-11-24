@@ -1,0 +1,5997 @@
+{
+  "meta": {
+    "imageCount": 183,
+    "imagesByCategory": {
+      "app-logo": 3,
+      "icon": 82,
+      "empty-state": 5,
+      "decorative-graphic": 3,
+      "photo-avatar": 3,
+      "illustration": 25,
+      "third-party-logo/credential": 9,
+      "payment-brand-logo": 53
+    },
+    "lottieJsonFilesInRepo": [],
+    "cssKeyframesCount": 61,
+    "gsapFiles": 5,
+    "couponArtwork": "none found: 'coupon' appears only in API/locale code (couponList / couponAmount), no coupon illustrations or styles",
+    "notes": [
+      "dominantColors for rasters are a 16-step quantised histogram of a 48px downscale (opaque pixels only), via macOS sips.",
+      "SVG colors list literal fill/stroke/stop-color values; currentColor icons inherit from CSS.",
+      "referencedBy is a filename grep across src (+ index.html)."
+    ]
+  },
+  "fonts": {
+    "fontFaces": [
+      {
+        "definedIn": "src/pages/HomePage/CreditIncreaseIntro/material/baked-heap.css:1",
+        "family": "Inter",
+        "weight": "100 900",
+        "style": null,
+        "display": "block",
+        "src": "url('/fonts/inter/Inter-Variable.woff2') format('woff2')",
+        "file": {
+          "path": "public/fonts/inter/Inter-Variable.woff2",
+          "exists": true,
+          "bytes": 348932
+        }
+      },
+      {
+        "definedIn": "src/pages/HomePage/CreditIncreaseIntro/material/baked-heap.css:7",
+        "family": "Satoshi",
+        "weight": "500",
+        "style": null,
+        "display": "block",
+        "src": "url('/fonts/satoshi/Satoshi-Medium.woff2') format('woff2')",
+        "file": {
+          "path": "public/fonts/satoshi/Satoshi-Medium.woff2",
+          "exists": true,
+          "bytes": 25596
+        }
+      },
+      {
+        "definedIn": "src/pages/HomePage/CreditIncreaseIntro/material/baked-heap.css:13",
+        "family": "Satoshi",
+        "weight": "700",
+        "style": null,
+        "display": "block",
+        "src": "url('/fonts/satoshi/Satoshi-Bold.woff2') format('woff2')",
+        "file": {
+          "path": "public/fonts/satoshi/Satoshi-Bold.woff2",
+          "exists": true,
+          "bytes": 25328
+        }
+      },
+      {
+        "definedIn": "src/pages/HomePage/CreditIncreaseIntro/material/baked-heap.css:19",
+        "family": "Hanken",
+        "weight": "100 900",
+        "style": null,
+        "display": "block",
+        "src": "url('/fonts/hanken-grotesk/HankenGrotesk-Variable.woff2') format('woff2')",
+        "file": {
+          "path": "public/fonts/hanken-grotesk/HankenGrotesk-Variable.woff2",
+          "exists": true,
+          "bytes": 56020
+        }
+      },
+      {
+        "definedIn": "src/styles/global.css:4",
+        "family": "Inter",
+        "weight": "300 800",
+        "style": "normal",
+        "display": "swap",
+        "src": "url('/fonts/inter/Inter-Variable.woff2') format('woff2')",
+        "file": {
+          "path": "public/fonts/inter/Inter-Variable.woff2",
+          "exists": true,
+          "bytes": 348932
+        }
+      },
+      {
+        "definedIn": "src/styles/global.css:12",
+        "family": "Hanken Grotesk",
+        "weight": "300 900",
+        "style": "normal",
+        "display": "swap",
+        "src": "url('/fonts/hanken-grotesk/HankenGrotesk-Variable.woff2') format('woff2')",
+        "file": {
+          "path": "public/fonts/hanken-grotesk/HankenGrotesk-Variable.woff2",
+          "exists": true,
+          "bytes": 56020
+        }
+      },
+      {
+        "definedIn": "src/styles/global.css:20",
+        "family": "Satoshi",
+        "weight": "500",
+        "style": "normal",
+        "display": "swap",
+        "src": "url('/fonts/satoshi/Satoshi-Medium.woff2') format('woff2')",
+        "file": {
+          "path": "public/fonts/satoshi/Satoshi-Medium.woff2",
+          "exists": true,
+          "bytes": 25596
+        }
+      },
+      {
+        "definedIn": "src/styles/global.css:28",
+        "family": "Satoshi",
+        "weight": "700",
+        "style": "normal",
+        "display": "swap",
+        "src": "url('/fonts/satoshi/Satoshi-Bold.woff2') format('woff2')",
+        "file": {
+          "path": "public/fonts/satoshi/Satoshi-Bold.woff2",
+          "exists": true,
+          "bytes": 25328
+        }
+      }
+    ],
+    "fontFiles": [
+      {
+        "path": "public/fonts/hanken-grotesk/HankenGrotesk-Variable.woff2",
+        "bytes": 56020
+      },
+      {
+        "path": "public/fonts/hanken-grotesk/OFL.txt",
+        "bytes": 4495
+      },
+      {
+        "path": "public/fonts/inter/Inter-Variable.woff2",
+        "bytes": 348932
+      },
+      {
+        "path": "public/fonts/inter/OFL.txt",
+        "bytes": 4470
+      },
+      {
+        "path": "public/fonts/satoshi/README.md",
+        "bytes": 784
+      },
+      {
+        "path": "public/fonts/satoshi/Satoshi-Bold.woff2",
+        "bytes": 25328
+      },
+      {
+        "path": "public/fonts/satoshi/Satoshi-Medium.woff2",
+        "bytes": 25596
+      }
+    ],
+    "familyTokens": {
+      "--font-family-body": "Inter",
+      "--font-family-label": "Inter",
+      "--font-family-inter": "Inter",
+      "--font-family-title": "Hanken Grotesk",
+      "--font-family-display": "Hanken Grotesk",
+      "--font-family-hanken-grotesk": "Hanken Grotesk"
+    },
+    "familyUsage": [
+      {
+        "family": "Inter",
+        "declarations": 298,
+        "files": 93,
+        "loaded": true,
+        "sampleFiles": [
+          "index.html",
+          "src/components/GlobalErrorHandler/index.module.css",
+          "src/components/ui/AppEntryLanding/index.module.css",
+          "src/components/ui/BorrowerProtectionCard/index.module.css",
+          "src/components/ui/BottomActionButton/index.module.css",
+          "src/components/ui/Checkbox/index.module.css",
+          "src/components/ui/CityCascadeSheet/index.module.css",
+          "src/components/ui/DatePickerSheet/index.module.css",
+          "src/components/ui/EmailField/index.module.css",
+          "src/components/ui/HeaderActionContainer/index.module.css",
+          "src/components/ui/Input/index.module.css",
+          "src/components/ui/LoanQuote/index.module.css"
+        ]
+      },
+      {
+        "family": "Hanken Grotesk",
+        "declarations": 169,
+        "files": 77,
+        "loaded": true,
+        "sampleFiles": [
+          "src/components/GlobalErrorHandler/index.module.css",
+          "src/components/ui/BorrowerProtectionCard/index.module.css",
+          "src/components/ui/CityCascadeSheet/index.module.css",
+          "src/components/ui/CreditFlowHeader/index.module.css",
+          "src/components/ui/CreditValidityTooltip/index.module.scss",
+          "src/components/ui/DatePickerSheet/index.module.css",
+          "src/components/ui/HeaderActionContainer/index.module.css",
+          "src/components/ui/LoanQuote/index.module.css",
+          "src/components/ui/Select/SelectSheet.module.css",
+          "src/features/reloan/QuoteForm/index.module.css",
+          "src/features/reloan/components/AmountEditDrawer/index.module.css",
+          "src/features/reloan/components/RepaymentPlanDrawer/index.module.css"
+        ]
+      },
+      {
+        "family": "Satoshi",
+        "declarations": 12,
+        "files": 7,
+        "loaded": true,
+        "sampleFiles": [
+          "src/components/ui/LoanQuote/index.module.css",
+          "src/features/reloan/QuoteForm/index.module.css",
+          "src/pages/AuthPage/LoanDetail/index.module.css",
+          "src/pages/HomePage/CreditIncreaseIntro/material/baked-heap.css",
+          "src/pages/HomePage/Home/HomeComposite.module.css",
+          "src/pages/HomePage/Home/components/RejectDiversionCard/index.module.css",
+          "src/styles/global.css"
+        ]
+      },
+      {
+        "family": "Arial",
+        "declarations": 4,
+        "files": 2,
+        "loaded": false,
+        "sampleFiles": [
+          "index.html",
+          "src/pages/ConfirmPage/DisclosureLetterPage/DisclosureLetter/DisclosureStatementForm.module.css"
+        ]
+      },
+      {
+        "family": "Helvetica",
+        "declarations": 3,
+        "files": 1,
+        "loaded": false,
+        "sampleFiles": [
+          "src/pages/ConfirmPage/DisclosureLetterPage/DisclosureLetter/DisclosureStatementForm.module.css"
+        ]
+      },
+      {
+        "family": "Arial Black",
+        "declarations": 2,
+        "files": 1,
+        "loaded": false,
+        "sampleFiles": [
+          "src/pages/ConfirmPage/DisclosureLetterPage/DisclosureLetter/DisclosureStatementForm.module.css"
+        ]
+      },
+      {
+        "family": "Roboto",
+        "declarations": 1,
+        "files": 1,
+        "loaded": false,
+        "sampleFiles": [
+          "src/pages/ConfirmPage/DisclosureLetterPage/DisclosureLetter/DisclosureStatementForm.module.css"
+        ]
+      },
+      {
+        "family": "Hanken (alias in baked-heap)",
+        "declarations": 1,
+        "files": 1,
+        "loaded": false,
+        "sampleFiles": [
+          "src/pages/HomePage/CreditIncreaseIntro/material/baked-heap.css"
+        ]
+      },
+      {
+        "family": "Nunito Sans",
+        "declarations": 1,
+        "files": 1,
+        "loaded": false,
+        "sampleFiles": [
+          "src/pages/RepayPage/QrCodePayment/index.module.css"
+        ]
+      }
+    ],
+    "setup": "Self-hosted WOFF2 in public/fonts, declared in src/styles/global.css. Inter variable (300-800) is the body default (body {font-family: 'Inter', sans-serif}); Hanken Grotesk variable (300-900) for titles/display via --font-family-title/--font-family-display; Satoshi 500/700 static (ITF FFL licence, not OFL) only for big money digits. index.html boot splash uses Inter, Arial fallback."
+  },
+  "animations": [
+    {
+      "path": "src/pages/HomePage/WithdrawMainRoute/motion/loadingCoin.ts",
+      "type": "Lottie JSON converted to inline SVG + GSAP timeline (perasure-tools/lottie2gsap); original .json not in repo",
+      "shows": "loading coin: blue peso coin spinning/bouncing (withdrawal processing)",
+      "fps": 60,
+      "frames": 102,
+      "colors": [
+        {
+          "color": "#2b74bd",
+          "uses": 10
+        },
+        {
+          "color": "#f6f9f8",
+          "uses": 2
+        }
+      ],
+      "usedBy": [
+        "src/pages/HomePage/WithdrawMainRoute/motion/coinMotion.ts"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/WithdrawMainRoute/motion/successCoin.ts",
+      "type": "Lottie JSON converted to inline SVG + GSAP timeline (perasure-tools/lottie2gsap); original .json not in repo",
+      "shows": "success coin: blue coin + check mark with radiating ticks and sparkle dots (withdrawal accepted)",
+      "fps": 60,
+      "frames": 127,
+      "colors": [
+        {
+          "color": "#2b74bd",
+          "uses": 39
+        },
+        {
+          "color": "#78aae2",
+          "uses": 8
+        },
+        {
+          "color": "#f6f9f8",
+          "uses": 5
+        }
+      ],
+      "usedBy": [
+        "src/pages/HomePage/WithdrawMainRoute/motion/coinMotion.ts"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/CreditIncreaseIntro/material",
+      "files": [
+        "src/pages/HomePage/CreditIncreaseIntro/material/README.md",
+        "src/pages/HomePage/CreditIncreaseIntro/material/baked-heap.css",
+        "src/pages/HomePage/CreditIncreaseIntro/material/baked-heap.d.ts",
+        "src/pages/HomePage/CreditIncreaseIntro/material/baked-heap.html",
+        "src/pages/HomePage/CreditIncreaseIntro/material/baked-heap.js",
+        "src/pages/HomePage/CreditIncreaseIntro/material/baked.json",
+        "src/pages/HomePage/CreditIncreaseIntro/material/entry.ts"
+      ],
+      "type": "baked physics recording (baked.json, 354 frames @60fps, 44 coins) replayed by canvas renderer baked-heap.js in an iframe + GSAP",
+      "shows": "credit-limit increase: a heap of gold coins drops and settles, amount counts up (Satoshi digits) then lands on the home credit card",
+      "colors": [
+        {
+          "color": "#eef5ef",
+          "uses": 6
+        },
+        {
+          "color": "#0d1620",
+          "uses": 4
+        },
+        {
+          "color": "#3fa0f0",
+          "uses": 4
+        },
+        {
+          "color": "#ffb000",
+          "uses": 2
+        },
+        {
+          "color": "#ffe36b",
+          "uses": 2
+        },
+        {
+          "color": "#ffd21f",
+          "uses": 2
+        },
+        {
+          "color": "#f29a00",
+          "uses": 2
+        },
+        {
+          "color": "#b4bcc1",
+          "uses": 2
+        },
+        {
+          "color": "#f5a200",
+          "uses": 1
+        },
+        {
+          "color": "#ffd84d",
+          "uses": 1
+        },
+        {
+          "color": "#ffc20a",
+          "uses": 1
+        },
+        {
+          "color": "#e48c00",
+          "uses": 1
+        },
+        {
+          "color": "#9aa7b0",
+          "uses": 1
+        },
+        {
+          "color": "#1b2834",
+          "uses": 1
+        },
+        {
+          "color": "#16304a",
+          "uses": 1
+        },
+        {
+          "color": "#6fb8f5",
+          "uses": 1
+        },
+        {
+          "color": "#1a232c",
+          "uses": 1
+        },
+        {
+          "color": "#7d878e",
+          "uses": 1
+        },
+        {
+          "color": "#ff6b3d",
+          "uses": 1
+        }
+      ],
+      "coinPalette": {
+        "orange/lime kinds": {
+          "top": "#FFB000",
+          "ring": "#FFE36B",
+          "side": "#FFD21F",
+          "rim": "#F29A00"
+        },
+        "teal kind": {
+          "top": "#F5A200",
+          "ring": "#FFD84D",
+          "side": "#FFC20A",
+          "rim": "#E48C00"
+        }
+      },
+      "note": "coin 'kinds' are named lime/orange/teal but all render as gold/amber; dark backdrop --bg/--ink #0d1620, accent #3fa0f0"
+    },
+    {
+      "path": "src/pages/OutPages/DiversionPage/Landing/components/DiversionLandingLoading",
+      "type": "CSS keyframes (timing taken from designer 'Opening' and 'loading' Lottie JSON; JSON not in repo)",
+      "shows": "diversion landing loader: brand mark slides/reveals with brand name, then loading dots pulse",
+      "colors": [],
+      "tokens": [
+        "--app-viewport-height",
+        "--color-brand-600",
+        "--color-brand-950",
+        "--color-surface-page-default",
+        "--font-family-title",
+        "--radius-full",
+        "--spacing-64"
+      ]
+    },
+    {
+      "path": "index.html",
+      "type": "inline static boot splash (HTML/CSS/SVG before React mounts)",
+      "shows": "PeraSure wordmark SVG (Hanken Grotesk 700, fill rgb(0,1,40)) on #f0f5f4 with pulsing green dots (static-boot-dot keyframes)",
+      "colors": [
+        {
+          "color": "#f0f5f4",
+          "uses": 4
+        },
+        {
+          "color": "#ffffff",
+          "uses": 4
+        },
+        {
+          "color": "#58d07c",
+          "uses": 3
+        },
+        {
+          "color": "#3c4850",
+          "uses": 1
+        },
+        {
+          "color": "#2c74be",
+          "uses": 1
+        },
+        {
+          "color": "#000128",
+          "uses": 1
+        },
+        {
+          "color": "#000028",
+          "uses": 1
+        }
+      ]
+    },
+    {
+      "path": "src/components/ui/PageLoading",
+      "type": "CSS keyframes",
+      "shows": "page loading: logo with four bouncing dots coloured brand / positive / warning / light",
+      "tokens": [
+        "--app-viewport-height",
+        "--color-action-bg-positive-default",
+        "--color-action-bg-primary-default",
+        "--color-icon-brand-light",
+        "--color-surface-page-default",
+        "--color-warning-300",
+        "--radius-full",
+        "--radius-sm",
+        "--spacing-4",
+        "--spacing-gap-lg",
+        "--spacing-gap-xs",
+        "--spacing-page-x-sm"
+      ]
+    }
+  ],
+  "cssKeyframes": [
+    {
+      "name": "appEntryReveal",
+      "file": "src/components/ui/AppEntryLanding/index.module.css",
+      "line": 117
+    },
+    {
+      "name": "paneEnterForward",
+      "file": "src/components/ui/DatePickerSheet/index.module.css",
+      "line": 511
+    },
+    {
+      "name": "paneExitForward",
+      "file": "src/components/ui/DatePickerSheet/index.module.css",
+      "line": 523
+    },
+    {
+      "name": "paneEnterBackward",
+      "file": "src/components/ui/DatePickerSheet/index.module.css",
+      "line": 535
+    },
+    {
+      "name": "paneExitBackward",
+      "file": "src/components/ui/DatePickerSheet/index.module.css",
+      "line": 547
+    },
+    {
+      "name": "calendarEnterNext",
+      "file": "src/components/ui/DatePickerSheet/index.module.css",
+      "line": 559
+    },
+    {
+      "name": "calendarExitNext",
+      "file": "src/components/ui/DatePickerSheet/index.module.css",
+      "line": 571
+    },
+    {
+      "name": "calendarEnterPrevious",
+      "file": "src/components/ui/DatePickerSheet/index.module.css",
+      "line": 583
+    },
+    {
+      "name": "calendarExitPrevious",
+      "file": "src/components/ui/DatePickerSheet/index.module.css",
+      "line": 595
+    },
+    {
+      "name": "slide-up",
+      "file": "src/components/ui/FullScreenLayer/index.module.css",
+      "line": 31
+    },
+    {
+      "name": "loading-spin",
+      "file": "src/components/ui/Loading/Loading.module.css",
+      "line": 47
+    },
+    {
+      "name": "morph-label",
+      "file": "src/components/ui/LoanQuote/index.module.css",
+      "line": 257
+    },
+    {
+      "name": "morph-amount",
+      "file": "src/components/ui/LoanQuote/index.module.css",
+      "line": 267
+    },
+    {
+      "name": "morph-edit-icon",
+      "file": "src/components/ui/LoanQuote/index.module.css",
+      "line": 279
+    },
+    {
+      "name": "morph-controls-enter",
+      "file": "src/components/ui/LoanQuote/index.module.css",
+      "line": 291
+    },
+    {
+      "name": "notice-ticker-marquee",
+      "file": "src/components/ui/NoticeTicker/index.module.css",
+      "line": 61
+    },
+    {
+      "name": "notice-ticker-copy-cycle",
+      "file": "src/components/ui/NoticeTicker/index.module.css",
+      "line": 80
+    },
+    {
+      "name": "logoBounce",
+      "file": "src/components/ui/PageLoading/index.module.css",
+      "line": 89
+    },
+    {
+      "name": "dotBounce",
+      "file": "src/components/ui/PageLoading/index.module.css",
+      "line": 104
+    },
+    {
+      "name": "page-toast-enter",
+      "file": "src/components/ui/PageToast.module.css",
+      "line": 33
+    },
+    {
+      "name": "popover-enter-bottom",
+      "file": "src/components/ui/Popover/index.module.css",
+      "line": 109
+    },
+    {
+      "name": "popover-enter-top",
+      "file": "src/components/ui/Popover/index.module.css",
+      "line": 164
+    },
+    {
+      "name": "popover-exit-bottom",
+      "file": "src/components/ui/Popover/index.module.css",
+      "line": 219
+    },
+    {
+      "name": "popover-exit-top",
+      "file": "src/components/ui/Popover/index.module.css",
+      "line": 230
+    },
+    {
+      "name": "popover-option-enter-bottom",
+      "file": "src/components/ui/Select/index.module.css",
+      "line": 207
+    },
+    {
+      "name": "popover-option-enter-top",
+      "file": "src/components/ui/Select/index.module.css",
+      "line": 218
+    },
+    {
+      "name": "toast-positioned-enter",
+      "file": "src/components/ui/Toast/index.module.css",
+      "line": 38
+    },
+    {
+      "name": "withdraw-card-enter",
+      "file": "src/features/reloan/QuoteForm/index.module.css",
+      "line": 613
+    },
+    {
+      "name": "keypad-caret-blink",
+      "file": "src/features/reloan/QuoteForm/index.module.css",
+      "line": 627
+    },
+    {
+      "name": "keypad-digit-enter",
+      "file": "src/features/reloan/QuoteForm/index.module.css",
+      "line": 639
+    },
+    {
+      "name": "spin",
+      "file": "src/pages/AccountPage/Inbox/index.module.css",
+      "line": 439
+    },
+    {
+      "name": "bank-tab-content-exit",
+      "file": "src/pages/AuthPage/BankCard/index.module.css",
+      "line": 185
+    },
+    {
+      "name": "bank-tab-content-enter",
+      "file": "src/pages/AuthPage/BankCard/index.module.css",
+      "line": 199
+    },
+    {
+      "name": "loan-detail-spin",
+      "file": "src/pages/AuthPage/LoanDetail/index.module.css",
+      "line": 440
+    },
+    {
+      "name": "loan-history-spin",
+      "file": "src/pages/AuthPage/LoanHistory/index.module.css",
+      "line": 276
+    },
+    {
+      "name": "spin",
+      "file": "src/pages/AuthPage/OtpVerify/index.module.css",
+      "line": 273
+    },
+    {
+      "name": "captchaPulse",
+      "file": "src/pages/AuthPage/components/RiskVerifyCaptcha/index.module.css",
+      "line": 209
+    },
+    {
+      "name": "enter",
+      "file": "src/pages/ConfirmPage/Order/phoneVerification/sheet.module.css",
+      "line": 159
+    },
+    {
+      "name": "historyTitleScroll",
+      "file": "src/pages/CreditHistoryPage/index.module.css",
+      "line": 198
+    },
+    {
+      "name": "shimmer",
+      "file": "src/pages/HomePage/Home/HomeComposite.module.css",
+      "line": 359
+    },
+    {
+      "name": "trust-logo-marquee",
+      "file": "src/pages/HomePage/Home/components/MadeForFilipinos/index.module.css",
+      "line": 219
+    },
+    {
+      "name": "fraud-warning-title-enter",
+      "file": "src/pages/HomePage/Payment/components/FraudWarningSheet/index.module.css",
+      "line": 274
+    },
+    {
+      "name": "fraud-warning-title-leave",
+      "file": "src/pages/HomePage/Payment/components/FraudWarningSheet/index.module.css",
+      "line": 286
+    },
+    {
+      "name": "fraud-warning-body-enter",
+      "file": "src/pages/HomePage/Payment/components/FraudWarningSheet/index.module.css",
+      "line": 298
+    },
+    {
+      "name": "fraud-warning-body-leave",
+      "file": "src/pages/HomePage/Payment/components/FraudWarningSheet/index.module.css",
+      "line": 310
+    },
+    {
+      "name": "fraud-warning-control-enter",
+      "file": "src/pages/HomePage/Payment/components/FraudWarningSheet/index.module.css",
+      "line": 322
+    },
+    {
+      "name": "fraud-warning-control-leave",
+      "file": "src/pages/HomePage/Payment/components/FraudWarningSheet/index.module.css",
+      "line": 334
+    },
+    {
+      "name": "payment-method-spin",
+      "file": "src/pages/HomePage/Payment/components/PaymentMethodDrawer/index.module.css",
+      "line": 538
+    },
+    {
+      "name": "skeletonShimmer",
+      "file": "src/pages/HomePage/Payment/components/RepaymentListSkeleton/index.module.css",
+      "line": 204
+    },
+    {
+      "name": "confirming-dot",
+      "file": "src/pages/HomePage/WithdrawMainRoute/SubmissionStatus.module.css",
+      "line": 62
+    },
+    {
+      "name": "confirm-block-enter",
+      "file": "src/pages/HomePage/WithdrawMainRoute/index.module.css",
+      "line": 405
+    },
+    {
+      "name": "skeletonShimmer",
+      "file": "src/pages/OutPages/DiversionPage/Home/components/DiversionHomeSkeleton/index.module.css",
+      "line": 133
+    },
+    {
+      "name": "trust-logo-marquee",
+      "file": "src/pages/OutPages/DiversionPage/Home/components/MadeForFilipinos/index.module.css",
+      "line": 219
+    },
+    {
+      "name": "openingIconShift",
+      "file": "src/pages/OutPages/DiversionPage/Landing/components/DiversionLandingLoading/index.module.scss",
+      "line": 125
+    },
+    {
+      "name": "openingIconPop",
+      "file": "src/pages/OutPages/DiversionPage/Landing/components/DiversionLandingLoading/index.module.scss",
+      "line": 137
+    },
+    {
+      "name": "openingMarkDraw",
+      "file": "src/pages/OutPages/DiversionPage/Landing/components/DiversionLandingLoading/index.module.scss",
+      "line": 157
+    },
+    {
+      "name": "openingNameReveal",
+      "file": "src/pages/OutPages/DiversionPage/Landing/components/DiversionLandingLoading/index.module.scss",
+      "line": 176
+    },
+    {
+      "name": "loadingDotBounce",
+      "file": "src/pages/OutPages/DiversionPage/Landing/components/DiversionLandingLoading/index.module.scss",
+      "line": 190
+    },
+    {
+      "name": "refresh-spin",
+      "file": "src/pages/RepayPage/components/RepayDetailRefreshFeedback.module.css",
+      "line": 93
+    },
+    {
+      "name": "splash-fade-in",
+      "file": "src/pages/SplashPage/index.module.css",
+      "line": 71
+    },
+    {
+      "name": "splash-spin",
+      "file": "src/pages/SplashPage/index.module.css",
+      "line": 81
+    }
+  ],
+  "gsapFiles": [
+    "src/pages/HomePage/CreditIncreaseIntro/adapter.ts",
+    "src/pages/HomePage/CreditIncreaseIntro/landing.ts",
+    "src/pages/HomePage/CreditIncreaseIntro/material/baked-heap.js",
+    "src/pages/HomePage/WithdrawMainRoute/motion/loadingCoin.ts",
+    "src/pages/HomePage/WithdrawMainRoute/motion/successCoin.ts"
+  ],
+  "iconSets": [
+    {
+      "set": "lucide-react",
+      "version": "^0.562.0",
+      "format": "React SVG components (stroke icons, currentColor)",
+      "distinctIcons": 28,
+      "icons": [
+        {
+          "name": "X",
+          "importingFiles": 17
+        },
+        {
+          "name": "ChevronRight",
+          "importingFiles": 13
+        },
+        {
+          "name": "ChevronLeft",
+          "importingFiles": 6
+        },
+        {
+          "name": "AlertTriangle",
+          "importingFiles": 5
+        },
+        {
+          "name": "LoaderCircle",
+          "importingFiles": 5
+        },
+        {
+          "name": "RefreshCw",
+          "importingFiles": 5
+        },
+        {
+          "name": "Check",
+          "importingFiles": 4
+        },
+        {
+          "name": "Search",
+          "importingFiles": 3
+        },
+        {
+          "name": "CircleAlert",
+          "importingFiles": 3
+        },
+        {
+          "name": "ArrowLeft",
+          "importingFiles": 3
+        },
+        {
+          "name": "Loader2",
+          "importingFiles": 2
+        },
+        {
+          "name": "Headphones",
+          "importingFiles": 2
+        },
+        {
+          "name": "RotateCcw",
+          "importingFiles": 1
+        },
+        {
+          "name": "CheckCircle2",
+          "importingFiles": 1
+        },
+        {
+          "name": "WalletCards",
+          "importingFiles": 1
+        },
+        {
+          "name": "Delete",
+          "importingFiles": 1
+        },
+        {
+          "name": "Pencil",
+          "importingFiles": 1
+        },
+        {
+          "name": "ContactRound",
+          "importingFiles": 1
+        },
+        {
+          "name": "CloudUpload",
+          "importingFiles": 1
+        },
+        {
+          "name": "CircleHelp",
+          "importingFiles": 1
+        },
+        {
+          "name": "History",
+          "importingFiles": 1
+        },
+        {
+          "name": "ChevronUp",
+          "importingFiles": 1
+        },
+        {
+          "name": "Heart",
+          "importingFiles": 1
+        },
+        {
+          "name": "RotateCw",
+          "importingFiles": 1
+        },
+        {
+          "name": "Smartphone",
+          "importingFiles": 1
+        },
+        {
+          "name": "CircleX",
+          "importingFiles": 1
+        },
+        {
+          "name": "Copy",
+          "importingFiles": 1
+        },
+        {
+          "name": "ChevronDown",
+          "importingFiles": 1
+        }
+      ]
+    },
+    {
+      "set": "src/assets",
+      "format": {
+        "svg": 4
+      },
+      "count": 4,
+      "categories": {
+        "app-logo": 2,
+        "icon": 1,
+        "empty-state": 1
+      }
+    },
+    {
+      "set": "src/assets/home",
+      "format": {
+        "svg": 10,
+        "jpg": 3,
+        "png": 1
+      },
+      "count": 14,
+      "categories": {
+        "icon": 7,
+        "decorative-graphic": 1,
+        "photo-avatar": 3,
+        "illustration": 1,
+        "third-party-logo/credential": 2
+      }
+    },
+    {
+      "set": "src/assets/loan",
+      "format": {
+        "svg": 2
+      },
+      "count": 2,
+      "categories": {
+        "icon": 2
+      }
+    },
+    {
+      "set": "src/assets/payment",
+      "format": {
+        "svg": 1
+      },
+      "count": 1,
+      "categories": {
+        "icon": 1
+      }
+    },
+    {
+      "set": "src/assets/payment-methods",
+      "format": {
+        "png": 4,
+        "svg": 2
+      },
+      "count": 6,
+      "categories": {
+        "payment-brand-logo": 4,
+        "icon": 1,
+        "empty-state": 1
+      }
+    },
+    {
+      "set": "src/assets/payment-methods/brands",
+      "format": {
+        "png": 33,
+        "svg": 16
+      },
+      "count": 49,
+      "categories": {
+        "payment-brand-logo": 49
+      }
+    },
+    {
+      "set": "src/assets/payment-methods/wallet-list",
+      "format": {
+        "png": 1
+      },
+      "count": 1,
+      "categories": {
+        "icon": 1
+      }
+    },
+    {
+      "set": "src/assets/svg",
+      "format": {
+        "svg": 1
+      },
+      "count": 1,
+      "categories": {
+        "icon": 1
+      }
+    },
+    {
+      "set": "src/assets/svg/credit-navigation",
+      "format": {
+        "svg": 1
+      },
+      "count": 1,
+      "categories": {
+        "icon": 1
+      }
+    },
+    {
+      "set": "src/assets/svg/credit-validity",
+      "format": {
+        "svg": 8
+      },
+      "count": 8,
+      "categories": {
+        "icon": 8
+      }
+    },
+    {
+      "set": "src/components/ui/BorrowerProtectionCard/assets",
+      "format": {
+        "svg": 1
+      },
+      "count": 1,
+      "categories": {
+        "icon": 1
+      }
+    },
+    {
+      "set": "src/components/ui/NoticeTicker/assets",
+      "format": {
+        "svg": 1
+      },
+      "count": 1,
+      "categories": {
+        "icon": 1
+      }
+    },
+    {
+      "set": "src/features/workProfile/documents/assets",
+      "format": {
+        "svg": 5
+      },
+      "count": 5,
+      "categories": {
+        "icon": 5
+      }
+    },
+    {
+      "set": "src/pages/AccountPage/AccountDeletion/assets",
+      "format": {
+        "svg": 1
+      },
+      "count": 1,
+      "categories": {
+        "icon": 1
+      }
+    },
+    {
+      "set": "src/pages/AccountPage/AccountDeletionReason/assets",
+      "format": {
+        "svg": 1
+      },
+      "count": 1,
+      "categories": {
+        "icon": 1
+      }
+    },
+    {
+      "set": "src/pages/AccountPage/Inbox/assets",
+      "format": {
+        "svg": 2
+      },
+      "count": 2,
+      "categories": {
+        "empty-state": 1,
+        "icon": 1
+      }
+    },
+    {
+      "set": "src/pages/AuthPage/Liveness/assets",
+      "format": {
+        "png": 3,
+        "svg": 1
+      },
+      "count": 4,
+      "categories": {
+        "illustration": 3,
+        "icon": 1
+      }
+    },
+    {
+      "set": "src/pages/AuthPage/assets",
+      "format": {
+        "png": 2,
+        "svg": 4
+      },
+      "count": 6,
+      "categories": {
+        "third-party-logo/credential": 1,
+        "icon": 4,
+        "illustration": 1
+      }
+    },
+    {
+      "set": "src/pages/ConfirmPage/Order/components/ReceivingAccountGuideSheet",
+      "format": {
+        "svg": 1
+      },
+      "count": 1,
+      "categories": {
+        "icon": 1
+      }
+    },
+    {
+      "set": "src/pages/CreditHistoryPage/assets",
+      "format": {
+        "svg": 2
+      },
+      "count": 2,
+      "categories": {
+        "icon": 2
+      }
+    },
+    {
+      "set": "src/pages/CreditLimitPage/assets",
+      "format": {
+        "svg": 5
+      },
+      "count": 5,
+      "categories": {
+        "icon": 5
+      }
+    },
+    {
+      "set": "src/pages/HomePage/Account/assets/icons",
+      "format": {
+        "svg": 12
+      },
+      "count": 12,
+      "categories": {
+        "icon": 12
+      }
+    },
+    {
+      "set": "src/pages/HomePage/Account/assets/social",
+      "format": {
+        "svg": 3
+      },
+      "count": 3,
+      "categories": {
+        "icon": 3
+      }
+    },
+    {
+      "set": "src/pages/HomePage/Home/assets",
+      "format": {
+        "svg": 3,
+        "png": 2
+      },
+      "count": 5,
+      "categories": {
+        "icon": 3,
+        "decorative-graphic": 1,
+        "third-party-logo/credential": 1
+      }
+    },
+    {
+      "set": "src/pages/HomePage/Payment/components/PaymentMethodDrawer/assets",
+      "format": {
+        "svg": 9
+      },
+      "count": 9,
+      "categories": {
+        "icon": 9
+      }
+    },
+    {
+      "set": "src/pages/OutPages/DiversionPage/Home/assets",
+      "format": {
+        "png": 2,
+        "svg": 1
+      },
+      "count": 3,
+      "categories": {
+        "decorative-graphic": 1,
+        "icon": 1,
+        "third-party-logo/credential": 1
+      }
+    },
+    {
+      "set": "src/pages/RepayPage/QrCodePayment/assets",
+      "format": {
+        "svg": 1
+      },
+      "count": 1,
+      "categories": {
+        "icon": 1
+      }
+    },
+    {
+      "set": "src/pages/SupportPage/BirRegistrationPage/assets",
+      "format": {
+        "webp": 1,
+        "svg": 1
+      },
+      "count": 2,
+      "categories": {
+        "third-party-logo/credential": 1,
+        "icon": 1
+      }
+    },
+    {
+      "set": "src/pages/SupportPage/CustomerServicePage/assets",
+      "format": {
+        "svg": 4
+      },
+      "count": 4,
+      "categories": {
+        "icon": 4
+      }
+    },
+    {
+      "set": "src/pages/SupportPage/FaqPage/assets",
+      "format": {
+        "svg": 2
+      },
+      "count": 2,
+      "categories": {
+        "icon": 2
+      }
+    }
+  ],
+  "images": [
+    {
+      "path": "src/assets/Group 393.svg",
+      "format": "svg",
+      "bytes": 7686,
+      "category": "app-logo",
+      "viewBox": "0 0 17 17",
+      "width": "17",
+      "height": "17",
+      "hasGradient": true,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#70ff99",
+          "uses": 6
+        },
+        {
+          "color": "#53c574",
+          "uses": 6
+        },
+        {
+          "color": "white",
+          "uses": 2
+        },
+        {
+          "color": "#fffefe",
+          "uses": 1
+        },
+        {
+          "color": "#999898",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/components/BrandLogo.tsx",
+        "src/pages/OutPages/DiversionPage/Landing/components/DiversionLandingLoading/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/about-footer-brand.svg",
+      "format": "svg",
+      "bytes": 13950,
+      "category": "app-logo",
+      "viewBox": "0 0 75.4527 16",
+      "width": "75.4527",
+      "height": "16",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#97a0a6",
+          "uses": 9
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/SupportPage/AboutPage/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/chevron-right.svg",
+      "format": "svg",
+      "bytes": 576,
+      "category": "icon",
+      "viewBox": "0 0 6.42073 10.9674",
+      "width": "6.42073",
+      "height": "10.9674",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#6a757d",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/AccountPage/AccountDeletion/index.tsx",
+        "src/pages/AccountPage/Inbox/VirtualMessageList.tsx",
+        "src/pages/AuthPage/LoanHistory/index.tsx",
+        "src/pages/HomePage/Account/index.tsx",
+        "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx",
+        "src/pages/SupportPage/AboutPage/index.tsx",
+        "src/pages/SupportPage/CustomerServicePage/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/empty-payment-method.svg",
+      "format": "svg",
+      "bytes": 2536,
+      "category": "empty-state",
+      "viewBox": "0 0 56.9539 57.1124",
+      "width": "100%",
+      "height": "100%",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#2ab0be",
+          "uses": 5
+        },
+        {
+          "color": "#004e60",
+          "uses": 3
+        },
+        {
+          "color": "#8ae6d0",
+          "uses": 1
+        },
+        {
+          "color": "#96f2dc",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/AuthPage/BankCard/components/BankSearchSelect/index.tsx",
+        "src/pages/HomePage/Payment/components/PaymentMethodDrawer/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/empty-states/history-empty.svg",
+      "format": "svg",
+      "bytes": 2552,
+      "category": "empty-state",
+      "viewBox": "0 0 75.9386 76.1499",
+      "width": "100%",
+      "height": "100%",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#2ab0be",
+          "uses": 5
+        },
+        {
+          "color": "#004e60",
+          "uses": 3
+        },
+        {
+          "color": "#8ae6d0",
+          "uses": 1
+        },
+        {
+          "color": "#96f2dc",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 10,
+      "referencedBy": [
+        "src/pages/AuthPage/LoanHistory/index.tsx",
+        "src/pages/CreditHistoryPage/index.tsx",
+        "src/pages/HomePage/Payment/components/EmptyPaymentState/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/home/application-state-clock-ring.svg",
+      "format": "svg",
+      "bytes": 433,
+      "category": "icon",
+      "viewBox": "0 0 34 34",
+      "width": "34",
+      "height": "34",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "white",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/OutPages/DiversionPage/Home/components/DiversionApplicationCard/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/home/application-state-clock-vector.svg",
+      "format": "svg",
+      "bytes": 736,
+      "category": "icon",
+      "viewBox": "0 0 9.11606 9.11605",
+      "width": "9.11606",
+      "height": "9.11605",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "white",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/OutPages/DiversionPage/Home/components/DiversionApplicationCard/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/home/application-state-clock.svg",
+      "format": "svg",
+      "bytes": 1100,
+      "category": "icon",
+      "viewBox": "0 0 32 32",
+      "width": "32",
+      "height": "32",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "white",
+          "uses": 2
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Home/components/ApplicationStateCard/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/home/application-state-glow.svg",
+      "format": "svg",
+      "bytes": 994,
+      "category": "decorative-graphic",
+      "viewBox": "0 0 480 180",
+      "width": "480",
+      "height": "180",
+      "hasGradient": true,
+      "hasFilter": true,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#9ae8ff",
+          "uses": 2
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Home/components/ApplicationStateCard/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/home/application-state-rejected-ring.svg",
+      "format": "svg",
+      "bytes": 435,
+      "category": "icon",
+      "viewBox": "0 0 34 34",
+      "width": "34",
+      "height": "34",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#f0f5f4",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": []
+    },
+    {
+      "path": "src/assets/home/application-state-rejected-vector.svg",
+      "format": "svg",
+      "bytes": 1714,
+      "category": "icon",
+      "viewBox": "0 0 12.6577 12.6533",
+      "width": "12.6577",
+      "height": "12.6533",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#f0f5f4",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": []
+    },
+    {
+      "path": "src/assets/home/application-state-support-chat.svg",
+      "format": "svg",
+      "bytes": 855,
+      "category": "icon",
+      "viewBox": "0 0 24 24",
+      "width": "24",
+      "height": "24",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "white",
+          "uses": 4
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Home/components/ApplicationStateCard/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/home/avatar-3.jpg",
+      "format": "jpg",
+      "bytes": 3279,
+      "category": "photo-avatar",
+      "pixelSize": "112x112",
+      "dominantColors": [
+        {
+          "color": "#b8b8b8",
+          "share": 0.118
+        },
+        {
+          "color": "#888878",
+          "share": 0.044
+        },
+        {
+          "color": "#a8a898",
+          "share": 0.043
+        },
+        {
+          "color": "#989888",
+          "share": 0.043
+        },
+        {
+          "color": "#b8b8a8",
+          "share": 0.027
+        },
+        {
+          "color": "#282838",
+          "share": 0.023
+        }
+      ],
+      "referencedBy": [
+        "src/pages/HomePage/Home/components/HomePromotionSection/index.tsx",
+        "src/pages/OutPages/DiversionPage/Home/components/HomeMarketingSections/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/home/john-s.jpg",
+      "format": "jpg",
+      "bytes": 3309,
+      "category": "photo-avatar",
+      "pixelSize": "112x112",
+      "dominantColors": [
+        {
+          "color": "#888888",
+          "share": 0.066
+        },
+        {
+          "color": "#888878",
+          "share": 0.056
+        },
+        {
+          "color": "#787868",
+          "share": 0.048
+        },
+        {
+          "color": "#080808",
+          "share": 0.045
+        },
+        {
+          "color": "#484848",
+          "share": 0.043
+        },
+        {
+          "color": "#787878",
+          "share": 0.04
+        }
+      ],
+      "referencedBy": [
+        "src/pages/HomePage/Home/components/HomePromotionSection/index.tsx",
+        "src/pages/HomePage/Home/components/NewCustomer/index.tsx",
+        "src/pages/OutPages/DiversionPage/Home/components/HomeMarketingSections/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/home/made-for-filipinos-avatars.png",
+      "format": "png",
+      "bytes": 73913,
+      "category": "illustration",
+      "pixelSize": "350x130",
+      "dominantColors": [
+        {
+          "color": "#e8e8e8",
+          "share": 0.042
+        },
+        {
+          "color": "#b8b8b8",
+          "share": 0.038
+        },
+        {
+          "color": "#c8c8c8",
+          "share": 0.038
+        },
+        {
+          "color": "#f8f8f8",
+          "share": 0.035
+        },
+        {
+          "color": "#d8d8d8",
+          "share": 0.026
+        },
+        {
+          "color": "#a8a8a8",
+          "share": 0.026
+        }
+      ],
+      "referencedBy": [
+        "src/pages/HomePage/Home/components/MadeForFilipinos/index.tsx",
+        "src/pages/OutPages/DiversionPage/Home/components/MadeForFilipinos/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/home/maria-c.jpg",
+      "format": "jpg",
+      "bytes": 3967,
+      "category": "photo-avatar",
+      "pixelSize": "112x112",
+      "dominantColors": [
+        {
+          "color": "#181818",
+          "share": 0.055
+        },
+        {
+          "color": "#281818",
+          "share": 0.053
+        },
+        {
+          "color": "#585858",
+          "share": 0.049
+        },
+        {
+          "color": "#585848",
+          "share": 0.027
+        },
+        {
+          "color": "#282828",
+          "share": 0.027
+        },
+        {
+          "color": "#484848",
+          "share": 0.027
+        }
+      ],
+      "referencedBy": [
+        "src/pages/HomePage/Home/components/HomePromotionSection/index.tsx",
+        "src/pages/HomePage/Home/components/NewCustomer/index.tsx",
+        "src/pages/OutPages/DiversionPage/Home/components/HomeMarketingSections/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/home/partner-logos.svg",
+      "format": "svg",
+      "bytes": 61607,
+      "category": "third-party-logo/credential",
+      "viewBox": "0 0 698 16",
+      "width": "698",
+      "height": "16",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#6a757d",
+          "uses": 12
+        },
+        {
+          "color": "#ffffff",
+          "uses": 5
+        },
+        {
+          "color": "#7d878e",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Home/components/MadeForFilipinos/index.tsx",
+        "src/pages/OutPages/DiversionPage/Home/components/MadeForFilipinos/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/home/quote-mark.svg",
+      "format": "svg",
+      "bytes": 1684,
+      "category": "icon",
+      "viewBox": "0 0 48 42",
+      "width": "48",
+      "height": "42",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#cdd1d4",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Home/components/HomePromotionSection/index.tsx",
+        "src/pages/HomePage/Home/components/NewCustomer/index.tsx",
+        "src/pages/OutPages/DiversionPage/Home/components/HomeMarketingSections/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/home/sec-registration.svg",
+      "format": "svg",
+      "bytes": 2877,
+      "category": "third-party-logo/credential",
+      "viewBox": "0 0 40.7822 44",
+      "width": "100%",
+      "height": "100%",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#2c74be",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 1,
+      "referencedBy": [
+        "src/pages/HomePage/Home/components/MadeForFilipinos/index.tsx",
+        "src/pages/OutPages/DiversionPage/Home/components/MadeForFilipinos/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/identity/id-back-preview.png",
+      "format": "png",
+      "bytes": 39295,
+      "category": "illustration",
+      "pixelSize": "325x224",
+      "dominantColors": [
+        {
+          "color": "#e8f8f8",
+          "share": 0.342
+        },
+        {
+          "color": "#f8f8f8",
+          "share": 0.253
+        },
+        {
+          "color": "#b8b8c8",
+          "share": 0.128
+        },
+        {
+          "color": "#d8d8d8",
+          "share": 0.058
+        },
+        {
+          "color": "#d8d8e8",
+          "share": 0.051
+        },
+        {
+          "color": "#c8c8c8",
+          "share": 0.044
+        }
+      ],
+      "referencedBy": [
+        "src/pages/AuthPage/Identity/components/IdentityUploadCards/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/identity/id-front-preview.png",
+      "format": "png",
+      "bytes": 50413,
+      "category": "illustration",
+      "pixelSize": "325x224",
+      "dominantColors": [
+        {
+          "color": "#e8e8f8",
+          "share": 0.377
+        },
+        {
+          "color": "#f8f8f8",
+          "share": 0.142
+        },
+        {
+          "color": "#b8b8c8",
+          "share": 0.084
+        },
+        {
+          "color": "#e8e8e8",
+          "share": 0.077
+        },
+        {
+          "color": "#b8c8c8",
+          "share": 0.06
+        },
+        {
+          "color": "#d8d8d8",
+          "share": 0.053
+        }
+      ],
+      "referencedBy": [
+        "src/pages/AuthPage/Identity/components/IdentityUploadCards/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/identity/ocr-fail/avoid-blurry.png",
+      "format": "png",
+      "bytes": 14070,
+      "category": "illustration",
+      "pixelSize": "312x200",
+      "dominantColors": [
+        {
+          "color": "#383838",
+          "share": 0.312
+        },
+        {
+          "color": "#e8d8d8",
+          "share": 0.052
+        },
+        {
+          "color": "#e8e8d8",
+          "share": 0.049
+        },
+        {
+          "color": "#686868",
+          "share": 0.045
+        },
+        {
+          "color": "#d8d8c8",
+          "share": 0.037
+        },
+        {
+          "color": "#f8f8e8",
+          "share": 0.031
+        }
+      ],
+      "referencedBy": [
+        "src/pages/AuthPage/Identity/components/IdentityVerifyFailedDialog/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/identity/ocr-fail/avoid-false-documents.png",
+      "format": "png",
+      "bytes": 24130,
+      "category": "illustration",
+      "pixelSize": "312x200",
+      "dominantColors": [
+        {
+          "color": "#383838",
+          "share": 0.37
+        },
+        {
+          "color": "#a87868",
+          "share": 0.047
+        },
+        {
+          "color": "#a88878",
+          "share": 0.041
+        },
+        {
+          "color": "#987868",
+          "share": 0.032
+        },
+        {
+          "color": "#886858",
+          "share": 0.031
+        },
+        {
+          "color": "#b89888",
+          "share": 0.027
+        }
+      ],
+      "referencedBy": [
+        "src/pages/AuthPage/Identity/components/IdentityVerifyFailedDialog/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/identity/ocr-fail/avoid-flash.png",
+      "format": "png",
+      "bytes": 20996,
+      "category": "illustration",
+      "pixelSize": "312x200",
+      "dominantColors": [
+        {
+          "color": "#383838",
+          "share": 0.333
+        },
+        {
+          "color": "#f8f8f8",
+          "share": 0.197
+        },
+        {
+          "color": "#e8e8e8",
+          "share": 0.039
+        },
+        {
+          "color": "#484848",
+          "share": 0.037
+        },
+        {
+          "color": "#f8e8e8",
+          "share": 0.033
+        },
+        {
+          "color": "#f8f8e8",
+          "share": 0.026
+        }
+      ],
+      "referencedBy": [
+        "src/pages/AuthPage/Identity/components/IdentityVerifyFailedDialog/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/identity/ocr-fail/avoid-incomplete.png",
+      "format": "png",
+      "bytes": 17524,
+      "category": "illustration",
+      "pixelSize": "312x200",
+      "dominantColors": [
+        {
+          "color": "#383838",
+          "share": 0.558
+        },
+        {
+          "color": "#f8e8d8",
+          "share": 0.033
+        },
+        {
+          "color": "#e8e8d8",
+          "share": 0.03
+        },
+        {
+          "color": "#d8c8c8",
+          "share": 0.021
+        },
+        {
+          "color": "#c8c8b8",
+          "share": 0.021
+        },
+        {
+          "color": "#e8d8d8",
+          "share": 0.021
+        }
+      ],
+      "referencedBy": [
+        "src/pages/AuthPage/Identity/components/IdentityVerifyFailedDialog/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/loan/loan-detail-change-card.svg",
+      "format": "svg",
+      "bytes": 1001,
+      "category": "icon",
+      "viewBox": "0 0 28 28",
+      "width": "28",
+      "height": "28",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "white",
+          "uses": 3
+        },
+        {
+          "color": "#ff0d19",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/AuthPage/LoanDetail/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/loan/loan-detail-reviewing.svg",
+      "format": "svg",
+      "bytes": 1248,
+      "category": "icon",
+      "viewBox": "0 0 28 28",
+      "width": "28",
+      "height": "28",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "white",
+          "uses": 2
+        },
+        {
+          "color": "#2c74be",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/AuthPage/LoanDetail/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/payment/repayment-check-mark.svg",
+      "format": "svg",
+      "bytes": 612,
+      "category": "icon",
+      "viewBox": "0 0 7.55556 5.35631",
+      "width": "7.55556",
+      "height": "5.35631",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "white",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Payment/components/RepaymentCard/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/allbank.png",
+      "format": "png",
+      "bytes": 2921,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/asia-united-bank.svg",
+      "format": "svg",
+      "bytes": 5806,
+      "category": "payment-brand-logo",
+      "viewBox": "0 0 36 36",
+      "width": "36",
+      "height": "36",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#fdb813",
+          "uses": 3
+        },
+        {
+          "color": "#e41b23",
+          "uses": 1
+        },
+        {
+          "color": "white",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/bangko-mabuhay.png",
+      "format": "png",
+      "bytes": 2960,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/bank-de-oro.svg",
+      "format": "svg",
+      "bytes": 1665,
+      "category": "payment-brand-logo",
+      "viewBox": "0 0 36 36",
+      "width": "36",
+      "height": "36",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#0b2972",
+          "uses": 1
+        },
+        {
+          "color": "#ffb20c",
+          "uses": 1
+        },
+        {
+          "color": "white",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/bank-of-commerce.png",
+      "format": "png",
+      "bytes": 1683,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/bpi-globe-banko.svg",
+      "format": "svg",
+      "bytes": 11297,
+      "category": "payment-brand-logo",
+      "viewBox": "0 0 36 36",
+      "width": "36",
+      "height": "36",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#961617",
+          "uses": 9
+        },
+        {
+          "color": "#951617",
+          "uses": 5
+        },
+        {
+          "color": "#971d20",
+          "uses": 3
+        },
+        {
+          "color": "#fcb417",
+          "uses": 3
+        },
+        {
+          "color": "#fcb416",
+          "uses": 2
+        },
+        {
+          "color": "#951516",
+          "uses": 2
+        },
+        {
+          "color": "#951415",
+          "uses": 2
+        },
+        {
+          "color": "white",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/bpi.svg",
+      "format": "svg",
+      "bytes": 10702,
+      "category": "payment-brand-logo",
+      "viewBox": "0 0 36 36",
+      "width": "36",
+      "height": "36",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#dcb91c",
+          "uses": 1
+        },
+        {
+          "color": "white",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/cebuana-lhuillier.png",
+      "format": "png",
+      "bytes": 2926,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/chinabank-savings.png",
+      "format": "png",
+      "bytes": 2749,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/chinabank.svg",
+      "format": "svg",
+      "bytes": 1471,
+      "category": "payment-brand-logo",
+      "viewBox": "0 0 36 36",
+      "width": "36",
+      "height": "36",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#ed1a37",
+          "uses": 2
+        },
+        {
+          "color": "white",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/chinatrust.png",
+      "format": "png",
+      "bytes": 5928,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/coins-ph.png",
+      "format": "png",
+      "bytes": 5036,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/dcpay.png",
+      "format": "png",
+      "bytes": 5036,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/dungganon.png",
+      "format": "png",
+      "bytes": 2388,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/east-west-banking.png",
+      "format": "png",
+      "bytes": 4222,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/east-west-rural.png",
+      "format": "png",
+      "bytes": 4222,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/equicom.png",
+      "format": "png",
+      "bytes": 2576,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/gcash.svg",
+      "format": "svg",
+      "bytes": 4698,
+      "category": "payment-brand-logo",
+      "viewBox": "0 0 36 36",
+      "width": "36",
+      "height": "36",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#6fbaf7",
+          "uses": 2
+        },
+        {
+          "color": "#007cff",
+          "uses": 1
+        },
+        {
+          "color": "#002cb8",
+          "uses": 1
+        },
+        {
+          "color": "white",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/gotyme.svg",
+      "format": "svg",
+      "bytes": 4957,
+      "category": "payment-brand-logo",
+      "viewBox": "0 0 36 36",
+      "width": "36",
+      "height": "36",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "white",
+          "uses": 2
+        },
+        {
+          "color": "black",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/grabpay.png",
+      "format": "png",
+      "bytes": 3682,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/hsbc.svg",
+      "format": "svg",
+      "bytes": 693,
+      "category": "payment-brand-logo",
+      "viewBox": "0 0 36 36",
+      "width": "36",
+      "height": "36",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#db0011",
+          "uses": 4
+        },
+        {
+          "color": "white",
+          "uses": 2
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/ing.svg",
+      "format": "svg",
+      "bytes": 13458,
+      "category": "payment-brand-logo",
+      "viewBox": "0 0 36 36",
+      "width": "36",
+      "height": "36",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "white",
+          "uses": 2
+        },
+        {
+          "color": "#ff6200",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/components/ui/CreditValidityTooltip/index.tsx",
+        "src/features/paymentMethods/iconCatalog.ts",
+        "src/pages/AuthPage/LoanDetail/index.tsx",
+        "src/pages/CreditLimitPage/HistorySection.tsx",
+        "src/pages/HomePage/WithdrawMainRoute/motion/coinMotion.ts",
+        "src/pages/OutPages/DiversionPage/Home/components/DiversionApplicationCard/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/isla.png",
+      "format": "png",
+      "bytes": 4601,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/landbank.png",
+      "format": "png",
+      "bytes": 5841,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/malayan.png",
+      "format": "png",
+      "bytes": 5097,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/maybank.svg",
+      "format": "svg",
+      "bytes": 6954,
+      "category": "payment-brand-logo",
+      "viewBox": "0 0 36 36",
+      "width": "36",
+      "height": "36",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#231f20",
+          "uses": 6
+        },
+        {
+          "color": "#ffcf01",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/metrobank.svg",
+      "format": "svg",
+      "bytes": 3179,
+      "category": "payment-brand-logo",
+      "viewBox": "0 0 36 36",
+      "width": "36",
+      "height": "36",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#023184",
+          "uses": 1
+        },
+        {
+          "color": "white",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/netbank.png",
+      "format": "png",
+      "bytes": 2694,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/omnipay.png",
+      "format": "png",
+      "bytes": 2815,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/one-network.svg",
+      "format": "svg",
+      "bytes": 1665,
+      "category": "payment-brand-logo",
+      "viewBox": "0 0 36 36",
+      "width": "36",
+      "height": "36",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#0b2972",
+          "uses": 1
+        },
+        {
+          "color": "#ffb20c",
+          "uses": 1
+        },
+        {
+          "color": "white",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/ownbank.png",
+      "format": "png",
+      "bytes": 7496,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/partner-rural.png",
+      "format": "png",
+      "bytes": 2755,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/paymaya.svg",
+      "format": "svg",
+      "bytes": 5193,
+      "category": "payment-brand-logo",
+      "viewBox": "0 0 36 36",
+      "width": "36",
+      "height": "36",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#50b16b",
+          "uses": 4
+        },
+        {
+          "color": "white",
+          "uses": 2
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/philippine-bank-of-communications.png",
+      "format": "png",
+      "bytes": 1990,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/philippine-business-bank.png",
+      "format": "png",
+      "bytes": 5849,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/philippine-national-bank.svg",
+      "format": "svg",
+      "bytes": 24364,
+      "category": "payment-brand-logo",
+      "viewBox": "0 0 36 36",
+      "width": "36",
+      "height": "36",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#10357f",
+          "uses": 4
+        },
+        {
+          "color": "#fdb913",
+          "uses": 4
+        },
+        {
+          "color": "white",
+          "uses": 2
+        },
+        {
+          "color": "#00aeef",
+          "uses": 1
+        },
+        {
+          "color": "#ed1c24",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/philippine-savings.png",
+      "format": "png",
+      "bytes": 2187,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/philippine-veterans.png",
+      "format": "png",
+      "bytes": 3862,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/philtrust.svg",
+      "format": "svg",
+      "bytes": 25435,
+      "category": "payment-brand-logo",
+      "viewBox": "0 0 36 36",
+      "width": "36",
+      "height": "36",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#020181",
+          "uses": 30
+        },
+        {
+          "color": "white",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/pnb-savings.svg",
+      "format": "svg",
+      "bytes": 24364,
+      "category": "payment-brand-logo",
+      "viewBox": "0 0 36 36",
+      "width": "36",
+      "height": "36",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#10357f",
+          "uses": 4
+        },
+        {
+          "color": "#fdb913",
+          "uses": 4
+        },
+        {
+          "color": "white",
+          "uses": 2
+        },
+        {
+          "color": "#00aeef",
+          "uses": 1
+        },
+        {
+          "color": "#ed1c24",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/quezon-capital.png",
+      "format": "png",
+      "bytes": 3748,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/rcbc.png",
+      "format": "png",
+      "bytes": 2459,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/security-bank.png",
+      "format": "png",
+      "bytes": 2381,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/shopeepay.png",
+      "format": "png",
+      "bytes": 2931,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/sterling.png",
+      "format": "png",
+      "bytes": 4987,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/sun-savings.png",
+      "format": "png",
+      "bytes": 4031,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/union-bank.png",
+      "format": "png",
+      "bytes": 4603,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/wealth-bank.png",
+      "format": "png",
+      "bytes": 3569,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/brands/yuanta.png",
+      "format": "png",
+      "bytes": 5013,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/coins-ph.png",
+      "format": "png",
+      "bytes": 21993,
+      "category": "payment-brand-logo",
+      "pixelSize": "360x360",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/default-wallet.svg",
+      "format": "svg",
+      "bytes": 2803,
+      "category": "icon",
+      "viewBox": "0 0 15.9996 15.9996",
+      "width": "100%",
+      "height": "100%",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#7d878e",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 1,
+      "referencedBy": [
+        "src/components/ui/PaymentMethodIcon/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/empty-account.svg",
+      "format": "svg",
+      "bytes": 774,
+      "category": "empty-state",
+      "viewBox": "0 0 36 36",
+      "width": "36",
+      "height": "36",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#2c74be",
+          "uses": 3
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/WithdrawMainRoute/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/gcash.png",
+      "format": "png",
+      "bytes": 24998,
+      "category": "payment-brand-logo",
+      "pixelSize": "360x360",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts",
+        "src/pages/RepayPage/repaymentGuide.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/grabpay.png",
+      "format": "png",
+      "bytes": 6495,
+      "category": "payment-brand-logo",
+      "pixelSize": "72x72",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/paymaya.png",
+      "format": "png",
+      "bytes": 19693,
+      "category": "payment-brand-logo",
+      "pixelSize": "360x360",
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/payment-methods/wallet-list/grabpay-merchant.png",
+      "format": "png",
+      "bytes": 8586,
+      "category": "icon",
+      "pixelSize": "72x72",
+      "dominantColors": [
+        {
+          "color": "#08a838",
+          "share": 0.289
+        },
+        {
+          "color": "#08b848",
+          "share": 0.287
+        },
+        {
+          "color": "#08a828",
+          "share": 0.119
+        },
+        {
+          "color": "#08b858",
+          "share": 0.088
+        },
+        {
+          "color": "#08c858",
+          "share": 0.041
+        },
+        {
+          "color": "#08c878",
+          "share": 0.02
+        }
+      ],
+      "referencedBy": [
+        "src/features/paymentMethods/iconCatalog.ts"
+      ]
+    },
+    {
+      "path": "src/assets/svg/credit-navigation/back.svg",
+      "format": "svg",
+      "bytes": 811,
+      "category": "icon",
+      "viewBox": "0 0 18 18",
+      "width": "18",
+      "height": "18",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [],
+      "usesCurrentColor": true,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/CreditHistoryPage/index.tsx",
+        "src/pages/CreditLimitPage/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/svg/credit-validity/close.svg",
+      "format": "svg",
+      "bytes": 744,
+      "category": "icon",
+      "viewBox": "0 0 12 12",
+      "width": "12",
+      "height": "12",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#2c74be",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/components/ui/CreditValidityTooltip/index.tsx",
+        "src/pages/ConfirmPage/Order/components/ReceivingAccountGuideSheet/index.tsx",
+        "src/pages/HomePage/Account/index.tsx",
+        "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/svg/credit-validity/history-cash.svg",
+      "format": "svg",
+      "bytes": 1116,
+      "category": "icon",
+      "viewBox": "0 0 38.5778 21.6222",
+      "width": "38.5778",
+      "height": "21.6222",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#26c887",
+          "uses": 4
+        },
+        {
+          "color": "#75ffc8",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": []
+    },
+    {
+      "path": "src/assets/svg/credit-validity/history-paper.svg",
+      "format": "svg",
+      "bytes": 9991,
+      "category": "icon",
+      "viewBox": "0 0 43.0297 49.1592",
+      "width": "43.0297",
+      "height": "49.1592",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#ff6ed3",
+          "uses": 12
+        },
+        {
+          "color": "#ff9edf",
+          "uses": 5
+        },
+        {
+          "color": "#d9d9d9",
+          "uses": 4
+        },
+        {
+          "color": "#ffcfef",
+          "uses": 1
+        },
+        {
+          "color": "#99ff00",
+          "uses": 1
+        },
+        {
+          "color": "#a9f11a",
+          "uses": 1
+        },
+        {
+          "color": "#a1a1a1",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": []
+    },
+    {
+      "path": "src/assets/svg/credit-validity/history-pen.svg",
+      "format": "svg",
+      "bytes": 5159,
+      "category": "icon",
+      "viewBox": "0 0 24.6167 34.7598",
+      "width": "24.6167",
+      "height": "34.7598",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#0e80ff",
+          "uses": 2
+        },
+        {
+          "color": "#65aeff",
+          "uses": 2
+        },
+        {
+          "color": "#d9d9d9",
+          "uses": 1
+        },
+        {
+          "color": "#006f89",
+          "uses": 1
+        },
+        {
+          "color": "#003542",
+          "uses": 1
+        },
+        {
+          "color": "#99ff00",
+          "uses": 1
+        },
+        {
+          "color": "#a9f11a",
+          "uses": 1
+        },
+        {
+          "color": "#a1a1a1",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": []
+    },
+    {
+      "path": "src/assets/svg/credit-validity/history-wallet.svg",
+      "format": "svg",
+      "bytes": 1351,
+      "category": "icon",
+      "viewBox": "0 0 33.4834 30.3333",
+      "width": "33.4834",
+      "height": "30.3333",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#ff9edf",
+          "uses": 2
+        },
+        {
+          "color": "#d9d9d9",
+          "uses": 1
+        },
+        {
+          "color": "#ffcfef",
+          "uses": 1
+        },
+        {
+          "color": "#233844",
+          "uses": 1
+        },
+        {
+          "color": "#ff54cb",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": []
+    },
+    {
+      "path": "src/assets/svg/credit-validity/info.svg",
+      "format": "svg",
+      "bytes": 1318,
+      "category": "icon",
+      "viewBox": "0 0 18 18",
+      "width": "18",
+      "height": "18",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "white",
+          "uses": 4
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/components/ui/CreditValidityTooltip/index.tsx",
+        "src/components/ui/NoticeTicker/index.tsx",
+        "src/pages/HomePage/Account/index.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/svg/credit-validity/limit-wallet.svg",
+      "format": "svg",
+      "bytes": 4943,
+      "category": "icon",
+      "viewBox": "0 0 13.6667 13.2403",
+      "width": "13.6667",
+      "height": "13.2403",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "white",
+          "uses": 2
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": []
+    },
+    {
+      "path": "src/assets/svg/credit-validity/pending.svg",
+      "format": "svg",
+      "bytes": 844,
+      "category": "icon",
+      "viewBox": "0 0 18.3155 18.3155",
+      "width": "18.3155",
+      "height": "18.3155",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/components/ui/CreditValidityTooltip/index.tsx",
+        "src/pages/CreditLimitPage/HistorySection.tsx"
+      ]
+    },
+    {
+      "path": "src/assets/svg/withdraw-amount-edit.svg",
+      "format": "svg",
+      "bytes": 1297,
+      "category": "icon",
+      "viewBox": "0 0 20 28",
+      "width": "20",
+      "height": "28",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#2c74be",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/components/ui/LoanQuote/index.tsx"
+      ]
+    },
+    {
+      "path": "src/components/ui/AppEntryLanding/assets/app-entry-showcase.png",
+      "format": "png",
+      "bytes": 390665,
+      "category": "illustration",
+      "pixelSize": "720x1152",
+      "dominantColors": [
+        {
+          "color": "#f8f8f8",
+          "share": 0.452
+        },
+        {
+          "color": "#e8e8e8",
+          "share": 0.118
+        },
+        {
+          "color": "#e8f8f8",
+          "share": 0.076
+        },
+        {
+          "color": "#d8d8d8",
+          "share": 0.054
+        },
+        {
+          "color": "#d8e8e8",
+          "share": 0.041
+        },
+        {
+          "color": "#c8c8c8",
+          "share": 0.021
+        }
+      ],
+      "referencedBy": [
+        "src/components/ui/AppEntryLanding/index.tsx"
+      ]
+    },
+    {
+      "path": "src/components/ui/AppEntryLanding/assets/app-entry-showcase.webp",
+      "format": "webp",
+      "bytes": 73622,
+      "category": "illustration",
+      "pixelSize": "720x1152",
+      "dominantColors": [
+        {
+          "color": "#f8f8f8",
+          "share": 0.456
+        },
+        {
+          "color": "#e8e8e8",
+          "share": 0.118
+        },
+        {
+          "color": "#e8f8f8",
+          "share": 0.055
+        },
+        {
+          "color": "#d8d8d8",
+          "share": 0.055
+        },
+        {
+          "color": "#d8e8e8",
+          "share": 0.042
+        },
+        {
+          "color": "#e8f8e8",
+          "share": 0.027
+        }
+      ],
+      "referencedBy": [
+        "src/components/ui/AppEntryLanding/index.tsx"
+      ]
+    },
+    {
+      "path": "src/components/ui/BorrowerProtectionCard/assets/protection.svg",
+      "format": "svg",
+      "bytes": 4698,
+      "category": "icon",
+      "viewBox": "0 0 36 36",
+      "width": "36",
+      "height": "36",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#d9d9d9",
+          "uses": 2
+        },
+        {
+          "color": "#0da58e",
+          "uses": 2
+        },
+        {
+          "color": "#91e8d2",
+          "uses": 1
+        },
+        {
+          "color": "#193f46",
+          "uses": 1
+        },
+        {
+          "color": "#ff72a3",
+          "uses": 1
+        },
+        {
+          "color": "black",
+          "uses": 1
+        },
+        {
+          "color": "white",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/components/ui/BorrowerProtectionCard/index.tsx"
+      ]
+    },
+    {
+      "path": "src/components/ui/NoticeTicker/assets/info.svg",
+      "format": "svg",
+      "bytes": 1385,
+      "category": "icon",
+      "viewBox": "0 0 16 16",
+      "width": "16",
+      "height": "16",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#20558d",
+          "uses": 3
+        },
+        {
+          "color": "white",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/components/ui/CreditValidityTooltip/index.tsx",
+        "src/components/ui/NoticeTicker/index.tsx",
+        "src/pages/HomePage/Account/index.tsx"
+      ]
+    },
+    {
+      "path": "src/features/workProfile/documents/assets/10347-9087.svg",
+      "format": "svg",
+      "bytes": 996,
+      "category": "icon",
+      "viewBox": "0 0 12 12",
+      "width": "12",
+      "height": "12",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#7d878e",
+          "uses": 3
+        },
+        {
+          "color": "white",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/features/workProfile/documents/WorkDocumentsField.tsx"
+      ]
+    },
+    {
+      "path": "src/features/workProfile/documents/assets/9565-10122.svg",
+      "format": "svg",
+      "bytes": 459,
+      "category": "icon",
+      "viewBox": "0 0 8 8",
+      "width": "8",
+      "height": "8",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#2eae6e",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/features/workProfile/documents/WorkDocumentsField.tsx"
+      ]
+    },
+    {
+      "path": "src/features/workProfile/documents/assets/9565-10124.svg",
+      "format": "svg",
+      "bytes": 1267,
+      "category": "icon",
+      "viewBox": "0 0 16 16",
+      "width": "16",
+      "height": "16",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#7d878e",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/features/workProfile/documents/WorkDocumentsField.tsx"
+      ]
+    },
+    {
+      "path": "src/features/workProfile/documents/assets/9565-10137.svg",
+      "format": "svg",
+      "bytes": 788,
+      "category": "icon",
+      "viewBox": "0 0 16 16",
+      "width": "16",
+      "height": "16",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#6a757d",
+          "uses": 1
+        },
+        {
+          "color": "white",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/features/workProfile/documents/WorkDocumentsField.tsx"
+      ]
+    },
+    {
+      "path": "src/features/workProfile/documents/assets/9565-10156.svg",
+      "format": "svg",
+      "bytes": 596,
+      "category": "icon",
+      "viewBox": "0 0 16 16",
+      "width": "16",
+      "height": "16",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#2c74be",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/features/workProfile/documents/WorkDocumentsField.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/AccountPage/AccountDeletion/assets/chevron-right.svg",
+      "format": "svg",
+      "bytes": 576,
+      "category": "icon",
+      "viewBox": "0 0 6.42073 10.9674",
+      "width": "6.42073",
+      "height": "10.9674",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#6a757d",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/AccountPage/AccountDeletion/index.tsx",
+        "src/pages/AccountPage/Inbox/VirtualMessageList.tsx",
+        "src/pages/AuthPage/LoanHistory/index.tsx",
+        "src/pages/HomePage/Account/index.tsx",
+        "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx",
+        "src/pages/SupportPage/AboutPage/index.tsx",
+        "src/pages/SupportPage/CustomerServicePage/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/AccountPage/AccountDeletionReason/assets/radio-selected.svg",
+      "format": "svg",
+      "bytes": 255,
+      "category": "icon",
+      "viewBox": "0 0 8.75 8.75",
+      "width": "8.75",
+      "height": "8.75",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#2c74be",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/AccountPage/AccountDeletionReason/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/AccountPage/Inbox/assets/inbox-empty.svg",
+      "format": "svg",
+      "bytes": 2406,
+      "category": "empty-state",
+      "viewBox": "0 0 75.9386 76.1499",
+      "width": "75.9386",
+      "height": "76.1499",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#2ab0be",
+          "uses": 5
+        },
+        {
+          "color": "#004e60",
+          "uses": 3
+        },
+        {
+          "color": "#8ae6d0",
+          "uses": 1
+        },
+        {
+          "color": "#96f2dc",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/AccountPage/Inbox/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/AccountPage/Inbox/assets/notification.svg",
+      "format": "svg",
+      "bytes": 2131,
+      "category": "icon",
+      "viewBox": "0 0 16 16",
+      "width": "16",
+      "height": "16",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#3c4850",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/AccountPage/Inbox/VirtualMessageList.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/AuthPage/Identity/components/IdentityInUseDialog/assets/identity-in-use.png",
+      "format": "png",
+      "bytes": 69881,
+      "category": "illustration",
+      "pixelSize": "314x314",
+      "dominantColors": [
+        {
+          "color": "#88e8c8",
+          "share": 0.167
+        },
+        {
+          "color": "#68d8c8",
+          "share": 0.099
+        },
+        {
+          "color": "#f86848",
+          "share": 0.082
+        },
+        {
+          "color": "#f8f8f8",
+          "share": 0.074
+        },
+        {
+          "color": "#78d8c8",
+          "share": 0.044
+        },
+        {
+          "color": "#78e8c8",
+          "share": 0.041
+        }
+      ],
+      "referencedBy": [
+        "src/pages/AuthPage/Identity/components/IdentityInUseDialog/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/AuthPage/Liveness/assets/front-straight.png",
+      "format": "png",
+      "bytes": 2968,
+      "category": "illustration",
+      "pixelSize": "91x64",
+      "dominantColors": [
+        {
+          "color": "#f8f8f8",
+          "share": 0.516
+        },
+        {
+          "color": "#a8d8f8",
+          "share": 0.128
+        },
+        {
+          "color": "#e8f8f8",
+          "share": 0.068
+        },
+        {
+          "color": "#c87848",
+          "share": 0.057
+        },
+        {
+          "color": "#e8e8e8",
+          "share": 0.012
+        },
+        {
+          "color": "#d8e8e8",
+          "share": 0.011
+        }
+      ],
+      "referencedBy": [
+        "src/pages/AuthPage/Liveness/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/AuthPage/Liveness/assets/no-covering-face.png",
+      "format": "png",
+      "bytes": 2561,
+      "category": "illustration",
+      "pixelSize": "91x64",
+      "dominantColors": [
+        {
+          "color": "#f8f8f8",
+          "share": 0.586
+        },
+        {
+          "color": "#a8d8f8",
+          "share": 0.126
+        },
+        {
+          "color": "#c87848",
+          "share": 0.055
+        },
+        {
+          "color": "#e8f8f8",
+          "share": 0.016
+        },
+        {
+          "color": "#381808",
+          "share": 0.013
+        },
+        {
+          "color": "#e8e8e8",
+          "share": 0.01
+        }
+      ],
+      "referencedBy": [
+        "src/pages/AuthPage/Liveness/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/AuthPage/Liveness/assets/profile-icon-area.svg",
+      "format": "svg",
+      "bytes": 471,
+      "category": "icon",
+      "viewBox": "0 0 200 200",
+      "width": "100%",
+      "height": "100%",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#cdd1d4",
+          "uses": 2
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 3,
+      "referencedBy": [
+        "src/pages/AuthPage/Liveness/components/LivenessStatusCircle/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/AuthPage/Liveness/assets/well-lighted.png",
+      "format": "png",
+      "bytes": 4795,
+      "category": "illustration",
+      "pixelSize": "91x64",
+      "dominantColors": [
+        {
+          "color": "#d8e8e8",
+          "share": 0.139
+        },
+        {
+          "color": "#a8d8f8",
+          "share": 0.128
+        },
+        {
+          "color": "#e8f8f8",
+          "share": 0.116
+        },
+        {
+          "color": "#f8f8f8",
+          "share": 0.064
+        },
+        {
+          "color": "#b8d8d8",
+          "share": 0.061
+        },
+        {
+          "color": "#c87848",
+          "share": 0.059
+        }
+      ],
+      "referencedBy": [
+        "src/pages/AuthPage/Liveness/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/AuthPage/assets/flag-ph.png",
+      "format": "png",
+      "bytes": 4865,
+      "category": "third-party-logo/credential",
+      "pixelSize": "80x160",
+      "dominantColors": [
+        {
+          "color": "#0838a8",
+          "share": 0.355
+        },
+        {
+          "color": "#c81828",
+          "share": 0.343
+        },
+        {
+          "color": "#f8f8f8",
+          "share": 0.122
+        },
+        {
+          "color": "#d81828",
+          "share": 0.023
+        },
+        {
+          "color": "#183898",
+          "share": 0.023
+        },
+        {
+          "color": "#f8f8d8",
+          "share": 0.01
+        }
+      ],
+      "referencedBy": [
+        "src/pages/AuthPage/LoginEntry/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/AuthPage/assets/method-phone.svg",
+      "format": "svg",
+      "bytes": 2292,
+      "category": "icon",
+      "viewBox": "0 0 21.7782 21.7778",
+      "width": "21.7782",
+      "height": "21.7778",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [],
+      "usesCurrentColor": true,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/AuthPage/OtpVerify/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/AuthPage/assets/method-sms.svg",
+      "format": "svg",
+      "bytes": 2319,
+      "category": "icon",
+      "viewBox": "0 0 21.7778 20.7855",
+      "width": "100%",
+      "height": "100%",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [],
+      "usesCurrentColor": true,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/AuthPage/OtpVerify/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/AuthPage/assets/method-viber.svg",
+      "format": "svg",
+      "bytes": 1778,
+      "category": "icon",
+      "viewBox": "0 0 23.7048 23.7778",
+      "width": "100%",
+      "height": "100%",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [],
+      "usesCurrentColor": true,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/AuthPage/OtpVerify/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/AuthPage/assets/method-whatsapp.svg",
+      "format": "svg",
+      "bytes": 1835,
+      "category": "icon",
+      "viewBox": "0 0 36 36",
+      "width": "100%",
+      "height": "100%",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [],
+      "usesCurrentColor": true,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/AuthPage/OtpVerify/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/AuthPage/assets/sending-code.png",
+      "format": "png",
+      "bytes": 91669,
+      "category": "illustration",
+      "pixelSize": "480x480",
+      "dominantColors": [
+        {
+          "color": "#a8e8d8",
+          "share": 0.535
+        },
+        {
+          "color": "#98e8d8",
+          "share": 0.064
+        },
+        {
+          "color": "#68d8b8",
+          "share": 0.052
+        },
+        {
+          "color": "#78d8c8",
+          "share": 0.049
+        },
+        {
+          "color": "#a8f8e8",
+          "share": 0.045
+        },
+        {
+          "color": "#88e8c8",
+          "share": 0.038
+        }
+      ],
+      "referencedBy": [
+        "src/pages/AuthPage/OtpVerify/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/ConfirmPage/DisclosureLetterPage/DisclosureLetter/assets/bagong-pilipinas-logo.png",
+      "format": "png",
+      "bytes": 12361,
+      "category": "third-party-logo/credential",
+      "pixelSize": "121x112",
+      "dominantColors": [
+        {
+          "color": "#f8d818",
+          "share": 0.186
+        },
+        {
+          "color": "#081898",
+          "share": 0.119
+        },
+        {
+          "color": "#2808d8",
+          "share": 0.11
+        },
+        {
+          "color": "#b80808",
+          "share": 0.04
+        },
+        {
+          "color": "#2808c8",
+          "share": 0.034
+        },
+        {
+          "color": "#2808e8",
+          "share": 0.034
+        }
+      ],
+      "referencedBy": [
+        "src/pages/ConfirmPage/DisclosureLetterPage/DisclosureLetter/DisclosureStatementForm.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/ConfirmPage/DisclosureLetterPage/DisclosureLetter/assets/sec-logo.svg",
+      "format": "svg",
+      "bytes": 29906,
+      "category": "third-party-logo/credential",
+      "viewBox": "0 0 44 29",
+      "width": "44",
+      "height": "29",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#01472f",
+          "uses": 81
+        },
+        {
+          "color": "white",
+          "uses": 3
+        },
+        {
+          "color": "#0ce093",
+          "uses": 1
+        },
+        {
+          "color": "#01462f",
+          "uses": 1
+        },
+        {
+          "color": "#0f8469",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/ConfirmPage/DisclosureLetterPage/DisclosureLetter/DisclosureStatementForm.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/ConfirmPage/Order/components/ReceivingAccountGuideSheet/close.svg",
+      "format": "svg",
+      "bytes": 4193,
+      "category": "icon",
+      "viewBox": "0 0 88 88",
+      "width": "88",
+      "height": "88",
+      "hasGradient": true,
+      "hasFilter": true,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "white",
+          "uses": 4
+        },
+        {
+          "color": "#141e24",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/components/ui/CreditValidityTooltip/index.tsx",
+        "src/pages/ConfirmPage/Order/components/ReceivingAccountGuideSheet/index.tsx",
+        "src/pages/HomePage/Account/index.tsx",
+        "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/CreditHistoryPage/assets/cash-in.svg",
+      "format": "svg",
+      "bytes": 1628,
+      "category": "icon",
+      "viewBox": "0 0 26.4444 24.8889",
+      "width": "26.4444",
+      "height": "24.8889",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "white",
+          "uses": 3
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/CreditHistoryPage/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/CreditHistoryPage/assets/cash-out.svg",
+      "format": "svg",
+      "bytes": 1628,
+      "category": "icon",
+      "viewBox": "0 0 26.4444 24.8889",
+      "width": "26.4444",
+      "height": "24.8889",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "white",
+          "uses": 3
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/CreditHistoryPage/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/CreditLimitPage/assets/adjustments.svg",
+      "format": "svg",
+      "bytes": 13508,
+      "category": "icon",
+      "viewBox": "0 0 56 56",
+      "width": "56",
+      "height": "56",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#ff6ed3",
+          "uses": 10
+        },
+        {
+          "color": "#d9d9d9",
+          "uses": 5
+        },
+        {
+          "color": "#ff9edf",
+          "uses": 5
+        },
+        {
+          "color": "#a9f11a",
+          "uses": 2
+        },
+        {
+          "color": "#a1a1a1",
+          "uses": 2
+        },
+        {
+          "color": "#0e80ff",
+          "uses": 2
+        },
+        {
+          "color": "#65aeff",
+          "uses": 2
+        },
+        {
+          "color": "#ffcfef",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/CreditLimitPage/HistorySection.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/CreditLimitPage/assets/borrowing.svg",
+      "format": "svg",
+      "bytes": 2221,
+      "category": "icon",
+      "viewBox": "0 0 56 56",
+      "width": "56",
+      "height": "56",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#26c887",
+          "uses": 4
+        },
+        {
+          "color": "#ff9edf",
+          "uses": 2
+        },
+        {
+          "color": "#d9d9d9",
+          "uses": 1
+        },
+        {
+          "color": "#ffcfef",
+          "uses": 1
+        },
+        {
+          "color": "#233844",
+          "uses": 1
+        },
+        {
+          "color": "#ff54cb",
+          "uses": 1
+        },
+        {
+          "color": "#75ffc8",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/CreditLimitPage/HistorySection.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/CreditLimitPage/assets/card-decoration.svg",
+      "format": "svg",
+      "bytes": 940,
+      "category": "icon",
+      "viewBox": "0 0 480 180",
+      "width": "480",
+      "height": "180",
+      "hasGradient": true,
+      "hasFilter": true,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#9ae8ff",
+          "uses": 2
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/CreditLimitPage/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/CreditLimitPage/assets/credit-used.svg",
+      "format": "svg",
+      "bytes": 1587,
+      "category": "icon",
+      "viewBox": "0 0 24 24",
+      "width": "24",
+      "height": "24",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "white",
+          "uses": 2
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": []
+    },
+    {
+      "path": "src/pages/CreditLimitPage/assets/pending.svg",
+      "format": "svg",
+      "bytes": 673,
+      "category": "icon",
+      "viewBox": "0 0 36 36",
+      "width": "36",
+      "height": "36",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#2c74be",
+          "uses": 3
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/components/ui/CreditValidityTooltip/index.tsx",
+        "src/pages/CreditLimitPage/HistorySection.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Account/assets/icons/contact.svg",
+      "format": "svg",
+      "bytes": 1047,
+      "category": "icon",
+      "viewBox": "0 0 18.8889 16.6667",
+      "width": "18.8889",
+      "height": "16.6667",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#141e24",
+          "uses": 4
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Account/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Account/assets/icons/customer-service.svg",
+      "format": "svg",
+      "bytes": 2026,
+      "category": "icon",
+      "viewBox": "0 0 16 15.2",
+      "width": "16",
+      "height": "15.2",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#141e24",
+          "uses": 1
+        },
+        {
+          "color": "black",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Payment/components/FraudWarningSheet/index.tsx",
+        "src/pages/HomePage/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Account/assets/icons/inbox.svg",
+      "format": "svg",
+      "bytes": 2253,
+      "category": "icon",
+      "viewBox": "0 0 20 20",
+      "width": "20",
+      "height": "20",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#141e24",
+          "uses": 1
+        },
+        {
+          "color": "white",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Account/index.tsx",
+        "src/pages/HomePage/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Account/assets/icons/info.svg",
+      "format": "svg",
+      "bytes": 1032,
+      "category": "icon",
+      "viewBox": "0 0 36 36",
+      "width": "36",
+      "height": "36",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "black",
+          "uses": 3
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/components/ui/CreditValidityTooltip/index.tsx",
+        "src/components/ui/NoticeTicker/index.tsx",
+        "src/pages/HomePage/Account/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Account/assets/icons/logout-close.svg",
+      "format": "svg",
+      "bytes": 1710,
+      "category": "icon",
+      "viewBox": "0 0 11.0755 11.0716",
+      "width": "11.0755",
+      "height": "11.0716",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#141e24",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Account/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Account/assets/icons/manage-account.svg",
+      "format": "svg",
+      "bytes": 1398,
+      "category": "icon",
+      "viewBox": "0 0 20 20",
+      "width": "20",
+      "height": "20",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#141e24",
+          "uses": 2
+        },
+        {
+          "color": "white",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Account/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Account/assets/icons/nav-account.svg",
+      "format": "svg",
+      "bytes": 1357,
+      "category": "icon",
+      "viewBox": "0 0 18.0004 18",
+      "width": "18.0004",
+      "height": "18",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#141e24",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Account/index.tsx",
+        "src/pages/HomePage/BottomNavigation/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Account/assets/icons/nav-home.svg",
+      "format": "svg",
+      "bytes": 1034,
+      "category": "icon",
+      "viewBox": "0 0 18 18",
+      "width": "18",
+      "height": "18",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#141e24",
+          "uses": 1
+        },
+        {
+          "color": "white",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/BottomNavigation/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Account/assets/icons/nav-payment.svg",
+      "format": "svg",
+      "bytes": 2548,
+      "category": "icon",
+      "viewBox": "0 0 18.0001 17.5136",
+      "width": "18.0001",
+      "height": "17.5136",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#141e24",
+          "uses": 2
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/BottomNavigation/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Account/assets/icons/question.svg",
+      "format": "svg",
+      "bytes": 1449,
+      "category": "icon",
+      "viewBox": "0 0 36 36",
+      "width": "36",
+      "height": "36",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "black",
+          "uses": 2
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Account/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Account/assets/icons/time.svg",
+      "format": "svg",
+      "bytes": 860,
+      "category": "icon",
+      "viewBox": "0 0 36 36",
+      "width": "36",
+      "height": "36",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "black",
+          "uses": 2
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Account/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Account/assets/icons/wallet.svg",
+      "format": "svg",
+      "bytes": 5089,
+      "category": "icon",
+      "viewBox": "0 0 18.6019 18.0216",
+      "width": "18.6019",
+      "height": "18.0216",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "white",
+          "uses": 2
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/components/ui/PaymentMethodIcon/index.tsx",
+        "src/pages/HomePage/Account/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Account/assets/social/facebook.svg",
+      "format": "svg",
+      "bytes": 614,
+      "category": "icon",
+      "viewBox": "0 0 28 27.8565",
+      "width": "28",
+      "height": "27.8565",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#1089fb",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Account/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Account/assets/social/instagram.svg",
+      "format": "svg",
+      "bytes": 8951,
+      "category": "icon",
+      "viewBox": "0 0 28 28",
+      "width": "28",
+      "height": "28",
+      "hasGradient": true,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#ffcc00",
+          "uses": 4
+        },
+        {
+          "color": "#ff005f",
+          "uses": 1
+        },
+        {
+          "color": "#fc01d8",
+          "uses": 1
+        },
+        {
+          "color": "#fe4a05",
+          "uses": 1
+        },
+        {
+          "color": "#ff0f3f",
+          "uses": 1
+        },
+        {
+          "color": "#fe0657",
+          "uses": 1
+        },
+        {
+          "color": "#780cff",
+          "uses": 1
+        },
+        {
+          "color": "#820bff",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Account/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Account/assets/social/tiktok.svg",
+      "format": "svg",
+      "bytes": 3173,
+      "category": "icon",
+      "viewBox": "0 0 28 28",
+      "width": "28",
+      "height": "28",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#ff004f",
+          "uses": 2
+        },
+        {
+          "color": "#00f7ef",
+          "uses": 2
+        },
+        {
+          "color": "black",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Account/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Home/assets/available-credit-glow.svg",
+      "format": "svg",
+      "bytes": 988,
+      "category": "icon",
+      "viewBox": "0 0 480 180",
+      "width": "480",
+      "height": "180",
+      "hasGradient": true,
+      "hasFilter": true,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#9ae8ff",
+          "uses": 2
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/CreditAmountCard/index.tsx",
+        "src/pages/HomePage/Home/HomeComposite.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Home/assets/laurel.png",
+      "format": "png",
+      "bytes": 9830,
+      "category": "decorative-graphic",
+      "pixelSize": "120x182",
+      "dominantColors": [
+        {
+          "color": "#080808",
+          "share": 1.0
+        }
+      ],
+      "referencedBy": [
+        "src/pages/HomePage/Home/components/MadeForFilipinos/index.module.css",
+        "src/pages/OutPages/DiversionPage/Home/components/MadeForFilipinos/index.module.css"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Home/assets/loan-update.svg",
+      "format": "svg",
+      "bytes": 1562,
+      "category": "icon",
+      "viewBox": "0 0 28 28",
+      "width": "28",
+      "height": "28",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "white",
+          "uses": 4
+        },
+        {
+          "color": "#2c74be",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Home/HomeComposite.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Home/assets/npc-logo.png",
+      "format": "png",
+      "bytes": 10370,
+      "category": "third-party-logo/credential",
+      "pixelSize": "150x80",
+      "dominantColors": [
+        {
+          "color": "#f8d868",
+          "share": 0.201
+        },
+        {
+          "color": "#282868",
+          "share": 0.151
+        },
+        {
+          "color": "#f8e868",
+          "share": 0.144
+        },
+        {
+          "color": "#a82828",
+          "share": 0.144
+        },
+        {
+          "color": "#080808",
+          "share": 0.108
+        },
+        {
+          "color": "#080818",
+          "share": 0.086
+        }
+      ],
+      "referencedBy": [
+        "src/pages/HomePage/Home/components/MadeForFilipinos/index.module.css",
+        "src/pages/OutPages/DiversionPage/Home/components/MadeForFilipinos/index.module.css"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Home/assets/repayment-calendar.svg",
+      "format": "svg",
+      "bytes": 1564,
+      "category": "icon",
+      "viewBox": "0 0 16 16",
+      "width": "16",
+      "height": "16",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#3c4850",
+          "uses": 7
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Home/HomeComposite.module.css"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Home/components/RejectDiversionCard/assets/loadcash-logo.svg",
+      "format": "svg",
+      "bytes": 12421,
+      "category": "third-party-logo/credential",
+      "viewBox": "0 0 99 24",
+      "width": "99",
+      "height": "24",
+      "hasGradient": true,
+      "hasFilter": true,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#333333",
+          "uses": 8
+        },
+        {
+          "color": "#ffb113",
+          "uses": 6
+        },
+        {
+          "color": "#fee146",
+          "uses": 5
+        },
+        {
+          "color": "white",
+          "uses": 3
+        },
+        {
+          "color": "black",
+          "uses": 3
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Home/rejectDiversion/registry.ts"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Home/feedbackInvitation/assets/satisfaction.svg",
+      "format": "svg",
+      "bytes": 13552,
+      "category": "illustration",
+      "viewBox": "0 0 100 100",
+      "width": "100",
+      "height": "100",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#d87bbf",
+          "uses": 10
+        },
+        {
+          "color": "#d9d9d9",
+          "uses": 5
+        },
+        {
+          "color": "#ff9edf",
+          "uses": 5
+        },
+        {
+          "color": "#a9f11a",
+          "uses": 2
+        },
+        {
+          "color": "#a1a1a1",
+          "uses": 2
+        },
+        {
+          "color": "#87b100",
+          "uses": 2
+        },
+        {
+          "color": "#aaff00",
+          "uses": 2
+        },
+        {
+          "color": "#ffcfef",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Home/feedbackInvitation/FeedbackInvitationSheet.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Home/feedbackInvitation/assets/support.svg",
+      "format": "svg",
+      "bytes": 6536,
+      "category": "illustration",
+      "viewBox": "0 0 100 100",
+      "width": "100",
+      "height": "100",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#ff9edf",
+          "uses": 3
+        },
+        {
+          "color": "#d9d9d9",
+          "uses": 2
+        },
+        {
+          "color": "#0e8198",
+          "uses": 2
+        },
+        {
+          "color": "#c1f4e9",
+          "uses": 1
+        },
+        {
+          "color": "#abeee2",
+          "uses": 1
+        },
+        {
+          "color": "#02414e",
+          "uses": 1
+        },
+        {
+          "color": "#ffcfef",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Home/feedbackInvitation/FeedbackInvitationSheet.tsx",
+        "src/pages/SupportPage/CustomerServicePage/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Payment/components/FraudWarningSheet/assets/customer-service.svg",
+      "format": "svg",
+      "bytes": 4004,
+      "category": "illustration",
+      "viewBox": "0 0 100 100",
+      "width": "100",
+      "height": "100",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#64c100",
+          "uses": 3
+        },
+        {
+          "color": "#ffcfef",
+          "uses": 2
+        },
+        {
+          "color": "#ff9edf",
+          "uses": 2
+        },
+        {
+          "color": "#442339",
+          "uses": 1
+        },
+        {
+          "color": "#8cff00",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Payment/components/FraudWarningSheet/index.tsx",
+        "src/pages/HomePage/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Payment/components/FraudWarningSheet/assets/transaction.svg",
+      "format": "svg",
+      "bytes": 12251,
+      "category": "illustration",
+      "viewBox": "0 0 100 100",
+      "width": "100",
+      "height": "100",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#025274",
+          "uses": 5
+        },
+        {
+          "color": "#d9d9d9",
+          "uses": 4
+        },
+        {
+          "color": "#cb7344",
+          "uses": 3
+        },
+        {
+          "color": "white",
+          "uses": 3
+        },
+        {
+          "color": "#016c9b",
+          "uses": 2
+        },
+        {
+          "color": "#b5d9ff",
+          "uses": 2
+        },
+        {
+          "color": "#ff9edf",
+          "uses": 2
+        },
+        {
+          "color": "#004360",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Payment/components/FraudWarningSheet/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Payment/components/FraudWarningSheet/assets/verification-code-keyhole.svg",
+      "format": "svg",
+      "bytes": 682,
+      "category": "illustration",
+      "viewBox": "0 0 33 42",
+      "width": "33",
+      "height": "42",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#417f73",
+          "uses": 3
+        },
+        {
+          "color": "#6fb5a7",
+          "uses": 2
+        },
+        {
+          "color": "#7affe4",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": []
+    },
+    {
+      "path": "src/pages/HomePage/Payment/components/FraudWarningSheet/assets/verification-code-lock.svg",
+      "format": "svg",
+      "bytes": 822,
+      "category": "illustration",
+      "viewBox": "0 0 79 64",
+      "width": "79",
+      "height": "64",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#ffcfef",
+          "uses": 1
+        },
+        {
+          "color": "#8c5f7d",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": []
+    },
+    {
+      "path": "src/pages/HomePage/Payment/components/FraudWarningSheet/assets/verification-code.svg",
+      "format": "svg",
+      "bytes": 6842,
+      "category": "illustration",
+      "viewBox": "0 0 100 100",
+      "width": "100",
+      "height": "100",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#db3c8d",
+          "uses": 4
+        },
+        {
+          "color": "#417f73",
+          "uses": 3
+        },
+        {
+          "color": "#ffcfef",
+          "uses": 2
+        },
+        {
+          "color": "#ff9edf",
+          "uses": 2
+        },
+        {
+          "color": "#6fb5a7",
+          "uses": 2
+        },
+        {
+          "color": "#fce6f4",
+          "uses": 1
+        },
+        {
+          "color": "#8c5f7d",
+          "uses": 1
+        },
+        {
+          "color": "#7affe4",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Payment/components/FraudWarningSheet/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Payment/components/PaymentMethodDrawer/assets/category-bank-roof.svg",
+      "format": "svg",
+      "bytes": 506,
+      "category": "icon",
+      "viewBox": "0 0 21.1918 8.89797",
+      "width": "21.1918",
+      "height": "8.89797",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#97a0a6",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Payment/components/PaymentMethodDrawer/assets/category-bill.svg",
+      "format": "svg",
+      "bytes": 2151,
+      "category": "icon",
+      "viewBox": "0 0 18 20",
+      "width": "18",
+      "height": "20",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#97a0a6",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Payment/components/PaymentMethodDrawer/assets/category-direct-app.svg",
+      "format": "svg",
+      "bytes": 879,
+      "category": "icon",
+      "viewBox": "0 0 16 16",
+      "width": "16",
+      "height": "16",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#999999",
+          "uses": 1
+        },
+        {
+          "color": "white",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Payment/components/PaymentMethodDrawer/assets/category-phone.svg",
+      "format": "svg",
+      "bytes": 1480,
+      "category": "icon",
+      "viewBox": "0 0 13.1787 21.333",
+      "width": "13.1787",
+      "height": "21.333",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#97a0a6",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Payment/components/PaymentMethodDrawer/assets/category-qr.svg",
+      "format": "svg",
+      "bytes": 1776,
+      "category": "icon",
+      "viewBox": "0 0 18.667 18.667",
+      "width": "18.667",
+      "height": "18.667",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#2c74be",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Payment/components/PaymentMethodDrawer/assets/category-shop.svg",
+      "format": "svg",
+      "bytes": 2171,
+      "category": "icon",
+      "viewBox": "0 0 22 20",
+      "width": "22",
+      "height": "20",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#97a0a6",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Payment/components/PaymentMethodDrawer/assets/chevron-right.svg",
+      "format": "svg",
+      "bytes": 576,
+      "category": "icon",
+      "viewBox": "0 0 6.42073 10.9674",
+      "width": "6.42073",
+      "height": "10.9674",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#6a757d",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/AccountPage/AccountDeletion/index.tsx",
+        "src/pages/AccountPage/Inbox/VirtualMessageList.tsx",
+        "src/pages/AuthPage/LoanHistory/index.tsx",
+        "src/pages/HomePage/Account/index.tsx",
+        "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx",
+        "src/pages/SupportPage/AboutPage/index.tsx",
+        "src/pages/SupportPage/CustomerServicePage/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Payment/components/PaymentMethodDrawer/assets/close.svg",
+      "format": "svg",
+      "bytes": 1710,
+      "category": "icon",
+      "viewBox": "0 0 11.0755 11.0716",
+      "width": "11.0755",
+      "height": "11.0716",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#141e24",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/components/ui/CreditValidityTooltip/index.tsx",
+        "src/pages/ConfirmPage/Order/components/ReceivingAccountGuideSheet/index.tsx",
+        "src/pages/HomePage/Account/index.tsx",
+        "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/HomePage/Payment/components/PaymentMethodDrawer/assets/search.svg",
+      "format": "svg",
+      "bytes": 1620,
+      "category": "icon",
+      "viewBox": "0 0 16 16",
+      "width": "16",
+      "height": "16",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#3c4850",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx",
+        "src/pages/SupportPage/FaqPage/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/OutPages/DiversionPage/Home/assets/laurel.png",
+      "format": "png",
+      "bytes": 9830,
+      "category": "decorative-graphic",
+      "pixelSize": "120x182",
+      "dominantColors": [
+        {
+          "color": "#080808",
+          "share": 1.0
+        }
+      ],
+      "referencedBy": [
+        "src/pages/HomePage/Home/components/MadeForFilipinos/index.module.css",
+        "src/pages/OutPages/DiversionPage/Home/components/MadeForFilipinos/index.module.css"
+      ]
+    },
+    {
+      "path": "src/pages/OutPages/DiversionPage/Home/assets/loan-plan-edit.svg",
+      "format": "svg",
+      "bytes": 1373,
+      "category": "icon",
+      "viewBox": "0 0 12.4838 15.5556",
+      "width": "13",
+      "height": "16",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "white",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/OutPages/DiversionPage/Home/components/LoanPlanCard/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/OutPages/DiversionPage/Home/assets/npc-logo.png",
+      "format": "png",
+      "bytes": 10370,
+      "category": "third-party-logo/credential",
+      "pixelSize": "150x80",
+      "dominantColors": [
+        {
+          "color": "#f8d868",
+          "share": 0.201
+        },
+        {
+          "color": "#282868",
+          "share": 0.151
+        },
+        {
+          "color": "#f8e868",
+          "share": 0.144
+        },
+        {
+          "color": "#a82828",
+          "share": 0.144
+        },
+        {
+          "color": "#080808",
+          "share": 0.108
+        },
+        {
+          "color": "#080818",
+          "share": 0.086
+        }
+      ],
+      "referencedBy": [
+        "src/pages/HomePage/Home/components/MadeForFilipinos/index.module.css",
+        "src/pages/OutPages/DiversionPage/Home/components/MadeForFilipinos/index.module.css"
+      ]
+    },
+    {
+      "path": "src/pages/OutPages/ShortLink/Repay/assets/link-expired.svg",
+      "format": "svg",
+      "bytes": 2406,
+      "category": "empty-state",
+      "viewBox": "0 0 75.9386 76.1499",
+      "width": "75.9386",
+      "height": "76.1499",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#2ab0be",
+          "uses": 5
+        },
+        {
+          "color": "#004e60",
+          "uses": 3
+        },
+        {
+          "color": "#8ae6d0",
+          "uses": 1
+        },
+        {
+          "color": "#96f2dc",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/OutPages/ShortLink/Loan/index.tsx",
+        "src/pages/OutPages/ShortLink/Repay/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/OutPages/ShortLink/Repay/assets/reloan-banner.jpg",
+      "format": "jpg",
+      "bytes": 41881,
+      "category": "illustration",
+      "pixelSize": "656x176",
+      "dominantColors": [
+        {
+          "color": "#f8f8e8",
+          "share": 0.175
+        },
+        {
+          "color": "#e8e8d8",
+          "share": 0.083
+        },
+        {
+          "color": "#f8c828",
+          "share": 0.054
+        },
+        {
+          "color": "#f8f8d8",
+          "share": 0.05
+        },
+        {
+          "color": "#f8e8c8",
+          "share": 0.045
+        },
+        {
+          "color": "#f8e8b8",
+          "share": 0.038
+        }
+      ],
+      "referencedBy": [
+        "src/pages/OutPages/ShortLink/Repay/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/RepayPage/GcashPayment/assets/guide-login.png",
+      "format": "png",
+      "bytes": 47012,
+      "category": "illustration",
+      "pixelSize": "888x1620",
+      "dominantColors": [
+        {
+          "color": "#0878f8",
+          "share": 0.393
+        },
+        {
+          "color": "#f8f8f8",
+          "share": 0.377
+        },
+        {
+          "color": "#1878f8",
+          "share": 0.053
+        },
+        {
+          "color": "#2888f8",
+          "share": 0.041
+        },
+        {
+          "color": "#d8e8f8",
+          "share": 0.026
+        },
+        {
+          "color": "#1888f8",
+          "share": 0.021
+        }
+      ],
+      "referencedBy": [
+        "src/pages/RepayPage/repaymentGuide.ts"
+      ]
+    },
+    {
+      "path": "src/pages/RepayPage/GcashPayment/assets/guide-payment.png",
+      "format": "png",
+      "bytes": 44647,
+      "category": "illustration",
+      "pixelSize": "888x1611",
+      "dominantColors": [
+        {
+          "color": "#f8f8f8",
+          "share": 0.516
+        },
+        {
+          "color": "#0868e8",
+          "share": 0.156
+        },
+        {
+          "color": "#0878f8",
+          "share": 0.051
+        },
+        {
+          "color": "#e8e8f8",
+          "share": 0.042
+        },
+        {
+          "color": "#e8e8e8",
+          "share": 0.037
+        },
+        {
+          "color": "#e8f8f8",
+          "share": 0.025
+        }
+      ],
+      "referencedBy": [
+        "src/pages/RepayPage/repaymentGuide.ts"
+      ]
+    },
+    {
+      "path": "src/pages/RepayPage/GcashPayment/assets/guide-receipt.png",
+      "format": "png",
+      "bytes": 30197,
+      "category": "illustration",
+      "pixelSize": "888x1620",
+      "dominantColors": [
+        {
+          "color": "#0868e8",
+          "share": 0.476
+        },
+        {
+          "color": "#f8f8f8",
+          "share": 0.214
+        },
+        {
+          "color": "#e8e8f8",
+          "share": 0.066
+        },
+        {
+          "color": "#0858e8",
+          "share": 0.043
+        },
+        {
+          "color": "#d8e8f8",
+          "share": 0.03
+        },
+        {
+          "color": "#1868e8",
+          "share": 0.026
+        }
+      ],
+      "referencedBy": [
+        "src/pages/RepayPage/repaymentGuide.ts"
+      ]
+    },
+    {
+      "path": "src/pages/RepayPage/QrCodePayment/assets/download.svg",
+      "format": "svg",
+      "bytes": 3196,
+      "category": "icon",
+      "viewBox": "0 0 20 20",
+      "width": "20",
+      "height": "20",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#2c74be",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/RepayPage/QrCodePayment/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/SupportPage/BirRegistrationPage/assets/bir-registration.webp",
+      "format": "webp",
+      "bytes": 47464,
+      "category": "third-party-logo/credential",
+      "pixelSize": "1600x569",
+      "dominantColors": [
+        {
+          "color": "#f8f8f8",
+          "share": 0.631
+        },
+        {
+          "color": "#888888",
+          "share": 0.033
+        },
+        {
+          "color": "#989898",
+          "share": 0.028
+        },
+        {
+          "color": "#e8e8f8",
+          "share": 0.022
+        },
+        {
+          "color": "#787878",
+          "share": 0.02
+        },
+        {
+          "color": "#686868",
+          "share": 0.018
+        }
+      ],
+      "referencedBy": [
+        "src/pages/SupportPage/BirRegistrationPage/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/SupportPage/BirRegistrationPage/assets/external-link.svg",
+      "format": "svg",
+      "bytes": 1197,
+      "category": "icon",
+      "viewBox": "0 0 16 16",
+      "width": "16",
+      "height": "16",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#6a757d",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/SupportPage/BirRegistrationPage/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/SupportPage/CustomerServicePage/assets/chevron-right.svg",
+      "format": "svg",
+      "bytes": 576,
+      "category": "icon",
+      "viewBox": "0 0 6.42073 10.9674",
+      "width": "6.42073",
+      "height": "10.9674",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#6a757d",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/AccountPage/AccountDeletion/index.tsx",
+        "src/pages/AccountPage/Inbox/VirtualMessageList.tsx",
+        "src/pages/AuthPage/LoanHistory/index.tsx",
+        "src/pages/HomePage/Account/index.tsx",
+        "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx",
+        "src/pages/SupportPage/AboutPage/index.tsx",
+        "src/pages/SupportPage/CustomerServicePage/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/SupportPage/CustomerServicePage/assets/email.svg",
+      "format": "svg",
+      "bytes": 1000,
+      "category": "icon",
+      "viewBox": "0 0 20 20",
+      "width": "20",
+      "height": "20",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "black",
+          "uses": 2
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/SupportPage/CustomerServicePage/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/SupportPage/CustomerServicePage/assets/online-customer-support.svg",
+      "format": "svg",
+      "bytes": 867,
+      "category": "icon",
+      "viewBox": "0 0 20 20",
+      "width": "20",
+      "height": "20",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#141e24",
+          "uses": 4
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/SupportPage/CustomerServicePage/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/SupportPage/CustomerServicePage/assets/phone.svg",
+      "format": "svg",
+      "bytes": 2273,
+      "category": "icon",
+      "viewBox": "0 0 20 20",
+      "width": "20",
+      "height": "20",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#141e24",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/AuthPage/OtpVerify/index.tsx",
+        "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx",
+        "src/pages/SupportPage/CustomerServicePage/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/SupportPage/FaqPage/assets/clear.svg",
+      "format": "svg",
+      "bytes": 1731,
+      "category": "icon",
+      "viewBox": "0 0 7.03208 7.02961",
+      "width": "7.03208",
+      "height": "7.02961",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "white",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/SupportPage/FaqPage/index.tsx"
+      ]
+    },
+    {
+      "path": "src/pages/SupportPage/FaqPage/assets/search.svg",
+      "format": "svg",
+      "bytes": 1620,
+      "category": "icon",
+      "viewBox": "0 0 16 16",
+      "width": "16",
+      "height": "16",
+      "hasGradient": false,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#3c4850",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx",
+        "src/pages/SupportPage/FaqPage/index.tsx"
+      ]
+    },
+    {
+      "path": "public/logo.svg",
+      "format": "svg",
+      "bytes": 8291,
+      "category": "app-logo",
+      "viewBox": "0 0 28 28",
+      "width": "28",
+      "height": "28",
+      "hasGradient": true,
+      "hasFilter": false,
+      "embedsRaster": false,
+      "colors": [
+        {
+          "color": "#70ff99",
+          "uses": 6
+        },
+        {
+          "color": "#53c574",
+          "uses": 6
+        },
+        {
+          "color": "white",
+          "uses": 2
+        },
+        {
+          "color": "#102950",
+          "uses": 1
+        },
+        {
+          "color": "#6ee317",
+          "uses": 1
+        },
+        {
+          "color": "#53c575",
+          "uses": 1
+        },
+        {
+          "color": "#fffefe",
+          "uses": 1
+        },
+        {
+          "color": "#999898",
+          "uses": 1
+        }
+      ],
+      "usesCurrentColor": false,
+      "figmaVarFills": 0,
+      "referencedBy": [
+        "index.html",
+        "src/config/env.ts",
+        "src/pages/ConfirmPage/DisclosureLetterPage/DisclosureLetter/DisclosureStatementForm.tsx",
+        "src/pages/HomePage/Home/rejectDiversion/registry.ts"
+      ]
+    }
+  ]
+}
