@@ -1,0 +1,76 @@
+diff --git a/src/pages/AuthPage/Identity/components/IdentityIdTypeSelect/index.module.css b/src/pages/AuthPage/Identity/components/IdentityIdTypeSelect/index.module.css
+index fa19c58..7941700 100644
+--- a/src/pages/AuthPage/Identity/components/IdentityIdTypeSelect/index.module.css
++++ b/src/pages/AuthPage/Identity/components/IdentityIdTypeSelect/index.module.css
+@@ -45,10 +45,6 @@
+   -webkit-tap-highlight-color: transparent;
+ }
+ 
+-.trigger:active:not(:disabled) {
+-  transform: scale(0.99);
+-}
+-
+ .triggerText {
+   min-width: 0;
+   flex: 1 1 auto;
+@@ -113,18 +109,9 @@
+   justify-content: flex-end;
+   overflow: hidden;
+   padding-top: 24px;
+-  transition: opacity 0.22s ease;
+ }
+ 
+-.overlayVisible {
+-  opacity: 1;
+-  pointer-events: auto;
+-}
+-
+-.overlayHidden {
+-  opacity: 0;
+-  pointer-events: none;
+-}
++/* Motion (slide, scrim, drag) comes from the shared Sheet (src/motion/Sheet.tsx). */
+ 
+ .mask {
+   position: absolute;
+@@ -156,20 +143,6 @@
+   border-top-right-radius: var(--radius-xxl, 32px);
+   background: var(--bg-default, #ffffff);
+   box-shadow: var(--elevation-2);
+-  transition: transform 0.22s ease;
+-}
+-
+-.sheetVisible {
+-  transform: translate3d(0, var(--bottom-sheet-drag-offset, 0), 0);
+-}
+-
+-.sheetHidden {
+-  transform: translate3d(0, 100%, 0);
+-}
+-
+-.sheetDragging {
+-  transition: none;
+-  will-change: transform;
+ }
+ 
+ .handle {
+@@ -257,6 +230,8 @@
+   cursor: pointer;
+   appearance: none;
+   -webkit-tap-highlight-color: transparent;
++  /* R-COLOR: a pick changes colour only, in 150 ms (press: pressProps) */
++  transition: color 0.15s ease;
+ }
+ 
+ .optionRow {
+@@ -273,10 +248,6 @@
+   padding-top: 0;
+ }
+ 
+-.option:active:not(:disabled) {
+-  opacity: 0.72;
+-}
+-
+ .optionSelected {
+   color: var(--fg-accent, #2c74be);
+   font-weight: var(--font-weight-medium, 500);

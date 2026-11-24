@@ -1,0 +1,46 @@
+diff --git a/src/pages/HomePage/index.tsx b/src/pages/HomePage/index.tsx
+index d5d5fa9..fa1b15e 100644
+--- a/src/pages/HomePage/index.tsx
++++ b/src/pages/HomePage/index.tsx
+@@ -15,6 +15,7 @@ import {
+ import { useLocation } from 'react-router-dom';
+ 
+ import BrandLogo from '@/components/BrandLogo';
++import { PageTransition } from '@/motion/PageTransition';
+ import {
+   type PageHeaderConfig,
+   usePageHeader,
+@@ -505,17 +506,22 @@ const HomePage: FC<HomePageProps> = ({
+           activeTab === 'home' ? styles.contentWithImmersiveHeader : ''
+         }`}
+       >
+-        {renderActivePanel(activeTab, {
+-          accountIsAuthenticated: effectiveAuthenticated,
+-          homeRefreshRevision,
+-          inboxUnreadCount,
+-          isAuthenticated: effectiveAuthenticated,
+-          onHomeAuthenticationResolved: setHomeApiAuthenticated,
+-          onLogout: handleLogout,
+-          onOpenPayment: handleOpenPayment,
+-          onRequireLogin,
+-          onSceneReady: handleHomeSceneReady,
+-        })}
++        {/* Tab change crossfades like a page change (rebrand R-PAGES):
++            the old panel fades out on LEAVE, the new one in on ENTER.
++            切换 tab 时内容区淡入淡出，与页面切换一致。 */}
++        <PageTransition pageKey={activeTab}>
++          {renderActivePanel(activeTab, {
++            accountIsAuthenticated: effectiveAuthenticated,
++            homeRefreshRevision,
++            inboxUnreadCount,
++            isAuthenticated: effectiveAuthenticated,
++            onHomeAuthenticationResolved: setHomeApiAuthenticated,
++            onLogout: handleLogout,
++            onOpenPayment: handleOpenPayment,
++            onRequireLogin,
++            onSceneReady: handleHomeSceneReady,
++          })}
++        </PageTransition>
+       </div>
+       <BottomNavigation
+         backdropEffectsEnabled={backdropEffectsEnabled}

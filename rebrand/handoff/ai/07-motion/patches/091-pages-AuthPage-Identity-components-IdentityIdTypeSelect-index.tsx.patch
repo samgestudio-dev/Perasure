@@ -1,0 +1,265 @@
+diff --git a/src/pages/AuthPage/Identity/components/IdentityIdTypeSelect/index.tsx b/src/pages/AuthPage/Identity/components/IdentityIdTypeSelect/index.tsx
+index b63fbf3..b48b983 100644
+--- a/src/pages/AuthPage/Identity/components/IdentityIdTypeSelect/index.tsx
++++ b/src/pages/AuthPage/Identity/components/IdentityIdTypeSelect/index.tsx
+@@ -7,14 +7,18 @@ import {
+   useState,
+   type ReactNode,
+ } from 'react';
+-import { createPortal } from 'react-dom';
+ import { ChevronRight } from 'lucide-react';
++import { AnimatePresence, m } from 'motion/react';
+ 
+ import type { SelectValue } from '@/components/ui/Select';
+-import { useBottomSheetDragDismiss } from '@/components/ui/useBottomSheetDragDismiss';
++import { pressProps } from '@/motion/press';
++import { Sheet } from '@/motion/Sheet';
++import { SheetDragArea } from '@/motion/SheetDragArea';
++import { CHOICE_CLOSE_DELAY_MS, MT } from '@/motion/tokens';
+ import { lockScroll, unlockScroll } from '@/utils/browser/dom/scrollLock';
+ 
+ import styles from './index.module.css';
++import { fade } from '@/motion/presets';
+ 
+ export interface IdentityIdTypeOption {
+   /** Option display text. 证件类型展示文案。 */
+@@ -60,7 +64,8 @@ export interface IdentityIdTypeSelectProps {
+   onOpenChange?: (open: boolean) => void;
+ }
+ 
+-const MOTION_DURATION = 220;
++/** Drag strip = the header's 20 px top padding (the title row drags too). */
++const DRAG_STRIP_HEIGHT = '1.25rem';
+ const DEFAULT_EVENT_TYPE = 'identity_id_type_open';
+ const DEFAULT_OPTION_EVENT_TYPE = 'identity_id_type_select';
+ 
+@@ -92,8 +97,6 @@ export function IdentityIdTypeSelect({
+   const titleId = useId();
+   const dialogTitleId = useId();
+   const [internalOpen, setInternalOpen] = useState(false);
+-  const [rendered, setRendered] = useState(false);
+-  const [visible, setVisible] = useState(false);
+   const sheetRef = useRef<HTMLDivElement | null>(null);
+   const open = controlledOpen ?? internalOpen;
+   const selectedOption = useMemo(
+@@ -112,17 +115,8 @@ export function IdentityIdTypeSelect({
+     [controlledOpen, onOpenChange],
+   );
+ 
+-  useEffect(() => {
+-    if (open) {
+-      setRendered(true);
+-      const timer = window.setTimeout(() => setVisible(true), 0);
+-      return () => window.clearTimeout(timer);
+-    }
+-
+-    setVisible(false);
+-    const timer = window.setTimeout(() => setRendered(false), MOTION_DURATION);
+-    return () => window.clearTimeout(timer);
+-  }, [open]);
++  const closeTimerRef = useRef<number | undefined>(undefined);
++  useEffect(() => () => window.clearTimeout(closeTimerRef.current), []);
+ 
+   useEffect(() => {
+     if (!open) return undefined;
+@@ -153,96 +147,80 @@ export function IdentityIdTypeSelect({
+       onChange?.(option.value, option);
+     }
+ 
+-    updateOpen(false);
++    // M-041 choice sheet: the picked row changes colour (0.15 s), then the
++    // sheet closes 160 ms later (demo form.js:142). 选中后先变色，160ms 后关闭。
++    window.clearTimeout(closeTimerRef.current);
++    closeTimerRef.current = window.setTimeout(
++      () => updateOpen(false),
++      CHOICE_CLOSE_DELAY_MS,
++    );
+   };
+ 
+-  const { backdropRef, isDragging, sheetDragProps } = useBottomSheetDragDismiss(
+-    {
+-      active: visible,
+-      onDismiss: () => updateOpen(false),
+-      sheetRef,
+-    },
+-  );
+-
++  // Motion: shared Sheet (M-013 / M-014 / M-015 / M-021). 动效由共享 Sheet 承担。
+   const popup =
+-    rendered && typeof document !== 'undefined'
+-      ? createPortal(
+-          <div
+-            className={joinClassNames(
+-              styles.overlay,
+-              visible ? styles.overlayVisible : styles.overlayHidden,
+-            )}
+-            style={{ zIndex }}
+-          >
+-            <button
+-              aria-label="Close ID type options"
+-              ref={backdropRef}
+-              className={styles.mask}
+-              onClick={() => updateOpen(false)}
+-              type="button"
+-            />
+-            <div
+-              aria-labelledby={dialogTitleId}
+-              className={joinClassNames(
+-                styles.sheet,
+-                visible ? styles.sheetVisible : styles.sheetHidden,
+-                isDragging ? styles.sheetDragging : '',
+-              )}
+-              aria-modal="true"
+-              {...sheetDragProps}
+-              ref={sheetRef}
+-              role="dialog"
+-            >
+-              <span aria-hidden="true" className={styles.handle} />
+-              <div className={styles.sheetHeader}>
+-                <h2 className={styles.sheetTitle} id={dialogTitleId}>
+-                  {sheetTitle}
+-                </h2>
+-              </div>
+-              <div className={styles.sheetContent}>
+-                {options.length > 0 ? (
+-                  <div className={styles.optionList} role="radiogroup">
+-                    {options.map((option) => {
+-                      const selected = isSameValue(option.value, value);
++    typeof document !== 'undefined' ? (
++      <Sheet
++        ariaLabel="ID type options"
++        ariaLabelledBy={dialogTitleId}
++        ariaModal
++        className={styles.sheet}
++        dragStripHeight={DRAG_STRIP_HEIGHT}
++        layerClassName={styles.overlay}
++        onClose={() => updateOpen(false)}
++        open={open}
++        panelRef={sheetRef}
++        positionPanel={false}
++        riseSkip={2}
++        role="dialog"
++        scrimClassName={styles.mask}
++        zIndex={zIndex}
++      >
++        <span aria-hidden="true" className={styles.handle} />
++        <SheetDragArea className={styles.sheetHeader}>
++          <h2 className={styles.sheetTitle} id={dialogTitleId}>
++            {sheetTitle}
++          </h2>
++        </SheetDragArea>
++        <div className={styles.sheetContent}>
++          {options.length > 0 ? (
++            <div className={styles.optionList} role="radiogroup">
++              {options.map((option) => {
++                const selected = isSameValue(option.value, value);
+ 
+-                      return (
+-                        <button
+-                          aria-checked={selected}
+-                          className={joinClassNames(
+-                            styles.option,
+-                            selected ? styles.optionSelected : '',
+-                            option.disabled ? styles.optionDisabled : '',
+-                          )}
+-                          data-event-type={optionDataEventType}
+-                          disabled={option.disabled}
+-                          key={String(option.value)}
+-                          onClick={() => handleSelectOption(option)}
+-                          role="radio"
+-                          type="button"
+-                        >
+-                          <span className={styles.optionRow}>
+-                            <span className={styles.optionLabel}>
+-                              {option.label}
+-                            </span>
+-                            {option.badge ? (
+-                              <span className={styles.optionBadge}>
+-                                {option.badge}
+-                              </span>
+-                            ) : null}
+-                          </span>
+-                        </button>
+-                      );
+-                    })}
+-                  </div>
+-                ) : (
+-                  <div className={styles.empty}>{emptyText}</div>
+-                )}
+-              </div>
++                return (
++                  <m.button
++                    aria-checked={selected}
++                    className={joinClassNames(
++                      styles.option,
++                      selected ? styles.optionSelected : '',
++                      option.disabled ? styles.optionDisabled : '',
++                    )}
++                    data-event-type={optionDataEventType}
++                    disabled={option.disabled}
++                    key={String(option.value)}
++                    onClick={() => handleSelectOption(option)}
++                    role="radio"
++                    type="button"
++                    {...pressProps(false, option.disabled)}
++                  >
++                    <span className={styles.optionRow}>
++                      <span className={styles.optionLabel}>{option.label}</span>
++                      {option.badge ? (
++                        <span className={styles.optionBadge}>
++                          {option.badge}
++                        </span>
++                      ) : null}
++                    </span>
++                  </m.button>
++                );
++              })}
+             </div>
+-          </div>,
+-          document.body,
+-        )
+-      : null;
++          ) : (
++            <div className={styles.empty}>{emptyText}</div>
++          )}
++        </div>
++      </Sheet>
++    ) : null;
+ 
+   return (
+     <>
+@@ -254,7 +232,7 @@ export function IdentityIdTypeSelect({
+             {title}
+           </span>
+         </div>
+-        <button
++        <m.button
+           aria-expanded={open}
+           aria-haspopup="dialog"
+           aria-invalid={hasError || undefined}
+@@ -264,6 +242,7 @@ export function IdentityIdTypeSelect({
+           disabled={disabled}
+           onClick={() => updateOpen(true)}
+           type="button"
++          {...pressProps(false, disabled)}
+         >
+           <span
+             className={joinClassNames(
+@@ -274,8 +253,15 @@ export function IdentityIdTypeSelect({
+             {selectedOption?.label ?? placeholder}
+           </span>
+           <ChevronRight aria-hidden="true" className={styles.chevron} />
+-        </button>
+-        {hasError ? <div className={styles.error}>{error}</div> : null}
++        </m.button>
++        {/* select error rises 6 px from a 3 px blur (M-025, as Select) */}
++        <AnimatePresence initial={false}>
++          {hasError ? (
++            <m.div className={styles.error} key="error" {...fade(MT.Y.digit)}>
++              {error}
++            </m.div>
++          ) : null}
++        </AnimatePresence>
+       </div>
+       {popup}
+     </>

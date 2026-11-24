@@ -1,0 +1,139 @@
+diff --git a/src/components/ui/Select/SelectPopover.tsx b/src/components/ui/Select/SelectPopover.tsx
+index 58de2b5..92379cf 100644
+--- a/src/components/ui/Select/SelectPopover.tsx
++++ b/src/components/ui/Select/SelectPopover.tsx
+@@ -1,5 +1,6 @@
+ import {
+   useCallback,
++  useEffect,
+   useLayoutEffect,
+   useRef,
+   useState,
+@@ -8,6 +9,10 @@ import {
+   type ReactNode,
+   type RefCallback,
+ } from 'react';
++import { m } from 'motion/react';
++
++import { menuRowMotion, usePopoverMotion } from '@/motion/popover';
++import { POPOVER } from '@/motion/tokens';
+ 
+ import type { SelectOption, SelectValue } from './index';
+ import {
+@@ -53,7 +58,7 @@ export function SelectPopover({
+   getOptionId,
+   onActiveIndexChange,
+   onKeyDown,
+-  onSelectOption,
++  onSelectOption: selectOptionNow,
+   open,
+   optionDataEventType,
+   options,
+@@ -63,9 +68,57 @@ export function SelectPopover({
+   const listRef = useRef<HTMLDivElement | null>(null);
+   const scrollbarThumbRef = useRef<HTMLSpanElement | null>(null);
+   const scrollbarTrackRef = useRef<HTMLSpanElement | null>(null);
++  const fadeRef = useRef<HTMLElement | null>(null);
+   const [scrollbarOffset, setScrollbarOffset] = useState<number | null>(null);
++  const { calm, placement } = usePopoverMotion();
++  /* R-MENU: a picked row lights up, then the menu folds away (90 ms later) */
++  const [pickedValue, setPickedValue] = useState<{ value: SelectValue } | null>(
++    null,
++  );
++  const pickTimerRef = useRef<number | null>(null);
++  /* rows that arrive after the menu has shown (search results) just appear */
++  const [firstRows, setFirstRows] = useState<Set<string> | null>(null);
++
++  useEffect(() => {
++    if (!open) {
++      setPickedValue(null);
++      setFirstRows(null);
++      return;
++    }
++    if (placement !== null && firstRows === null) {
++      setFirstRows(new Set(options.map((option) => String(option.value))));
++    }
++  }, [firstRows, open, options, placement]);
++
++  useEffect(
++    () => () => {
++      if (pickTimerRef.current !== null) {
++        window.clearTimeout(pickTimerRef.current);
++      }
++    },
++    [],
++  );
++
++  const onSelectOption = useCallback(
++    (option: SelectOption): void => {
++      if (pickTimerRef.current !== null) return;
++      setPickedValue({ value: option.value });
++      pickTimerRef.current = window.setTimeout(() => {
++        pickTimerRef.current = null;
++        selectOptionNow(option);
++      }, POPOVER.pickDelayMs);
++    },
++    [selectOptionNow],
++  );
+ 
+   const updateScrollbar = useCallback((): void => {
++    const list = listRef.current;
++    // M-040 (form.js:203): the bottom white fade shows while more rows are
++    // below and fades out (0.15 s, CSS) when fewer than 2 px are left.
++    if (list && fadeRef.current) {
++      const room = list.scrollHeight - list.clientHeight;
++      fadeRef.current.style.opacity = room - list.scrollTop > 2 ? '1' : '0';
++    }
+     if (
+       !listRef.current ||
+       !scrollbarThumbRef.current ||
+@@ -115,7 +168,16 @@ export function SelectPopover({
+           <div className={styles.popoverEmpty}>{emptyText}</div>
+         ) : (
+           options.map((option, index) => {
+-            const selected = Object.is(option.value, selectedValue);
++            const selected = pickedValue
++              ? Object.is(option.value, pickedValue.value)
++              : Object.is(option.value, selectedValue);
++            const arrivedLate =
++              firstRows !== null && !firstRows.has(String(option.value));
++            const rowMotion = menuRowMotion(
++              index,
++              placement,
++              calm || arrivedLate,
++            );
+             const active = !option.disabled && activeIndex === index;
+             const optionMotionStyle: PopoverOptionMotionStyle = {
+               '--popover-option-delay-bottom': `${60 + Math.min(index, 8) * 24}ms`,
+@@ -129,7 +191,8 @@ export function SelectPopover({
+             );
+ 
+             return (
+-              <button
++              <m.button
++                animate={rowMotion.animate}
+                 aria-selected={selected}
+                 className={joinClassNames(
+                   styles.popoverOption,
+@@ -139,6 +202,7 @@ export function SelectPopover({
+                 data-event-type={optionDataEventType}
+                 disabled={!interactive}
+                 id={getOptionId(index)}
++                initial={rowMotion.initial}
+                 key={String(option.value)}
+                 onClick={interactive ? () => onSelectOption(option) : undefined}
+                 onFocus={
+@@ -159,11 +223,12 @@ export function SelectPopover({
+                 <span className={styles.popoverOptionLabel}>
+                   {option.label}
+                 </span>
+-              </button>
++              </m.button>
+             );
+           })
+         )}
+       </div>
++      <i aria-hidden="true" className={styles.popoverFade} ref={fadeRef} />
+       <span
+         aria-hidden="true"
+         className={joinClassNames(

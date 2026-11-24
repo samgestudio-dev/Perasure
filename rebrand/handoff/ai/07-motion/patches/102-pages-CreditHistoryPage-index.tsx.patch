@@ -1,0 +1,54 @@
+diff --git a/src/pages/CreditHistoryPage/index.tsx b/src/pages/CreditHistoryPage/index.tsx
+index 9b98990..6b7b890 100644
+--- a/src/pages/CreditHistoryPage/index.tsx
++++ b/src/pages/CreditHistoryPage/index.tsx
+@@ -1,5 +1,6 @@
+ import CreditBackIcon from '@/assets/svg/credit-navigation/back.svg?react';
+ import { useCallback, useEffect, useMemo, useRef } from 'react';
++import { m } from 'motion/react';
+ import { usePageHeader } from '@/components/Layout/GlobalLayout';
+ import { registerNativeBackPressHandler } from '@/utils/jsbridge';
+ import { useAppNavigation } from '@/utils/navigation';
+@@ -22,6 +23,8 @@ import { useHistoryLoadMore } from './useHistoryLoadMore';
+ import HistoryCardTitle from './HistoryCardTitle';
+ import cashInIcon from './assets/cash-in.svg';
+ import cashOutIcon from './assets/cash-out.svg';
++import { pressProps } from '@/motion/press';
++import { MT } from '@/motion/tokens';
+ import styles from './index.module.css';
+ 
+ /** Existing router callers retain the category prop contract. */
+@@ -105,17 +108,30 @@ export default function CreditHistoryPage({
+     <section className={styles.page} data-credit-history-tab={tab}>
+       <main className={styles.content}>
+         <nav className={styles.tabs} aria-label={t('credit.history.navTitle')}>
++          {/* PS.Tabs (coupon.js:93-105, M-033): the active pill glides on the
++              Smooth spring (layoutId), labels change colour in 150 ms, tabs press. */}
+           {categories.map((category) => (
+-            <button
++            <m.button
+               key={category}
+               className={tab === category ? styles.activeTab : ''}
+               type="button"
+               aria-current={tab === category ? 'page' : undefined}
+               data-event-type="credit_history_tab_click"
+               onClick={() => changeTab(category)}
++              {...pressProps()}
+             >
+-              {t(`credit.history.${category}`)}
+-            </button>
++              {tab === category ? (
++                <m.span
++                  aria-hidden="true"
++                  className={styles.tabPill}
++                  layoutId="credit-history-tab-pill"
++                  transition={MT.SPRING}
++                />
++              ) : null}
++              <span className={styles.tabLabel}>
++                {t(`credit.history.${category}`)}
++              </span>
++            </m.button>
+           ))}
+         </nav>
+         <div

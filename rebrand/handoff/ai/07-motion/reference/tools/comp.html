@@ -1,0 +1,37 @@
+<!doctype html><html><head><meta charset="utf-8"><style>body{margin:0;background:#fff}</style></head><body>
+<script>
+function load(u){return new Promise((ok,ko)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>ko(new Error('img '+u));i.src=u;});}
+async function strip(o){ // o: {frames:[{url,t}], roi:{x,y,w,h}, title, cols, tileW}
+  const imgs=await Promise.all(o.frames.map(f=>load(f.url)));
+  const sc=imgs[0].naturalWidth/360; // px per css px in frame
+  const roi=o.roi, cols=o.cols, rows=Math.ceil(imgs.length/cols);
+  const tw=o.tileW, th=Math.round(tw*roi.h/roi.w), lab=18, pad=6, head=26;
+  const W=cols*(tw+pad)+pad, H=head+rows*(th+lab+pad)+pad;
+  const cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d');
+  g.fillStyle='#f2f3f5';g.fillRect(0,0,W,H);g.fillStyle='#111';g.font='bold 13px -apple-system,Helvetica,Arial';g.fillText(o.title,pad,17);
+  g.imageSmoothingQuality='high';
+  imgs.forEach((im,i)=>{const cx=pad+(i%cols)*(tw+pad), cy=head+Math.floor(i/cols)*(th+lab+pad);
+    g.drawImage(im,roi.x*sc,roi.y*sc,roi.w*sc,roi.h*sc,cx,cy,tw,th);g.strokeStyle='#c8cad0';g.strokeRect(cx+.5,cy+.5,tw-1,th-1);
+    g.fillStyle='#333';g.font='12px Menlo,monospace';g.fillText('t='+Math.round(o.frames[i].t)+' ms',cx+2,cy+th+13);});
+  return cv.toDataURL('image/png').split(',')[1];
+}
+async function video(o){ // o: {frames:[{url,t}], title, tail}
+  const imgs=await Promise.all(o.frames.map(f=>load(f.url)));
+  const w=imgs[0].naturalWidth, h=imgs[0].naturalHeight, bar=28;
+  const cv=document.createElement('canvas');cv.width=w;cv.height=h+bar;document.body.appendChild(cv);const g=cv.getContext('2d');
+  const type=MediaRecorder.isTypeSupported('video/mp4;codecs=avc1')?'video/mp4;codecs=avc1':'video/webm';
+  const stream=cv.captureStream(60);const rec=new MediaRecorder(stream,{mimeType:type,videoBitsPerSecond:4e6});const chunks=[];
+  rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+  const t0=o.frames[0].t, t1=o.frames[o.frames.length-1].t+(o.tail||300);
+  function draw(el){let k=0;for(let i=0;i<o.frames.length;i++){if(o.frames[i].t-t0<=el)k=i;}
+    g.fillStyle='#fff';g.fillRect(0,0,w,h+bar);g.drawImage(imgs[k],0,0);g.fillStyle='#111';g.fillRect(0,h,w,bar);g.fillStyle='#fff';g.font='14px Menlo,monospace';
+    g.fillText(o.title+'  t='+Math.round(t0+el)+' ms',8,h+19);}
+  draw(0);rec.start();const st=performance.now();
+  await new Promise(done=>{function tick(){const el=performance.now()-st;draw(el);if(el<t1-t0)requestAnimationFrame(tick);else done();}requestAnimationFrame(tick);});
+  await new Promise(r=>setTimeout(r,100));
+  await new Promise(r=>{rec.onstop=r;rec.stop();});
+  cv.remove();
+  const b=new Blob(chunks,{type});const buf=new Uint8Array(await b.arrayBuffer());let s='';for(let i=0;i<buf.length;i+=0x8000)s+=String.fromCharCode.apply(null,buf.subarray(i,i+0x8000));
+  return {type, b64:btoa(s)};
+}
+</script></body></html>

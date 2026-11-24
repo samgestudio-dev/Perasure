@@ -1,0 +1,53 @@
+diff --git a/src/components/ui/BottomActionButton/index.tsx b/src/components/ui/BottomActionButton/index.tsx
+index a3b4e43..05e25ba 100644
+--- a/src/components/ui/BottomActionButton/index.tsx
++++ b/src/components/ui/BottomActionButton/index.tsx
+@@ -6,13 +6,23 @@ import {
+   type ReactNode,
+ } from 'react';
+ 
++import { m } from 'motion/react';
++
+ import { ProgressiveBlur } from '@/components/ui/ProgressiveBlur';
++import { BusyDots } from '@/motion/BusyDots';
++import { pressProps } from '@/motion/press';
+ 
+ import styles from './index.module.css';
+ 
+ export interface BottomActionButtonProps extends Omit<
+   ButtonHTMLAttributes<HTMLButtonElement>,
+-  'children' | 'onClick'
++  | 'children'
++  | 'onClick'
++  // Motion owns these handlers on the animated button.
++  | 'onAnimationStart'
++  | 'onDrag'
++  | 'onDragEnd'
++  | 'onDragStart'
+ > {
+   /** Button display content. 外部可传入按钮文案或自定义节点。 */
+   children?: ReactNode;
+@@ -92,8 +102,9 @@ export function BottomActionButton({
+         strength={10}
+         steps={6}
+       />
+-      <button
++      <m.button
+         {...rest}
++        {...pressProps(false, isDisabled)}
+         aria-busy={loading || undefined}
+         className={joinClassNames(styles.button, buttonClassName)}
+         data-event-type={dataEventType}
+@@ -101,8 +112,10 @@ export function BottomActionButton({
+         onClick={handleClick}
+         type={type}
+       >
+-        {children ?? text}
+-      </button>
++        {/* Waiting: the three-dot pulse replaces the label (rebrand PS.Busy).
++            等待中以三点脉冲替换按钮文案。 */}
++        {loading ? <BusyDots /> : (children ?? text)}
++      </m.button>
+     </div>
+   );
+ }

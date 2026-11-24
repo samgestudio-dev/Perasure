@@ -1,0 +1,37 @@
+diff --git a/src/pages/HomePage/Home/components/MadeForFilipinos/index.module.css b/src/pages/HomePage/Home/components/MadeForFilipinos/index.module.css
+index 8d2d104..0203162 100644
+--- a/src/pages/HomePage/Home/components/MadeForFilipinos/index.module.css
++++ b/src/pages/HomePage/Home/components/MadeForFilipinos/index.module.css
+@@ -199,8 +199,7 @@
+ .partnerLogoTrack {
+   display: flex;
+   width: max-content;
+-  animation: trust-logo-marquee 20s linear infinite;
+-  transform: translate3d(0, 0, 0);
++  /* M-068: moved by useMarquee (WAAPI, 28 px/s over one strip). */
+   will-change: transform;
+ }
+ 
+@@ -216,12 +215,6 @@
+   object-fit: contain;
+ }
+ 
+-@keyframes trust-logo-marquee {
+-  to {
+-    transform: translate3d(-50%, 0, 0);
+-  }
+-}
+-
+ @media (max-width: 340px) {
+   .card {
+     --trust-card-padding: var(--spacing-padding-md, 12px);
+@@ -242,9 +235,3 @@
+     font-size: 12px;
+   }
+ }
+-
+-@media (prefers-reduced-motion: reduce) {
+-  .partnerLogoTrack {
+-    animation-duration: 30s;
+-  }
+-}

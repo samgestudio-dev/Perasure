@@ -1,0 +1,234 @@
+diff --git a/src/components/ui/Popover/index.tsx b/src/components/ui/Popover/index.tsx
+index a54e3d3..a5ed9aa 100644
+--- a/src/components/ui/Popover/index.tsx
++++ b/src/components/ui/Popover/index.tsx
+@@ -2,15 +2,23 @@ import {
+   useCallback,
+   useEffect,
+   useLayoutEffect,
++  useMemo,
+   useRef,
+   useState,
+-  type AnimationEvent,
+   type CSSProperties,
+   type ReactNode,
+   type RefObject,
+ } from 'react';
+ import { createPortal } from 'react-dom';
++import { m } from 'motion/react';
+ 
++import {
++  centreOnTap,
++  PopoverMotionContext,
++  popoverMotion,
++  recentTap,
++  trackLastTap,
++} from '@/motion/popover';
+ import { lockScroll, unlockScroll } from '@/utils/browser/dom/scrollLock';
+ 
+ import { PopoverCloseRequestGate } from './closeRequestGate';
+@@ -31,15 +39,27 @@ export interface PopoverProps {
+   zIndex?: number;
+ }
+ 
+-const EXIT_MOTION_DURATION = 155;
+-const MOTION_END_FALLBACK_DELAY = 50;
++/**
++ * MENU_OUT (0.12 s). The fold-back is a Motion animation (also with reduced
++ * motion, where it is an opacity fade); this only sizes the safety net.
++ */
++const EXIT_MOTION_DURATION = 120;
++const MOTION_END_FALLBACK_DELAY = 200;
+ 
+-function getExitMotionDuration(): number {
+-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+-    ? 0
+-    : EXIT_MOTION_DURATION;
++/** Reduced motion: the card only fades (demo "calm" popover). */
++function prefersCalmPopover(): boolean {
++  return (
++    typeof window !== 'undefined' &&
++    typeof window.matchMedia === 'function' &&
++    window.matchMedia('(prefers-reduced-motion: reduce)').matches
++  );
+ }
+ 
++/** Placement plus the tap-centred origin (R-MENU). */
++type PlacedPopover = Omit<PopoverPosition, 'transformOrigin'> & {
++  transformOrigin: string;
++};
++
+ function joinClassNames(
+   ...classNames: Array<string | false | undefined>
+ ): string {
+@@ -47,8 +67,8 @@ function joinClassNames(
+ }
+ 
+ function isSamePosition(
+-  current: PopoverPosition | null,
+-  next: PopoverPosition,
++  current: PlacedPopover | null,
++  next: PlacedPopover,
+ ): boolean {
+   return (
+     current?.left === next.left &&
+@@ -88,7 +108,10 @@ export function Popover({
+   open,
+   zIndex = 1000,
+ }: PopoverProps): ReactNode {
+-  const [position, setPosition] = useState<PopoverPosition | null>(null);
++  const [position, setPosition] = useState<PlacedPopover | null>(null);
++  const [calm] = useState(prefersCalmPopover);
++  /* the tap that opened the menu, kept for this opening (R-MENU) */
++  const openTapRef = useRef<{ x: number } | null>(null);
+   const [rendered, setRendered] = useState(open);
+   const [closeRequestGate] = useState(() => new PopoverCloseRequestGate());
+   const closeRequestRearmTimerRef = useRef<number | null>(null);
+@@ -135,7 +158,7 @@ export function Popover({
+     const viewportHeight = visualViewport?.height ?? window.innerHeight;
+     const safeAreaInsetBottom =
+       safeAreaProbeRef.current.getBoundingClientRect().height;
+-    const nextPosition = calculatePopoverPosition({
++    const basePosition = calculatePopoverPosition({
+       anchorGap: positionProbeRect.width,
+       anchorRect,
+       // 动画中的 getBoundingClientRect 会包含 transform，不能用于决定上下翻转，
+@@ -149,16 +172,44 @@ export function Popover({
+         width: viewportWidth,
+       },
+     });
++    // Like an iPhone menu, centre the card on the finger (8 px from the sides)
++    // and grow it out of that point; keyboard opens keep the anchor alignment.
++    // 像 iPhone 菜单一样以手指位置为中心展开，键盘打开时保持锚点右对齐。
++    const nextPosition: PlacedPopover = {
++      ...basePosition,
++      ...centreOnTap({
++        edge: positionProbeRect.width,
++        left: basePosition.left,
++        placement: basePosition.placement,
++        popoverWidth: popover.offsetWidth,
++        tap: openTapRef.current,
++        viewportWidth,
++      }),
++    };
+ 
+     setPosition((current) =>
+       isSamePosition(current, nextPosition) ? current : nextPosition,
+     );
+   }, [anchorRef]);
+ 
++  useEffect(() => {
++    trackLastTap();
++  }, []);
++
++  // Opening runs in a layout effect, not a passive one: the card mounts (and
++  // measures, below) before the browser paints the frame after the tap, so the
++  // menu's first frame is the demo's (R-MENU, M-037). A passive effect ran
++  // after that paint and started the grow one frame (~17 ms) late.
++  // 打开放在 layout effect：首帧即挂载并测量，与 demo 同帧开始展开。
++  useLayoutEffect(() => {
++    if (!open) return;
++    closeRequestGate.rearm();
++    openTapRef.current = recentTap();
++    setRendered(true);
++  }, [closeRequestGate, open]);
++
+   useEffect(() => {
+     if (open) {
+-      closeRequestGate.rearm();
+-      setRendered(true);
+       return undefined;
+     }
+ 
+@@ -166,16 +217,10 @@ export function Popover({
+       return undefined;
+     }
+ 
+-    const motionDuration = getExitMotionDuration();
+-    if (motionDuration === 0) {
+-      finishClose();
+-      return undefined;
+-    }
+-
+-    // animationend 负责正常卸载；定时器只防止事件缺失时 Portal 残留。
++    // 收起动效完成（onAnimationComplete）负责正常卸载；定时器只防止回调缺失时 Portal 残留。
+     const timer = window.setTimeout(
+       finishClose,
+-      motionDuration + MOTION_END_FALLBACK_DELAY,
++      EXIT_MOTION_DURATION + MOTION_END_FALLBACK_DELAY,
+     );
+ 
+     return () => window.clearTimeout(timer);
+@@ -248,11 +293,7 @@ export function Popover({
+ 
+   const isVisible = position !== null;
+   const isClosing = !open;
+-  const handleAnimationEnd = (event: AnimationEvent<HTMLDivElement>): void => {
+-    if (isClosing && event.currentTarget === event.target) {
+-      finishClose();
+-    }
+-  };
++  const motionProps = popoverMotion(calm);
+   const popoverStyle: CSSProperties | undefined = position
+     ? {
+         left: position.left,
+@@ -278,27 +319,53 @@ export function Popover({
+       />
+       <div className={styles.positionProbe} ref={positionProbeRef} />
+       <div className={styles.safeAreaProbe} ref={safeAreaProbeRef} />
+-      <div
++      <m.div
++        animate={
++          isClosing
++            ? motionProps.exit
++            : isVisible
++              ? motionProps.animate
++              : motionProps.initial
++        }
+         aria-hidden={isClosing || undefined}
+         className={joinClassNames(
+           styles.popover,
+           isVisible ? styles.popoverVisible : styles.popoverHidden,
+-          isVisible && !isClosing ? styles.popoverOpen : '',
+-          isClosing ? styles.popoverClosing : '',
+           className,
+         )}
+         data-placement={position?.placement}
+         data-motion={isVisible ? (isClosing ? 'closing' : 'open') : 'measuring'}
+         inert={isClosing || undefined}
+-        onAnimationEnd={handleAnimationEnd}
++        initial={motionProps.initial}
++        onAnimationComplete={() => {
++          // The fold-back finished: unmount (the timer above is the safety net).
++          // 收起动效完成后卸载；上方定时器只做兜底。
++          if (isClosing) finishClose();
++        }}
+         ref={popoverRef}
+         style={popoverStyle}
+       >
+-        <div className={styles.content}>{children}</div>
+-      </div>
++        <PopoverRows calm={calm} placement={position?.placement ?? null}>
++          <div className={styles.content}>{children}</div>
++        </PopoverRows>
++      </m.div>
+     </div>,
+     document.body,
+   );
+ }
+ 
++/** Gives menu rows the card's placement (row rise direction) and calm flag. */
++function PopoverRows({
++  calm,
++  children,
++  placement,
++}: {
++  calm: boolean;
++  children: ReactNode;
++  placement: 'bottom' | 'top' | null;
++}) {
++  const value = useMemo(() => ({ calm, placement }), [calm, placement]);
++  return <PopoverMotionContext value={value}>{children}</PopoverMotionContext>;
++}
++
+ export default Popover;

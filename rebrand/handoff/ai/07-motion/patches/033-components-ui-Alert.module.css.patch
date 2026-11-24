@@ -1,0 +1,68 @@
+diff --git a/src/components/ui/Alert.module.css b/src/components/ui/Alert.module.css
+index ffea3a7..60d3c70 100644
+--- a/src/components/ui/Alert.module.css
++++ b/src/components/ui/Alert.module.css
+@@ -1,45 +1,18 @@
+-.root {
+-  position: fixed;
+-  inset: 0;
+-  z-index: 60;
+-  display: flex;
+-  align-items: center;
+-  justify-content: center;
+-  padding-inline: 32px;
+-  opacity: 0;
+-  transition: opacity 200ms ease;
+-}
+-
+-.rootOpen {
+-  opacity: 1;
+-}
+-
+-.rootClosed {
+-  opacity: 0;
+-  pointer-events: none;
+-}
++/* Motion (scrim fade, card grow / fade) comes from the shared Sheet
++   (src/motion/Sheet.tsx, centre placement; layer z 60). */
+ 
+ .mask {
+-  position: absolute;
+-  inset: 0;
+   background: var(--gradient-scrim);
+ }
+ 
+ .panel {
+-  position: relative;
+-  width: 100%;
+-  max-width: 320px;
++  box-sizing: border-box;
++  width: min(calc(100vw - 64px), 320px);
+   padding: 24px;
+   border-radius: 32px;
+   background: #ffffff;
+   text-align: center;
+   box-shadow: var(--elevation-2);
+-  transform: translateY(32px) scale(0.9);
+-  transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+-}
+-
+-.panelOpen {
+-  transform: translateY(0) scale(1);
+ }
+ 
+ .title {
+@@ -67,9 +40,8 @@
+   color: var(--button-primary-fg);
+   font-weight: 700;
+   box-shadow: 0 20px 25px -5px rgb(0 1 40 / 20%);
+-  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+-}
+-
+-.button:active {
+-  transform: scale(0.98);
++  /* R-COLOR 150 ms; the press (0.985 / 60 ms) comes from pressProps */
++  transition:
++    background-color 0.15s ease,
++    color 0.15s ease;
+ }

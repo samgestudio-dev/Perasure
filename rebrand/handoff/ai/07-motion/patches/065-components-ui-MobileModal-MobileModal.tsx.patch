@@ -1,0 +1,292 @@
+diff --git a/src/components/ui/MobileModal/MobileModal.tsx b/src/components/ui/MobileModal/MobileModal.tsx
+index 738001d..c1f01b5 100644
+--- a/src/components/ui/MobileModal/MobileModal.tsx
++++ b/src/components/ui/MobileModal/MobileModal.tsx
+@@ -1,9 +1,10 @@
+ import type { CSSProperties, ReactNode, RefObject } from 'react';
+-import { useEffect, useRef, useState } from 'react';
+-import { createPortal } from 'react-dom';
++import { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
+ import { X } from 'lucide-react';
+ import { lockScroll, unlockScroll } from '@/utils/browser/dom/scrollLock';
+-import { useBottomSheetDragDismiss } from '@/components/ui/useBottomSheetDragDismiss';
++import { m } from 'motion/react';
++import { pressProps } from '@/motion/press';
++import { Sheet, useSheetDrag } from '@/motion/Sheet';
+ import styles from './MobileModal.module.css';
+ import { getMobileModalAriaModal } from './accessibility';
+ import { focusModalEntry, trapModalTabKey } from './focus';
+@@ -41,11 +42,52 @@ export interface MobileModalProps {
+   initialFocusRef?: RefObject<HTMLElement | null>;
+   initialFocusReady?: boolean;
+   trapFocus?: boolean;
++  /** Draw the demo's grab handle at the sheet's top (bottom placement). */
++  showGrabHandle?: boolean;
+ }
+ 
+-const MOTION_DURATION = 220;
++/**
++ * afterOpen fires when the enter motion settles (Sheet onOpened); this is
++ * only the safety net if the animation never reports (no rAF, hidden tab).
++ * SPRING_PCT rests in ≈ 560 ms, so 900 ms never cuts a real enter short.
++ */
++const AFTER_OPEN_FALLBACK_MS = 900;
+ 
+-/** 共用居中／底部弹窗；底部拖动只淡化独立遮罩，保留关闭和焦点约束。 */
++/** Height of the drag strip: the 20 px content / header padding, so it never covers a control. */
++const DRAG_STRIP_HEIGHT = '1.25rem';
++
++/** Title row: above the drag strip, and itself a drag handle (except its buttons). */
++function ModalHeader({
++  className,
++  children,
++}: {
++  className: string;
++  children: ReactNode;
++}) {
++  const drag = useSheetDrag();
++  return (
++    <div
++      className={className}
++      onPointerDown={drag.enabled ? drag.startDrag : undefined}
++      style={
++        drag.enabled
++          ? { position: 'relative', zIndex: 4, touchAction: 'none' }
++          : undefined
++      }
++    >
++      {children}
++    </div>
++  );
++}
++
++/**
++ * 共用居中／底部弹窗；动效由共享 Sheet（motion）承担：底部弹窗在 Smooth spring 上滑入滑出，
++ * 遮罩 0.2s 淡入、LEAVE 淡出，顶部拖拽条下拉关闭；保留关闭和焦点约束。
++ * Shared centre / bottom modal on the motion Sheet shell (demo PS.Sheet):
++ * slide on SPRING_PCT, scrim 0.2 s in / LEAVE out, drag the top strip or the
++ * title row down to close (96 px / 640 px/s), rows rise in; a closing modal
++ * takes no taps.
++ */
+ export function MobileModal({
+   open,
+   onClose,
+@@ -75,57 +117,50 @@ export function MobileModal({
+   initialFocusRef,
+   initialFocusReady = true,
+   trapFocus = false,
++  showGrabHandle = false,
+ }: MobileModalProps) {
+-  const [rendered, setRendered] = useState(open);
+-  const [visible, setVisible] = useState(open);
+   const panelRef = useRef<HTMLDivElement | null>(null);
+   const restoreFocusRef = useRef<HTMLElement | null>(null);
+   const openCycleRef = useRef(0);
++  const openedCycleRef = useRef(-1);
+   const closeOnEscapeRef = useRef(closeOnEscape);
+   const onCloseRef = useRef(onClose);
++  const afterOpenRef = useRef(afterOpen);
+ 
+-  const { backdropRef, isDragging, sheetDragProps } = useBottomSheetDragDismiss(
+-    {
+-      active: enableSwipeToDismiss && placement === 'bottom' && visible,
+-      onDismiss: () => onClose?.(),
+-      sheetRef: panelRef,
+-    },
+-  );
++  useLayoutEffect(() => {
++    afterOpenRef.current = afterOpen;
++  });
+ 
+-  useEffect(() => {
+-    if (open) {
+-      setRendered(true);
+-      const frame = window.requestAnimationFrame(() => setVisible(true));
+-      return () => window.cancelAnimationFrame(frame);
+-    }
+-
+-    setVisible(false);
+-    const timer = window.setTimeout(() => {
+-      if (destroyOnClose) setRendered(false);
+-      afterClose?.();
+-    }, MOTION_DURATION);
+-
+-    return () => window.clearTimeout(timer);
+-  }, [afterClose, destroyOnClose, open]);
++  /** Exactly-once per opening: the enter motion settled, or the safety net. */
++  const fireAfterOpen = useCallback(() => {
++    const cycle = openCycleRef.current;
++    if (openedCycleRef.current === cycle) return;
++    openedCycleRef.current = cycle;
++    afterOpenRef.current?.();
++  }, []);
+ 
+   useEffect(() => {
+     if (!open || !afterOpen) return undefined;
+ 
+-    const openCycle = ++openCycleRef.current;
+-    // Match the visual transition duration so consumers only record exposure
+-    // after the dialog is fully visible. The cycle guard also makes the
+-    // callback exactly-once when React effects are restarted.
+-    // 与进场动画时长保持一致，确保业务只在弹层完整可见后计曝光；周期号同时避免
+-    // React effect 重启时重复回调。
++    // Consumers record exposure only once the dialog is fully visible: the
++    // Sheet reports it when its enter motion settles (fireAfterOpen); this
++    // timer is the fallback. The cycle guard keeps the callback exactly-once
++    // when React effects restart.
++    // 业务只在弹层完整可见后计曝光：进场动效结束时由 Sheet 回调；定时器只是兜底，
++    // 周期号避免 React effect 重启时重复回调。
++    const openCycle = openCycleRef.current;
+     const timer = window.setTimeout(() => {
+-      if (openCycle === openCycleRef.current) afterOpen();
+-    }, MOTION_DURATION);
++      if (openCycle === openCycleRef.current) fireAfterOpen();
++    }, AFTER_OPEN_FALLBACK_MS);
+ 
+     return () => {
+       window.clearTimeout(timer);
+-      openCycleRef.current += 1;
+     };
+-  }, [afterOpen, open]);
++  }, [afterOpen, fireAfterOpen, open]);
++
++  useEffect(() => {
++    if (!open) openCycleRef.current += 1;
++  }, [open]);
+ 
+   useEffect(() => {
+     if (!open || !shouldLockScroll) return undefined;
+@@ -176,75 +211,70 @@ export function MobileModal({
+     return () => window.cancelAnimationFrame(frame);
+   }, [initialFocusReady, initialFocusRef, open, trapFocus]);
+ 
+-  if (!rendered || typeof document === 'undefined') return null;
++  if (typeof document === 'undefined') return null;
+ 
+-  return createPortal(
+-    <div
++  const swipe = enableSwipeToDismiss && placement === 'bottom';
++
++  return (
++    <Sheet
++      ariaLabelledBy={ariaLabelledBy}
++      ariaModal={getMobileModalAriaModal(trapFocus)}
+       className={[
+-        styles.root,
+-        visible ? styles.rootVisible : styles.rootHidden,
++        styles.panel,
++        placement === 'bottom' ? styles.panelBottom : styles.panelCenter,
++        className ?? '',
+       ].join(' ')}
+-      data-placement={placement}
+-      style={{ zIndex }}
++      closeOnScrimClick={closeOnMaskClick}
++      dragStripHeight={DRAG_STRIP_HEIGHT}
++      dragToClose={swipe}
++      grabHandle={showGrabHandle && placement === 'bottom'}
++      keepMounted={!destroyOnClose}
++      onClose={onClose}
++      onClosed={afterClose}
++      onOpened={fireAfterOpen}
++      open={open}
++      panelRef={panelRef}
++      placement={placement}
++      positionPanel={false}
++      rise={placement === 'bottom'}
++      role="dialog"
++      scrimClassName={[styles.mask, maskClassName ?? ''].join(' ')}
++      style={style}
++      tabIndex={-1}
++      zIndex={zIndex}
+     >
++      {title || showCloseButton ? (
++        <ModalHeader
++          className={[styles.header, headerClassName ?? ''].join(' ')}
++        >
++          <div className={styles.title}>{title}</div>
++          {showCloseButton ? (
++            <m.button
++              aria-label={closeButtonAriaLabel}
++              className={styles.closeButton}
++              disabled={closeButtonDisabled}
++              onClick={onClose}
++              type="button"
++              {...pressProps(true, closeButtonDisabled)}
++            >
++              <X className={styles.closeIcon} />
++            </m.button>
++          ) : null}
++        </ModalHeader>
++      ) : null}
+       <div
+-        ref={backdropRef}
+-        className={[styles.mask, maskClassName ?? ''].join(' ')}
+-        onClick={closeOnMaskClick ? onClose : undefined}
+-      />
+-      <div
+-        className={[
+-          styles.panel,
+-          placement === 'bottom' ? styles.panelBottom : styles.panelCenter,
+-          visible
+-            ? placement === 'bottom'
+-              ? styles.panelBottomVisible
+-              : styles.panelCenterVisible
+-            : placement === 'bottom'
+-              ? styles.panelBottomHidden
+-              : '',
+-          isDragging ? styles.panelDragging : '',
+-          className ?? '',
+-        ].join(' ')}
+-        role="dialog"
+-        tabIndex={-1}
+-        aria-modal={getMobileModalAriaModal(trapFocus)}
+-        aria-labelledby={ariaLabelledBy}
+-        ref={panelRef}
+-        style={style}
+-        {...(enableSwipeToDismiss ? sheetDragProps : {})}
++        className={[styles.content, contentClassName ?? '']
++          .filter(Boolean)
++          .join(' ')}
++        style={contentStyle}
+       >
+-        {title || showCloseButton ? (
+-          <div className={[styles.header, headerClassName ?? ''].join(' ')}>
+-            <div className={styles.title}>{title}</div>
+-            {showCloseButton ? (
+-              <button
+-                aria-label={closeButtonAriaLabel}
+-                className={styles.closeButton}
+-                disabled={closeButtonDisabled}
+-                onClick={onClose}
+-                type="button"
+-              >
+-                <X className={styles.closeIcon} />
+-              </button>
+-            ) : null}
+-          </div>
+-        ) : null}
+-        <div
+-          className={[styles.content, contentClassName ?? '']
+-            .filter(Boolean)
+-            .join(' ')}
+-          style={contentStyle}
+-        >
+-          {children}
+-        </div>
+-        {footer ? (
+-          <div className={[styles.footer, footerClassName ?? ''].join(' ')}>
+-            {footer}
+-          </div>
+-        ) : null}
++        {children}
+       </div>
+-    </div>,
+-    document.body,
++      {footer ? (
++        <div className={[styles.footer, footerClassName ?? ''].join(' ')}>
++          {footer}
++        </div>
++      ) : null}
++    </Sheet>
+   );
+ }

@@ -1,0 +1,98 @@
+diff --git a/src/pages/HomePage/Payment/components/PaymentMethodDrawer/index.module.css b/src/pages/HomePage/Payment/components/PaymentMethodDrawer/index.module.css
+index 736cdd7..652f7fd 100644
+--- a/src/pages/HomePage/Payment/components/PaymentMethodDrawer/index.module.css
++++ b/src/pages/HomePage/Payment/components/PaymentMethodDrawer/index.module.css
+@@ -2,7 +2,8 @@
+   position: fixed;
+   box-sizing: border-box;
+   z-index: 1020;
+-  top: var(--app-shell-header-offset, 76px);
++  /* !important: the shared Sheet layer sets inset: 0 inline; stay under the app header */
++  top: var(--app-shell-header-offset, 76px) !important;
+   right: 0;
+   bottom: 0;
+   left: 0;
+@@ -19,7 +20,7 @@
+ }
+ 
+ .overlayNativeApp {
+-  top: var(--app-shell-header-offset, 76px);
++  top: var(--app-shell-header-offset, 76px) !important;
+ }
+ 
+ .drawer {
+@@ -43,19 +44,7 @@
+   border-radius: var(--radius-xxl, 32px) var(--radius-xxl, 32px) 0 0;
+   background: var(--bg-default, #ffffff);
+   box-shadow: var(--elevation-2);
+-  transform: translate3d(0, var(--bottom-sheet-drag-offset, 0), 0);
+-  transition: transform 0.34s cubic-bezier(0.22, 0.7, 0.24, 1);
+-}
+-
+-.drawerDragging,
+-.drawerDragging * {
+-  -webkit-user-select: none;
+-  user-select: none;
+-}
+-
+-.drawerDragging {
+-  transition: none;
+-  will-change: transform;
++  /* Motion (enter / exit, drag, spring back) comes from the shared Sheet. */
+ }
+ 
+ .dragHandle {
+@@ -440,7 +429,7 @@
+   width: 100%;
+   height: 36px;
+   min-height: 36px;
+-  grid-template-columns: minmax(0, 1fr) 16px;
++  grid-template-columns: minmax(0, 1fr) auto;
+   align-items: center;
+   gap: var(--spacing-gap-sm, 8px);
+   padding: var(--spacing-padding-sm, 8px) var(--spacing-padding-md, 12px);
+@@ -450,6 +439,14 @@
+   text-align: left;
+ }
+ 
++.methodButton,
++.categoryButton {
++  /* R-COLOR: selection colour in 150 ms (press: pressProps) */
++  transition:
++    background-color 0.15s ease,
++    color 0.15s ease;
++}
++
+ .methodButton:active,
+ .methodButtonSelected {
+   background: var(--bg-page-subtle, #f7faf9);
+@@ -484,8 +481,9 @@
+ }
+ 
+ .loadingIcon {
++  display: inline-flex;
++  min-width: 16px;
+   color: var(--fg-accent, #2c74be);
+-  animation: payment-method-spin 0.8s linear infinite;
+ }
+ 
+ .emptyState {
+@@ -533,18 +531,8 @@
+   line-height: var(--font-line-height-caption-xs, 14px);
+ }
+ 
+-@keyframes payment-method-spin {
+-  to {
+-    transform: rotate(360deg);
+-  }
+-}
+-
+ @media (prefers-reduced-motion: reduce) {
+   .methodContent {
+     scroll-behavior: auto;
+   }
+-
+-  .loadingIcon {
+-    animation: none;
+-  }
+ }

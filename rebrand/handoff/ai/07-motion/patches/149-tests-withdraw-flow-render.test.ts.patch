@@ -1,0 +1,15 @@
+diff --git a/tests/withdraw-flow-render.test.ts b/tests/withdraw-flow-render.test.ts
+index aca8c98..a699e83 100644
+--- a/tests/withdraw-flow-render.test.ts
++++ b/tests/withdraw-flow-render.test.ts
+@@ -271,6 +271,10 @@ test('actual flow caches terms, isolates bank/header/agreement renders and inval
+     '@/utils/browser/agreement',
+     '@/features/reloan/tracking',
+     './motion/cardMotion',
++    './motion/withdrawMorph',
++    '@/motion/flows/agreementNudge',
++    '@/motion/flows/useGlide',
++    '@/motion/flows/withdrawTokens',
+     './SubmissionStatus',
+   ]) {
+     accountDependencies[name] = {};

@@ -1,0 +1,57 @@
+diff --git a/src/pages/HomePage/CreditIncreaseIntro/material/baked-heap.js b/src/pages/HomePage/CreditIncreaseIntro/material/baked-heap.js
+index e70dc24..191b133 100644
+--- a/src/pages/HomePage/CreditIncreaseIntro/material/baked-heap.js
++++ b/src/pages/HomePage/CreditIncreaseIntro/material/baked-heap.js
+@@ -46,6 +46,9 @@ export function createBakedHeap(recording, CONFIG, onDone) {
+     $('wasLabel').textContent = CONFIG.previousLabel;
+     $('wasAmt').textContent = money(CONFIG.from);
+     $('expText').textContent = CONFIG.expiresText;
++    /* source demo: no date hides the date segment and the increase becomes a round pill of its own */
++    $('exp').style.display = CONFIG.expiresText ? '' : 'none';
++    $('delta').classList.toggle('solo', !CONFIG.expiresText);
+     setAmount(money(CONFIG.from));
+     fitAmount();
+   }
+@@ -1078,10 +1081,11 @@ export function createBakedHeap(recording, CONFIG, onDone) {
+     tl.add(function () {
+       setAmount(money(CONFIG.to));
+     }, 'land');
++    /* source demo: 'done' fires at 'end-=.2' (3.2 s); the host's 3 s hold then starts */
+     tl.add(function () {
+       onDone();
+-    }, 'end');
+-    /* the UI is done at 'end' (3.4 s, the 'done' event); the recorded coins may settle a moment longer */
++    }, 'end-=.2');
++    /* the UI is done at 3.2 s (the 'done' event); the recorded coins may settle a moment longer */
+     tl.to({}, { duration: 0.01 }, Math.max(END, (BAKED.end || END) - 0.01));
+     gsap.set(['#up', '#was', '#exp'], { opacity: 0 });
+     frame();
+@@ -1098,14 +1102,24 @@ export function createBakedHeap(recording, CONFIG, onDone) {
+   document.documentElement.classList.add('cl-on');
+   tl.play(0);
+   return {
+-    /** Stops looping effects before the host takes visual ownership. */
++    /** Freezes every running timeline in place (main, star twinkles, this frame's global timeline), as the
++     source exit does, before the host takes visual ownership; stars keep their current pose. */
+     stop() {
+-      tl.pause();
+-      stopTwinkles();
++      if (tl) tl.pause();
++      twinkles.forEach(function (t) {
++        t.pause();
++      });
++      gsap.globalTimeline.pause();
+     },
+     /** Exposes only the agreed visual handles, never unrelated child DOM. */
+     getVisualHandles() {
+-      return { amount: amountEl, hero: $('hero') };
++      return {
++        amount: amountEl,
++        hero: $('hero'),
++        art: $('art') || null,
++        stars: $('artStars') || null,
++        canvases: [$('cvBack'), $('cvFront')].filter(Boolean),
++      };
+     },
+     /** Idempotent removal releases timelines, canvas backing stores and recording references. */
+     destroy() {

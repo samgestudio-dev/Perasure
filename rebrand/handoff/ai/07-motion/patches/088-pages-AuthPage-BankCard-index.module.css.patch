@@ -1,0 +1,48 @@
+diff --git a/src/pages/AuthPage/BankCard/index.module.css b/src/pages/AuthPage/BankCard/index.module.css
+index 3d03ff3..b2e90f7 100644
+--- a/src/pages/AuthPage/BankCard/index.module.css
++++ b/src/pages/AuthPage/BankCard/index.module.css
+@@ -69,28 +69,21 @@
+ }
+ 
+ .tabIndicator {
++  /* The white pill sits in the active tab and glides to the other one on the
++     Smooth spring (rebrand Segmented, Motion layoutId). 白色胶囊以 Smooth spring 滑动。 */
+   position: absolute;
+-  z-index: 0;
+-  top: var(--spacing-2, 2px);
+-  bottom: var(--spacing-2, 2px);
+-  left: var(--spacing-2, 2px);
+-  width: calc(50% - var(--spacing-2, 2px));
++  z-index: -1;
++  inset: 0;
+   border-radius: 14px;
+   background: var(--fg-on-emphasis, #ffffff);
+   pointer-events: none;
+-  transform: translateX(0);
+-  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+-  will-change: transform;
+-}
+-
+-.tabs[data-active-tab='bank'] .tabIndicator {
+-  transform: translateX(100%);
+ }
+ 
+ .tab {
+   box-sizing: border-box;
+   position: relative;
+   z-index: 1;
++  isolation: isolate;
+   min-width: 0;
+   flex: 1 1 0;
+   display: inline-flex;
+@@ -106,7 +99,8 @@
+   font-weight: var(--font-weight-semi-bold, 600);
+   line-height: var(--font-line-height-label-md, 20px);
+   white-space: nowrap;
+-  transition: color 180ms ease;
++  /* Colour only, 150 ms (rebrand R-COLOR). 只变颜色，150ms。 */
++  transition: color 0.15s ease;
+ }
+ 
+ .tabActive {

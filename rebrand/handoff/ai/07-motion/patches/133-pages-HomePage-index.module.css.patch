@@ -1,0 +1,13 @@
+diff --git a/src/pages/HomePage/index.module.css b/src/pages/HomePage/index.module.css
+index 69c643b..301b17f 100644
+--- a/src/pages/HomePage/index.module.css
++++ b/src/pages/HomePage/index.module.css
+@@ -9,6 +9,8 @@
+ }
+ 
+ .content {
++  /* Positioned for the tab crossfade (the leaving panel overlaps the new one). / tab 淡入淡出时旧面板需绝对定位叠放。 */
++  position: relative;
+   box-sizing: border-box;
+   min-height: 100%;
+   /* Reserve space for the fixed bottom nav so future tab content is not covered. / 为 fixed 底部导航预留空间，避免后续 tab 内容被遮挡。 */

@@ -1,0 +1,226 @@
+diff --git a/src/components/ui/Select/SelectSheet.tsx b/src/components/ui/Select/SelectSheet.tsx
+index 0deb725..a792305 100644
+--- a/src/components/ui/Select/SelectSheet.tsx
++++ b/src/components/ui/Select/SelectSheet.tsx
+@@ -1,14 +1,17 @@
+-import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
+-import { createPortal } from 'react-dom';
++import { useEffect, useId, useRef, type ReactNode } from 'react';
++import { m } from 'motion/react';
+ 
+ import { ProgressiveBlur } from '@/components/ui/ProgressiveBlur';
+-import { useBottomSheetDragDismiss } from '@/components/ui/useBottomSheetDragDismiss';
++import { pressProps } from '@/motion/press';
++import { Sheet } from '@/motion/Sheet';
++import { SheetDragArea } from '@/motion/SheetDragArea';
+ import { lockScroll, unlockScroll } from '@/utils/browser/dom/scrollLock';
+ 
+ import type { SelectOption, SelectValue } from './index';
+ import styles from './SelectSheet.module.css';
+ 
+-const MOTION_DURATION = 220;
++/** Drag strip = the sheet's 20 px top padding above the title (the title row drags too). */
++const DRAG_STRIP_HEIGHT = '1.25rem';
+ 
+ interface SelectSheetProps {
+   closeOnMaskClick: boolean;
+@@ -34,7 +37,14 @@ function joinClassNames(...classNames: Array<string | false | undefined>) {
+   return classNames.filter(Boolean).join(' ');
+ }
+ 
+-/** Select 的内部 sheet 展示层；不持有受控/非受控业务状态或选择回调编排。 */
++/**
++ * Select 的内部 sheet 展示层；不持有受控/非受控业务状态或选择回调编排。
++ * 动效由共享 Sheet 承担（Smooth spring 滑入滑出、遮罩 0.2s 淡入、顶部下拉关闭、内容逐行上浮）；
++ * 选中项颜色 150ms 过渡，随后由 Select 在 160ms 后关闭（M-041）。
++ * Select's sheet on the shared motion Sheet (M-013 / M-014 / M-015 / M-021);
++ * a picked row changes colour in 0.15 s and Select closes the sheet 160 ms
++ * later (M-041, CHOICE_CLOSE_DELAY_MS).
++ */
+ export function SelectSheet({
+   closeOnMaskClick,
+   emptyText,
+@@ -51,33 +61,8 @@ export function SelectSheet({
+   zIndex,
+ }: SelectSheetProps) {
+   const dialogTitleId = useId();
+-  const [rendered, setRendered] = useState(open);
+-  const [visible, setVisible] = useState(open);
+   const sheetRef = useRef<HTMLDivElement | null>(null);
+ 
+-  const { backdropRef, isDragging, sheetDragProps } = useBottomSheetDragDismiss(
+-    {
+-      active: open && visible,
+-      onDismiss: onRequestClose,
+-      sheetRef,
+-    },
+-  );
+-
+-  useEffect(() => {
+-    if (open) {
+-      setRendered(true);
+-      const timer = window.setTimeout(() => setVisible(true), 0);
+-      return () => window.clearTimeout(timer);
+-    }
+-
+-    setVisible(false);
+-    const timer = window.setTimeout(() => {
+-      setRendered(false);
+-    }, MOTION_DURATION);
+-
+-    return () => window.clearTimeout(timer);
+-  }, [open]);
+-
+   useEffect(() => {
+     if (!open) return undefined;
+ 
+@@ -98,90 +83,72 @@ export function SelectSheet({
+     return () => window.removeEventListener('keydown', handleKeyDown);
+   }, [onRequestClose, open]);
+ 
+-  if (!rendered || typeof document === 'undefined') {
++  if (typeof document === 'undefined') {
+     return null;
+   }
+ 
+-  return createPortal(
+-    <div
+-      className={joinClassNames(
+-        styles.overlay,
+-        visible ? styles.overlayVisible : styles.overlayHidden,
+-      )}
+-      style={{ zIndex }}
++  return (
++    <Sheet
++      ariaLabelledBy={dialogTitleId}
++      className={joinClassNames(styles.sheet, popupClassName)}
++      closeOnScrimClick={closeOnMaskClick}
++      dragStripHeight={DRAG_STRIP_HEIGHT}
++      layerClassName={styles.overlay}
++      onClose={onRequestClose}
++      open={open}
++      panelRef={sheetRef}
++      positionPanel={false}
++      riseSkip={2}
++      role="dialog"
++      scrimClassName={styles.mask}
++      zIndex={zIndex}
+     >
+-      <button
+-        aria-label="Close select options"
+-        ref={backdropRef}
+-        className={styles.mask}
+-        onClick={closeOnMaskClick ? onRequestClose : undefined}
+-        tabIndex={closeOnMaskClick ? 0 : -1}
+-        type="button"
+-      />
+-      <div
+-        aria-labelledby={dialogTitleId}
++      <span aria-hidden="true" className={styles.handle} />
++      <SheetDragArea
+         className={joinClassNames(
+-          styles.sheet,
+-          visible ? styles.sheetVisible : styles.sheetHidden,
+-          isDragging ? styles.sheetDragging : '',
+-          popupClassName,
++          styles.sheetHeader,
++          progressiveBlur ? styles.sheetHeaderProgressive : '',
+         )}
+-        role="dialog"
+-        ref={sheetRef}
+-        {...sheetDragProps}
+       >
+-        <span aria-hidden="true" className={styles.handle} />
+-        <div
+-          className={joinClassNames(
+-            styles.sheetHeader,
+-            progressiveBlur ? styles.sheetHeaderProgressive : '',
+-          )}
+-        >
+-          {progressiveBlur ? (
+-            <ProgressiveBlur className={styles.sheetHeaderBlur} />
+-          ) : null}
+-          <h2 className={styles.sheetTitle} id={dialogTitleId}>
+-            {sheetTitle ?? title}
+-          </h2>
+-        </div>
+-        <div className={styles.sheetContent}>
+-          {options.length > 0 ? (
+-            <div className={styles.optionList} role="radiogroup">
+-              {options.map((option) => {
+-                const selected = isSameValue(option.value, selectedValue);
+-
+-                return (
+-                  <button
+-                    aria-checked={selected}
+-                    className={joinClassNames(
+-                      styles.option,
+-                      selected
+-                        ? styles.optionSelected
+-                        : styles.optionUnselected,
+-                      option.disabled ? styles.optionDisabled : '',
+-                    )}
+-                    data-event-type={optionDataEventType}
+-                    disabled={option.disabled}
+-                    key={String(option.value)}
+-                    onClick={() => onSelectOption(option)}
+-                    role="radio"
+-                    type="button"
+-                  >
+-                    <span className={styles.optionLabel}>{option.label}</span>
+-                    <span
+-                      aria-hidden="true"
+-                      className={styles.optionIndicator}
+-                    />
+-                  </button>
+-                );
+-              })}
+-            </div>
+-          ) : (
+-            <div className={styles.empty}>{emptyText}</div>
+-          )}
+-        </div>
++        {progressiveBlur ? (
++          <ProgressiveBlur className={styles.sheetHeaderBlur} />
++        ) : null}
++        <h2 className={styles.sheetTitle} id={dialogTitleId}>
++          {sheetTitle ?? title}
++        </h2>
++      </SheetDragArea>
++      <div className={styles.sheetContent}>
++        {options.length > 0 ? (
++          <div className={styles.optionList} role="radiogroup">
++            {options.map((option) => {
++              const selected = isSameValue(option.value, selectedValue);
++
++              return (
++                <m.button
++                  aria-checked={selected}
++                  className={joinClassNames(
++                    styles.option,
++                    selected ? styles.optionSelected : styles.optionUnselected,
++                    option.disabled ? styles.optionDisabled : '',
++                  )}
++                  data-event-type={optionDataEventType}
++                  disabled={option.disabled}
++                  key={String(option.value)}
++                  onClick={() => onSelectOption(option)}
++                  role="radio"
++                  type="button"
++                  {...pressProps(false, option.disabled)}
++                >
++                  <span className={styles.optionLabel}>{option.label}</span>
++                  <span aria-hidden="true" className={styles.optionIndicator} />
++                </m.button>
++              );
++            })}
++          </div>
++        ) : (
++          <div className={styles.empty}>{emptyText}</div>
++        )}
+       </div>
+-    </div>,
+-    document.body,
++    </Sheet>
+   );
+ }

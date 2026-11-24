@@ -1,0 +1,116 @@
+diff --git a/src/components/ui/HeaderActionContainer/index.tsx b/src/components/ui/HeaderActionContainer/index.tsx
+index 01acc50..f6c14ec 100644
+--- a/src/components/ui/HeaderActionContainer/index.tsx
++++ b/src/components/ui/HeaderActionContainer/index.tsx
+@@ -8,6 +8,8 @@ import { isApp } from '@/utils/jsbridge';
+ import { useAppNavigation } from '@/utils/navigation';
+ 
+ import styles from './index.module.css';
++import { m } from 'motion/react';
++import { pressProps } from '@/motion/press';
+ 
+ export type HeaderActionContainerVariant =
+   'default' | 'primary' | 'twoAction' | 'titlePill' | 'backOnly' | 'search';
+@@ -143,7 +145,7 @@ const HeaderIconButton = ({
+   }
+ 
+   return (
+-    <button
++    <m.button
+       aria-label={action.ariaLabel}
+       className={`${styles.iconButton} ${invisible ? styles.invisible : ''}`}
+       data-event-type={action.eventType}
+@@ -151,9 +153,10 @@ const HeaderIconButton = ({
+       type="button"
+       onClick={action.onClick}
+       {...getDataAttributes(action)}
++      {...pressProps(true, action.disabled)}
+     >
+       {action.icon}
+-    </button>
++    </m.button>
+   );
+ };
+ 
+@@ -268,18 +271,19 @@ const HeaderActionContainer = ({
+       <header aria-label={ariaLabel} className={rootClassName} style={style}>
+         {headerBackdrop}
+         <div className={`${styles.row} ${styles.rowBetween}`} data-header-row>
+-          <button
++          <m.button
+             aria-label={resolvedBrand.ariaLabel ?? resolvedBrand.text}
+             className={brandButtonClassName}
+             data-event-type={resolvedBrand.eventType}
+             type="button"
+             onClick={resolvedBrand.onClick}
++            {...pressProps()}
+           >
+             {resolvedBrand.logo ? (
+               <span className={logoWrapClassName}>{resolvedBrand.logo}</span>
+             ) : null}
+             <span>{resolvedBrand.text}</span>
+-          </button>
++          </m.button>
+ 
+           {visibleRightActions.length > 0 ? (
+             <div
+@@ -293,7 +297,7 @@ const HeaderActionContainer = ({
+                 .join(' ')}
+             >
+               {visibleRightActions.slice(0, 2).map((action, index) => (
+-                <button
++                <m.button
+                   aria-label={action.ariaLabel}
+                   className={styles.groupIconButton}
+                   data-event-type={action.eventType}
+@@ -302,9 +306,10 @@ const HeaderActionContainer = ({
+                   type="button"
+                   onClick={action.onClick}
+                   {...getDataAttributes(action)}
++                  {...pressProps(true, action.disabled)}
+                 >
+                   {action.icon}
+-                </button>
++                </m.button>
+               ))}
+             </div>
+           ) : null}
+@@ -334,7 +339,7 @@ const HeaderActionContainer = ({
+                 .join(' ')}
+             >
+               {visibleRightActions.slice(0, 2).map((action, index) => (
+-                <button
++                <m.button
+                   aria-label={action.ariaLabel}
+                   className={styles.groupIconButton}
+                   data-event-type={action.eventType}
+@@ -343,9 +348,10 @@ const HeaderActionContainer = ({
+                   type="button"
+                   onClick={action.onClick}
+                   {...getDataAttributes(action)}
++                  {...pressProps(true, action.disabled)}
+                 >
+                   {action.icon}
+-                </button>
++                </m.button>
+               ))}
+             </div>
+           ) : null}
+@@ -362,14 +368,15 @@ const HeaderActionContainer = ({
+           <div className={styles.searchBox}>
+             {renderIcon(Search, 18)}
+             <span>{search?.value || search?.placeholder || 'Search'}</span>
+-            <button
++            <m.button
+               aria-label="Clear search"
+               className={styles.searchClear}
+               type="button"
+               onClick={search?.onClear}
++              {...pressProps()}
+             >
+               {renderIcon(X, 12)}
+-            </button>
++            </m.button>
+           </div>
+           <HeaderIconButton
+             action={{

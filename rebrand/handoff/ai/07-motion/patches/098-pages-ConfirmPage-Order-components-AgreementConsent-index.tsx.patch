@@ -1,0 +1,52 @@
+diff --git a/src/pages/ConfirmPage/Order/components/AgreementConsent/index.tsx b/src/pages/ConfirmPage/Order/components/AgreementConsent/index.tsx
+index 0e0c061..8de60e9 100644
+--- a/src/pages/ConfirmPage/Order/components/AgreementConsent/index.tsx
++++ b/src/pages/ConfirmPage/Order/components/AgreementConsent/index.tsx
+@@ -31,22 +31,31 @@ export default function AgreementConsent({
+   return (
+     <section className={styles.root} data-agreement-checked={checked}>
+       <div className={styles.content}>
+-        <button
+-          aria-checked={checked}
+-          aria-label={t('confirm.order.agreement.acceptLabel')}
+-          className={[styles.checkbox, checked ? styles.checkboxChecked : '']
+-            .filter(Boolean)
+-            .join(' ')}
+-          data-event-type="confirm_order_agreement_toggle"
+-          disabled={disabled}
+-          onClick={() => onChange(!checked)}
+-          role="checkbox"
+-          type="button"
+-        >
+-          {checked ? (
+-            <Check aria-hidden="true" size={10} strokeWidth={3} />
+-          ) : null}
+-        </button>
++        {/* The nudge ring (withdraw.js:1341, M-112): it ripples out of the
++            empty circle when Confirm is tapped before the tick. */}
++        <span className={styles.checkboxWrap}>
++          <span
++            aria-hidden="true"
++            className={styles.halo}
++            data-agreement-halo
++          />
++          <button
++            aria-checked={checked}
++            aria-label={t('confirm.order.agreement.acceptLabel')}
++            className={[styles.checkbox, checked ? styles.checkboxChecked : '']
++              .filter(Boolean)
++              .join(' ')}
++            data-event-type="confirm_order_agreement_toggle"
++            disabled={disabled}
++            onClick={() => onChange(!checked)}
++            role="checkbox"
++            type="button"
++          >
++            {checked ? (
++              <Check aria-hidden="true" size={10} strokeWidth={3} />
++            ) : null}
++          </button>
++        </span>
+ 
+         <p className={styles.text}>
+           {t('confirm.order.agreement.prefix')}{' '}

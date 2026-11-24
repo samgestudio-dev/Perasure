@@ -1,0 +1,66 @@
+diff --git a/src/pages/HomePage/BottomNavigation/index.tsx b/src/pages/HomePage/BottomNavigation/index.tsx
+index 4ba7949..ad31975 100644
+--- a/src/pages/HomePage/BottomNavigation/index.tsx
++++ b/src/pages/HomePage/BottomNavigation/index.tsx
+@@ -1,4 +1,5 @@
+ import { useEffect, useRef, useState, type FC } from 'react';
++import { m } from 'motion/react';
+ 
+ import { ProgressiveBlur } from '@/components/ui/ProgressiveBlur';
+ import {
+@@ -10,6 +11,8 @@ import {
+   type KeyboardVisibilityState,
+ } from '@/utils/browser/dom/keyboardViewport';
+ import { useI18n, type TranslationKey } from '@/i18n';
++import { pressProps } from '@/motion/press';
++import { MT } from '@/motion/tokens';
+ 
+ import navAccountIcon from '../Account/assets/icons/nav-account.svg';
+ import navHomeIcon from '../Account/assets/icons/nav-home.svg';
+@@ -169,6 +172,7 @@ const BottomNavigation: FC<BottomNavigationProps> = ({
+       aria-label={t('home.navigation.label')}
+       className={styles.navigation}
+       data-active-tab={activeTab}
++      data-motion-bottom-bar=""
+       data-backdrop-effects={backdropEffectsEnabled}
+     >
+       {backdropEffectsEnabled ? (
+@@ -184,9 +188,10 @@ const BottomNavigation: FC<BottomNavigationProps> = ({
+           const isActive = activeTab === item.key;
+ 
+           return (
+-            <button
+-              className={`${styles.tabButton} ${isActive ? styles.tabButtonActive : ''}`}
++            <m.button
+               key={item.key}
++              {...pressProps()}
++              className={`${styles.tabButton} ${isActive ? styles.tabButtonActive : ''}`}
+               type="button"
+               aria-current={isActive ? 'page' : undefined}
+               data-home-tab={item.key}
+@@ -200,6 +205,16 @@ const BottomNavigation: FC<BottomNavigationProps> = ({
+               onPointerEnter={() => onTabPreload?.(item.key)}
+               onTouchStart={() => onTabPreload?.(item.key)}
+             >
++              {/* The pill glides to the tapped tab on the Smooth spring (rebrand
++                  Navigator, layoutId). 选中胶囊以 Smooth spring 滑到新 tab。 */}
++              {isActive ? (
++                <m.span
++                  aria-hidden="true"
++                  className={styles.tabPill}
++                  layoutId="home-nav-pill"
++                  transition={MT.SPRING}
++                />
++              ) : null}
+               <span
+                 aria-hidden="true"
+                 className={styles.tabIcon}
+@@ -209,7 +224,7 @@ const BottomNavigation: FC<BottomNavigationProps> = ({
+                 }}
+               />
+               <span className={styles.tabLabel}>{t(item.labelKey)}</span>
+-            </button>
++            </m.button>
+           );
+         })}
+       </div>

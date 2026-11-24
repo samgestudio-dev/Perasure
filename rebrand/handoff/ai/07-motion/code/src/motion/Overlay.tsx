@@ -1,0 +1,60 @@
+/** @jsxRuntime automatic @jsxImportSource react */
+import type { CSSProperties, ReactNode } from 'react';
+import { AnimatePresence, m } from 'motion/react';
+
+import { MT, SCRIM_IN } from './tokens';
+
+/** Props shared by {@link Cover} and {@link Overlay}. */
+export interface LayerProps {
+  open: boolean;
+  className?: string;
+  style?: CSSProperties;
+  children?: ReactNode;
+}
+
+/**
+ * `PS.Cover` (Perasure `shared/ps-ui/layout.js:111-126`) — M-012 / R-LOADING:
+ * a page that is still loading (or failed) is covered by a layer that is
+ * there AT ONCE and leaves on LEAVE (opacity 1 → 0, 0.15 s). What was waited
+ * for then rises in piece by piece (wrap it in `<Rise>`). Position it with
+ * `className` (production: full screen, above header and bars).
+ */
+export function Cover({ open, className, style, children }: LayerProps) {
+  return (
+    <AnimatePresence initial={false}>
+      {open ? (
+        <m.div
+          className={className}
+          exit={{ opacity: 0, transition: MT.LEAVE }}
+          key="cover"
+          style={style}
+        >
+          {children}
+        </m.div>
+      ) : null}
+    </AnimatePresence>
+  );
+}
+
+/**
+ * `PS.Overlay` (`shared/ps-ui/feedback.js:64-68`) — M-056: a full-screen layer
+ * over the page (loaders, order submit) that fades in 0.2 s and out on LEAVE.
+ */
+export function Overlay({ open, className, style, children }: LayerProps) {
+  return (
+    <AnimatePresence>
+      {open ? (
+        <m.div
+          animate={{ opacity: 1, transition: SCRIM_IN }}
+          className={className}
+          exit={{ opacity: 0, transition: MT.LEAVE }}
+          initial={{ opacity: 0 }}
+          key="overlay"
+          style={style}
+        >
+          {children}
+        </m.div>
+      ) : null}
+    </AnimatePresence>
+  );
+}

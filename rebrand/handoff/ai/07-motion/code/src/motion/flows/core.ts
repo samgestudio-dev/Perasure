@@ -1,0 +1,190 @@
+/**
+ * Flow motion core — the pieces every PeraSure "card morph" shares
+ * (skill `perasure-card-morph`, demo `prototypes/withdraw-fund-flow/withdraw.js`).
+ *
+ * One progress k (0 = state A, 1 = state B) rides ONE spring; every style is a
+ * pure function of k, written straight to the DOM (no React render per frame).
+ * Opacity / blur / small rises follow smoothstep windows of k (`win`);
+ * secondary details enter on a 0.34 s clock started by the progress (`clock`).
+ *
+ * New file (flow agent). It only reads the foundation tokens; nothing in
+ * `src/motion/*` was changed.
+ */
+import { animate, motionValue, type MotionValue } from 'motion';
+
+import { EASE_IN, MT, type CubicBezier } from '../tokens';
+import { prefersReducedMotion } from '../reducedMotion';
+
+/** Controls returned by Motion's `animate` (stop / then). */
+export type Playback = ReturnType<typeof animate>;
+
+/** clamp to 0–1 */
+export const clamp01 = (v: number): number => Math.max(0, Math.min(1, v));
+
+/** lerp; unclamped so geometry follows the spring's tiny overshoot (withdraw.js:312). */
+export const lerp = (a: number, b: number, k: number): number =>
+  a + (b - a) * k;
+
+/**
+ * Opacity window on the shared progress — withdraw.js:321 `win(a, b)`:
+ * 0 before k = a, 1 after k = b, smoothstep between. Same function both ways,
+ * so a reversal runs it back.
+ */
+export function win(k: number, a: number, b: number): number {
+  const t = clamp01((k - a) / (b - a));
+  return t * t * (3 - 2 * t);
+}
+
+/** Round to 1/1000 px — every value the demo writes goes through r3 (withdraw.js:402). */
+export const r3 = (v: number): number => Math.round(v * 1000) / 1000;
+
+/** Parse `#rrggbb` / `rgb(…)` / `rgba(…)` into [r, g, b]. */
+export function rgbOf(color: string): [number, number, number] {
+  const c = color.trim();
+  if (c.startsWith('#') && c.length >= 7)
+    return [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16)) as [
+      number,
+      number,
+      number,
+    ];
+  const n = (c.match(/[\d.]+/g) ?? ['0', '0', '0']).slice(0, 3).map(Number);
+  return [n[0] ?? 0, n[1] ?? 0, n[2] ?? 0];
+}
+
+/**
+ * Colour rides the progress (skill rule 7) — withdraw.js:324 `mix(a, b)`:
+ * per-channel lerp on the clamped k, rounded.
+ */
+export function mixRgb(a: string, b: string, k: number): string {
+  const x = rgbOf(a);
+  const y = rgbOf(b);
+  const t = clamp01(k);
+  return `rgb(${x.map((v, i) => Math.round(v + (y[i] - v) * t)).join(',')})`;
+}
+
+/** The Smooth feel without rest thresholds — withdraw motion-tokens.js FEEL.Smooth. */
+export const SMOOTH = {
+  type: 'spring' as const,
+  stiffness: MT.SPRING.stiffness,
+  damping: MT.SPRING.damping,
+  mass: MT.SPRING.mass,
+};
+
+/**
+ * The morph spring on a 0→1 progress — withdraw.js:648 tweenMp: Smooth +
+ * restDelta 0.001, restSpeed 0.01 (the final snap moves nothing by more than
+ * ~0.4 px). 95 % ≈ 290 ms, rest ≈ 560–572 ms.
+ */
+export const MORPH_SPRING = { ...SMOOTH, restDelta: 0.001, restSpeed: 0.01 };
+
+/**
+ * A long travel stretches the same spring — withdraw.js:984-1001 (introExit):
+ * De = longest edge travel (px), ts = min(2.5, max(1, De / 378));
+ * stiffness ÷ ts², damping ÷ ts, rest at 0.378 px and 3.78 px/s over De.
+ * Never faster than the base spring for a short travel.
+ */
+export function stretchedSpring(travelPx: number) {
+  const De = Math.max(1, travelPx);
+  const ts = Math.min(2.5, Math.max(1, De / 378));
+  return {
+    ts,
+    De,
+    transition: {
+      ...SMOOTH,
+      stiffness: SMOOTH.stiffness / (ts * ts),
+      damping: SMOOTH.damping / ts,
+      restDelta: 0.378 / De,
+      restSpeed: 3.78 / De / ts,
+    },
+  };
+}
+
+/** The secondary-content clock — skill: 0.34 s on the ENTER curve, rise from a 3 px blur. */
+export const CLOCK = { duration: 0.34, ease: EASE_IN as CubicBezier };
+
+/** Plays a 0→1 clock and reports every value (used for clocked entrances). */
+export function clock(
+  options: { duration: number; ease?: CubicBezier | 'linear'; delay?: number },
+  onUpdate: (v: number) => void,
+  onComplete: () => void,
+): Playback {
+  return animate(0, 1, {
+    duration: options.duration,
+    delay: options.delay,
+    ease: options.ease ?? EASE_IN,
+    onUpdate,
+    onComplete,
+  });
+}
+
+/**
+ * Drives one progress value on a spring; `onFrame` receives every k.
+ * Returns the value so a later call can re-target it (velocity carried).
+ */
+export function createProgress(initial: number, onFrame: (k: number) => void) {
+  const mv: MotionValue<number> = motionValue(initial);
+  const off = mv.on('change', onFrame);
+  return {
+    mv,
+    to(target: number, transition: object, onRest?: () => void): Playback {
+      return animate(mv, target, {
+        ...(transition as Record<string, unknown>),
+        onComplete: onRest,
+      });
+    },
+    dispose() {
+      off();
+      mv.stop();
+    },
+  };
+}
+
+/**
+ * Inline-style ledger — withdraw.js:746-753 `set()`: every style touched is
+ * saved once and put back exactly at rest; a value equal to the one already
+ * written is not written again (no style invalidation for nothing).
+ */
+export class StyleLedger {
+  private saved = new Map<HTMLElement | SVGElement, Map<string, string>>();
+  private last = new Map<HTMLElement | SVGElement, Map<string, string>>();
+
+  set(
+    el: HTMLElement | SVGElement | null | undefined,
+    prop: string,
+    value: string,
+  ): void {
+    if (!el) return;
+    const style = el.style as unknown as Record<string, string>;
+    let s = this.saved.get(el);
+    if (!s) {
+      s = new Map();
+      this.saved.set(el, s);
+      this.last.set(el, new Map());
+    }
+    if (!s.has(prop)) s.set(prop, style[prop] ?? '');
+    const l = this.last.get(el)!;
+    if (l.get(prop) === value) return;
+    l.set(prop, value);
+    style[prop] = value;
+  }
+
+  /** The inline value the element had before the ledger touched it. */
+  base(el: HTMLElement | SVGElement, prop: string): string | undefined {
+    return this.saved.get(el)?.get(prop);
+  }
+
+  /** Put every touched style back (one frame, at rest). */
+  restore(): void {
+    this.saved.forEach((props, el) => {
+      const style = el.style as unknown as Record<string, string>;
+      props.forEach((value, prop) => {
+        style[prop] = value;
+      });
+    });
+    this.saved.clear();
+    this.last.clear();
+  }
+}
+
+/** Reduced motion, read once per motion (PS.reduce). */
+export const reduced = (): boolean => prefersReducedMotion();

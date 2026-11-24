@@ -1,0 +1,31 @@
+diff --git a/src/components/ui/CreditFlowHeader/index.tsx b/src/components/ui/CreditFlowHeader/index.tsx
+index 00567cc..24aea87 100644
+--- a/src/components/ui/CreditFlowHeader/index.tsx
++++ b/src/components/ui/CreditFlowHeader/index.tsx
+@@ -2,6 +2,8 @@ import { ChevronLeft } from 'lucide-react';
+ import React from 'react';
+ 
+ import styles from './index.module.css';
++import { m } from 'motion/react';
++import { pressProps } from '@/motion/press';
+ 
+ interface CreditFlowHeaderProps {
+   backLabel: string;
+@@ -20,14 +22,15 @@ const CreditFlowHeader: React.FC<CreditFlowHeaderProps> = ({
+   return (
+     <header className={`${styles.header} ${sticky ? '' : styles.nonSticky}`}>
+       <div className={styles.navRow}>
+-        <button
++        <m.button
+           className={styles.backButton}
+           type="button"
+           aria-label={backLabel}
+           onClick={onBack}
++          {...pressProps(true)}
+         >
+           <ChevronLeft size={22} strokeWidth={2.2} />
+-        </button>
++        </m.button>
+         {title ? (
+           <h1 className={styles.title}>{title}</h1>
+         ) : (

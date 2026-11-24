@@ -1,0 +1,16 @@
+diff --git a/src/components/ui/Input/index.module.css b/src/components/ui/Input/index.module.css
+index db52b81..bbe57a9 100644
+--- a/src/components/ui/Input/index.module.css
++++ b/src/components/ui/Input/index.module.css
+@@ -65,6 +65,11 @@
+   opacity: 0.6;
+ }
+ 
++.clearButton {
++  /* R-COLOR: state changes that move nothing fade in 150 ms */
++  transition: opacity 0.15s ease;
++}
++
+ .clearButton:active {
+   opacity: 0.72;
+ }

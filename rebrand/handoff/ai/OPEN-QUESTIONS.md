@@ -9,11 +9,18 @@ The design owner answered on **2026-11-24**. The answers are applied in `02-chan
   until fixed. → `01-tokens/unresolved.md` §7
 - **Waiting for design** (decision G): 02 AppEntryLanding showcase picture, 09 PaymentErrorModal, 10 PaymentListRecoveryState.
 
-Nothing else is open. Two edits stay `manual` by nature (E285, E286: icon recolours through CSS filter chains, see their `target`).
+- **U+2011 glyph (found 2026-11-25):** Hanken Grotesk (production's `HankenGrotesk-Variable.woff2` and the design repo's
+  `hanken-grotesk-var.woff2`) has no non-breaking hyphen U+2011. The 17 copy fixes of step 6 still keep "E‑wallet" / "10‑digit"
+  on one line, but that one glyph comes from the system sans-serif. Options: accept it; add a U+2011 → hyphen mapping to the font's
+  cmap (fontTools, an OFL-permitted modification) and ship that file; or use U+2010 / a `white-space: nowrap` span instead
+  (copy / markup change). → `README.md` "Step 5" (glyph check), `04-assets/assets-to-replace.json` (`glyphCheck`)
+
+Nothing else is open. No edit is `manual` any more: E285 / E286 (PaymentMethodDrawer category icons) carry new CSS filter
+chains computed for `#298648` / `#8a8a9c` (exact in Chrome).
 
 ## Decided 2026-11-24
 
-**H. Every other per-file call** (the 56 edits that were still `needsOwner`): the owner accepted the package's value for all of them
+**H. Every other per-file call** (the 56 edits that were still `needsOwner` then; none is now): the owner accepted the package's value for all of them
 (`decided: "2026-11-24 H …"`) — `conflicts.md` sections B (7, 10), C and D, the shared-rule buttons left as they are, the hyphen copy
 fixes E507–E523.
 

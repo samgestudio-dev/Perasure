@@ -1,0 +1,13 @@
+diff --git a/src/components/ui/FullScreenLayer/index.ts b/src/components/ui/FullScreenLayer/index.ts
+index 2e42204..3856388 100644
+--- a/src/components/ui/FullScreenLayer/index.ts
++++ b/src/components/ui/FullScreenLayer/index.ts
+@@ -2,4 +2,7 @@ export {
+   FullScreenLayer,
+   useFullScreenLayerStableTarget,
+ } from './FullScreenLayer';
+-export type { FullScreenLayerProps } from './FullScreenLayer';
++export type {
++  FullScreenLayerExit,
++  FullScreenLayerProps,
++} from './FullScreenLayer';

@@ -1,0 +1,162 @@
+diff --git a/src/components/ui/CityCascadeSheet/index.module.css b/src/components/ui/CityCascadeSheet/index.module.css
+index 3a2b97f..2c4e348 100644
+--- a/src/components/ui/CityCascadeSheet/index.module.css
++++ b/src/components/ui/CityCascadeSheet/index.module.css
+@@ -1,37 +1,29 @@
++/* The shared Sheet's layer (fixed; z-index and pointer-events are set by the
++   Sheet). Its inline `inset: 0` is overridden here (!important) because the
++   web sheet starts under the 76 px page header and follows the keyboard.
++   / 共享 Sheet 的层（fixed，层级与指针事件由 Sheet 设置）。Sheet 内联了
++   inset: 0，这里用 !important 覆盖：网页版弹层从 76px 头部下方开始，并跟随键盘视口。 */
+ .root {
+-  position: fixed;
+-  top: calc(76px + var(--city-cascade-viewport-offset-top, 0rem));
+-  right: 0;
+-  bottom: 0;
+-  left: 0;
+-  z-index: 1000;
++  top: calc(76px + var(--city-cascade-viewport-offset-top, 0rem)) !important;
+   box-sizing: border-box;
+   display: flex;
+   align-items: flex-end;
+   justify-content: center;
+   overflow: visible;
+   padding-top: 0;
+-  opacity: 0;
+-  pointer-events: none;
+-  transition: opacity 220ms ease;
+-}
+-
+-.rootVisible {
+-  opacity: 1;
+-  pointer-events: auto;
+ }
+ 
+ .rootNativeApp {
+-  top: 0;
++  top: 0 !important;
+ }
+ 
+ .rootKeyboardVisible {
+-  bottom: auto;
++  bottom: auto !important;
+   height: calc(var(--city-cascade-viewport-height) - 76px);
+ }
+ 
+ .rootNativeApp.rootKeyboardVisible {
+-  top: var(--city-cascade-viewport-offset-top, 0px);
++  top: var(--city-cascade-viewport-offset-top, 0px) !important;
+   height: var(--city-cascade-viewport-height);
+ }
+ 
+@@ -83,23 +75,15 @@
+   overflow: hidden;
+   overscroll-behavior-y: contain;
+   touch-action: pan-y;
+-  transform: translate3d(0, 104%, 0);
+-  transition: transform 260ms cubic-bezier(0.32, 0.72, 0, 1);
+-}
+-
+-.rootVisible .sheet {
+-  transform: translate3d(0, var(--bottom-sheet-drag-offset, 0), 0);
+-}
+-
+-.sheetDragging {
+-  transition: none;
+-  will-change: transform;
+ }
+ 
++/* Centred with left / right 0 + auto margins (no transform: the sheet's
++   content rise animates transform). / 用左右 0 + 自动外边距居中，不用 transform。 */
+ .topOverlay {
+   position: absolute;
+   top: 0;
+-  left: 50%;
++  right: 0;
++  left: 0;
+   z-index: 2;
+   box-sizing: border-box;
+   display: flex;
+@@ -116,7 +100,7 @@
+     var(--gradient-white-40, rgba(255, 255, 255, 0.4)) 70%,
+     var(--gradient-white-0, rgba(255, 255, 255, 0)) 100%
+   );
+-  transform: translateX(-50%);
++  margin: 0 auto;
+ }
+ 
+ .handle {
+@@ -239,6 +223,7 @@
+ }
+ 
+ .content {
++  position: relative;
+   display: flex;
+   width: 100%;
+   min-height: 0;
+@@ -250,6 +235,15 @@
+   overflow: hidden;
+ }
+ 
++/* Tabs ↔ search results crossfade (Crossfade popLayout, parent .content). */
++.contentView {
++  display: flex;
++  width: 100%;
++  min-height: 0;
++  flex: 1 1 auto;
++  flex-direction: column;
++}
++
+ .panel {
+   display: flex;
+   width: 100%;
+@@ -286,7 +280,7 @@
+   font-weight: var(--font-weight-semi-bold, 600);
+   line-height: var(--font-line-height-section-title-sm, 20px);
+   letter-spacing: 0;
+-  transition: color 160ms ease;
++  transition: color 0.15s ease;
+   -webkit-appearance: none;
+   appearance: none;
+ }
+@@ -300,16 +294,27 @@
+   color: var(--fg-accent, #2c74be);
+ }
+ 
+-.tabActive::after {
++/* M-035: the underline (m.i layoutId) glides between tabs; Motion owns its
++   transform, so it is centred with left / right + auto margins. */
++.tabBar {
+   position: absolute;
++  right: 0;
+   bottom: 0;
+-  left: 50%;
++  left: 0;
+   width: 36px;
+   height: 4px;
++  margin: 0 auto;
+   border-radius: 4px 4px 0 0;
+   background: var(--control-checked-bg);
+-  content: '';
+-  transform: translateX(-50%);
++}
++
++/* The level list crossfades in place (M-081; popLayout needs a positioned parent). */
++.listViewport {
++  position: relative;
++  display: flex;
++  min-height: 0;
++  flex: 1 1 auto;
++  flex-direction: column;
+ }
+ 
+ .list {
+@@ -484,7 +489,7 @@
+   text-align: center;
+ }
+ 
+-.content > .empty {
++.contentView > .empty {
+   display: flex;
+   min-height: 0;
+   flex: 1 1 auto;

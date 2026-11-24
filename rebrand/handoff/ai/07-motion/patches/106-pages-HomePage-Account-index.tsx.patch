@@ -1,0 +1,37 @@
+diff --git a/src/pages/HomePage/Account/index.tsx b/src/pages/HomePage/Account/index.tsx
+index 0fd9e05..b780b92 100644
+--- a/src/pages/HomePage/Account/index.tsx
++++ b/src/pages/HomePage/Account/index.tsx
+@@ -1,8 +1,10 @@
+ import { normalizeCreditSummary } from '@/features/creditDisplay/summary';
+ import type { ComponentType, FC } from 'react';
+ import { useEffect, useMemo, useRef, useState } from 'react';
++import { m } from 'motion/react';
+ 
+ import { MobileModal } from '@/components/ui/MobileModal';
++import { pressProps } from '@/motion/press';
+ import { Toast } from '@/components/ui/Toast';
+ import { useI18n, type TranslationKey } from '@/i18n';
+ import {
+@@ -566,9 +568,10 @@ const Account: FC<AccountProps> = ({
+           const Icon = item.icon;
+ 
+           return (
+-            <button
+-              className={styles.menuItem}
++            <m.button
+               key={item.labelKey}
++              {...pressProps()}
++              className={styles.menuItem}
+               type="button"
+               data-event-type={item.eventType}
+               data-requires-login={item.requiresLogin ? 'true' : 'false'}
+@@ -586,7 +589,7 @@ const Account: FC<AccountProps> = ({
+                 ) : null}
+                 <ChevronIcon className={styles.chevron} size={16} />
+               </span>
+-            </button>
++            </m.button>
+           );
+         })}
+       </section>

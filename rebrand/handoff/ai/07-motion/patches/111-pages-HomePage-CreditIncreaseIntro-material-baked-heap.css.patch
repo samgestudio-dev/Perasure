@@ -1,0 +1,21 @@
+diff --git a/src/pages/HomePage/CreditIncreaseIntro/material/baked-heap.css b/src/pages/HomePage/CreditIncreaseIntro/material/baked-heap.css
+index b4ea340..5b1c4ec 100644
+--- a/src/pages/HomePage/CreditIncreaseIntro/material/baked-heap.css
++++ b/src/pages/HomePage/CreditIncreaseIntro/material/baked-heap.css
+@@ -7,6 +7,8 @@
+ :root {
+   --ps-font-body: Hanken, system-ui, -apple-system, 'Segoe UI', sans-serif;
+   --ps-font-text: Hanken, system-ui, -apple-system, 'Segoe UI', sans-serif;
++  /* Owner rule (2026-11-24): every amount uses the rebrand number font, --font-family-number = Hanken Grotesk 700
++     (production self-hosts it; Hanken has its own ₱). The iframe cannot read the app tokens, so the family is literal. */
+   --ps-font-num: Hanken, system-ui, sans-serif;
+ }
+ html:not(.cl-on) #hero,
+@@ -128,6 +130,7 @@ main {
+ #up.down .arw {
+   transform: scaleY(-1);
+ }
++/* small amounts beside the big number: the number font too (owner rule: Hanken for every amount) */
+ #up .num {
+   font-family: var(--ps-font-num);
+   font-weight: 700;

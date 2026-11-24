@@ -1,0 +1,16 @@
+diff --git a/src/components/ui/EmailField/index.module.css b/src/components/ui/EmailField/index.module.css
+index 12c4615..fb7b6f1 100644
+--- a/src/components/ui/EmailField/index.module.css
++++ b/src/components/ui/EmailField/index.module.css
+@@ -131,6 +131,11 @@
+   font-weight: var(--font-weight-regular, 400);
+ }
+ 
++.suggestionButton {
++  /* R-COLOR: 150 ms (was an instant snap) */
++  transition: background-color 0.15s ease;
++}
++
+ .suggestionButton:active {
+   background: color-mix(in srgb, var(--bg-accent-emphasis) 8%, transparent);
+ }

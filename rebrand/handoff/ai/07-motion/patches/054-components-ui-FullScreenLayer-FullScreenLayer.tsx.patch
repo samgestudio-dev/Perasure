@@ -1,0 +1,123 @@
+diff --git a/src/components/ui/FullScreenLayer/FullScreenLayer.tsx b/src/components/ui/FullScreenLayer/FullScreenLayer.tsx
+index 3ef5091..ede1201 100644
+--- a/src/components/ui/FullScreenLayer/FullScreenLayer.tsx
++++ b/src/components/ui/FullScreenLayer/FullScreenLayer.tsx
+@@ -8,6 +8,12 @@ import {
+   type ReactNode,
+ } from 'react';
+ import { createPortal } from 'react-dom';
++import { animate } from 'motion';
++
++import { SMOOTH } from '@/motion/flows/core';
++import { SHEET_EXIT } from '@/motion/flows/withdrawTokens';
++import { MT } from '@/motion/tokens';
++import { prefersReducedMotion } from '@/motion/reducedMotion';
+ 
+ import { lockScroll, unlockScroll } from '@/utils/browser/dom/scrollLock';
+ import { lockViewportHeight } from '@/utils/browser/dom/viewportHeight';
+@@ -16,6 +22,11 @@ import styles from './index.module.css';
+ import { isOpaqueViewportCover } from './coverage';
+ 
+ const FULL_SCREEN_LAYER_HEIGHT_CSS_VAR = '--full-screen-layer-height';
++/** Fired on the backdrop when the spring entry has settled (coverage re-check). */
++const ENTERED_EVENT = 'fullscreenlayer:entered';
++
++/** How the layer leaves before the route goes: down (back from the entry) or a crossfade (home after a submit). */
++export type FullScreenLayerExit = (kind: 'down' | 'fade') => Promise<void>;
+ const FullScreenLayerStableTargetContext = createContext<HTMLDivElement | null>(
+   null,
+ );
+@@ -40,6 +51,13 @@ export interface FullScreenLayerProps {
+   onCoverageChange?: (covered: boolean) => void;
+   open: boolean;
+   transition?: 'slide-up' | 'none';
++  /**
++   * Filled with the layer's exit while it is open (M-098): `down` slides it
++   * to its full height in 0.3 s on [0.4, 0, 1, 1] (withdraw.js:1494), `fade`
++   * leaves on LEAVE (the page crossfade home, M-132). The caller navigates
++   * when the promise settles. Reduced motion settles at once.
++   */
++  exitRef?: { current: FullScreenLayerExit | null };
+ }
+ 
+ /**
+@@ -54,6 +72,7 @@ export function FullScreenLayer({
+   onCoverageChange,
+   open,
+   transition = 'slide-up',
++  exitRef,
+ }: FullScreenLayerProps) {
+   const backdropRef = useRef<HTMLDivElement>(null);
+   const restoreFocusRef = useRef<HTMLElement | null>(null);
+@@ -69,6 +88,56 @@ export function FullScreenLayer({
+     );
+   }, [open]);
+ 
++  // M-098: the layer rises from its full height on the Smooth spring
++  // (withdraw.js loanScreen: y FULL → 0, FEEL.Smooth 240 / 30 / 1); it owns
++  // a layer only while it moves. Reduced motion: at once (added, not in the
++  // demo's code path).
++  useLayoutEffect(() => {
++    const backdrop = backdropRef.current;
++    if (!open || !backdrop) return undefined;
++    let leaving = false;
++    if (exitRef)
++      exitRef.current = (kind) => {
++        if (leaving || prefersReducedMotion()) return Promise.resolve();
++        leaving = true;
++        backdrop.style.pointerEvents = 'none';
++        const run =
++          kind === 'down'
++            ? animate(
++                backdrop,
++                { y: backdrop.offsetHeight },
++                { duration: SHEET_EXIT.duration, ease: SHEET_EXIT.ease },
++              )
++            : animate(backdrop, { opacity: 0 }, MT.LEAVE);
++        return Promise.resolve(run.finished).then(() => undefined);
++      };
++    if (transition !== 'slide-up' || prefersReducedMotion()) {
++      backdrop.dispatchEvent(new Event(ENTERED_EVENT));
++      return () => {
++        if (exitRef) exitRef.current = null;
++      };
++    }
++    backdrop.style.willChange = 'transform';
++    const entry = animate(
++      backdrop,
++      { y: [backdrop.offsetHeight || window.innerHeight, 0] },
++      {
++        ...SMOOTH,
++        onComplete: () => {
++          // Release the transform: viewport-fixed children keep the viewport
++          // as their containing block once the layer has arrived.
++          backdrop.style.transform = '';
++          backdrop.style.willChange = '';
++          backdrop.dispatchEvent(new Event(ENTERED_EVENT));
++        },
++      },
++    );
++    return () => {
++      entry.stop();
++      if (exitRef) exitRef.current = null;
++    };
++  }, [open, transition, exitRef]);
++
+   useLayoutEffect(() => {
+     const backdrop = backdropRef.current;
+     const panel = backdrop?.querySelector<HTMLElement>(
+@@ -121,12 +190,14 @@ export function FullScreenLayer({
+     });
+     const timer = window.setTimeout(inspect, Math.max(...durations, 0) + 100);
+     backdrop.addEventListener('animationend', onEnd);
++    backdrop.addEventListener(ENTERED_EVENT, inspect);
+     window.addEventListener('resize', inspect);
+     return () => {
+       disposed = true;
+       window.cancelAnimationFrame(frame);
+       window.clearTimeout(timer);
+       backdrop.removeEventListener('animationend', onEnd);
++      backdrop.removeEventListener(ENTERED_EVENT, inspect);
+       window.removeEventListener('resize', inspect);
+       // Layout cleanup restores Home before its first uncovered frame.
+       onCoverageChange(false);

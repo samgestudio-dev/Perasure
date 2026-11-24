@@ -1,0 +1,65 @@
+diff --git a/src/pages/HomePage/WithdrawMainRoute/index.module.css b/src/pages/HomePage/WithdrawMainRoute/index.module.css
+index 1f85cdc..6cbe414 100644
+--- a/src/pages/HomePage/WithdrawMainRoute/index.module.css
++++ b/src/pages/HomePage/WithdrawMainRoute/index.module.css
+@@ -8,16 +8,25 @@
+   /* Let FullScreenLayer remain the only vertical scroll owner. `hidden` on
+      one axis would otherwise compute the other axis to `auto`. */
+   overflow-x: clip;
++  isolation: isolate;
+   background: var(--bg-page, #f0f5f4);
+ }
+ 
+-.page[data-withdraw-phase='confirming'],
+-.page[data-withdraw-phase='requesting'] {
++/* The order page's tint: its own layer, so the morph can fade it in with
++   the progress (withdraw.js gradLayer, opacity = bk). */
++.confirmTint {
++  position: absolute;
++  z-index: -1;
++  top: 0;
++  right: 0;
++  left: 0;
++  height: 498px;
+   background: linear-gradient(
+     180deg,
+     var(--palette-green-100, #ddf8ee) 0%,
+-    var(--bg-page, #f0f5f4) 498px
++    rgba(240, 245, 244, 0) 100%
+   );
++  pointer-events: none;
+ }
+ 
+ .header {
+@@ -112,7 +121,7 @@
+ }
+ 
+ /* Only the optional module needs a new gap before the existing withdrawal section. */
+-.confirmation > [data-borrower-protection] {
++.confirmBlocks > [data-borrower-protection] {
+   margin-bottom: var(--spacing-gap-xl, 20px);
+ }
+ 
+@@ -377,6 +386,22 @@
+ 
+ .submitAction button {
+   pointer-events: auto;
++  /* Confirm turns from the disabled look to enabled in 0.2 s when the
++     agreement is ticked (withdraw.js:1399, M-113); it stays tappable so a
++     tap can bring the agreement into view (M-111). */
++  transition:
++    background-color 0.2s,
++    color 0.2s;
++}
++
++.submitAction button[data-agree='false']:not(:disabled) {
++  background: var(--bg-disabled);
++  color: var(--fg-disabled, #97a0a6);
++}
++
++/* The bar's veil: gone over the last bar-height of scroll (M-114). */
++.submitAction > :first-child {
++  opacity: var(--withdraw-veil, 1);
+ }
+ 
+ .emptyState {

@@ -1,10 +1,10 @@
 {
  "meta": {
   "baseline": "production GitLab phi_h5_025 master 0d9bdd4 (read-only export)",
-  "generated": "2026-11-24",
+  "generated": "2026-11-24, revised 2026-11-25 (E285 / E286 real values, E556 added)",
   "step0": "Step 0 runs before every edit (README 'Step 0', tools/apply.py --step 0): 0.0 delete the local --gradient-modal-backdrop block in src/styles/global.css (baseline lines 50-54, before the seds); 0.1 run 01-tokens/rename.sed, rename-value-changes.sed, removed-literals.sed (in that order) on src/**/*.{css,scss,ts,tsx}; 0.2 overwrite src/styles/figma-tokens.css with 01-tokens/rebrand-tokens.css plus the generated header. `current` is the baseline text; `currentAfterStep0` is that text after step 0 (computed by running step 0 on the baseline) and is the anchor. Undefined names (01-tokens/unresolved.md section 6) and the 4 removed names still in use are not part of step 0: every use is an edit in this file.",
   "conventions": {
-   "action": "replace = replace currentAfterStep0 (exact text, first occurrence in lines lineAfterStep0..lineAfterStep0+n-1, n = its line count; every occurrence when replaceAll, expectedCount says how many) with target. insert = put target (complete line(s), indentation included) after the last line of anchor; anchor = currentAfterStep0, exact text starting at lineAfterStep0; selector names the rule (or the new rule). delete = remove the n lines starting at lineAfterStep0; currentAfterStep0 is their exact full text. manual = not scriptable, follow `instruction`. skip = do not apply, see skipReason. token-step = done by step 0.",
+   "action": "replace = replace currentAfterStep0 (exact text, first occurrence in lines lineAfterStep0..lineAfterStep0+n-1, n = its line count; every occurrence when replaceAll, expectedCount says how many) with target. insert = put target (complete line(s), indentation included) after the last line of anchor; anchor = currentAfterStep0, exact text starting at lineAfterStep0; selector names the rule (or the new rule). delete = remove the n lines starting at lineAfterStep0; currentAfterStep0 is their exact full text. skip = do not apply, see skipReason. token-step = done by step 0.",
    "order": "files in applyGroup order; edits inside a file bottom-up (descending line, an insert before any other edit on its anchor line), so each lineAfterStep0 stays valid while you work down the list and no anchor is changed by an earlier edit. Apply in the listed order.",
    "lines": "line / lineEnd / insertAfterLine = baseline 0d9bdd4; lineAfterStep0 = after step 0 (differs only in src/styles/global.css below the deleted block: -5).",
    "doneByStep0": "true = step 0 already produces the target; nothing to do (apply.py reports already-done).",
@@ -12,24 +12,25 @@
    "visual": "false = same rendered value, only points an undefined token at a defined one (hygiene), or a test assertion",
    "needsOwner": "true = value chosen but the owner must confirm (see conflicts.md); apply.py --skip-owner-items leaves them out",
    "confidence": "design = a visual-changes row says so; inferred = rule applied by analogy",
-   "fallbacks": "var(--token, fallback) fallbacks of DEFINED tokens never render and are not listed; README step 8 cleans them up in one pass",
+   "fallbacks": "var(--token, fallback) fallbacks of DEFINED tokens never render and are not listed; tools/apply.py --step 8 removes them after the motion patch (README \"Step 8\")",
    "decided": "\"2026-11-24 <letter>\" = the design owner answered this on 2026-11-24 (OPEN-QUESTIONS.md, \"Decided 2026-11-24\"); needsOwner is then false",
    "structural": "\"owner-approved\" = a small structural change (markup / state hook) the owner approved on 2026-11-24 (E023 + E542 tab icon, E543 + E400 overdue button); everything else stays purely visual"
   },
   "counts": {
    "files": 128,
-   "edits": 554,
+   "edits": 555,
    "byAction": {
-    "token-step": 1,
+    "replace": 528,
     "insert": 17,
-    "replace": 525,
     "delete": 7,
-    "manual": 2,
-    "skip": 2
+    "skip": 2,
+    "token-step": 1
    },
-   "visualEdits": 465,
-   "needsOwner": 56,
+   "visualEdits": 466,
+   "needsOwner": 0,
    "doneByStep0": 2,
+   "decided20261124": 91,
+   "structuralOwnerApproved": 4,
    "byGroup": {
     "1 Global (tokens, global.css, boot splash)": {
      "files": 3,
@@ -41,7 +42,7 @@
     },
     "3 Components and features": {
      "files": 49,
-     "edits": 234
+     "edits": 235
     },
     "4 Pages": {
      "files": 34,
@@ -59,9 +60,7 @@
      "files": 2,
      "edits": 18
     }
-   },
-   "structuralOwnerApproved": 4,
-   "decided20261124": 35
+   }
   },
   "precedence": "changes-by-file.json > 01-tokens/token-map.json > 01-tokens/unresolved.md. Where an edit and the token map touch the same line, the edit wins: it runs after step 0 and anchors on the renamed text."
  },
@@ -4306,6 +4305,26 @@
      "visual": true
     },
     {
+     "id": "E556",
+     "action": "replace",
+     "selector": "drawDecorativeBackground noise lines (context.strokeStyle)",
+     "property": "canvas strokeStyle",
+     "line": 185,
+     "lineAfterStep0": 185,
+     "current": "`rgba(44, 116, 190, ${",
+     "currentAfterStep0": "`rgba(44, 116, 190, ${",
+     "target": "`rgba(92, 214, 128, ${",
+     "doneByStep0": false,
+     "targetToken": "--bg-accent-emphasis",
+     "targetValue": "#5cd680 at the same random alpha (0.08-0.24)",
+     "changeId": "G-001",
+     "reason": "legacy brand blue noise lines in the captcha canvas -> green-500 at the same alpha, like the hole outline (E195); found by the step-8 legacy-blue check (2026-11-25)",
+     "confidence": "inferred",
+     "needsOwner": false,
+     "visual": true,
+     "decided": "2026-11-25 (rule G-001, same treatment as E195)"
+    },
+    {
      "id": "E196",
      "action": "replace",
      "selector": "drawDecorativeBackground gradient.addColorStop(0)",
@@ -6237,7 +6256,7 @@
     },
     {
      "id": "E285",
-     "action": "manual",
+     "action": "replace",
      "selector": ".categoryButtonActive > .assetIcon img",
      "property": "filter",
      "line": 350,
@@ -6245,21 +6264,21 @@
      "lineAfterStep0": 350,
      "current": "brightness(0) saturate(100%) invert(43%) sepia(17%) saturate(1985%)\n    hue-rotate(171deg) brightness(89%) contrast(87%)",
      "currentAfterStep0": "brightness(0) saturate(100%) invert(43%) sepia(17%) saturate(1985%)\n    hue-rotate(171deg) brightness(89%) contrast(87%)",
-     "target": "(manual, see instruction)",
+     "target": "brightness(0) saturate(100%) invert(37.8%) sepia(71%) saturate(393.5%)\n    hue-rotate(87.3deg) brightness(98%) contrast(95.9%)",
      "doneByStep0": false,
-     "targetToken": null,
-     "targetValue": null,
+     "targetToken": "--fg-accent",
+     "targetValue": "#298648 (the chain turns the black SVG into exactly #298648; checked by rendering in Chrome: pixel = #298648)",
      "changeId": "C-116",
-     "reason": "current filter paints the legacy blue #2C74BE",
-     "instruction": "Recolour this icon to #298648 (--fg-accent). A CSS filter chain is an approximation: either compute a new brightness/invert/sepia/saturate/hue-rotate chain for #298648 and replace lines 350-351 with it, or (owner call, structural) replace the <img> + filter with a mask and background: currentColor.",
+     "reason": "current filter paints the legacy blue #2C74BE; new chain computed for #298648 (--fg-accent), exact in Chrome (the old chain rendered #3670b1, not #2c74be)",
      "confidence": "design",
      "needsOwner": false,
      "visual": true,
-     "decided": "2026-11-24 H (owner accepted the package value)"
+     "decided": "2026-11-24 H (owner accepted the package value); value shipped 2026-11-25",
+     "alternative": "a CSS mask with background-color: currentColor (like E023 / E542) would need the shared AssetIcon <img> in CategoryIcons.tsx to become a masked <span> for all 9 drawer icons: a structural change the owner has not approved, so the filter chain is kept"
     },
     {
      "id": "E286",
-     "action": "manual",
+     "action": "replace",
      "selector": ".categoryButton > .assetIcon img",
      "property": "filter",
      "line": 345,
@@ -6267,17 +6286,17 @@
      "lineAfterStep0": 345,
      "current": "brightness(0) saturate(100%) invert(64%) sepia(7%) saturate(387%)\n    hue-rotate(159deg) brightness(88%) contrast(88%)",
      "currentAfterStep0": "brightness(0) saturate(100%) invert(64%) sepia(7%) saturate(387%)\n    hue-rotate(159deg) brightness(88%) contrast(88%)",
-     "target": "(manual, see instruction)",
+     "target": "brightness(0) saturate(100%) invert(59.1%) sepia(8.5%) saturate(516.1%)\n    hue-rotate(201.5deg) brightness(91.7%) contrast(89.2%)",
      "doneByStep0": false,
-     "targetToken": null,
-     "targetValue": null,
+     "targetToken": "--fg-disabled",
+     "targetValue": "#8a8a9c (the chain turns the black SVG into exactly #8a8a9c; checked by rendering in Chrome: pixel = #8a8a9c)",
      "changeId": "C-116, G-001",
-     "reason": "current filter paints the legacy grey #97A0A6 on black svgs",
-     "instruction": "Recolour this icon to #8A8A9C (--fg-disabled). A CSS filter chain is an approximation: either compute a new brightness/invert/sepia/saturate/hue-rotate chain for #8A8A9C and replace lines 345-346 with it, or (owner call, structural) replace the <img> + filter with a mask and background: currentColor.",
+     "reason": "current filter paints the legacy grey #97A0A6 on black svgs; new chain computed for #8a8a9c (--fg-disabled), exact in Chrome",
      "confidence": "inferred",
      "needsOwner": false,
      "visual": true,
-     "decided": "2026-11-24 H (owner accepted the package value)"
+     "decided": "2026-11-24 H (owner accepted the package value); value shipped 2026-11-25",
+     "alternative": "a CSS mask with background-color: currentColor (like E023 / E542) would need the shared AssetIcon <img> in CategoryIcons.tsx to become a masked <span> for all 9 drawer icons: a structural change the owner has not approved, so the filter chain is kept"
     },
     {
      "id": "E287",

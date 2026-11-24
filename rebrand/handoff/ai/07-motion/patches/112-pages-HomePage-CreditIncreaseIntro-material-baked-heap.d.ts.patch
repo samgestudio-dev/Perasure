@@ -1,0 +1,17 @@
+diff --git a/src/pages/HomePage/CreditIncreaseIntro/material/baked-heap.d.ts b/src/pages/HomePage/CreditIncreaseIntro/material/baked-heap.d.ts
+index 11bc8bd..5042e8a 100644
+--- a/src/pages/HomePage/CreditIncreaseIntro/material/baked-heap.d.ts
++++ b/src/pages/HomePage/CreditIncreaseIntro/material/baked-heap.d.ts
+@@ -3,7 +3,11 @@ import type {
+   IntroMaterialInput,
+ } from '@/pages/HomePage/creditIncrease/materialProtocol';
+ 
+-/** Typed boundary around the supplied JavaScript painter; recording is a trusted bundled asset. */
++/**
++ * Typed boundary around the supplied JavaScript painter; recording is a trusted bundled asset.
++ * The returned material's `stop()` freezes every timeline in place and `getVisualHandles()` returns
++ * `{ amount, hero, art, stars, canvases }`.
++ */
+ export function createBakedHeap(
+   recording: unknown,
+   input: IntroMaterialInput,

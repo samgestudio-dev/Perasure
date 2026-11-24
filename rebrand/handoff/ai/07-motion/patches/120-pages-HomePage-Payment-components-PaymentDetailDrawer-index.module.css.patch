@@ -1,0 +1,22 @@
+diff --git a/src/pages/HomePage/Payment/components/PaymentDetailDrawer/index.module.css b/src/pages/HomePage/Payment/components/PaymentDetailDrawer/index.module.css
+index e02d313..d6a2d85 100644
+--- a/src/pages/HomePage/Payment/components/PaymentDetailDrawer/index.module.css
++++ b/src/pages/HomePage/Payment/components/PaymentDetailDrawer/index.module.css
+@@ -39,16 +39,10 @@
+   border-radius: var(--radius-xxl, 32px) var(--radius-xxl, 32px) 0 0;
+   background: var(--bg-page, #f0f5f4);
+   touch-action: pan-y;
+-  transform: translate3d(0, var(--bottom-sheet-drag-offset, 0), 0);
+-  transition: transform 0.34s cubic-bezier(0.22, 0.7, 0.24, 1);
++  /* Motion (enter / exit, drag, spring back) comes from the shared Sheet. */
+   box-shadow: var(--elevation-2);
+ }
+ 
+-.drawerDragging {
+-  transition: none;
+-  will-change: transform;
+-}
+-
+ .dragHandle {
+   position: absolute;
+   top: var(--spacing-gap-sm, 8px);

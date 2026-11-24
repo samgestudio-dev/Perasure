@@ -1,0 +1,147 @@
+diff --git a/src/pages/RepayPage/components/RepayDetailShell.module.css b/src/pages/RepayPage/components/RepayDetailShell.module.css
+index a9aea3b..08e3343 100644
+--- a/src/pages/RepayPage/components/RepayDetailShell.module.css
++++ b/src/pages/RepayPage/components/RepayDetailShell.module.css
+@@ -106,29 +106,6 @@
+ }
+ 
+ .exampleContainer {
+-  --repayment-accordion-spring: linear(
+-    0 0%,
+-    0.007 4%,
+-    0.112 8%,
+-    0.196 12%,
+-    0.377 16%,
+-    0.555 20%,
+-    0.63 24%,
+-    0.76 28%,
+-    0.859 32%,
+-    0.895 36%,
+-    0.949 40%,
+-    0.984 44%,
+-    0.995 48%,
+-    1.009 52%,
+-    1.014 56%,
+-    1.015 60%,
+-    1.014 68%,
+-    1.008 80%,
+-    1.002 90%,
+-    1 100%
+-  );
+-
+   box-sizing: border-box;
+   display: grid;
+   width: 100%;
+@@ -137,11 +114,6 @@
+   padding: var(--spacing-padding-lg, 16px);
+   border-radius: var(--radius-xl, 24px);
+   background: var(--bg-default, #ffffff);
+-  transition: row-gap 430ms cubic-bezier(0.22, 1.1, 0.36, 1);
+-}
+-
+-.exampleContainer[data-repayment-example-expanded='true'] {
+-  row-gap: var(--spacing-gap-sm, 8px);
+ }
+ 
+ .exampleToggle {
+@@ -161,7 +133,7 @@
+   text-align: left;
+ }
+ 
+-.exampleToggle span {
++.exampleToggle > span:first-child {
+   min-width: 0;
+   overflow: hidden;
+   text-overflow: ellipsis;
+@@ -177,72 +149,20 @@
+ }
+ 
+ .exampleChevron {
++  display: flex;
+   flex: 0 0 auto;
+   margin-top: 2px;
+   color: var(--fg-subtle, #6a757d);
+-  transform: rotate(0deg);
+-  transition: transform 430ms cubic-bezier(0.22, 1.1, 0.36, 1);
+-  will-change: transform;
+-}
+-
+-.exampleChevronExpanded {
+-  transform: rotate(180deg);
+ }
+ 
++/* M-069: the body's height and opacity are driven by Motion (AnimatePresence). */
+ .examplePanel {
+-  display: grid;
+   min-width: 0;
+-  grid-template-rows: 0fr;
+   overflow: hidden;
+-  transition: grid-template-rows 430ms cubic-bezier(0.22, 1.1, 0.36, 1);
+-}
+-
+-.exampleContainer[data-repayment-example-expanded='true'] .examplePanel {
+-  grid-template-rows: 1fr;
+ }
+ 
+ .examplePanelInner {
+-  min-height: 0;
+-  overflow: hidden;
+-  mask-image: linear-gradient(
+-    to bottom,
+-    #000 0%,
+-    #000 50%,
+-    transparent 75%,
+-    transparent 100%
+-  );
+-  mask-position: 0 100%;
+-  mask-size: 100% 200%;
+-  transition: mask-position 430ms cubic-bezier(0.22, 1.1, 0.36, 1);
+-  -webkit-mask-image: linear-gradient(
+-    to bottom,
+-    #000 0%,
+-    #000 50%,
+-    transparent 75%,
+-    transparent 100%
+-  );
+-  -webkit-mask-position: 0 100%;
+-  -webkit-mask-size: 100% 200%;
+-  -webkit-transition: -webkit-mask-position 430ms
+-    cubic-bezier(0.22, 1.1, 0.36, 1);
+-}
+-
+-.exampleContainer[data-repayment-example-expanded='true'] .examplePanelInner {
+-  mask-position: 0 0;
+-  -webkit-mask-position: 0 0;
+-}
+-
+-@supports (transition-timing-function: linear(0, 1)) {
+-  .exampleContainer,
+-  .exampleChevron,
+-  .examplePanel,
+-  .examplePanelInner {
+-    transition-timing-function: var(--repayment-accordion-spring);
+-  }
+-
+-  .examplePanelInner {
+-    -webkit-transition-timing-function: var(--repayment-accordion-spring);
+-  }
++  padding-top: var(--spacing-gap-sm, 8px);
+ }
+ 
+ .exampleSteps {
+@@ -294,15 +214,6 @@
+   margin-left: 24px;
+ }
+ 
+-@media (prefers-reduced-motion: reduce) {
+-  .exampleContainer,
+-  .exampleChevron,
+-  .examplePanel,
+-  .examplePanelInner {
+-    transition-duration: 0.01ms;
+-  }
+-}
+-
+ .exampleStepImage {
+   display: block;
+   max-width: 100%;

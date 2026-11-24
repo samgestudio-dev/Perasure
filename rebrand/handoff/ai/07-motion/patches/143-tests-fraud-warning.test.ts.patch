@@ -1,0 +1,119 @@
+diff --git a/tests/fraud-warning.test.ts b/tests/fraud-warning.test.ts
+index 2e97978..2c4485c 100644
+--- a/tests/fraud-warning.test.ts
++++ b/tests/fraud-warning.test.ts
+@@ -384,7 +384,8 @@ test('dialog source retains focus trap, Escape close, and focus restoration', ()
+   assert.match(source, /event\.key === 'Escape'/);
+   assert.match(source, /event\.key !== 'Tab'/);
+   assert.match(source, /restoreFocusRef\.current\?\.focus\(\)/);
+-  assert.match(source, /aria-modal=\{getMobileModalAriaModal\(trapFocus\)\}/);
++  // The panel is now the shared motion Sheet's element; aria-modal is passed through.
++  assert.match(source, /ariaModal=\{getMobileModalAriaModal\(trapFocus\)\}/);
+ });
+ 
+ test('dialog exposes modal ARIA semantics only with real focus containment', () => {
+@@ -410,14 +411,15 @@ test('fraud warning sheet uses the runtime viewport instead of dvh', () => {
+   assert.match(styles, /--app-viewport-height/);
+   assert.doesNotMatch(styles, /100dvh/);
+   assert.doesNotMatch(styles, /height:\s*406px/);
+-  assert.match(styles, /grid-area:\s*1 \/ 1/);
+-  assert.match(styles, /\.stepHidden[\s\S]*opacity:\s*0/);
++  // Steps sit side by side in the carousel track (demo PS.Carousel).
++  assert.match(styles, /\.stepTrack\s*\{[\s\S]*display:\s*flex/);
++  assert.match(styles, /\.step\s*\{[\s\S]*flex:\s*0 0 100%/);
+   assert.match(source, /enableSwipeToDismiss/);
+   assert.match(source, /className=\{styles\.dragHandle\}/);
+   assert.match(styles, /\.dragHandle[\s\S]*touch-action:\s*none/);
+ });
+ 
+-test('fraud warning steps support directional follow-finger navigation', () => {
++test('fraud warning steps ride the shared carousel motion (M-064)', () => {
+   const source = readFileSync(
+     new URL(
+       '../src/pages/HomePage/Payment/components/FraudWarningSheet/index.tsx',
+@@ -433,16 +435,18 @@ test('fraud warning steps support directional follow-finger navigation', () => {
+     'utf8',
+   );
+ 
+-  assert.match(source, /Math\.abs\(deltaX\) > Math\.abs\(deltaY\)/);
+-  assert.match(source, /setPointerCapture\(event\.pointerId\)/);
+-  assert.match(source, /Math\.abs\(swipeOffset\) >= SWIPE_COMMIT_DISTANCE/);
+-  assert.match(source, /index - stepIndex/);
++  assert.match(source, /drag="x"/);
++  assert.match(source, /dragElastic=\{CAROUSEL\.elastic\}/);
++  assert.match(source, /dragMomentum=\{false\}/);
++  assert.match(source, /info\.offset\.x < -width \* CAROUSEL\.nextFraction/);
++  assert.match(source, /info\.velocity\.x < -CAROUSEL\.velocity/);
++  assert.match(source, /animate\(x, target, MT\.SPRING\)/);
++  assert.match(source, /prefersReducedMotion\(\)[\s\S]*x\.jump\(target\)/);
++  assert.match(source, /removeEventListener\('resize', fit\)/);
+   assert.match(styles, /touch-action:\s*pan-y/);
+-  assert.match(styles, /data-swiping='true'/);
+-  assert.match(styles, /300ms cubic-bezier\(0\.22, 0\.61, 0\.36, 1\)/);
+ });
+ 
+-test('fraud warning copy and button label use approved motion timings', () => {
++test('fraud warning button label swaps and controls use the shared press', () => {
+   const source = readFileSync(
+     new URL(
+       '../src/pages/HomePage/Payment/components/FraudWarningSheet/index.tsx',
+@@ -458,34 +462,25 @@ test('fraud warning copy and button label use approved motion timings', () => {
+     'utf8',
+   );
+ 
+-  assert.match(
+-    styles,
+-    /fraud-warning-title-leave 150ms cubic-bezier\(0\.4, 0, 1, 1\)/,
+-  );
+-  assert.match(
+-    styles,
+-    /fraud-warning-title-enter 300ms cubic-bezier\(0\.22, 0\.61, 0\.36, 1\)[\s\S]*70ms backwards/,
+-  );
+-  assert.match(styles, /transform: translateY\(-8px\)/);
+-  assert.match(styles, /transform: translateY\(6px\)/);
+-  assert.match(styles, /fraud-warning-control-enter 300ms/);
+-  assert.match(styles, /fraud-warning-control-leave 150ms/);
+-  assert.match(styles, /\.primaryButtonLabel \.primaryButtonLabelMotion/);
+-  assert.match(styles, /\.primaryButton:active[\s\S]*scale\(0\.985\)/);
+-  // The stable shell owns only press feedback; step motion belongs to labels.
++  // The stable shell owns only press feedback; the label crossfades (PS.Swap)
++  // keyed on the visible copy so identical adjacent labels do not replay.
+   const primaryButton = source.match(
+-    /<button\s+aria-label=\{step\.actionLabel\}[\s\S]*?<\/button>/,
++    /<m\.button\s+aria-label=\{step\.actionLabel\}[\s\S]*?<\/m\.button>/,
+   )?.[0];
+   const primaryButtonOpeningTag = primaryButton?.match(
+-    /<button[\s\S]*?type="button"\s*>/,
++    /<m\.button[\s\S]*?\{\.\.\.pressProps\(\)\}\s*>/,
+   )?.[0];
+   assert.ok(primaryButton);
+   assert.ok(primaryButtonOpeningTag);
+   assert.doesNotMatch(primaryButtonOpeningTag, /key=/);
+   assert.match(primaryButton, /primaryButtonLabels/);
+-  assert.match(primaryButton, /actionLabelSnapshots\.map/);
+-  assert.match(primaryButton, /actionLabel === step\.actionLabel/);
+-  assert.doesNotMatch(styles, /\.primaryButton\s*\{[^}]*animation:/);
++  assert.match(primaryButton, /<Swap block k=\{step\.actionLabel\}>/);
++  assert.match(
++    source,
++    /className=\{styles\.closeButton\}[\s\S]*\{\.\.\.pressProps\(true\)\}/,
++  );
++  assert.doesNotMatch(styles, /:active/);
++  assert.doesNotMatch(styles, /@keyframes/);
+ });
+ 
+ test('fraud warning pagination morphs widths in one stable flex row', () => {
+@@ -507,9 +502,10 @@ test('fraud warning pagination morphs widths in one stable flex row', () => {
+   assert.match(source, /className=\{styles\.pagination\}/);
+   assert.doesNotMatch(source, /paginationViewport|paginationHidden/);
+   assert.match(styles, /\.pagination\s*\{[\s\S]*display:\s*flex/);
+-  assert.match(styles, /\.dot,[\s\S]*width:\s*6px/);
+-  assert.match(styles, /\.activeDot\s*\{[\s\S]*width:\s*24px/);
+-  assert.match(styles, /width 300ms ease/);
++  assert.match(styles, /\.dot\s*\{[\s\S]*width:\s*6px/);
++  // M-065: each dot follows the swipe (6 → 24 px, dark fill) from the progress.
++  assert.match(source, /6 \+ 18 \* Math\.max\(0, 1 - Math\.abs\(p - index\)\)/);
++  assert.match(source, /Math\.max\(0, 1 - Math\.abs\(p - index\)\)/);
+   assert.match(styles, /height:\s*6px/);
+ });
+ 

@@ -1,0 +1,347 @@
+diff --git a/src/features/reloan/QuoteForm/index.tsx b/src/features/reloan/QuoteForm/index.tsx
+index 6df46aa..159e7db 100644
+--- a/src/features/reloan/QuoteForm/index.tsx
++++ b/src/features/reloan/QuoteForm/index.tsx
+@@ -8,6 +8,7 @@ import {
+   type ReactNode,
+ } from 'react';
+ import { ChevronRight, Delete, Pencil } from 'lucide-react';
++import { m, useReducedMotion } from 'motion/react';
+ 
+ import CreditValidityTooltip from '@/components/ui/CreditValidityTooltip';
+ import { BottomActionButton } from '@/components/ui/BottomActionButton';
+@@ -47,8 +48,40 @@ import {
+   applyWithdrawKeypadKey,
+   calculateWithdrawKeypadLayoutOffset,
+ } from '../withdrawAmountKeypad';
++import { Glyphs, GLYPH_BASE } from '@/motion/flows/Glyphs';
++import {
++  KEY_PRESS_BG_FALLBACK,
++  KEY_PRESS_SCALE,
++  LAYOUT_GLIDE,
++  PAD_IN,
++  WD_REVEAL,
++} from '@/motion/flows/withdrawTokens';
+ import styles from './index.module.css';
+ 
++/**
++ * M-099 (owner rule, 2026-11-24): on the first open the keypad plays the demo's
++ * key-by-key cascade — withdraw.js:1152-1161 `keypad()` with `MT.REVEAL(i)`
++ * (motion-tokens.js `REVEAL`: 0.34 s after 0.06 + i·0.03 s, y 10, scale 0.94).
++ * Reference: reference/curves/M-099.json, M-133.json (re-recorded after the
++ * demo's `this.ap({ key: 'pinned', initial: false }, …)` regression was fixed).
++ * Set to false to mount the keypad at rest.
++ */
++const FIRST_OPEN_CASCADE = true;
++
++/** The pressed key's background: Figma Stroke/Default, resolved once so Motion can tween it. */
++let keyPressBackground: string | undefined;
++function readKeyPressBackground() {
++  if (keyPressBackground !== undefined) return keyPressBackground;
++  const token =
++    typeof document === 'undefined'
++      ? ''
++      : getComputedStyle(document.documentElement)
++          .getPropertyValue('--border-default')
++          .trim();
++  keyPressBackground = token || KEY_PRESS_BG_FALLBACK;
++  return keyPressBackground;
++}
++
+ function joinClassNames(...classNames: Array<string | false | undefined>) {
+   return classNames.filter(Boolean).join(' ');
+ }
+@@ -227,7 +260,8 @@ export default function ReLoanQuoteForm({
+   );
+   const [keypadBuffer, setKeypadBuffer] = useState<string | null>(null);
+   const keypadSuffixRef = useRef<HTMLSpanElement>(null);
+-  const keypadSuffixOriginLeftRef = useRef<number | null>(null);
++  /** Left edge of every glyph box + the suffix before a key press (FLIP source). */
++  const keypadSuffixOriginLeftRef = useRef<Map<Element, number> | null>(null);
+   const [keypadLayoutRevision, setKeypadLayoutRevision] = useState(0);
+   const [amountEditOpen, setAmountEditOpen] = useState(false);
+   // Keep the repayment-plan state visible on the local re-loan fixture so the
+@@ -237,6 +271,9 @@ export default function ReLoanQuoteForm({
+     () => isVisualMock,
+   );
+   const { t } = useI18n();
++  // Reduced motion: the first-open cascade keeps its key-by-key fade but drops
++  // the rise and scale (a `transform` string is not covered by MotionConfig).
++  const reduceMotion = useReducedMotion();
+   const formattedAmount = useMemo(
+     () => formatPesoDisplayParts(amount),
+     [amount],
+@@ -248,33 +285,42 @@ export default function ReLoanQuoteForm({
+     if (visualVariant !== 'withdraw-flow') return undefined;
+ 
+     const keypadSuffix = keypadSuffixRef.current;
+-    if (!keypadSuffix) return undefined;
+-
+-    const layoutOffset = calculateWithdrawKeypadLayoutOffset(
+-      keypadSuffixOriginLeftRef.current,
+-      keypadSuffix.getBoundingClientRect().left,
+-    );
++    const origins = keypadSuffixOriginLeftRef.current;
+     keypadSuffixOriginLeftRef.current = null;
++    if (!keypadSuffix || !origins) return undefined;
+ 
+     const prefersReducedMotion = window.matchMedia(
+       '(prefers-reduced-motion: reduce)',
+     ).matches;
+-    if (Math.abs(layoutOffset) < 0.5 || prefersReducedMotion) return undefined;
+-
+-    // The prototype keeps the caret and fixed 00.00 continuously visible.
+-    // Invert their real layout displacement instead of fading/remounting them.
+-    const animation = keypadSuffix.animate(
+-      [
+-        { transform: `translateX(${layoutOffset}px)` },
+-        { transform: 'translateX(0)' },
+-      ],
+-      {
+-        duration: 220,
+-        easing: 'cubic-bezier(0.2, 0, 0, 1)',
+-      },
+-    );
++    if (prefersReducedMotion) return undefined;
++
++    // withdraw.js:1221-1239: the digits, caret, "00" and ".00" are
++    // `layout: 'position'` — a typed digit pushes them on Motion's default
++    // layout glide (0.45 s, [0.4, 0, 0.1, 1]); a new digit plays its own
++    // entrance instead. Inverts each box's real displacement (FLIP).
++    const animations: Animation[] = [];
++    origins.forEach((previousLeft, element) => {
++      if (!element.isConnected) return;
++      const layoutOffset = calculateWithdrawKeypadLayoutOffset(
++        previousLeft,
++        element.getBoundingClientRect().left,
++      );
++      if (Math.abs(layoutOffset) < 0.5) return;
++      animations.push(
++        (element as HTMLElement).animate(
++          [
++            { transform: `translateX(${layoutOffset}px)` },
++            { transform: 'translateX(0)' },
++          ],
++          {
++            duration: LAYOUT_GLIDE.duration * 1000,
++            easing: `cubic-bezier(${LAYOUT_GLIDE.ease.join(', ')})`,
++          },
++        ),
++      );
++    });
+ 
+-    return () => animation.cancel();
++    return () => animations.forEach((animation) => animation.cancel());
+   }, [keypadLayoutRevision, visualVariant]);
+   const calculatedRepaymentSchedules = useMemo(
+     () =>
+@@ -476,8 +522,19 @@ export default function ReLoanQuoteForm({
+       max: amountRange.max,
+     });
+     if (nextState.buffer !== keypadEditableDigits) {
+-      keypadSuffixOriginLeftRef.current =
+-        keypadSuffixRef.current?.getBoundingClientRect().left ?? null;
++      const origins = new Map<Element, number>();
++      const row = keypadSuffixRef.current?.parentElement;
++      row
++        ?.querySelectorAll('[data-g="int"]')
++        .forEach((glyph) =>
++          origins.set(glyph, glyph.getBoundingClientRect().left),
++        );
++      if (keypadSuffixRef.current)
++        origins.set(
++          keypadSuffixRef.current,
++          keypadSuffixRef.current.getBoundingClientRect().left,
++        );
++      keypadSuffixOriginLeftRef.current = origins;
+       setKeypadLayoutRevision((revision) => revision + 1);
+     }
+     setKeypadBuffer(nextState.buffer);
+@@ -529,14 +586,14 @@ export default function ReLoanQuoteForm({
+           data-withdraw-card={visualVariant === 'withdraw-flow' || undefined}
+           aria-label={t('home.apply.orderLabel')}
+         >
+-          <section className={styles.amountPanel}>
++          <section className={styles.amountPanel} data-morph="panel">
+             {creditValidityDateText ? (
+               <CreditValidityTooltip
+                 key={creditValidityDateText}
+                 dateText={creditValidityDateText}
+               />
+             ) : null}
+-            <div className={styles.amountLabel}>
++            <div className={styles.amountLabel} data-morph="label">
+               {visualVariant === 'withdraw-flow'
+                 ? t('home.apply.disbursementAmount')
+                 : t('home.apply.availableAmount')}
+@@ -547,7 +604,12 @@ export default function ReLoanQuoteForm({
+                   aria-label={formattedAmount.formatted}
+                   className={styles.amountValue}
+                 >
+-                  <span aria-hidden="true" className={styles.amountCurrency}>
++                  <span
++                    aria-hidden="true"
++                    className={styles.amountCurrency}
++                    data-morph="peso"
++                  >
++                    <i style={GLYPH_BASE} />
+                     {formattedAmount.currency}
+                   </span>
+                   <span aria-hidden="true" className={styles.amountInteger}>
+@@ -561,10 +623,12 @@ export default function ReLoanQuoteForm({
+                     className={styles.keypadSuffix}
+                     ref={keypadSuffixRef}
+                   >
+-                    <span className={styles.keypadCaret} />
+-                    <span className={styles.keypadFixedDigits}>00</span>
++                    <span className={styles.keypadCaret} data-morph="caret" />
++                    <span className={styles.keypadFixedDigits}>
++                      <Glyphs group="tail" text="00" />
++                    </span>
+                     <span className={styles.amountFraction}>
+-                      {formattedAmount.fraction}
++                      <Glyphs group="dec" text={formattedAmount.fraction} />
+                     </span>
+                   </span>
+                 </span>
+@@ -624,7 +688,7 @@ export default function ReLoanQuoteForm({
+             )}
+ 
+             {visualVariant === 'withdraw-flow' ? (
+-              <p className={styles.amountRangeHint}>
++              <p className={styles.amountRangeHint} data-morph="cap">
+                 {drawerCopy.amountRange({
+                   max: formatPesoCompact(amountRange.max),
+                   min: formatPesoCompact(amountRange.min),
+@@ -633,10 +697,10 @@ export default function ReLoanQuoteForm({
+             ) : null}
+           </section>
+ 
+-          <section className={styles.detailCard}>
++          <section className={styles.detailCard} data-morph="detail">
+             <div className={styles.termSection}>
+               {visualVariant === 'withdraw-flow' ? (
+-                <p className={styles.termPrompt}>
++                <p className={styles.termPrompt} data-morph="prompt">
+                   {t('home.apply.termPrompt')}
+                 </p>
+               ) : (
+@@ -664,6 +728,7 @@ export default function ReLoanQuoteForm({
+                         selected && styles.termOptionActive,
+                       )}
+                       data-event-type={eventType('term_option')}
++                      data-morph-chip={option.id}
+                       disabled={!interactive}
+                       key={option.id}
+                       onClick={() => handleTermSelect(option.id)}
+@@ -683,36 +748,84 @@ export default function ReLoanQuoteForm({
+ 
+             {visualVariant === 'withdraw-flow' ? (
+               <>
+-                <div aria-hidden="true" className={styles.divider} />
+-                <div
++                {/* Pad line and keypad: fade in 0.2 s, keys WD_REVEAL(i) —
++                    withdraw.js:1142-1177. First open: the full key-by-key
++                    cascade while the layer rises (owner rule; see
++                    FIRST_OPEN_CASCADE). */}
++                <m.div
++                  animate={{ opacity: 1, transition: PAD_IN }}
++                  aria-hidden="true"
++                  className={styles.divider}
++                  data-morph="line"
++                  initial={FIRST_OPEN_CASCADE ? { opacity: 0 } : false}
++                />
++                <m.div
++                  animate={{ opacity: 1, transition: PAD_IN }}
+                   aria-label={t('home.apply.keypad.label')}
+                   className={styles.keypad}
++                  data-morph="pad"
++                  initial={FIRST_OPEN_CASCADE ? { opacity: 0 } : false}
+                   role="group"
+                 >
+-                  {WITHDRAW_FLOW_KEYPAD.map((key) => (
+-                    <button
+-                      aria-label={
+-                        key === 'delete'
+-                          ? t('home.apply.keypad.delete')
+-                          : undefined
+-                      }
+-                      className={styles.keypadKey}
+-                      data-event-type={eventType('amount_keypad')}
+-                      disabled={!interactive || key === 'spacer'}
+-                      key={key}
+-                      onClick={() => handleKeypadPress(key)}
+-                      type="button"
+-                    >
+-                      {key === 'delete' ? (
+-                        <Delete aria-hidden="true" size={24} />
+-                      ) : key === 'spacer' ? (
+-                        '*'
+-                      ) : (
+-                        key
+-                      )}
+-                    </button>
+-                  ))}
+-                </div>
++                  {WITHDRAW_FLOW_KEYPAD.map((key, index) => {
++                    // M-099: key by key in reading order — WD_REVEAL(i):
++                    // 0.34 s after 0.06 + 0.03·i s, y 10, scale 0.94, as ONE
++                    // transform string (compositor) on a wrapper; the press
++                    // (scale 0.94 + the line colour, Motion's default
++                    // transition — withdraw.js:1174) on the key itself.
++                    const reveal = WD_REVEAL(index);
++                    return (
++                      <m.div
++                        animate={{
++                          opacity: 1,
++                          transform: 'translateY(0px) scale(1)',
++                        }}
++                        className={styles.keypadCell}
++                        initial={
++                          FIRST_OPEN_CASCADE
++                            ? {
++                                opacity: reveal.initial.opacity,
++                                transform: reduceMotion
++                                  ? 'translateY(0px) scale(1)'
++                                  : `translateY(${reveal.initial.y}px) scale(${reveal.initial.scale})`,
++                              }
++                            : false
++                        }
++                        key={key}
++                        transition={reveal.transition}
++                      >
++                        <m.button
++                          aria-label={
++                            key === 'delete'
++                              ? t('home.apply.keypad.delete')
++                              : undefined
++                          }
++                          className={styles.keypadKey}
++                          data-event-type={eventType('amount_keypad')}
++                          disabled={!interactive || key === 'spacer'}
++                          onClick={() => handleKeypadPress(key)}
++                          type="button"
++                          whileTap={
++                            !interactive || key === 'spacer'
++                              ? undefined
++                              : {
++                                  scale: KEY_PRESS_SCALE,
++                                  backgroundColor: readKeyPressBackground(),
++                                }
++                          }
++                        >
++                          {key === 'delete' ? (
++                            <Delete aria-hidden="true" size={24} />
++                          ) : key === 'spacer' ? (
++                            '*'
++                          ) : (
++                            key
++                          )}
++                        </m.button>
++                      </m.div>
++                    );
++                  })}
++                </m.div>
+               </>
+             ) : null}
+ 

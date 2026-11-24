@@ -1,0 +1,29 @@
+diff --git a/src/pages/OutPages/DiversionPage/Home/components/DownloadGuideSheet/index.module.css b/src/pages/OutPages/DiversionPage/Home/components/DownloadGuideSheet/index.module.css
+index 62386e7..7e12724 100644
+--- a/src/pages/OutPages/DiversionPage/Home/components/DownloadGuideSheet/index.module.css
++++ b/src/pages/OutPages/DiversionPage/Home/components/DownloadGuideSheet/index.module.css
+@@ -41,13 +41,7 @@
+   outline: none;
+   overscroll-behavior-y: contain;
+   touch-action: pan-y;
+-  transform: translate3d(0, var(--bottom-sheet-drag-offset, 0), 0);
+-  transition: transform 0.34s cubic-bezier(0.22, 0.7, 0.24, 1);
+-}
+-
+-.sheetDragging {
+-  transition: none;
+-  will-change: transform;
++  /* Motion (enter / exit, drag, spring back) comes from the shared Sheet. */
+ }
+ 
+ .dragRegion {
+@@ -122,9 +116,3 @@
+ .downloadButton {
+   min-height: 48px;
+ }
+-
+-@media (prefers-reduced-motion: reduce) {
+-  .sheet {
+-    transition: none;
+-  }
+-}

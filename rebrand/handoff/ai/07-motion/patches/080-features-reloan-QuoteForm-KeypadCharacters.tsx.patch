@@ -1,0 +1,68 @@
+diff --git a/src/features/reloan/QuoteForm/KeypadCharacters.tsx b/src/features/reloan/QuoteForm/KeypadCharacters.tsx
+index d7a3883..786f962 100644
+--- a/src/features/reloan/QuoteForm/KeypadCharacters.tsx
++++ b/src/features/reloan/QuoteForm/KeypadCharacters.tsx
+@@ -1,9 +1,58 @@
+-import { createElement } from 'react';
++import { createElement, useState } from 'react';
+ import { formatWithdrawKeypadCharacters } from '../withdrawAmountKeypad';
+ 
+-/** Renders editable positions with stable identities; new positions retain the caller's entrance CSS. */
+-export default function KeypadCharacters({ digits, className }: { digits: string; className: string }) {
+-  return formatWithdrawKeypadCharacters(digits).map(character =>
+-    createElement('span', { className, key: character.key }, character.value),
++const BASE = { display: 'inline-block', width: 0, height: 0 } as const;
++
++/** One glyph box; it decides ONCE, on mount, whether it was typed. */
++function KeypadGlyph({
++  className,
++  opening,
++  id,
++  value,
++}: {
++  className: string;
++  opening: Set<string>;
++  id: string;
++  value: string;
++}) {
++  // withdraw.js:1203-1216 `born`: the digits on screen when the entry opens
++  // are the value, not typing (`data-still`, no entrance); a position added
++  // later was typed. Consuming the opening set means a deleted and retyped
++  // position plays the entrance again.
++  const [still] = useState(() => opening.delete(id));
++  return createElement(
++    'span',
++    { className, 'data-g': 'int', 'data-still': still ? '' : undefined },
++    createElement('i', { style: BASE }),
++    value,
++  );
++}
++
++/**
++ * Renders editable positions with stable identities; new positions retain the
++ * caller's entrance CSS. Each glyph carries an empty inline-block on its
++ * baseline (`data-g="int"`) so the amount → order card morph can FLIP it
++ * (withdraw.js glyph() / BASE). A deleted digit disappears at once (no exit,
++ * as in the demo).
++ */
++export default function KeypadCharacters({
++  digits,
++  className,
++}: {
++  digits: string;
++  className: string;
++}) {
++  const characters = formatWithdrawKeypadCharacters(digits);
++  const [opening] = useState(
++    () => new Set(characters.map((character) => character.key)),
++  );
++  return characters.map((character) =>
++    createElement(KeypadGlyph, {
++      className,
++      id: character.key,
++      key: character.key,
++      opening,
++      value: character.value,
++    }),
+   );
+ }

@@ -1,0 +1,25 @@
+diff --git a/src/pages/HomePage/Payment/components/CancelLoanConfirmDialog/index.module.css b/src/pages/HomePage/Payment/components/CancelLoanConfirmDialog/index.module.css
+index 59b2d69..6511007 100644
+--- a/src/pages/HomePage/Payment/components/CancelLoanConfirmDialog/index.module.css
++++ b/src/pages/HomePage/Payment/components/CancelLoanConfirmDialog/index.module.css
+@@ -1,17 +1,13 @@
++/* Scrim of the shared Sheet (layer: fixed, inset 0, z 1010; the card is
++   centred by the Sheet's centre placement). / 共享 Sheet 的遮罩。 */
+ .overlay {
+-  position: fixed;
+-  inset: 0;
+-  z-index: 1010;
+-  display: grid;
+-  place-items: center;
+-  padding: var(--spacing-padding-2xl, 24px);
+   background: var(--gradient-scrim);
+ }
+ 
+ .dialog {
+   box-sizing: border-box;
+   display: grid;
+-  width: min(100%, 342px);
++  width: min(calc(100% - 2 * var(--spacing-padding-2xl, 24px)), 342px);
+   gap: var(--spacing-gap-lg, 16px);
+   padding: var(--spacing-padding-2xl, 24px);
+   border-radius: var(--radius-xl, 24px);

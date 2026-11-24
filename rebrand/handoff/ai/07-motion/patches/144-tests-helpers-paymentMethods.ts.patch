@@ -1,0 +1,15 @@
+diff --git a/tests/helpers/paymentMethods.ts b/tests/helpers/paymentMethods.ts
+index 423d633..d0415ea 100644
+--- a/tests/helpers/paymentMethods.ts
++++ b/tests/helpers/paymentMethods.ts
+@@ -143,6 +143,10 @@ export function loadWithdrawalMethod(bankModule: unknown) {
+     '@/utils/navigation',
+     '@/features/reloan/tracking',
+     './motion/cardMotion',
++    './motion/withdrawMorph',
++    '@/motion/flows/agreementNudge',
++    '@/motion/flows/useGlide',
++    '@/motion/flows/withdrawTokens',
+     './SubmissionStatus',
+   ])
+     dependencies[name] = {};

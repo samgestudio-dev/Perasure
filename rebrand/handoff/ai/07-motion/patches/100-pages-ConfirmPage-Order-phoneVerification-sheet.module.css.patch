@@ -1,0 +1,65 @@
+diff --git a/src/pages/ConfirmPage/Order/phoneVerification/sheet.module.css b/src/pages/ConfirmPage/Order/phoneVerification/sheet.module.css
+index 80a2ba7..aa696c3 100644
+--- a/src/pages/ConfirmPage/Order/phoneVerification/sheet.module.css
++++ b/src/pages/ConfirmPage/Order/phoneVerification/sheet.module.css
+@@ -16,16 +16,19 @@
+   display: flex;
+   flex-direction: column;
+   gap: var(--spacing-16);
+-  min-height: 248px;
+   padding: var(--spacing-16);
+   color: var(--fg-default);
+-  transition: min-height 340ms cubic-bezier(0.22, 0.61, 0.36, 1);
+ }
+-.inputSheet {
+-  min-height: 260px;
++/* The sheet's height follows its middle, which rides the Smooth spring
++   (48 / 60, +56 with an error — PS.OtpSheet, M-091). Panes crossfade inside
++   it (popLayout): each pane is laid out at the top of the middle. */
++.middle {
++  position: relative;
++  flex-shrink: 0;
+ }
+-.errorSheet {
+-  min-height: 316px;
++.pane {
++  position: relative;
++  width: 100%;
+ }
+ .grabber {
+   position: absolute;
+@@ -113,7 +116,10 @@
+     700 20px/28px 'Hanken Grotesk',
+     sans-serif;
+   color: var(--fg-subtle);
+-  animation: enter 340ms cubic-bezier(0.22, 0.61, 0.36, 1);
++  /* State colours: 150 ms (R-COLOR, M-029). */
++  transition:
++    border-color 0.15s ease,
++    color 0.15s ease;
+ }
+ .active {
+   border-color: var(--border-selected);
+@@ -156,21 +162,8 @@
+   background: var(--bg-disabled);
+   color: var(--button-primary-fg-disabled);
+ }
+-@keyframes enter {
+-  from {
+-    opacity: 0;
+-    transform: translateY(10px) scale(0.94);
+-  }
+-  to {
+-    opacity: 1;
+-    transform: none;
+-  }
+-}
+ @media (prefers-reduced-motion: reduce) {
+-  .sheet {
+-    transition: none;
+-  }
+   .digit {
+-    animation: none;
++    transition: none;
+   }
+ }

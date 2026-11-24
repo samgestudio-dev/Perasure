@@ -1,0 +1,86 @@
+diff --git a/src/components/ui/Loading/Loading.tsx b/src/components/ui/Loading/Loading.tsx
+index f6d341b..8e0d964 100644
+--- a/src/components/ui/Loading/Loading.tsx
++++ b/src/components/ui/Loading/Loading.tsx
+@@ -1,6 +1,9 @@
+ import type { ReactNode } from 'react';
+ import { useEffect, useState } from 'react';
+ import { createPortal } from 'react-dom';
++import { AnimatePresence, m } from 'motion/react';
++import { MT, SCRIM_IN } from '@/motion/tokens';
++import { CoinLoader } from '@/motion/flows/CoinLoader';
+ import { lockScroll, unlockScroll } from '@/utils/browser/dom/scrollLock';
+ import styles from './Loading.module.css';
+ 
+@@ -68,26 +71,57 @@ export function Loading({
+     return (
+       <div className={joinClassNames(styles.wrapper, className)}>
+         {children}
+-        {visible ? (
+-          <div className={joinClassNames(styles.overlay, classNames?.overlay)}>
+-            {indicator}
+-          </div>
+-        ) : null}
++        {/* The loading layer is there at once and leaves on LEAVE (rebrand
++            PS.Cover). 加载层立即出现，结束时按 LEAVE 淡出。 */}
++        <AnimatePresence initial={false}>
++          {visible ? (
++            <m.div
++              className={joinClassNames(styles.overlay, classNames?.overlay)}
++              exit={{ opacity: 0, transition: MT.LEAVE }}
++              key="loading-cover"
++            >
++              {indicator}
++            </m.div>
++          ) : null}
++        </AnimatePresence>
+       </div>
+     );
+   }
+ 
+   if (fullscreen && typeof document !== 'undefined') {
++    // Action wait loader (rebrand APP.run → PS.Overlay + PS.Loader, M-128 /
++    // M-054): the coin + dots in the middle of the screen; the layer fades in
++    // 0.2 s and leaves on LEAVE. 全屏等待：金币 + 圆点，0.2s 淡入，LEAVE 淡出。
+     return createPortal(
+-      <div
+-        className={joinClassNames(
+-          styles.fullscreen,
+-          className,
+-          classNames?.fullscreen,
+-        )}
+-      >
+-        {indicator}
+-      </div>,
++      <AnimatePresence>
++        {visible ? (
++          <m.div
++            animate={{ opacity: 1, transition: SCRIM_IN }}
++            className={joinClassNames(
++              styles.fullscreen,
++              className,
++              classNames?.fullscreen,
++            )}
++            exit={{ opacity: 0, transition: MT.LEAVE }}
++            initial={{ opacity: 0 }}
++            key="loading-fullscreen"
++          >
++            <div
++              className={joinClassNames(
++                styles.indicator,
++                classNames?.indicator,
++              )}
++            >
++              <CoinLoader label={typeof text === 'string' ? text : undefined} />
++              {text ? (
++                <span className={joinClassNames(styles.text, classNames?.text)}>
++                  {text}
++                </span>
++              ) : null}
++            </div>
++          </m.div>
++        ) : null}
++      </AnimatePresence>,
+       document.body,
+     );
+   }

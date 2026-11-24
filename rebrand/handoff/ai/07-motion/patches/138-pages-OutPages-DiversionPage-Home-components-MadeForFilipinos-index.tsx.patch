@@ -1,0 +1,34 @@
+diff --git a/src/pages/OutPages/DiversionPage/Home/components/MadeForFilipinos/index.tsx b/src/pages/OutPages/DiversionPage/Home/components/MadeForFilipinos/index.tsx
+index 4c3b1f7..5e69047 100644
+--- a/src/pages/OutPages/DiversionPage/Home/components/MadeForFilipinos/index.tsx
++++ b/src/pages/OutPages/DiversionPage/Home/components/MadeForFilipinos/index.tsx
+@@ -1,8 +1,9 @@
+-import type { ReactNode } from 'react';
++import { useRef, type ReactNode } from 'react';
+ 
+ import madeForFilipinosAvatars from '@/assets/home/made-for-filipinos-avatars.png';
+ import partnerLogos from '@/assets/home/partner-logos.svg';
+ import secRegistration from '@/assets/home/sec-registration.svg';
++import { useMarquee } from '@/motion/useMarquee';
+ import { useI18n, type TranslationKey } from '@/i18n';
+ 
+ import styles from './index.module.css';
+@@ -27,6 +28,9 @@ const CREDENTIALS = [
+ /** 导流页自有的菲律宾用户与合规资质展示。 */
+ export default function MadeForFilipinos(): ReactNode {
+   const { t } = useI18n();
++  const logoTrackRef = useRef<HTMLDivElement | null>(null);
++  // M-068: the logo strip runs at 28 px/s on WAAPI; still with reduced motion.
++  useMarquee(logoTrackRef);
+ 
+   return (
+     <section className={styles.card} aria-labelledby="made-for-filipinos-title">
+@@ -90,7 +94,7 @@ export default function MadeForFilipinos(): ReactNode {
+         className={styles.partnerLogos}
+         aria-label={t('diversion.home.trust.partnersLabel')}
+       >
+-        <div className={styles.partnerLogoTrack}>
++        <div className={styles.partnerLogoTrack} ref={logoTrackRef}>
+           {[false, true].map((isDuplicate) => (
+             <div
+               aria-hidden={isDuplicate ? 'true' : undefined}

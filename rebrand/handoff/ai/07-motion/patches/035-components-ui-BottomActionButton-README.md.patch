@@ -1,0 +1,22 @@
+diff --git a/src/components/ui/BottomActionButton/README.md b/src/components/ui/BottomActionButton/README.md
+index fe8acc1..ec84e3e 100644
+--- a/src/components/ui/BottomActionButton/README.md
++++ b/src/components/ui/BottomActionButton/README.md
+@@ -11,7 +11,7 @@ Figma refs:
+ 
+ - 支持外部传入按钮文案或自定义节点。
+ - 支持 `disabled` 控制不可点击状态。
+-- 支持 `loading` 控制异步处理中状态，表现为不可点击。
++- 支持 `loading` 控制异步处理中状态，表现为不可点击，文案替换为三点脉冲（改版 PS.Busy）。
+ - 支持 `onClick` 回调。
+ - 内置点击防抖，默认 500ms 内重复点击不会再次触发。
+ - 默认带 `data-event-type="bottom_action_button_click"`，便于 DOM 行为埋点采集。
+@@ -70,7 +70,7 @@ export function Demo() {
+ | `text`            | `ReactNode`                        | `'Next'`                       | 按钮文案，`children` 为空时生效。                                           |
+ | `children`        | `ReactNode`                        | `undefined`                    | 自定义按钮内容，优先级高于 `text`。                                         |
+ | `disabled`        | `boolean`                          | `false`                        | 禁用按钮，展示灰色状态，并阻止点击回调。                                    |
+-| `loading`         | `boolean`                          | `false`                        | 外部异步执行中状态，按钮不可点击，并设置 `aria-busy`。                      |
++| `loading`         | `boolean`                          | `false`                        | 外部异步执行中状态，按钮不可点击、显示三点脉冲，并设置 `aria-busy`。        |
+ | `debounceMs`      | `number`                           | `500`                          | 点击防抖窗口。首次点击立即触发，窗口内重复点击忽略；小于等于 0 时关闭防抖。 |
+ | `className`       | `string`                           | `undefined`                    | 外层容器 class，可用于 fixed 定位。                                         |
+ | `buttonClassName` | `string`                           | `undefined`                    | 内部按钮 class，用于局部样式覆盖。                                          |

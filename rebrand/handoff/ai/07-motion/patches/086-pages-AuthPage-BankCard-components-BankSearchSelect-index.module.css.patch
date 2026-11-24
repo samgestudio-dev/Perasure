@@ -1,0 +1,97 @@
+diff --git a/src/pages/AuthPage/BankCard/components/BankSearchSelect/index.module.css b/src/pages/AuthPage/BankCard/components/BankSearchSelect/index.module.css
+index e21c762..f8ee25b 100644
+--- a/src/pages/AuthPage/BankCard/components/BankSearchSelect/index.module.css
++++ b/src/pages/AuthPage/BankCard/components/BankSearchSelect/index.module.css
+@@ -38,10 +38,6 @@
+   -webkit-tap-highlight-color: transparent;
+ }
+ 
+-.trigger:active {
+-  transform: scale(0.99);
+-}
+-
+ .triggerValue {
+   min-width: 0;
+   flex: 1 1 auto;
+@@ -82,7 +78,8 @@
+   /* This body portal must sit above the withdrawal FullScreenLayer (1200).
+      内嵌绑卡也需可点击，避免银行列表被提现容器遮挡。 */
+   z-index: 1300;
+-  top: var(--app-shell-header-offset, 76px);
++  /* !important: the shared Sheet layer sets inset: 0 inline; the list stays under the app header */
++  top: var(--app-shell-header-offset, 76px) !important;
+   right: 0;
+   bottom: 0;
+   left: 0;
+@@ -90,27 +87,17 @@
+   align-items: flex-end;
+   justify-content: center;
+   overflow: visible;
+-  transition: opacity 0.22s ease;
+ }
+ 
+ .overlayNativeApp {
+-  top: 0;
++  top: 0 !important;
+ }
+ 
+ .overlayNativeApp .sheet {
+   box-shadow: var(--elevation-2);
+ }
+ 
+-.overlayVisible {
+-  opacity: 1;
+-  pointer-events: auto;
+-}
+-
+-.overlayHidden {
+-  opacity: 0;
+-  pointer-events: none;
+-}
+-
++/* Motion (slide, scrim, drag) comes from the shared Sheet (src/motion/Sheet.tsx). */
+ .mask {
+   position: absolute;
+   inset: 0;
+@@ -143,20 +130,6 @@
+       var(--shadow-subtle-1, rgba(0, 1, 40, 0.12)),
+     0 -4px var(--blur-shadow-default-2, 12px) 0
+       var(--shadow-subtle-2, rgba(0, 1, 40, 0.06));
+-  transition: transform 0.22s ease;
+-}
+-
+-.sheetVisible {
+-  transform: translate3d(0, var(--bottom-sheet-drag-offset, 0), 0);
+-}
+-
+-.sheetHidden {
+-  transform: translate3d(0, 100%, 0);
+-}
+-
+-.sheetDragging {
+-  transition: none;
+-  will-change: transform;
+ }
+ 
+ .sheetHeader {
+@@ -343,6 +316,8 @@
+ }
+ 
+ .sheetList {
++  /* Crossfade (popLayout) positions the leaving list against this box */
++  position: relative;
+   box-sizing: border-box;
+   min-height: 100%;
+   padding: 0 var(--spacing-page-x-sm, 16px)
+@@ -420,6 +395,11 @@
+   color: var(--fg-accent, #2c74be);
+ }
+ 
++/* R-COLOR: colour changes in 150 ms */
++.bankOption {
++  transition: color 0.15s ease;
++}
++
+ .searchMatch {
+   color: var(--fg-accent, #2c74be);
+ }

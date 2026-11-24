@@ -1,0 +1,61 @@
+diff --git a/src/pages/AuthPage/Identity/components/IdentityInUseDialog/index.module.css b/src/pages/AuthPage/Identity/components/IdentityInUseDialog/index.module.css
+index abef918..3bb173f 100644
+--- a/src/pages/AuthPage/Identity/components/IdentityInUseDialog/index.module.css
++++ b/src/pages/AuthPage/Identity/components/IdentityInUseDialog/index.module.css
+@@ -1,19 +1,4 @@
+-.overlay {
+-  position: fixed;
+-  inset: 0;
+-  transition: opacity 0.22s ease;
+-}
+-
+-.overlayVisible {
+-  opacity: 1;
+-  pointer-events: auto;
+-}
+-
+-.overlayHidden {
+-  opacity: 0;
+-  pointer-events: none;
+-}
+-
++/* Motion (slide, scrim, drag) comes from the shared Sheet (src/motion/Sheet.tsx). */
+ .mask {
+   position: absolute;
+   inset: 0;
+@@ -41,24 +26,9 @@
+   border-radius: var(--radius-xxl, 32px);
+   background: var(--bg-default, #ffffff);
+   touch-action: pan-y;
+-  transform: translate3d(0, var(--bottom-sheet-drag-offset, 0), 0);
+-  transition: transform 0.34s cubic-bezier(0.22, 0.7, 0.24, 1);
+   box-shadow: var(--elevation-2);
+ }
+ 
+-.sheetVisible {
+-  transform: translate3d(0, var(--bottom-sheet-drag-offset, 0), 0);
+-}
+-
+-.sheetHidden {
+-  transform: translateY(calc(100% + 24px));
+-}
+-
+-.sheetDragging {
+-  transition: none;
+-  will-change: transform;
+-}
+-
+ .handle {
+   position: absolute;
+   top: 8px;
+@@ -156,10 +126,6 @@
+   opacity: 0.45;
+ }
+ 
+-.accountButton:active {
+-  transform: scale(0.99);
+-}
+-
+ .accountTitle {
+   color: var(--button-secondary-fg);
+   font-family: var(--font-family-body, var(--font-family-title)), sans-serif;

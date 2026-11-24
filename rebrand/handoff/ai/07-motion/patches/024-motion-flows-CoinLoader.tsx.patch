@@ -1,0 +1,96 @@
+diff --git a/src/motion/flows/CoinLoader.tsx b/src/motion/flows/CoinLoader.tsx
+new file mode 100644
+index 0000000..1af0561
+--- /dev/null
++++ b/src/motion/flows/CoinLoader.tsx
+@@ -0,0 +1,90 @@
++/** @jsxRuntime automatic @jsxImportSource react */
++/**
++ * The Loader — demo `PS.Loader` (shared/ps-ui/feedback.js:30-36, M-054): the
++ * PeraSure coin spinning (72 px, its picture hanging 10 px outside a 52 px
++ * box) over the loading dots (104 × 27), 16 px apart, in the very middle of
++ * its box. The coin is the production GSAP port of the rebrand Lottie
++ * (`WithdrawMainRoute/motion/loadingCoin.ts`, recoloured to the dark green);
++ * it is loaded on demand so a Suspense fallback stays light: until it arrives
++ * the dots play alone in the same layout (the coin box keeps its space).
++ *
++ * Reduced motion: the coin shows its first frame and the dots stand still
++ * (Motion's reducedMotion="user" behaviour for the demo's Lottie players).
++ */
++import { useEffect, useRef, type CSSProperties } from 'react';
++
++import { prefersReducedMotion } from '../reducedMotion';
++import { LoadingDots } from './LoadingDots';
++
++const COIN = 72;
++const INSET = 10;
++
++const column: CSSProperties = {
++  display: 'flex',
++  flexDirection: 'column',
++  alignItems: 'center',
++  justifyContent: 'center',
++  gap: 16,
++};
++
++export interface CoinLoaderProps {
++  /** accessible label (role status) */
++  label?: string;
++  className?: string;
++  style?: CSSProperties;
++}
++
++/** PS.Loader without `fill`: place it in a full-screen layer for a page load. */
++export function CoinLoader({
++  label = 'Loading',
++  className,
++  style,
++}: CoinLoaderProps) {
++  const coinRef = useRef<HTMLSpanElement>(null);
++  useEffect(() => {
++    let disposed = false;
++    let destroy: (() => void) | undefined;
++    void import('@/pages/HomePage/WithdrawMainRoute/motion/loadingCoin')
++      .then(({ createLoadingCoin }) => {
++        const box = coinRef.current;
++        if (disposed || !box) return;
++        const coin = createLoadingCoin(box);
++        coin.svg.style.width = '100%';
++        coin.svg.style.height = '100%';
++        if (prefersReducedMotion()) coin.timeline.pause(0);
++        else coin.timeline.repeat(-1).play(0);
++        destroy = () => coin.destroy();
++      })
++      .catch(() => undefined);
++    return () => {
++      disposed = true;
++      destroy?.();
++    };
++  }, []);
++  return (
++    <div
++      aria-label={label}
++      className={className}
++      role="status"
++      style={{ ...column, ...style }}
++    >
++      <span
++        aria-hidden="true"
++        style={{
++          width: COIN - INSET * 2,
++          height: COIN - INSET * 2,
++          display: 'block',
++          position: 'relative',
++        }}
++      >
++        <span
++          ref={coinRef}
++          style={{ position: 'absolute', inset: -INSET, display: 'block' }}
++        />
++      </span>
++      <LoadingDots width={104} />
++    </div>
++  );
++}
++
++export default CoinLoader;

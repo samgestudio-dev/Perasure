@@ -1,0 +1,421 @@
+diff --git a/src/pages/AuthPage/BankCard/components/BankSearchSelect/index.tsx b/src/pages/AuthPage/BankCard/components/BankSearchSelect/index.tsx
+index d2144d9..95b4eaa 100644
+--- a/src/pages/AuthPage/BankCard/components/BankSearchSelect/index.tsx
++++ b/src/pages/AuthPage/BankCard/components/BankSearchSelect/index.tsx
+@@ -7,19 +7,24 @@ import {
+   useState,
+   type ChangeEvent,
+ } from 'react';
+-import { createPortal } from 'react-dom';
+ import { ChevronRight, Search, X } from 'lucide-react';
++import { AnimatePresence, m } from 'motion/react';
+ 
+ import { PaymentMethodIcon } from '@/components/ui/PaymentMethodIcon';
+ import { resolvePaymentChannel } from '@/features/paymentMethods/channelIdentity';
+ import { ProgressiveBlur } from '@/components/ui/ProgressiveBlur';
+ import emptyPaymentMethodImage from '@/assets/empty-payment-method.svg';
+-import { useBottomSheetDragDismiss } from '@/components/ui/useBottomSheetDragDismiss';
++import { Crossfade } from '@/motion/Crossfade';
++import { pressProps } from '@/motion/press';
++import { Sheet } from '@/motion/Sheet';
++import { SheetDragArea } from '@/motion/SheetDragArea';
+ import type { BankMethodOption, BankMethodValue } from '@/services/api/bank';
+ import { lockScroll, unlockScroll } from '@/utils/browser/dom/scrollLock';
+ import { isApp } from '@/utils/jsbridge';
+ 
+ import styles from './index.module.css';
++import { fade } from '@/motion/presets';
++import { MT } from '@/motion/tokens';
+ 
+ interface BankSearchSelectProps {
+   title: string;
+@@ -44,8 +49,6 @@ interface BankOptionGroup {
+   options: BankMethodOption[];
+ }
+ 
+-const MOTION_DURATION = 220;
+-
+ function getGroupKey(label: string) {
+   const firstCharacter = label.trim().charAt(0).toUpperCase();
+   return /^[A-Z]$/.test(firstCharacter) ? firstCharacter : '#';
+@@ -163,13 +166,11 @@ export default function BankSearchSelect({
+   const titleId = useId();
+   const isNativeApp = isApp();
+   const [open, setOpen] = useState(false);
+-  const [rendered, setRendered] = useState(false);
+-  const [visible, setVisible] = useState(false);
+   const [scrolled, setScrolled] = useState(false);
+   const [searchValue, setSearchValue] = useState('');
+   const [searchFocused, setSearchFocused] = useState(false);
+   const listRef = useRef<HTMLDivElement | null>(null);
+-  const sheetRef = useRef<HTMLElement | null>(null);
++  const sheetRef = useRef<HTMLDivElement | null>(null);
+   const selectedOption = useMemo(
+     () => options.find((option) => isSameValue(option.value, value)),
+     [options, value],
+@@ -216,18 +217,6 @@ export default function BankSearchSelect({
+     [onOpenChange],
+   );
+ 
+-  useEffect(() => {
+-    if (open) {
+-      setRendered(true);
+-      const timer = window.setTimeout(() => setVisible(true), 0);
+-      return () => window.clearTimeout(timer);
+-    }
+-
+-    setVisible(false);
+-    const timer = window.setTimeout(() => setRendered(false), MOTION_DURATION);
+-    return () => window.clearTimeout(timer);
+-  }, [open]);
+-
+   useEffect(() => {
+     if (!open) return undefined;
+ 
+@@ -257,171 +246,154 @@ export default function BankSearchSelect({
+     updateOpen(false);
+   };
+ 
+-  const { backdropRef, isDragging, sheetDragProps } = useBottomSheetDragDismiss(
+-    {
+-      active: visible,
+-      onDismiss: () => updateOpen(false),
+-      sheetRef,
+-    },
+-  );
+-
++  // Motion: shared Sheet (M-013 slide on SPRING_PCT, M-014 scrim, M-015 drag
++  // from the search row, M-021 rise); the list crossfades between the full
++  // list and the search results (R-FADE). 动效由共享 Sheet 承担；全量列表与搜索结果之间淡入淡出。
+   const popup =
+-    rendered && typeof document !== 'undefined'
+-      ? createPortal(
++    typeof document !== 'undefined' ? (
++      <Sheet
++        ariaLabelledBy={titleId}
++        className={styles.sheet}
++        layerClassName={[
++          styles.overlay,
++          isNativeApp ? styles.overlayNativeApp : '',
++        ].join(' ')}
++        onClose={() => updateOpen(false)}
++        open={open}
++        panelRef={sheetRef}
++        positionPanel={false}
++        role="dialog"
++        scrimClassName={styles.mask}
++        zIndex={1300}
++      >
++        <div
++          className={styles.sheetContent}
++          ref={listRef}
++          onScroll={(event) => setScrolled(event.currentTarget.scrollTop > 0)}
++        >
+           <div
+-            className={[
+-              styles.overlay,
+-              isNativeApp ? styles.overlayNativeApp : '',
+-              visible ? styles.overlayVisible : styles.overlayHidden,
+-            ].join(' ')}
++            aria-label={listLabel}
++            className={styles.sheetList}
++            role="radiogroup"
+           >
+-            <button
+-              aria-label={closeLabel}
+-              ref={backdropRef}
+-              className={styles.mask}
+-              onClick={() => updateOpen(false)}
+-              type="button"
+-            />
+-
+-            <section
+-              aria-labelledby={titleId}
+-              className={[
+-                styles.sheet,
+-                visible ? styles.sheetVisible : styles.sheetHidden,
+-                isDragging ? styles.sheetDragging : '',
+-              ].join(' ')}
+-              {...sheetDragProps}
+-              ref={sheetRef}
+-              role="dialog"
+-            >
+-              <div
+-                className={styles.sheetContent}
+-                ref={listRef}
+-                onScroll={(event) =>
+-                  setScrolled(event.currentTarget.scrollTop > 0)
+-                }
+-              >
+-                <div
+-                  aria-label={listLabel}
+-                  className={styles.sheetList}
+-                  role="radiogroup"
+-                >
+-                  {visibleGroups.length > 0 ? (
+-                    <div className={styles.groupList}>
+-                      {visibleGroups.map((group) => (
+-                        <section className={styles.groupCard} key={group.key}>
+-                          {!normalizedSearch ? (
+-                            <h3 className={styles.groupTitle}>{group.key}</h3>
+-                          ) : null}
+-                          <div className={styles.bankList}>
+-                            {group.options.map((option) => (
+-                              <button
+-                                aria-checked={isSameValue(option.value, value)}
+-                                className={styles.bankOption}
+-                                data-event-type={optionDataEventType}
+-                                key={String(option.value)}
+-                                onClick={() => handleSelect(option)}
+-                                role="radio"
+-                                type="button"
+-                              >
+-                                <PaymentMethodIcon
+-                                  channelKey={resolvePaymentChannel({
+-                                    methodId: 1,
+-                                    code: option.value,
+-                                    names: [option.label],
+-                                  })}
+-                                  variant="bank-list"
+-                                />
+-                                <span className={styles.bankOptionLabel}>
+-                                  <BankOptionLabel
+-                                    label={option.label}
+-                                    query={searchValue}
+-                                  />
+-                                </span>
+-                              </button>
+-                            ))}
+-                          </div>
+-                        </section>
+-                      ))}
+-                    </div>
+-                  ) : (
+-                    <div
+-                      aria-live="polite"
+-                      className={styles.emptyState}
+-                      role="status"
+-                    >
+-                      <img
+-                        alt=""
+-                        aria-hidden="true"
+-                        className={styles.emptyIcon}
+-                        src={emptyPaymentMethodImage}
+-                      />
+-                      <p>{options.length > 0 ? noResultsText : emptyText}</p>
+-                    </div>
+-                  )}
++            <Crossfade k={normalizedSearch ? 'results' : 'all'}>
++              {visibleGroups.length > 0 ? (
++                <div className={styles.groupList}>
++                  {visibleGroups.map((group) => (
++                    <section className={styles.groupCard} key={group.key}>
++                      {!normalizedSearch ? (
++                        <h3 className={styles.groupTitle}>{group.key}</h3>
++                      ) : null}
++                      <div className={styles.bankList}>
++                        {group.options.map((option) => (
++                          <m.button
++                            aria-checked={isSameValue(option.value, value)}
++                            className={styles.bankOption}
++                            data-event-type={optionDataEventType}
++                            key={String(option.value)}
++                            onClick={() => handleSelect(option)}
++                            role="radio"
++                            type="button"
++                            {...pressProps()}
++                          >
++                            <PaymentMethodIcon
++                              channelKey={resolvePaymentChannel({
++                                methodId: 1,
++                                code: option.value,
++                                names: [option.label],
++                              })}
++                              variant="bank-list"
++                            />
++                            <span className={styles.bankOptionLabel}>
++                              <BankOptionLabel
++                                label={option.label}
++                                query={searchValue}
++                              />
++                            </span>
++                          </m.button>
++                        ))}
++                      </div>
++                    </section>
++                  ))}
+                 </div>
+-              </div>
+-
+-              {scrolled && (
+-                <ProgressiveBlur
+-                  className={styles.sheetBlur}
+-                  radius="var(--radius-xxl, 32px) var(--radius-xxl, 32px) 0 0"
+-                  side="top"
+-                  strength={10}
+-                  steps={6}
+-                />
+-              )}
+-
+-              <header className={styles.sheetHeader}>
+-                <span aria-hidden="true" className={styles.handle} />
++              ) : (
+                 <div
+-                  className={[
+-                    styles.searchField,
+-                    searchFocused ? styles.searchFieldFocused : '',
+-                  ]
+-                    .filter(Boolean)
+-                    .join(' ')}
++                  aria-live="polite"
++                  className={styles.emptyState}
++                  role="status"
+                 >
+-                  <Search aria-hidden="true" className={styles.searchIcon} />
+-                  <input
+-                    aria-label={searchPlaceholder}
+-                    autoComplete="off"
+-                    className={styles.searchInput}
+-                    data-event-type="bank_card_bank_search_input"
+-                    onBlur={() => setSearchFocused(false)}
+-                    onChange={handleSearchChange}
+-                    onFocus={() => setSearchFocused(true)}
+-                    placeholder={searchPlaceholder}
+-                    type="search"
+-                    value={searchValue}
++                  <img
++                    alt=""
++                    aria-hidden="true"
++                    className={styles.emptyIcon}
++                    src={emptyPaymentMethodImage}
+                   />
+-                  {searchValue ? (
+-                    <button
+-                      aria-label={clearSearchLabel}
+-                      className={styles.clearSearch}
+-                      data-event-type="bank_card_bank_search_clear"
+-                      onClick={() => setSearchValue('')}
+-                      type="button"
+-                    >
+-                      <X aria-hidden="true" />
+-                    </button>
+-                  ) : null}
++                  <p>{options.length > 0 ? noResultsText : emptyText}</p>
+                 </div>
+-                <button
+-                  aria-label={closeLabel}
+-                  className={styles.closeButton}
+-                  data-event-type="bank_card_bank_search_close"
+-                  onClick={() => updateOpen(false)}
+-                  type="button"
+-                >
+-                  <X aria-hidden="true" />
+-                </button>
+-              </header>
+-            </section>
+-          </div>,
+-          document.body,
+-        )
+-      : null;
++              )}
++            </Crossfade>
++          </div>
++        </div>
++
++        {scrolled && (
++          <ProgressiveBlur
++            className={styles.sheetBlur}
++            radius="var(--radius-xxl, 32px) var(--radius-xxl, 32px) 0 0"
++            side="top"
++            strength={10}
++            steps={6}
++          />
++        )}
++
++        <SheetDragArea as="header" className={styles.sheetHeader}>
++          <span aria-hidden="true" className={styles.handle} />
++          <div
++            className={[
++              styles.searchField,
++              searchFocused ? styles.searchFieldFocused : '',
++            ]
++              .filter(Boolean)
++              .join(' ')}
++          >
++            <Search aria-hidden="true" className={styles.searchIcon} />
++            <input
++              aria-label={searchPlaceholder}
++              autoComplete="off"
++              className={styles.searchInput}
++              data-event-type="bank_card_bank_search_input"
++              onBlur={() => setSearchFocused(false)}
++              onChange={handleSearchChange}
++              onFocus={() => setSearchFocused(true)}
++              placeholder={searchPlaceholder}
++              type="search"
++              value={searchValue}
++            />
++            {searchValue ? (
++              <m.button
++                aria-label={clearSearchLabel}
++                className={styles.clearSearch}
++                data-event-type="bank_card_bank_search_clear"
++                onClick={() => setSearchValue('')}
++                type="button"
++                {...pressProps(true)}
++              >
++                <X aria-hidden="true" />
++              </m.button>
++            ) : null}
++          </div>
++          <m.button
++            aria-label={closeLabel}
++            className={styles.closeButton}
++            data-event-type="bank_card_bank_search_close"
++            onClick={() => updateOpen(false)}
++            type="button"
++            {...pressProps(true)}
++          >
++            <X aria-hidden="true" />
++          </m.button>
++        </SheetDragArea>
++      </Sheet>
++    ) : null;
+ 
+   return (
+     <>
+@@ -429,7 +401,7 @@ export default function BankSearchSelect({
+         <span className={styles.label} id={titleId}>
+           {title}
+         </span>
+-        <button
++        <m.button
+           aria-expanded={open}
+           aria-haspopup="dialog"
+           aria-invalid={Boolean(error) || undefined}
+@@ -437,6 +409,7 @@ export default function BankSearchSelect({
+           data-event-type={dataEventType}
+           onClick={() => updateOpen(true)}
+           type="button"
++          {...pressProps()}
+         >
+           <span
+             className={[
+@@ -447,8 +420,15 @@ export default function BankSearchSelect({
+             {selectedOption?.label ?? placeholder}
+           </span>
+           <ChevronRight aria-hidden="true" className={styles.chevron} />
+-        </button>
+-        {error ? <span className={styles.error}>{error}</span> : null}
++        </m.button>
++        {/* select error rises 6 px from a 3 px blur (M-025, as Select) */}
++        <AnimatePresence initial={false}>
++          {error ? (
++            <m.span className={styles.error} key="error" {...fade(MT.Y.digit)}>
++              {error}
++            </m.span>
++          ) : null}
++        </AnimatePresence>
+       </div>
+       {popup}
+     </>

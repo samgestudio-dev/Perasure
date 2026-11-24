@@ -1,0 +1,301 @@
+diff --git a/src/features/reloan/components/RepaymentPlanDrawer/index.tsx b/src/features/reloan/components/RepaymentPlanDrawer/index.tsx
+index 7ef5d1e..fd654a1 100644
+--- a/src/features/reloan/components/RepaymentPlanDrawer/index.tsx
++++ b/src/features/reloan/components/RepaymentPlanDrawer/index.tsx
+@@ -1,9 +1,12 @@
+-import { useEffect, useRef, type MouseEvent, type ReactNode } from 'react';
+-import { createPortal } from 'react-dom';
++import { useEffect, useRef, type ReactNode } from 'react';
+ import { X } from 'lucide-react';
++import { m } from 'motion/react';
+ 
+ import { BottomActionButton } from '@/components/ui/BottomActionButton';
+-import { useBottomSheetDragDismiss } from '@/components/ui/useBottomSheetDragDismiss';
++import { pressProps } from '@/motion/press';
++import { Sheet } from '@/motion/Sheet';
++import { SheetDragArea } from '@/motion/SheetDragArea';
++import { useScrimAttributes } from '@/motion/useScrimAttributes';
+ import { lockScroll, unlockScroll } from '@/utils/browser/dom/scrollLock';
+ 
+ import styles from './index.module.css';
+@@ -50,6 +53,9 @@ interface RepaymentPlanDrawerProps {
+   dataEventPrefix?: string;
+ }
+ 
++/** Drag strip = the header's 20 px top padding, so it never covers the close button. */
++const DRAG_STRIP_HEIGHT = '1.25rem';
++
+ function AmountWithOriginal({
+   original,
+   value,
+@@ -96,15 +102,15 @@ export default function RepaymentPlanDrawer({
+   titleAlign = 'center',
+   dataEventPrefix = 'apply_order',
+ }: RepaymentPlanDrawerProps): ReactNode {
+-  const drawerRef = useRef<HTMLElement | null>(null);
+-  const { backdropRef, isDragging, sheetDragProps } = useBottomSheetDragDismiss(
++  const drawerRef = useRef<HTMLDivElement | null>(null);
++  // tracking + title alignment stay on the scrim / panel the Sheet draws
++  useScrimAttributes(
++    drawerRef,
++    open,
++    { 'data-event-type': `${dataEventPrefix}_repayment_plan_overlay` },
+     {
+-      active: open,
+-      // Only the fixed header/handle initiates dragging so schedule actions and
+-      // the scrollable repayment list keep their native click/scroll ownership.
+-      dragRegionSelector: `.${styles.handle}, .${styles.header}`,
+-      onDismiss: onClose,
+-      sheetRef: drawerRef,
++      'data-event-type': `${dataEventPrefix}_repayment_plan_drawer`,
++      'data-title-align': titleAlign,
+     },
+   );
+ 
+@@ -117,16 +123,13 @@ export default function RepaymentPlanDrawer({
+     return () => unlockScroll();
+   }, [open]);
+ 
+-  if (!open || typeof document === 'undefined') {
++  // Stays mounted while closed so the Sheet can play the exit; the scrim is a
++  // sibling of the panel, so taps inside the drawer never reach it.
++  // 关闭时保持挂载以播放退场；遮罩与面板为兄弟节点，面板内点击不会关闭弹窗。
++  if (typeof document === 'undefined') {
+     return null;
+   }
+ 
+-  const handleDrawerClick = (event: MouseEvent<HTMLElement>) => {
+-    // Keep interactions inside the drawer from closing the overlay.
+-    // 阻止抽屉内部点击冒泡，避免误触蒙层关闭。
+-    event.stopPropagation();
+-  };
+-
+   const handleContinue = () => {
+     // Parent may handle analytics/state first; otherwise fall back to plain close.
+     // 父组件可先处理埋点和状态；未传回调时默认只关闭弹窗。
+@@ -138,124 +141,114 @@ export default function RepaymentPlanDrawer({
+     onClose();
+   };
+ 
+-  return createPortal(
+-    // Portal keeps the drawer above the route page and independent of page stacking context.
+-    // 使用 Portal 让抽屉脱离页面层级，稳定覆盖当前二级 webview。
+-    <div
+-      className={styles.overlay}
+-      data-event-type={`${dataEventPrefix}_repayment_plan_overlay`}
+-      onClick={onClose}
++  // Motion: shared Sheet — real enter / exit (it used to return null), slide on
++  // SPRING_PCT, scrim 0.2 s in / LEAVE out, drag the top strip or the header
++  // down (springs back 240 / 30), rows rise. 进出场与拖拽关闭由共享 Sheet 承担。
++  return (
++    <Sheet
++      ariaLabel={copy.title}
++      ariaModal
++      className={styles.drawer}
++      dragStripHeight={DRAG_STRIP_HEIGHT}
++      layerClassName={styles.overlay}
++      onClose={onClose}
++      open={open}
++      panelRef={drawerRef}
++      positionPanel={false}
++      riseSkip={2}
++      role="dialog"
++      scrimClassName={styles.backdrop}
++      zIndex={1300}
+     >
+-      <div aria-hidden="true" className={styles.backdrop} ref={backdropRef} />
+-      <section
+-        aria-label={copy.title}
+-        aria-modal="true"
+-        className={`${styles.drawer} ${isDragging ? styles.drawerDragging : ''}`}
+-        data-event-type={`${dataEventPrefix}_repayment_plan_drawer`}
+-        onClick={handleDrawerClick}
+-        ref={drawerRef}
+-        role="dialog"
+-        data-title-align={titleAlign}
+-        {...sheetDragProps}
+-      >
+-        <span className={styles.handle} aria-hidden="true" />
+-        <header className={styles.header}>
+-          <span className={styles.headerSpacer} aria-hidden="true" />
+-          <h2 className={styles.title}>{copy.title}</h2>
+-          {copy.close ? (
+-            <button
+-              aria-label={copy.close}
+-              className={styles.closeButton}
+-              onClick={() => {
+-                onCloseButtonClick?.();
+-                onClose();
+-              }}
+-              type="button"
+-            >
+-              <X aria-hidden="true" size={20} strokeWidth={2.4} />
+-            </button>
+-          ) : (
+-            <span className={styles.headerSpacer} aria-hidden="true" />
+-          )}
+-        </header>
+-
+-        <div className={styles.body}>
+-          <section
+-            className={styles.scheduleList}
+-            aria-label={copy.schedulesLabel}
++      <span className={styles.handle} aria-hidden="true" />
++      <SheetDragArea as="header" className={styles.header}>
++        <span className={styles.headerSpacer} aria-hidden="true" />
++        <h2 className={styles.title}>{copy.title}</h2>
++        {copy.close ? (
++          <m.button
++            aria-label={copy.close}
++            className={styles.closeButton}
++            onClick={() => {
++              onCloseButtonClick?.();
++              onClose();
++            }}
++            type="button"
++            {...pressProps(true)}
+           >
+-            {schedules.map((schedule, index) => {
+-              const isLast = index === schedules.length - 1;
++            <X aria-hidden="true" size={20} strokeWidth={2.4} />
++          </m.button>
++        ) : (
++          <span className={styles.headerSpacer} aria-hidden="true" />
++        )}
++      </SheetDragArea>
++
++      <div className={styles.body}>
++        <section
++          className={styles.scheduleList}
++          aria-label={copy.schedulesLabel}
++        >
++          {schedules.map((schedule, index) => {
++            const isLast = index === schedules.length - 1;
++
++            return (
++              <article className={styles.scheduleItem} key={schedule.id}>
++                <div className={styles.timeline} aria-hidden="true">
++                  <span className={styles.timelineDot} />
++                  {!isLast ? <span className={styles.timelineLine} /> : null}
++                </div>
++
++                <div className={styles.scheduleContent}>
++                  <div className={styles.scheduleHeader}>
++                    <div className={styles.scheduleInfo}>
++                      <h3 className={styles.scheduleTitle}>{schedule.title}</h3>
++                      <p className={styles.scheduleDate}>{schedule.dueDate}</p>
++                    </div>
+ 
+-              return (
+-                <article className={styles.scheduleItem} key={schedule.id}>
+-                  <div className={styles.timeline} aria-hidden="true">
+-                    <span className={styles.timelineDot} />
+-                    {!isLast ? <span className={styles.timelineLine} /> : null}
++                    <div className={styles.totalInfo}>
++                      <p className={styles.totalAmount}>
++                        <PesoAmount value={schedule.totalAmount} />
++                      </p>
++                      <p className={styles.totalLabel}>{copy.total}</p>
++                    </div>
+                   </div>
+ 
+-                  <div className={styles.scheduleContent}>
+-                    <div className={styles.scheduleHeader}>
+-                      <div className={styles.scheduleInfo}>
+-                        <h3 className={styles.scheduleTitle}>
+-                          {schedule.title}
+-                        </h3>
+-                        <p className={styles.scheduleDate}>
+-                          {schedule.dueDate}
+-                        </p>
+-                      </div>
+-
+-                      <div className={styles.totalInfo}>
+-                        <p className={styles.totalAmount}>
+-                          <PesoAmount value={schedule.totalAmount} />
+-                        </p>
+-                        <p className={styles.totalLabel}>{copy.total}</p>
+-                      </div>
++                  <div className={styles.breakdown}>
++                    <div className={styles.breakdownRow}>
++                      <span className={styles.rowLabel}>{copy.principal}</span>
++                      <span className={styles.rowValue}>
++                        <PesoAmount value={schedule.principal} />
++                      </span>
+                     </div>
+-
+-                    <div className={styles.breakdown}>
+-                      <div className={styles.breakdownRow}>
+-                        <span className={styles.rowLabel}>
+-                          {copy.principal}
+-                        </span>
+-                        <span className={styles.rowValue}>
+-                          <PesoAmount value={schedule.principal} />
+-                        </span>
+-                      </div>
+-                      <div className={styles.breakdownRow}>
+-                        <span className={styles.rowLabel}>{copy.interest}</span>
+-                        <AmountWithOriginal
+-                          original={schedule.originalInterest}
+-                          value={schedule.interest}
+-                        />
+-                      </div>
+-                      <div className={styles.breakdownRow}>
+-                        <span className={styles.rowLabel}>
+-                          {copy.serviceFee}
+-                        </span>
+-                        <AmountWithOriginal
+-                          original={schedule.originalServiceFee}
+-                          value={schedule.serviceFee}
+-                        />
+-                      </div>
++                    <div className={styles.breakdownRow}>
++                      <span className={styles.rowLabel}>{copy.interest}</span>
++                      <AmountWithOriginal
++                        original={schedule.originalInterest}
++                        value={schedule.interest}
++                      />
++                    </div>
++                    <div className={styles.breakdownRow}>
++                      <span className={styles.rowLabel}>{copy.serviceFee}</span>
++                      <AmountWithOriginal
++                        original={schedule.originalServiceFee}
++                        value={schedule.serviceFee}
++                      />
+                     </div>
+                   </div>
+-                </article>
+-              );
+-            })}
+-          </section>
+-
+-          <BottomActionButton
+-            buttonClassName={styles.continueButton}
+-            className={styles.continueAction}
+-            dataEventType={`${dataEventPrefix}_repayment_plan_continue`}
+-            loading={continuing}
+-            onClick={handleContinue}
+-            text={copy.continue}
+-          />
+-        </div>
+-      </section>
+-    </div>,
+-    document.body,
++                </div>
++              </article>
++            );
++          })}
++        </section>
++
++        <BottomActionButton
++          buttonClassName={styles.continueButton}
++          className={styles.continueAction}
++          dataEventType={`${dataEventPrefix}_repayment_plan_continue`}
++          loading={continuing}
++          onClick={handleContinue}
++          text={copy.continue}
++        />
++      </div>
++    </Sheet>
+   );
+ }

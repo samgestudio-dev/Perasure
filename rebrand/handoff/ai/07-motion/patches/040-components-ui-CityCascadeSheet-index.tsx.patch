@@ -1,0 +1,525 @@
+diff --git a/src/components/ui/CityCascadeSheet/index.tsx b/src/components/ui/CityCascadeSheet/index.tsx
+index 6e9bfe0..7b21624 100644
+--- a/src/components/ui/CityCascadeSheet/index.tsx
++++ b/src/components/ui/CityCascadeSheet/index.tsx
+@@ -1,15 +1,14 @@
+ import {
+-  type CSSProperties,
+-  type KeyboardEventHandler,
+   type ReactNode,
+   useCallback,
+   useEffect,
+   useId,
++  useLayoutEffect,
+   useMemo,
+   useRef,
+   useState,
+ } from 'react';
+-import { createPortal } from 'react-dom';
++import { m } from 'motion/react';
+ import { ChevronRight, Search, X } from 'lucide-react';
+ import {
+   fetchCityOptionsByProvinceId,
+@@ -19,7 +18,10 @@ import {
+ } from '@/services/api/address';
+ import { lockScroll, unlockScroll } from '@/utils/browser/dom/scrollLock';
+ import { isApp } from '@/utils/jsbridge';
+-import { useBottomSheetDragDismiss } from '@/components/ui/useBottomSheetDragDismiss';
++import { Crossfade } from '@/motion/Crossfade';
++import { pressProps } from '@/motion/press';
++import { Sheet, useSheetDrag } from '@/motion/Sheet';
++import { MT } from '@/motion/tokens';
+ import { cityCascadeMockData } from './mockData';
+ import styles from './index.module.css';
+ import type {
+@@ -32,7 +34,6 @@ import type {
+   CityCascadeValue,
+ } from './types';
+ 
+-const MOTION_DURATION = 220;
+ const SEARCH_DEBOUNCE_DURATION = 260;
+ const KEYBOARD_VIEWPORT_SHRINK_THRESHOLD_PX = 80;
+ const FOCUSABLE_SELECTOR =
+@@ -56,6 +57,25 @@ interface KeyboardViewport {
+ 
+ const TABS: CityCascadeTab[] = ['region', 'province', 'city'];
+ 
++/** Search row + close button: also a drag handle for the sheet (its controls excluded). */
++function DragArea({
++  className,
++  children,
++}: {
++  className: string;
++  children: ReactNode;
++}) {
++  const drag = useSheetDrag();
++  return (
++    <div
++      className={className}
++      onPointerDown={drag.enabled ? drag.startDrag : undefined}
++    >
++      {children}
++    </div>
++  );
++}
++
+ const DEFAULT_MESSAGES: CityCascadeSheetMessages = {
+   cityHeading: 'CITY',
+   cityLoadError: 'Failed to load cities',
+@@ -177,8 +197,6 @@ export function CityCascadeSheet({
+   const localData = data;
+   const isRemoteMode = useRemoteData;
+   const isControlled = value !== undefined;
+-  const [rendered, setRendered] = useState(open);
+-  const [visible, setVisible] = useState(open);
+   const [activeTab, setActiveTab] = useState<CityCascadeTab>('region');
+   const [selectedRegionId, setSelectedRegionId] = useState('');
+   const [selectedProvinceId, setSelectedProvinceId] = useState('');
+@@ -225,7 +243,7 @@ export function CityCascadeSheet({
+   const remoteRegionsRef = useRef(remoteRegions);
+   const remoteProvinceMapRef = useRef(remoteProvinceMap);
+   const remoteCityMapRef = useRef(remoteCityMap);
+-  const sheetRef = useRef<HTMLElement | null>(null);
++  const sheetRef = useRef<HTMLDivElement | null>(null);
+   const viewportBaselineHeightRef = useRef(0);
+ 
+   const getFocusableElements = useCallback(() => {
+@@ -371,22 +389,6 @@ export function CityCascadeSheet({
+     [isRemoteMode, localData],
+   );
+ 
+-  useEffect(() => {
+-    if (open) {
+-      setRendered(true);
+-      const timer = window.setTimeout(() => setVisible(true), 0);
+-      return () => window.clearTimeout(timer);
+-    }
+-
+-    setVisible(false);
+-    const timer = window.setTimeout(() => {
+-      setRendered(false);
+-      setSearchValue('');
+-    }, MOTION_DURATION);
+-
+-    return () => window.clearTimeout(timer);
+-  }, [open]);
+-
+   useEffect(() => {
+     if (!open) return undefined;
+     lockScroll();
+@@ -478,7 +480,7 @@ export function CityCascadeSheet({
+   ]);
+ 
+   useEffect(() => {
+-    if (!open || !rendered || typeof document === 'undefined') return undefined;
++    if (!open || typeof document === 'undefined') return undefined;
+ 
+     previousActiveElementRef.current =
+       document.activeElement instanceof HTMLElement
+@@ -507,7 +509,7 @@ export function CityCascadeSheet({
+         previousActiveElement.focus();
+       }
+     };
+-  }, [getFocusableElements, open, rendered]);
++  }, [getFocusableElements, open]);
+ 
+   useEffect(() => {
+     const timer = window.setTimeout(() => {
+@@ -840,45 +842,73 @@ export function CityCascadeSheet({
+ 
+   const searchResults = isRemoteMode ? remoteSearchResults : localSearchResults;
+ 
+-  const handleDialogKeyDown: KeyboardEventHandler<HTMLElement> = (event) => {
+-    if (event.key === 'Escape') {
+-      event.stopPropagation();
+-      onCancel?.();
+-      return;
+-    }
++  const onCancelRef = useRef(onCancel);
++  useEffect(() => {
++    onCancelRef.current = onCancel;
++  });
+ 
+-    if (event.key !== 'Tab') return;
++  // Escape cancels and Tab stays inside the dialog while it is open (the
++  // Sheet panel takes no key handler, so this listens on the document).
++  // 打开期间 Escape 取消、Tab 焦点留在弹层内（Sheet 面板不接收键盘回调，故监听 document）。
++  useEffect(() => {
++    if (!open) return undefined;
+ 
+-    const focusableElements = getFocusableElements();
+-    if (focusableElements.length === 0) {
+-      event.preventDefault();
+-      sheetRef.current?.focus();
+-      return;
+-    }
++    const handleKeyDown = (event: KeyboardEvent) => {
++      if (event.key === 'Escape') {
++        event.stopPropagation();
++        onCancelRef.current?.();
++        return;
++      }
+ 
+-    const firstElement = focusableElements[0];
+-    const lastElement = focusableElements[focusableElements.length - 1];
+-    const activeElement = document.activeElement;
++      if (event.key !== 'Tab') return;
+ 
+-    if (event.shiftKey && activeElement === firstElement) {
+-      event.preventDefault();
+-      lastElement.focus();
+-      return;
+-    }
++      const focusableElements = getFocusableElements();
++      if (focusableElements.length === 0) {
++        event.preventDefault();
++        sheetRef.current?.focus();
++        return;
++      }
+ 
+-    if (!event.shiftKey && activeElement === lastElement) {
+-      event.preventDefault();
+-      firstElement.focus();
+-    }
+-  };
++      const firstElement = focusableElements[0];
++      const lastElement = focusableElements[focusableElements.length - 1];
++      const activeElement = document.activeElement;
+ 
+-  const { backdropRef, isDragging, sheetDragProps } = useBottomSheetDragDismiss(
+-    {
+-      active: visible,
+-      onDismiss: () => onCancel?.(),
+-      sheetRef,
+-    },
+-  );
++      if (event.shiftKey && activeElement === firstElement) {
++        event.preventDefault();
++        lastElement.focus();
++        return;
++      }
++
++      if (!event.shiftKey && activeElement === lastElement) {
++        event.preventDefault();
++        firstElement.focus();
++      }
++    };
++
++    document.addEventListener('keydown', handleKeyDown);
++    return () => document.removeEventListener('keydown', handleKeyDown);
++  }, [getFocusableElements, open]);
++
++  // The keyboard viewport is written on the Sheet's layer (the panel's
++  // parent), which the root CSS positions; the Sheet takes no layer style.
++  // 键盘视口变量写在 Sheet 的层上（面板的父节点），由 .root 样式定位。
++  useLayoutEffect(() => {
++    const layer = sheetRef.current?.parentElement;
++    if (!layer) return;
++    if (keyboardViewport) {
++      layer.style.setProperty(
++        '--city-cascade-viewport-height',
++        `${keyboardViewport.height}px`,
++      );
++      layer.style.setProperty(
++        '--city-cascade-viewport-offset-top',
++        `${keyboardViewport.offsetTop}px`,
++      );
++    } else {
++      layer.style.removeProperty('--city-cascade-viewport-height');
++      layer.style.removeProperty('--city-cascade-viewport-offset-top');
++    }
++  }, [keyboardViewport, open]);
+ 
+   const chooseRegion = (region: CityCascadeRegion) => {
+     if (isRemoteMode) {
+@@ -933,7 +963,13 @@ export function CityCascadeSheet({
+   };
+ 
+   const renderRow = (key: string, label: ReactNode, onClick: () => void) => (
+-    <button className={styles.row} key={key} onClick={onClick} type="button">
++    <m.button
++      className={styles.row}
++      key={key}
++      onClick={onClick}
++      type="button"
++      {...pressProps()}
++    >
+       <span className={styles.rowText}>{label}</span>
+       <ChevronRight
+         aria-hidden="true"
+@@ -941,7 +977,7 @@ export function CityCascadeSheet({
+         size={16}
+         strokeWidth={2}
+       />
+-    </button>
++    </m.button>
+   );
+ 
+   const renderCityRow = (
+@@ -950,15 +986,16 @@ export function CityCascadeSheet({
+     meta: string,
+     onClick: () => void,
+   ) => (
+-    <button
++    <m.button
+       className={styles.cityRow}
+       key={key}
+       onClick={onClick}
+       type="button"
++      {...pressProps()}
+     >
+       <span className={styles.cityName}>{cityLabel}</span>
+       <span className={styles.cityMeta}>{meta}</span>
+-    </button>
++    </m.button>
+   );
+ 
+   /** Render the active cascade level with localized loading, error, and empty states. */
+@@ -1123,124 +1160,141 @@ export function CityCascadeSheet({
+     );
+   };
+ 
+-  if (!rendered || typeof document === 'undefined') return null;
++  if (typeof document === 'undefined') return null;
+ 
+-  const viewportStyle: CSSProperties | undefined = keyboardViewport
+-    ? ({
+-        '--city-cascade-viewport-height': `${keyboardViewport.height}px`,
+-        '--city-cascade-viewport-offset-top': `${keyboardViewport.offsetTop}px`,
+-      } as CSSProperties)
+-    : undefined;
++  // M-081: the list crossfades when the tab or the chosen region / province
++  // changes; the whole body crossfades between the tabs and the search results.
++  const listKey = `${activeTab}-${selectedRegion?.id ?? ''}-${selectedProvince?.id ?? ''}`;
+ 
+-  return createPortal(
+-    <div
+-      className={`${styles.root} ${
+-        isNativeApp ? styles.rootNativeApp : ''
+-      } ${keyboardViewport ? styles.rootKeyboardVisible : ''} ${
+-        visible ? styles.rootVisible : ''
+-      }`}
+-      role="presentation"
+-      style={viewportStyle}
++  return (
++    <Sheet
++      ariaLabelledBy={titleId}
++      ariaModal
++      className={styles.sheet}
++      closeOnScrimClick={closeOnMaskClick}
++      layerClassName={[
++        styles.root,
++        isNativeApp ? styles.rootNativeApp : '',
++        keyboardViewport ? styles.rootKeyboardVisible : '',
++      ]
++        .filter(Boolean)
++        .join(' ')}
++      onClose={onCancel}
++      onClosed={() => setSearchValue('')}
++      open={open}
++      panelRef={sheetRef}
++      positionPanel={false}
++      riseSkip={1}
++      role="dialog"
++      scrimClassName={styles.backdrop}
++      tabIndex={-1}
++      zIndex={1000}
+     >
+-      <div
+-        aria-hidden="true"
+-        ref={backdropRef}
+-        className={styles.backdrop}
+-        onClick={closeOnMaskClick ? onCancel : undefined}
+-      />
+-      <section
+-        aria-labelledby={titleId}
+-        aria-modal="true"
+-        className={`${styles.sheet} ${isDragging ? styles.sheetDragging : ''}`}
+-        {...sheetDragProps}
+-        onKeyDown={handleDialogKeyDown}
+-        ref={sheetRef}
+-        role="dialog"
+-        tabIndex={-1}
+-      >
+-        <h2 id={titleId} hidden>
+-          {messages.dialogTitle}
+-        </h2>
+-        <div className={styles.topOverlay}>
+-          <div className={styles.handle} />
+-          <div
+-            className={`${styles.searchBar} ${
+-              searchFocused ? styles.searchBarFocused : ''
+-            }`}
+-          >
+-            <Search aria-hidden="true" className={styles.searchIcon} />
+-            <input
+-              aria-label={messages.searchCityLabel}
+-              className={styles.searchInput}
+-              onBlur={() => setSearchFocused(false)}
+-              onChange={(event) => setSearchValue(event.target.value)}
+-              onFocus={() => setSearchFocused(true)}
+-              placeholder={
+-                isRemoteMode
+-                  ? selectedRegion
+-                    ? messages.searchProvinceOrCityPlaceholder
+-                    : messages.searchRegionPlaceholder
+-                  : messages.searchCityPlaceholder
+-              }
+-              type="search"
+-              value={searchValue}
+-            />
+-            {searchValue ? (
+-              <button
+-                aria-label={messages.clearSearchLabel}
+-                className={styles.clearButton}
+-                onClick={() => {
+-                  setSearchValue('');
+-                  setDebouncedSearchValue('');
+-                }}
+-                type="button"
+-              >
+-                <X aria-hidden="true" />
+-              </button>
+-            ) : null}
+-          </div>
+-          <button
+-            aria-label={messages.closeLabel}
+-            className={styles.closeButton}
+-            onClick={onCancel}
+-            type="button"
+-          >
+-            <X aria-hidden="true" />
+-          </button>
++      <h2 id={titleId} hidden>
++        {messages.dialogTitle}
++      </h2>
++      <DragArea className={styles.topOverlay}>
++        <div className={styles.handle} />
++        <div
++          className={`${styles.searchBar} ${
++            searchFocused ? styles.searchBarFocused : ''
++          }`}
++        >
++          <Search aria-hidden="true" className={styles.searchIcon} />
++          <input
++            aria-label={messages.searchCityLabel}
++            className={styles.searchInput}
++            onBlur={() => setSearchFocused(false)}
++            onChange={(event) => setSearchValue(event.target.value)}
++            onFocus={() => setSearchFocused(true)}
++            placeholder={
++              isRemoteMode
++                ? selectedRegion
++                  ? messages.searchProvinceOrCityPlaceholder
++                  : messages.searchRegionPlaceholder
++                : messages.searchCityPlaceholder
++            }
++            type="search"
++            value={searchValue}
++          />
++          {searchValue ? (
++            <m.button
++              aria-label={messages.clearSearchLabel}
++              className={styles.clearButton}
++              onClick={() => {
++                setSearchValue('');
++                setDebouncedSearchValue('');
++              }}
++              type="button"
++              {...pressProps(true)}
++            >
++              <X aria-hidden="true" />
++            </m.button>
++          ) : null}
+         </div>
+-
+-        <div className={styles.content}>
++        <m.button
++          aria-label={messages.closeLabel}
++          className={styles.closeButton}
++          onClick={onCancel}
++          type="button"
++          {...pressProps(true)}
++        >
++          <X aria-hidden="true" />
++        </m.button>
++      </DragArea>
++
++      <div className={styles.content}>
++        <Crossfade
++          className={styles.contentView}
++          k={hasSearchValue ? 'search' : 'tabs'}
++          y={MT.Y.block}
++        >
+           {hasSearchValue ? (
+             renderSearchResults()
+           ) : (
+             <div className={styles.panel}>
+               <div className={styles.tabs} role="tablist">
+-                {TABS.map((tab) => (
+-                  <button
+-                    aria-selected={activeTab === tab}
+-                    className={`${styles.tab} ${
+-                      activeTab === tab ? styles.tabActive : ''
+-                    }`}
+-                    disabled={
+-                      (tab === 'province' && !selectedRegion) ||
+-                      (tab === 'city' && !selectedProvince)
+-                    }
+-                    key={tab}
+-                    onClick={() => setActiveTab(tab)}
+-                    role="tab"
+-                    type="button"
+-                  >
+-                    {tabLabels[tab]}
+-                  </button>
+-                ))}
++                {TABS.map((tab) => {
++                  const active = activeTab === tab;
++                  return (
++                    <button
++                      aria-selected={active}
++                      className={`${styles.tab} ${
++                        active ? styles.tabActive : ''
++                      }`}
++                      disabled={
++                        (tab === 'province' && !selectedRegion) ||
++                        (tab === 'city' && !selectedProvince)
++                      }
++                      key={tab}
++                      onClick={() => setActiveTab(tab)}
++                      role="tab"
++                      type="button"
++                    >
++                      {tabLabels[tab]}
++                      {active ? (
++                        // M-035: the underline glides to the new tab on the Smooth spring.
++                        <m.i
++                          aria-hidden="true"
++                          className={styles.tabBar}
++                          layoutId="city-cascade-bar"
++                          transition={MT.SPRING}
++                        />
++                      ) : null}
++                    </button>
++                  );
++                })}
++              </div>
++              <div className={styles.listViewport}>
++                <Crossfade className={styles.list} k={listKey} y={MT.Y.block}>
++                  {renderCascadeList()}
++                </Crossfade>
+               </div>
+-              <div className={styles.list}>{renderCascadeList()}</div>
+             </div>
+           )}
+-        </div>
+-      </section>
+-    </div>,
+-    document.body,
++        </Crossfade>
++      </div>
++    </Sheet>
+   );
+ }
+ 

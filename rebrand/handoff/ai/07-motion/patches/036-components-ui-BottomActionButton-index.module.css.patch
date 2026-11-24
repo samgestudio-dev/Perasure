@@ -1,0 +1,26 @@
+diff --git a/src/components/ui/BottomActionButton/index.module.css b/src/components/ui/BottomActionButton/index.module.css
+index 6e72f5e..5cbcd70 100644
+--- a/src/components/ui/BottomActionButton/index.module.css
++++ b/src/components/ui/BottomActionButton/index.module.css
+@@ -58,17 +58,17 @@
+   text-align: center;
+   white-space: nowrap;
+   cursor: pointer;
++  /* Colour 150 ms (R-COLOR); the press is Motion's whileTap 0.985 / 60 ms (R-PRESS).
++     颜色 150ms；按压由 motion 处理（0.985 / 60ms）。 */
+   transition:
+-    background-color 0.18s ease,
+-    color 0.18s ease,
+-    transform 0.18s ease;
++    background-color 0.15s ease,
++    color 0.15s ease;
+   appearance: none;
+   -webkit-tap-highlight-color: transparent;
+ }
+ 
+ .button:active:not(:disabled) {
+   background: var(--bg-accent-emphasis-pressed, #20558d);
+-  transform: scale(0.98);
+ }
+ 
+ .button:disabled {

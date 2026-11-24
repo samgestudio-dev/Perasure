@@ -1,0 +1,103 @@
+/** @jsxRuntime automatic @jsxImportSource react */
+/**
+ * The three… four loading dots — a hand conversion of the demo's Lottie
+ * `shared/ps-ui/assets/lottie/loading-dots.json` (PS.Dots, M-053), drawn with
+ * the same crop (`viewBox '50 130 425 180'`) and played with WAAPI, so
+ * production needs no lottie-web.
+ *
+ * Lottie data (60 fps, a 60-frame loop): 4 dots, Ø 120 in a precomp placed at
+ * (260, 236), anchor (962.96, 540.74), scale 92.2785 %. Dot i starts at frame
+ * 0 / 9 / 17 / 25; over its next 14 frames it rises 40 (precomp units), grows
+ * 50 → 75 % and fades 25 → 100 %, then falls back by frame +30; every segment
+ * eases cubic-bezier(0.333, 0, 0.667, 1). Fill rgb(41, 134, 72).
+ */
+import { useEffect, useRef } from 'react';
+
+import { prefersReducedMotion } from '../reducedMotion';
+
+const S = 0.922785;
+const P = { x: 260, y: 236 };
+const A = { x: 962.9629629629629, y: 540.7407407407408 };
+const toCanvas = (x: number, y: number) => ({
+  x: (x - A.x) * S + P.x,
+  y: (y - A.y) * S + P.y,
+});
+/** precomp x of each dot and its first frame */
+const DOTS = [
+  { x: 782, f0: 0 },
+  { x: 902, f0: 9 },
+  { x: 1022, f0: 17 },
+  { x: 1142, f0: 25 },
+];
+const LOOP_FRAMES = 60;
+const FPS = 60;
+const EASE = 'cubic-bezier(0.333, 0, 0.667, 1)';
+/** radius at 100 % layer scale: Ø120 · 0.5 (rest scale) · precomp scale */
+const R_REST = 60 * 0.5 * S;
+const RISE = 40 * S;
+
+export interface LoadingDotsProps {
+  /** drawn width in px (Loader: 104; the Loading page demo: 84) */
+  width?: number;
+  className?: string;
+}
+
+/** PS.Dots: 104 × 27 inside the Loader (feedback.js:26-29, 35). */
+export function LoadingDots({ width = 104, className }: LoadingDotsProps) {
+  const ref = useRef<SVGSVGElement>(null);
+  useEffect(() => {
+    const svg = ref.current;
+    if (!svg || prefersReducedMotion()) return undefined;
+    const animations = Array.from(
+      svg.querySelectorAll<SVGCircleElement>('circle'),
+    ).flatMap((dot, i) => {
+      if (typeof dot.animate !== 'function') return [];
+      const { f0 } = DOTS[i];
+      const a = f0 / LOOP_FRAMES;
+      const b = (f0 + 14) / LOOP_FRAMES;
+      const c = (f0 + 30) / LOOP_FRAMES;
+      const rest = { transform: 'translateY(0px) scale(1)', opacity: 0.25 };
+      const up = { transform: `translateY(${-RISE}px) scale(1.5)`, opacity: 1 };
+      const frames: Keyframe[] = [];
+      if (a > 0) frames.push({ offset: 0, ...rest });
+      frames.push({ offset: a, ...rest, easing: EASE });
+      frames.push({ offset: b, ...up, easing: EASE });
+      frames.push({ offset: c, ...rest });
+      if (c < 1) frames.push({ offset: 1, ...rest });
+      return [
+        dot.animate(frames, {
+          duration: (LOOP_FRAMES / FPS) * 1000,
+          iterations: Infinity,
+        }),
+      ];
+    });
+    return () => animations.forEach((animation) => animation.cancel());
+  }, []);
+  return (
+    <svg
+      aria-hidden="true"
+      className={className}
+      height={Math.round((width * 22) / 84)}
+      ref={ref}
+      viewBox="50 130 425 180"
+      width={width}
+    >
+      {DOTS.map((dot) => {
+        const c = toCanvas(dot.x, 540);
+        return (
+          <circle
+            cx={c.x}
+            cy={c.y}
+            fill="rgb(41,134,72)"
+            key={dot.x}
+            opacity={0.25}
+            r={R_REST}
+            style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+          />
+        );
+      })}
+    </svg>
+  );
+}
+
+export default LoadingDots;

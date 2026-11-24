@@ -1,0 +1,23 @@
+diff --git a/src/pages/AuthPage/LoginEntry/index.module.css b/src/pages/AuthPage/LoginEntry/index.module.css
+index e199d50..b5a4a53 100644
+--- a/src/pages/AuthPage/LoginEntry/index.module.css
++++ b/src/pages/AuthPage/LoginEntry/index.module.css
+@@ -251,13 +251,15 @@
+   font-size: var(--font-size-label-md, 14px);
+   font-weight: var(--font-weight-semi-bold, 600);
+   line-height: var(--font-line-height-label-md, 20px);
++  /* R-PRESS 0.985 / 60 ms, R-COLOR 150 ms (CSS form: the button is centred
++     with translateX(-50%), which a Motion transform would replace) */
+   transition:
+-    transform 180ms ease,
+-    background-color 180ms ease;
++    transform 0.06s ease,
++    background-color 0.15s ease;
+ }
+ 
+ .primaryButton:active {
+-  transform: translateX(-50%) scale(0.98);
++  transform: translateX(-50%) scale(0.985);
+ }
+ 
+ .primaryButton:disabled:active {

@@ -36,7 +36,7 @@ def main():
            '2. Groups in order (1 global … 6 copy, 7 tests). Inside a file the rows are **bottom-up**: apply them in the listed order '
            'and every "Line" (after step 0) stays valid.',
            '3. **replace**: swap "Now" for "Becomes". **insert**: add "Becomes" (whole lines) after the line(s) shown in "Now". '
-           '**delete**: remove those lines. **manual**: follow the instruction. **skip**: do not apply. ⏎ marks a line break.',
+           '**delete**: remove those lines. **skip**: do not apply. ⏎ marks a line break.',
            '4. `(same value)` rows change nothing on screen: they point an undefined token at a real one.',
            '5. Precedence: this list > `01-tokens/token-map.json` > `01-tokens/unresolved.md`.',
            '6. Reference implementation: `python3 tools/apply.py <phi_h5_025> --step all` does all of the above and reports '

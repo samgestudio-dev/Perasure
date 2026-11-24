@@ -1,0 +1,20 @@
+diff --git a/src/components/ui/Toast/README.md b/src/components/ui/Toast/README.md
+index 84294b1..beea18b 100644
+--- a/src/components/ui/Toast/README.md
++++ b/src/components/ui/Toast/README.md
+@@ -18,9 +18,11 @@ Toast.show({ content: 'Saved', position: 'bottom', zIndex: 100 });
+ 
+ - Intended for shared infrastructure such as request error hints.
+   适合请求错误提示等公共基建场景。
+-- `Toast.show('message')` keeps the original ui Toast behavior: centered, 2000ms, z-index 1100.
+-  `Toast.show('message')` 保持原 ui Toast 行为：居中、2000ms、z-index 1100。
+-- `position` and `zIndex` are compatibility options for scenes migrated from the removed common Toast.
+-  `position` 和 `zIndex` 用于兼容从已移除 common Toast 迁移过来的场景。
++- `Toast.show('message')`: 2000ms, z-index 1100, shown at the top 8 px under the header bar (rebrand rule R-TOAST).
++  `Toast.show('message')`：2000ms、z-index 1100，显示在顶部标题栏下方 8px（改版规则 R-TOAST）。
++- Every call shows a new toast at once (never queued or merged): the newest covers the older ones, which slip lower, shrink and fade (stack of 3); a swipe to the left closes one. Motion: `src/motion/Toaster.tsx`.
++  每次调用立即显示新提示（不排队、不合并），最多叠 3 条，左滑关闭；动效见 `src/motion/Toaster.tsx`。
++- `position` is accepted for compatibility but no longer moves the toast; `zIndex` still raises the toast layer.
++  `position` 仅为兼容保留，不再改变位置；`zIndex` 仍可抬高提示层级。
+ - Current visible page toast is `PageToast`.
+   当前页面底部可见提示组件是 `PageToast`。

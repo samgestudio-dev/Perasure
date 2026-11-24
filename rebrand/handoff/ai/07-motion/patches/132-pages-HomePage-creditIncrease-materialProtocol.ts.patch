@@ -1,0 +1,26 @@
+diff --git a/src/pages/HomePage/creditIncrease/materialProtocol.ts b/src/pages/HomePage/creditIncrease/materialProtocol.ts
+index 9548cf1..2483e94 100644
+--- a/src/pages/HomePage/creditIncrease/materialProtocol.ts
++++ b/src/pages/HomePage/creditIncrease/materialProtocol.ts
+@@ -22,11 +22,21 @@ export interface IntroInitMessage {
+ 
+ /** Minimal same-origin material handles; the host never searches arbitrary child DOM. */
+ export interface IntroMaterial {
++  /** Freezes every running material timeline (including the star twinkle loop) in place. */
+   stop: () => void;
+   destroy: () => void;
++  /** Visual nodes the host exit animates (the demo's introExit set); absent layers are null / []. */
+   getVisualHandles: () => {
++    /** The big number (#amount). */
+     amount: HTMLElement;
++    /** The number block (#hero): label, amount, increase pill, date, previous limit. */
+     hero: HTMLElement;
++    /** The artwork group (#art): stars and coin canvases. */
++    art: HTMLElement | null;
++    /** The twinkling stars layer (#artStars). */
++    stars: SVGSVGElement | null;
++    /** The coin canvases, back then front (#cvBack, #cvFront). */
++    canvases: HTMLCanvasElement[];
+   };
+ }
+ 

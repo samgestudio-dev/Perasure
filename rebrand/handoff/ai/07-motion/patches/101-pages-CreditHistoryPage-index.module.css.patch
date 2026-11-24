@@ -1,0 +1,40 @@
+diff --git a/src/pages/CreditHistoryPage/index.module.css b/src/pages/CreditHistoryPage/index.module.css
+index d544dce..77a21be 100644
+--- a/src/pages/CreditHistoryPage/index.module.css
++++ b/src/pages/CreditHistoryPage/index.module.css
+@@ -31,19 +31,28 @@
+   font-weight: 600;
+   line-height: var(--font-line-height-section-title-sm, 20px);
+   white-space: nowrap;
+-  transition:
+-    transform 160ms ease,
+-    background-color 160ms ease;
++  position: relative;
++  isolation: isolate;
++  transition: color 0.15s ease;
+ }
+ 
+-.tabs button:active {
+-  transform: scale(0.97);
+-}
+ .tabs .activeTab {
+-  background: var(--bg-accent-emphasis, #2c74be);
+   color: var(--fg-on-accent);
+ }
+ 
++/* M-033: the active pill (Motion layoutId) sits under the label. */
++.tabPill {
++  position: absolute;
++  z-index: -1;
++  inset: 0;
++  border-radius: var(--radius-full, 999px);
++  background: var(--bg-accent-emphasis, #2c74be);
++}
++
++.tabLabel {
++  position: relative;
++}
++
+ .historyList {
+   display: flex;
+   flex-direction: column;

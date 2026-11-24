@@ -1,0 +1,1546 @@
+{
+ "meta": {
+  "what": "Every motion token of the demo (inventory) with its resolved values and the production export that carries it in the motion-applied tree.",
+  "productionFiles": {
+   "shared": "src/motion/tokens.ts (copy: motion-tokens.ts next to this file; full code in code/src/motion/)",
+   "withdraw": "src/motion/flows/withdrawTokens.ts",
+   "morph": "src/motion/flows/core.ts"
+  },
+  "demo": "branch tokens/rebrand-v3",
+  "note": "Values are 1:1 with the demo (motion@14.4.0 = the demo's vendored Motion). \"production\": null = no production use (the demo-only piece is n.a. in specs.json)."
+ },
+ "groups": {
+  "PS.MT (shared/ps-ui/core.js) and other shared values": [
+   {
+    "name": "PS.MT.SPRING",
+    "type": "spring",
+    "params": {
+     "type": "spring",
+     "stiffness": 240,
+     "damping": 30,
+     "mass": 1,
+     "restDelta": 0.378,
+     "restSpeed": 3.78
+    },
+    "usedBy": "geometry in px: layoutId pills (Navigator, Tabs, Segmented, LineTabs, MethodPicker mark), OTP sheet height, accordion/doc/summary heights, chips layout, carousel, slider glide, scroll glides, toasts (variant)",
+    "source": "shared/ps-ui/core.js:32-33",
+    "notes": "Withdraw's Smooth spring; 95 % ≈ 290 ms, rest ≈ 560 ms. Aliased as PS.T.spring/ui/layout/sheet/page/pop (core.js:50).",
+    "production": {
+     "export": "MT.SPRING",
+     "definedAt": "src/motion/tokens.ts:73"
+    }
+   },
+   {
+    "name": "PS.MT.SPRING_PCT",
+    "type": "spring",
+    "params": {
+     "type": "spring",
+     "stiffness": 240,
+     "damping": 30,
+     "mass": 1,
+     "restDelta": 0.05,
+     "restSpeed": 0.5
+    },
+    "usedBy": "values in %: PS.Sheet y 100%<->0%, PS.Pages dir 2",
+    "source": "shared/ps-ui/core.js:34-35",
+    "notes": null,
+    "production": {
+     "export": "MT.SPRING_PCT",
+     "definedAt": "src/motion/tokens.ts:74"
+    }
+   },
+   {
+    "name": "PS.MT.EASE_IN",
+    "type": "easing",
+    "params": {
+     "cubicBezier": [
+      0.22,
+      0.61,
+      0.36,
+      1
+     ]
+    },
+    "usedBy": "ENTER, REVEAL, MENU opacity/filter, agreement ripple, rise",
+    "source": "shared/ps-ui/core.js:30",
+    "notes": "Despite the name it is an ease-out curve.",
+    "production": {
+     "export": "EASE_IN",
+     "definedAt": "src/motion/tokens.ts:53"
+    }
+   },
+   {
+    "name": "PS.MT.ENTER",
+    "type": "tween",
+    "params": {
+     "duration": 0.3,
+     "delay": 0.07,
+     "ease": [
+      0.22,
+      0.61,
+      0.36,
+      1
+     ]
+    },
+    "usedBy": "what comes in (Swap/fade/Crossfade, tooltip, toast opacity/filter, page opacity, splash, cover)",
+    "source": "shared/ps-ui/core.js:37",
+    "notes": null,
+    "production": {
+     "export": "MT.ENTER",
+     "definedAt": "src/motion/tokens.ts:76"
+    }
+   },
+   {
+    "name": "PS.MT.LEAVE",
+    "type": "tween",
+    "params": {
+     "duration": 0.15,
+     "ease": [
+      0.4,
+      0,
+      1,
+      1
+     ]
+    },
+    "usedBy": "what goes (Swap/fade exits, page exit, scrim out, cover, toast exit)",
+    "source": "shared/ps-ui/core.js:38",
+    "notes": null,
+    "production": {
+     "export": "MT.LEAVE",
+     "definedAt": "src/motion/tokens.ts:77"
+    }
+   },
+   {
+    "name": "PS.MT.Y",
+    "type": "distance",
+    "params": {
+     "text": 8,
+     "block": 10,
+     "digit": 6,
+     "unit": "px"
+    },
+    "usedBy": "rise distance of fade/reveal/rise by element size",
+    "source": "shared/ps-ui/core.js:39",
+    "notes": null,
+    "production": {
+     "export": "MT.Y",
+     "definedAt": "src/motion/tokens.ts:78"
+    }
+   },
+   {
+    "name": "PS.MT.BLUR",
+    "type": "distance",
+    "params": {
+     "value": 3,
+     "unit": "px"
+    },
+    "usedBy": "crossfade blur bridge (blur(3px) <-> blur(0px))",
+    "source": "shared/ps-ui/core.js:39",
+    "notes": null,
+    "production": {
+     "export": "MT.BLUR / blur()",
+     "definedAt": "src/motion/tokens.ts:79"
+    }
+   },
+   {
+    "name": "PS.MT.REVEAL(i)",
+    "type": "tween",
+    "params": {
+     "duration": 0.34,
+     "delay": "0.06 + i*0.03",
+     "ease": [
+      0.22,
+      0.61,
+      0.36,
+      1
+     ]
+    },
+    "usedBy": "PS.reveal, Keypad cascade (i = row + col*0.5)",
+    "source": "shared/ps-ui/core.js:40",
+    "notes": null,
+    "production": {
+     "export": "MT.REVEAL(i)",
+     "definedAt": "src/motion/tokens.ts:80"
+    }
+   },
+   {
+    "name": "PS.MT.PRESS",
+    "type": "tween",
+    "params": {
+     "duration": 0.06
+    },
+    "usedBy": "whileTap transition everywhere",
+    "source": "shared/ps-ui/core.js:41",
+    "notes": null,
+    "production": {
+     "export": "MT.PRESS",
+     "definedAt": "src/motion/tokens.ts:85"
+    }
+   },
+   {
+    "name": "PS.MT.PRESS_SCALE",
+    "type": "scale",
+    "params": {
+     "pill": 0.985,
+     "icon": 0.92
+    },
+    "usedBy": "PS.TAP {scale:0.985}, PS.TAP_ICON {scale:0.92}, PS.press(icon)",
+    "source": "shared/ps-ui/core.js:41",
+    "notes": "Withdraw calls the icon key 'iconButton'.",
+    "production": {
+     "export": "MT.PRESS_SCALE",
+     "definedAt": "src/motion/tokens.ts:86"
+    }
+   },
+   {
+    "name": "PS.MT.COLOR",
+    "type": "tween",
+    "params": {
+     "duration": 0.15
+    },
+    "usedBy": "documented colour time; CSS uses 'transition: <prop> 0.15s ease'",
+    "source": "shared/ps-ui/core.js:42",
+    "notes": null,
+    "production": {
+     "export": "MT.COLOR / COLOR_TRANSITION_CSS",
+     "definedAt": "src/motion/tokens.ts:87"
+    }
+   },
+   {
+    "name": "PS.MT.MENU",
+    "type": "spring",
+    "params": {
+     "type": "spring",
+     "visualDuration": 0.22,
+     "bounce": 0.28
+    },
+    "usedBy": "Popover scaleX",
+    "source": "shared/ps-ui/core.js:43-45",
+    "notes": "The one thing that bounces.",
+    "production": {
+     "export": "MT.MENU",
+     "definedAt": "src/motion/tokens.ts:88"
+    }
+   },
+   {
+    "name": "PS.MT.MENU_Y",
+    "type": "spring",
+    "params": {
+     "type": "spring",
+     "visualDuration": 0.26,
+     "bounce": 0.3
+    },
+    "usedBy": "Popover scaleY (height a beat behind width)",
+    "source": "shared/ps-ui/core.js:46",
+    "notes": null,
+    "production": {
+     "export": "MT.MENU_Y",
+     "definedAt": "src/motion/tokens.ts:89"
+    }
+   },
+   {
+    "name": "PS.MT.MENU_ROW(i)",
+    "type": "spring+tween",
+    "params": {
+     "delay": "0.02 + min(i,8)*0.014",
+     "y": {
+      "type": "spring",
+      "visualDuration": 0.24,
+      "bounce": 0.32
+     },
+     "opacity": {
+      "duration": 0.12,
+      "ease": [
+       0.22,
+       0.61,
+       0.36,
+       1
+      ]
+     },
+     "filter": {
+      "duration": 0.12,
+      "ease": [
+       0.22,
+       0.61,
+       0.36,
+       1
+      ]
+     }
+    },
+    "usedBy": "Popover rows",
+    "source": "shared/ps-ui/core.js:47",
+    "notes": "Made faster 2026-11-24 (owner).",
+    "production": {
+     "export": "MT.MENU_ROW(i)",
+     "definedAt": "src/motion/tokens.ts:90"
+    }
+   },
+   {
+    "name": "PS.MT.MENU_OUT",
+    "type": "tween",
+    "params": {
+     "duration": 0.12,
+     "ease": [
+      0.4,
+      0,
+      1,
+      1
+     ]
+    },
+    "usedBy": "Popover exit",
+    "source": "shared/ps-ui/core.js:48",
+    "notes": null,
+    "production": {
+     "export": "MT.MENU_OUT",
+     "definedAt": "src/motion/tokens.ts:91"
+    }
+   },
+   {
+    "name": "PS.fade(y)",
+    "type": "preset",
+    "params": {
+     "initial": {
+      "opacity": 0,
+      "y": "+y",
+      "filter": "blur(3px)"
+     },
+     "animate": {
+      "opacity": 1,
+      "y": 0,
+      "filter": "blur(0px)",
+      "transition": "ENTER"
+     },
+     "exit": {
+      "opacity": 0,
+      "y": "-y",
+      "filter": "blur(3px)",
+      "transition": "LEAVE"
+     },
+     "yDefault": 8
+    },
+    "usedBy": "Swap, Crossfade, error lines (y -4 / 6), panes",
+    "source": "shared/ps-ui/core.js:54-60",
+    "notes": null,
+    "production": {
+     "export": "fade(y)",
+     "definedAt": "src/motion/presets.ts:30"
+    }
+   },
+   {
+    "name": "PS.reveal(i)",
+    "type": "preset",
+    "params": {
+     "initial": {
+      "opacity": 0,
+      "y": 8,
+      "filter": "blur(3px)"
+     },
+     "animate": {
+      "opacity": 1,
+      "y": 0,
+      "filter": "blur(0px)",
+      "transition": "REVEAL(i)"
+     },
+     "exit": {
+      "opacity": 0,
+      "transition": "LEAVE"
+     }
+    },
+    "usedBy": "OtpBoxes cascade",
+    "source": "shared/ps-ui/core.js:61-65",
+    "notes": null,
+    "production": {
+     "export": "reveal(i)",
+     "definedAt": "src/motion/presets.ts:44"
+    }
+   },
+   {
+    "name": "PS.rise(el, o)",
+    "type": "keyframes (WAAPI)",
+    "params": {
+     "keyframes": [
+      {
+       "opacity": 0,
+       "transform": "translateY(y px)",
+       "filter": "blur(3px)"
+      },
+      {
+       "opacity": 1,
+       "transform": "translateY(0px)",
+       "filter": "blur(0px)"
+      }
+     ],
+     "duration": 340,
+     "easing": "cubic-bezier(0.22, 0.61, 0.36, 1)",
+     "fill": "backwards",
+     "delay": "o.delay(60) + min(i-skip, 8)*o.gap(40)",
+     "yDefault": 10
+    },
+    "usedBy": "PS.Rise, Screen{rise} (delay 120), Sheet (skip 2, delay 110, y 8), Crossfade{rise} (delay 70)",
+    "source": "shared/ps-ui/core.js:66-83",
+    "notes": "Skipped with prefers-reduced-motion.",
+    "production": {
+     "export": "rise(el, o)",
+     "definedAt": "src/motion/Rise.tsx:35"
+    }
+   },
+   {
+    "name": "toast spring",
+    "type": "spring",
+    "params": {
+     "type": "spring",
+     "stiffness": 240,
+     "damping": 30,
+     "mass": 1,
+     "restDelta": 0.01,
+     "restSpeed": 0.1
+    },
+    "usedBy": "Toasts/Toast default (y, scale, x)",
+    "source": "shared/ps-ui/layout.js:252",
+    "notes": "SPRING with tighter rest (non-token variant).",
+    "production": {
+     "export": "TOAST_SPRING",
+     "definedAt": "src/motion/tokens.ts:196"
+    }
+   },
+   {
+    "name": "Toasts STACK",
+    "type": "layout",
+    "params": {
+     "depth0": {
+      "y": 0,
+      "scale": 1,
+      "opacity": 1
+     },
+     "depth1": {
+      "y": 10,
+      "scale": 0.94,
+      "opacity": 0.55
+     },
+     "depth2": {
+      "y": 18,
+      "scale": 0.88,
+      "opacity": 0.3
+     },
+     "behindOpacityTransition": {
+      "duration": 0.2
+     }
+    },
+    "usedBy": "PS.Toasts",
+    "source": "shared/ps-ui/layout.js:249-259",
+    "notes": null,
+    "production": {
+     "export": "TOAST_STACK",
+     "definedAt": "src/motion/tokens.ts:219"
+    }
+   },
+   {
+    "name": "Sheet drag",
+    "type": "drag",
+    "params": {
+     "elastic": {
+      "top": 0,
+      "bottom": 0.6
+     },
+     "dragTransition": {
+      "bounceStiffness": 240,
+      "bounceDamping": 30
+     },
+     "closeIf": "offset.y > 96 px || velocity.y > 640 px/s"
+    },
+    "usedBy": "PS.Sheet",
+    "source": "shared/ps-ui/layout.js:168-171",
+    "notes": null,
+    "production": {
+     "export": "SHEET_DRAG",
+     "definedAt": "src/motion/tokens.ts:242"
+    }
+   },
+   {
+    "name": "Toast swipe",
+    "type": "drag",
+    "params": {
+     "elastic": {
+      "left": 0.9,
+      "right": 0.08
+     },
+     "closeIf": "offset.x < -56 px || velocity.x < -320 px/s",
+     "exitX": "-110%"
+    },
+    "usedBy": "PS.Toasts",
+    "source": "shared/ps-ui/layout.js:260-262",
+    "notes": null,
+    "production": {
+     "export": "TOAST_SWIPE",
+     "definedAt": "src/motion/tokens.ts:229"
+    }
+   },
+   {
+    "name": "Carousel drag",
+    "type": "drag",
+    "params": {
+     "elastic": 0.18,
+     "momentum": false,
+     "nextIf": "|offset.x| > 0.2 * width || |velocity.x| > 400",
+     "settle": "SPRING"
+    },
+    "usedBy": "PS.Carousel",
+    "source": "shared/ps-ui/pay.js:145-150",
+    "notes": null,
+    "production": {
+     "export": "CAROUSEL",
+     "definedAt": "src/motion/tokens.ts:337"
+    }
+   },
+   {
+    "name": "Pages dir -2 exit",
+    "type": "tween",
+    "params": {
+     "duration": 0.3,
+     "ease": [
+      0.4,
+      0,
+      1,
+      1
+     ]
+    },
+    "usedBy": "PS.Pages page going back down; withdraw sheet exit",
+    "source": "shared/ps-ui/layout.js:144",
+    "notes": null,
+    "production": {
+     "export": "PAGE_VARIANTS (dir -2)",
+     "definedAt": "src/motion/presets.ts:63"
+    }
+   },
+   {
+    "name": "Pages dir 2 old page hold",
+    "type": "tween",
+    "params": {
+     "opacity": 0.999,
+     "duration": 0.56
+    },
+    "usedBy": "keeps the covered page mounted while the new one springs up",
+    "source": "shared/ps-ui/layout.js:143",
+    "notes": null,
+    "production": {
+     "export": "PAGE_VARIANTS (dir 2)",
+     "definedAt": "src/motion/presets.ts:63"
+    }
+   },
+   {
+    "name": "Scrim / Overlay in",
+    "type": "tween",
+    "params": {
+     "duration": 0.2
+    },
+    "usedBy": "PS.Sheet scrim, PS.Overlay, withdraw padLine/keypad wrapper/blocks wrapper (Motion default ease)",
+    "source": [
+     "shared/ps-ui/layout.js:166",
+     "shared/ps-ui/feedback.js:67"
+    ],
+    "notes": null,
+    "production": {
+     "export": "SCRIM_IN",
+     "definedAt": "src/motion/tokens.ts:213"
+    }
+   },
+   {
+    "name": "Tabs fade",
+    "type": "tween",
+    "params": {
+     "duration": 0.15,
+     "ease": "easeOut"
+    },
+    "usedBy": "PS.Tabs{fade} pill",
+    "source": "shared/ps-ui/coupon.js:101",
+    "notes": null,
+    "production": {
+     "export": "TABS_FADE",
+     "definedAt": "src/motion/tokens.ts:334"
+    }
+   },
+   {
+    "name": "OTP digit pop",
+    "type": "tween",
+    "params": {
+     "duration": 0.18,
+     "ease": [
+      0.22,
+      0.61,
+      0.36,
+      1
+     ],
+     "exit": {
+      "duration": 0.1
+     }
+    },
+    "usedBy": "PS.OtpBoxes",
+    "source": "shared/ps-ui/form.js:45-46",
+    "notes": null,
+    "production": {
+     "export": "OTP_DIGIT",
+     "definedAt": "src/motion/tokens.ts:312"
+    }
+   },
+   {
+    "name": "Amount entry digit",
+    "type": "tween",
+    "params": {
+     "duration": 0.2,
+     "ease": [
+      0.22,
+      0.61,
+      0.36,
+      1
+     ],
+     "exit": {
+      "duration": 0.08
+     }
+    },
+    "usedBy": "PS.AmountEntry typed digits",
+    "source": "shared/ps-ui/loan.js:201-202",
+    "notes": null,
+    "production": {
+     "export": "AMOUNT_DIGIT / DIGIT_IN",
+     "definedAt": "src/motion/tokens.ts:319"
+    }
+   },
+   {
+    "name": "Agreement ripple",
+    "type": "keyframes",
+    "params": {
+     "scale": [
+      1,
+      2.4
+     ],
+     "opacity": [
+      0.6,
+      0
+     ],
+     "duration": 0.6,
+     "ease": [
+      0.22,
+      0.61,
+      0.36,
+      1
+     ],
+     "plays": 2
+    },
+    "usedBy": "PS.Agreement, withdraw nudgeAgree",
+    "source": [
+     "shared/ps-ui/loan.js:146-147",
+     "prototypes/withdraw-fund-flow/withdraw.js:553-558"
+    ],
+    "notes": null,
+    "production": {
+     "export": "RIPPLE",
+     "definedAt": "src/motion/tokens.ts:325"
+    }
+   },
+   {
+    "name": "Slider glide",
+    "type": "spring",
+    "params": {
+     "type": "spring",
+     "stiffness": 240,
+     "damping": 30,
+     "mass": 1,
+     "restDelta": "step*0.1 (50 for step 500)",
+     "restSpeed": "restDelta*10"
+    },
+    "usedBy": "PS.Slider/AmountCard useGlide",
+    "source": "shared/ps-ui/loan.js:9-17",
+    "notes": null,
+    "production": {
+     "export": "LAYOUT_GLIDE",
+     "definedAt": "src/motion/flows/withdrawTokens.ts:82"
+    }
+   },
+   {
+    "name": "Height open/close spring",
+    "type": "spring",
+    "params": {
+     "type": "spring",
+     "stiffness": 240,
+     "damping": 30,
+     "mass": 1,
+     "restDelta": 0.5
+    },
+    "usedBy": "DocCard files, MethodPicker scroll glide, scroll-to-agree (restDelta 0.5, restSpeed 5)",
+    "source": [
+     "shared/ps-ui/form.js:255",
+     "shared/ps-ui/pay.js:94"
+    ],
+    "notes": null,
+    "production": {
+     "export": "HEIGHT_SPRING",
+     "definedAt": "src/motion/tokens.ts:206"
+    }
+   },
+   {
+    "name": "OrderSubmit constants",
+    "type": "keyframes (WAAPI)",
+    "params": {
+     "IN": "cubic-bezier(0.34, 0.02, 0.2, 1)",
+     "OUT": "cubic-bezier(0.4, 0.05, 0.6, 0.4)",
+     "IN_MS": 560,
+     "OUT_MS": 400,
+     "STAGGER": 16,
+     "GAP": 120,
+     "RISE": 12,
+     "EXIT": 10,
+     "BLUR": 5,
+     "holdMs": 1500,
+     "submitMs": 3000,
+     "dotsLoop": {
+      "duration": 2000,
+      "on": [
+       0.25,
+       0.5,
+       0.75
+      ]
+     }
+    },
+    "usedBy": "PS.OrderSubmit",
+    "source": "shared/ps-ui/fx.js:16",
+    "notes": "Same numbers as prototypes/order-submit.",
+    "production": {
+     "export": "ORDER submit constants (HOLD_MS …)",
+     "definedAt": "src/pages/HomePage/WithdrawMainRoute/submissionMotion.ts:79"
+    }
+   },
+   {
+    "name": "CSS colour transition",
+    "type": "tween (CSS)",
+    "params": {
+     "duration": "0.15s",
+     "easing": "ease"
+    },
+    "usedBy": "check, radio, term, tabs label, seg, ltabs, contact, selbar, consent, otp box, field ring, ticket, coupon option, pop option, date day, vote chip, pager",
+    "source": "shared/ps-ui/ps-ui.css:204-1242 (see motions)",
+    "notes": null,
+    "production": {
+     "export": "COLOR_TRANSITION_CSS",
+     "definedAt": "src/motion/tokens.ts:189"
+    }
+   },
+   {
+    "name": "ps-busy",
+    "type": "keyframes (CSS)",
+    "params": {
+     "keyframes": {
+      "0%,60%,100%": {
+       "opacity": 0.35
+      },
+      "30%": {
+       "opacity": 1
+      }
+     },
+     "duration": "0.9s",
+     "easing": "ease-in-out",
+     "iteration": "infinite",
+     "delays": [
+      "0s",
+      "0.15s",
+      "0.3s"
+     ]
+    },
+    "usedBy": "PS.Busy",
+    "source": "shared/ps-ui/ps-ui.css:596-600",
+    "notes": null,
+    "production": {
+     "export": ".busy (motion.module.css)",
+     "definedAt": "src/motion/motion.module.css:7"
+    }
+   },
+   {
+    "name": "ps-caret",
+    "type": "keyframes (CSS)",
+    "params": {
+     "keyframes": {
+      "50%": {
+       "opacity": 0
+      }
+     },
+     "duration": "1.06s",
+     "easing": "steps(1, end)",
+     "iteration": "infinite"
+    },
+    "usedBy": "PS.AmountEntry caret",
+    "source": "shared/ps-ui/ps-ui.css:1298-1299",
+    "notes": null,
+    "production": {
+     "export": ".caret (motion.module.css)",
+     "definedAt": "src/motion/motion.module.css:52"
+    }
+   },
+   {
+    "name": "psBlink",
+    "type": "keyframes (CSS)",
+    "params": {
+     "keyframes": {
+      "0%,49%": {
+       "opacity": 1
+      },
+      "50%,100%": {
+       "opacity": 0
+      }
+     },
+     "duration": "1s",
+     "easing": "step-end",
+     "iteration": "infinite"
+    },
+    "usedBy": "withdraw caret (also defined in ps-ui.css for the hosted demo)",
+    "source": [
+     "prototypes/withdraw-fund-flow/withdraw.css:8",
+     "shared/ps-ui/ps-ui.css:974",
+     "prototypes/withdraw-fund-flow/withdraw.js:1233"
+    ],
+    "notes": null,
+    "production": {
+     "export": "keypad-caret-blink (QuoteForm CSS)",
+     "definedAt": "src/features/reloan/QuoteForm/index.module.css:612"
+    }
+   },
+   {
+    "name": "ps-marquee",
+    "type": "keyframes (CSS)",
+    "params": {
+     "keyframes": {
+      "0%,12%": {
+       "transform": "translateX(0)"
+      },
+      "100%": {
+       "transform": "translateX(-100%)"
+      }
+     },
+     "duration": "14s",
+     "easing": "linear",
+     "iteration": "infinite"
+    },
+    "usedBy": "PS.ScamStrip",
+    "source": "shared/ps-ui/ps-ui.css:831-833",
+    "notes": null,
+    "production": {
+     "export": "useMarquee",
+     "definedAt": "src/motion/useMarquee.ts:19"
+    }
+   },
+   {
+    "name": "Partner logos marquee",
+    "type": "keyframes (WAAPI)",
+    "params": {
+     "from": "translateX(0px)",
+     "to": "translateX(-L px)",
+     "speed": "28 px/s (duration L/28*1000 ms)",
+     "easing": "linear",
+     "iterations": "Infinity"
+    },
+    "usedBy": "PS.PartnerLogos",
+    "source": "shared/ps-ui/home.js:121-127",
+    "notes": null,
+    "production": {
+     "export": "useMarquee",
+     "definedAt": "src/motion/useMarquee.ts:19"
+    }
+   },
+   {
+    "name": "Doc chevron",
+    "type": "tween (CSS)",
+    "params": {
+     "duration": "0.24s",
+     "easing": "cubic-bezier(0.22, 0.61, 0.36, 1)",
+     "rotate": "90deg -> -90deg"
+    },
+    "usedBy": "PS.DocCard",
+    "source": "shared/ps-ui/ps-ui.css:1068-1069",
+    "notes": null,
+    "production": null
+   }
+  ],
+  "withdraw (motion-tokens.js + withdraw.js constants)": [
+   {
+    "name": "FEEL.Smooth",
+    "type": "spring",
+    "params": {
+     "type": "spring",
+     "stiffness": 240,
+     "damping": 30,
+     "mass": 1
+    },
+    "usedBy": "withdraw default spring: sheet slide, morph progress, pill, scroll-to-agree, glide, intro exit (stretched)",
+    "source": "prototypes/withdraw-fund-flow/motion-tokens.js:7-8",
+    "notes": null,
+    "production": {
+     "export": "SMOOTH (= MT.SPRING)",
+     "definedAt": "src/motion/flows/core.ts:66"
+    }
+   },
+   {
+    "name": "FEEL.Snappy",
+    "type": "spring",
+    "params": {
+     "type": "spring",
+     "stiffness": 430,
+     "damping": 34,
+     "mass": 0.8
+    },
+    "usedBy": "Tune option only",
+    "source": "prototypes/withdraw-fund-flow/motion-tokens.js:9",
+    "notes": null,
+    "production": null
+   },
+   {
+    "name": "FEEL.Gentle",
+    "type": "spring",
+    "params": {
+     "type": "spring",
+     "stiffness": 140,
+     "damping": 24,
+     "mass": 1.15
+    },
+    "usedBy": "Tune option only",
+    "source": "prototypes/withdraw-fund-flow/motion-tokens.js:10",
+    "notes": null,
+    "production": null
+   },
+   {
+    "name": "EASE_IN",
+    "type": "easing",
+    "params": {
+     "cubicBezier": [
+      0.22,
+      0.61,
+      0.36,
+      1
+     ]
+    },
+    "usedBy": "ENTER, REVEAL, REVEAL_ROW, LAYER_IN",
+    "source": "prototypes/withdraw-fund-flow/motion-tokens.js:14",
+    "notes": null,
+    "production": {
+     "export": "EASE_IN",
+     "definedAt": "src/motion/tokens.ts:53"
+    }
+   },
+   {
+    "name": "ENTER",
+    "type": "tween",
+    "params": {
+     "duration": 0.3,
+     "delay": 0.07,
+     "ease": [
+      0.22,
+      0.61,
+      0.36,
+      1
+     ]
+    },
+    "usedBy": "fade() in",
+    "source": "prototypes/withdraw-fund-flow/motion-tokens.js:15",
+    "notes": null,
+    "production": {
+     "export": "MT.ENTER",
+     "definedAt": "src/motion/tokens.ts:76"
+    }
+   },
+   {
+    "name": "LEAVE",
+    "type": "tween",
+    "params": {
+     "duration": 0.15,
+     "ease": [
+      0.4,
+      0,
+      1,
+      1
+     ]
+    },
+    "usedBy": "fade() out, keypad/padLine/blocks exit",
+    "source": "prototypes/withdraw-fund-flow/motion-tokens.js:16",
+    "notes": null,
+    "production": {
+     "export": "MT.LEAVE",
+     "definedAt": "src/motion/tokens.ts:77"
+    }
+   },
+   {
+    "name": "Y",
+    "type": "distance",
+    "params": {
+     "text": 8,
+     "block": 10,
+     "digit": 6,
+     "unit": "px"
+    },
+    "usedBy": "rise distances",
+    "source": "prototypes/withdraw-fund-flow/motion-tokens.js:19",
+    "notes": null,
+    "production": {
+     "export": "MT.Y",
+     "definedAt": "src/motion/tokens.ts:78"
+    }
+   },
+   {
+    "name": "STAGGER_STEP",
+    "type": "number",
+    "params": {
+     "value": 0.03,
+     "unit": "s"
+    },
+    "usedBy": "REVEAL default stagger",
+    "source": "prototypes/withdraw-fund-flow/motion-tokens.js:22",
+    "notes": null,
+    "production": {
+     "export": "STAGGER_STEP",
+     "definedAt": "src/motion/flows/withdrawTokens.ts:11"
+    }
+   },
+   {
+    "name": "REVEAL_SCALE",
+    "type": "number",
+    "params": {
+     "value": 0.94
+    },
+    "usedBy": "REVEAL initial scale",
+    "source": "prototypes/withdraw-fund-flow/motion-tokens.js:23",
+    "notes": null,
+    "production": {
+     "export": "REVEAL_SCALE",
+     "definedAt": "src/motion/flows/withdrawTokens.ts:10"
+    }
+   },
+   {
+    "name": "REVEAL(i, stagger)",
+    "type": "tween",
+    "params": {
+     "initial": {
+      "opacity": 0,
+      "y": 10,
+      "scale": 0.94
+     },
+     "default": {
+      "duration": 0.34,
+      "delay": "0.06 + i*stagger",
+      "ease": [
+       0.22,
+       0.61,
+       0.36,
+       1
+      ]
+     },
+     "borderColor": {
+      "duration": 0.15
+     },
+     "boxShadow": {
+      "duration": 0.22
+     }
+    },
+    "usedBy": "keypad first open, order blocks",
+    "source": "prototypes/withdraw-fund-flow/motion-tokens.js:24-31",
+    "notes": null,
+    "production": {
+     "export": "WD_REVEAL(i)",
+     "definedAt": "src/motion/flows/withdrawTokens.ts:19"
+    }
+   },
+   {
+    "name": "REVEAL_ROW(row, stagger=0.025)",
+    "type": "tween",
+    "params": {
+     "initial": {
+      "opacity": 0,
+      "y": 8,
+      "scale": 0.96
+     },
+     "default": {
+      "duration": 0.22,
+      "delay": "0.02 + row*stagger",
+      "ease": [
+       0.22,
+       0.61,
+       0.36,
+       1
+      ]
+     },
+     "borderColor": {
+      "duration": 0.15
+     },
+     "boxShadow": {
+      "duration": 0.22
+     }
+    },
+    "usedBy": "keypad on return from the order page",
+    "source": "prototypes/withdraw-fund-flow/motion-tokens.js:35-42",
+    "notes": null,
+    "production": {
+     "export": "WD_REVEAL_ROW(row)",
+     "definedAt": "src/motion/flows/withdrawTokens.ts:34"
+    }
+   },
+   {
+    "name": "LAYER_IN",
+    "type": "tween",
+    "params": {
+     "duration": 0.22,
+     "delay": 0.16,
+     "ease": [
+      0.22,
+      0.61,
+      0.36,
+      1
+     ]
+    },
+    "usedBy": "defined, not used by withdraw.js",
+    "source": "prototypes/withdraw-fund-flow/motion-tokens.js:47",
+    "notes": null,
+    "production": null
+   },
+   {
+    "name": "LAYER_OUT",
+    "type": "tween",
+    "params": {
+     "duration": 0.1,
+     "ease": [
+      0.4,
+      0,
+      1,
+      1
+     ]
+    },
+    "usedBy": "defined, not used",
+    "source": "prototypes/withdraw-fund-flow/motion-tokens.js:48",
+    "notes": null,
+    "production": null
+   },
+   {
+    "name": "FLAT_SHADOW / FOCUS_SHADOW",
+    "type": "value",
+    "params": {
+     "flat": "0px 0px 0px 0px rgba(0,1,40,0), 0px 0px 0px 0px rgba(0,1,40,0)",
+     "focus": "0px 0px 4px 0px rgba(0,1,40,0.16), 0px 8px 32px 0px rgba(0,1,40,0.12)"
+    },
+    "usedBy": "off-state shadows must be zero-alpha shadows, not 'none' (defined, not referenced)",
+    "source": "prototypes/withdraw-fund-flow/motion-tokens.js:52-53",
+    "notes": null,
+    "production": null
+   },
+   {
+    "name": "COLOR_TRANSITION",
+    "type": "tween (CSS)",
+    "params": {
+     "value": "color .15s ease"
+    },
+    "usedBy": "colour on a node that does not remount",
+    "source": "prototypes/withdraw-fund-flow/motion-tokens.js:55",
+    "notes": null,
+    "production": {
+     "export": "COLOR_TRANSITION_CSS",
+     "definedAt": "src/motion/tokens.ts:189"
+    }
+   },
+   {
+    "name": "PRESS",
+    "type": "tween",
+    "params": {
+     "duration": 0.06
+    },
+    "usedBy": "whileTap",
+    "source": "prototypes/withdraw-fund-flow/motion-tokens.js:58",
+    "notes": null,
+    "production": {
+     "export": "MT.PRESS",
+     "definedAt": "src/motion/tokens.ts:85"
+    }
+   },
+   {
+    "name": "PRESS_SCALE",
+    "type": "scale",
+    "params": {
+     "pill": 0.985,
+     "iconButton": 0.92
+    },
+    "usedBy": "Confirm (pill), Back (iconButton)",
+    "source": "prototypes/withdraw-fund-flow/motion-tokens.js:59",
+    "notes": null,
+    "production": {
+     "export": "MT.PRESS_SCALE",
+     "definedAt": "src/motion/tokens.ts:86"
+    }
+   },
+   {
+    "name": "FOCUS_AFTER_MORPH / AUTOFILL_START / AUTOFILL_STEP",
+    "type": "delay",
+    "params": {
+     "FOCUS_AFTER_MORPH": 340,
+     "AUTOFILL_START": 900,
+     "AUTOFILL_STEP": 110,
+     "unit": "ms"
+    },
+    "usedBy": "not referenced by withdraw.js; the same 900 / 110 ms drive the OTP sheet auto-typing (fx.js:99)",
+    "source": "prototypes/withdraw-fund-flow/motion-tokens.js:62-64",
+    "notes": null,
+    "production": null
+   },
+   {
+    "name": "fade(React, motion, key, y)",
+    "type": "preset",
+    "params": {
+     "initial": {
+      "opacity": 0,
+      "y": "y"
+     },
+     "animate": {
+      "opacity": 1,
+      "y": 0,
+      "transition": "ENTER"
+     },
+     "exit": {
+      "opacity": 0,
+      "y": "-y",
+      "transition": "LEAVE"
+     }
+    },
+    "usedBy": "withdraw pill labels (no blur, unlike PS.fade)",
+    "source": "prototypes/withdraw-fund-flow/motion-tokens.js:69-77",
+    "notes": null,
+    "production": {
+     "export": "fade(y)",
+     "definedAt": "src/motion/presets.ts:30"
+    }
+   },
+   {
+    "name": "DIGIT_IN",
+    "type": "keyframes",
+    "params": {
+     "initial": {
+      "opacity": 0,
+      "y": 5,
+      "filter": "blur(5px)"
+     },
+     "opacity": [
+      0,
+      0.28,
+      0.72,
+      1
+     ],
+     "y": [
+      5,
+      2.1,
+      0.6,
+      0
+     ],
+     "filter": [
+      "blur(5px)",
+      "blur(2.5px)",
+      "blur(0.8px)",
+      "blur(0px)"
+     ],
+     "duration": 0.38,
+     "times": [
+      0,
+      0.4,
+      0.7,
+      1
+     ],
+     "ease": [
+      0.34,
+      0.02,
+      0.2,
+      1
+     ]
+    },
+    "usedBy": "typed digit entrance",
+    "source": "prototypes/withdraw-fund-flow/withdraw.js:230-238",
+    "notes": null,
+    "production": {
+     "export": "DIGIT_IN",
+     "definedAt": "src/motion/flows/withdrawTokens.ts:68"
+    }
+   },
+   {
+    "name": "DIGIT_STILL",
+    "type": "tween",
+    "params": {
+     "opacity": 1,
+     "y": 0,
+     "filter": "blur(0px)",
+     "duration": 0
+    },
+    "usedBy": "digits not typed (slider / already there)",
+    "source": "prototypes/withdraw-fund-flow/withdraw.js:239",
+    "notes": null,
+    "production": {
+     "export": ".keypadDigit[data-still] (QuoteForm CSS)",
+     "definedAt": "src/features/reloan/QuoteForm/index.module.css:495"
+    }
+   },
+   {
+    "name": "Morph progress spring",
+    "type": "spring",
+    "params": {
+     "type": "spring",
+     "stiffness": 240,
+     "damping": 30,
+     "mass": 1,
+     "restDelta": 0.001,
+     "restSpeed": 0.01
+    },
+    "usedBy": "tweenMp (_mpMV 0<->1), glide()",
+    "source": [
+     "prototypes/withdraw-fund-flow/withdraw.js:640-649",
+     "shared/ps-ui/withdraw-host.js:121"
+    ],
+    "notes": null,
+    "production": {
+     "export": "MORPH_SPRING",
+     "definedAt": "src/motion/flows/core.ts:78"
+    }
+   },
+   {
+    "name": "Morph fallback tween",
+    "type": "tween",
+    "params": {
+     "duration": 0.42,
+     "ease": "1-(1-p)^3 (ease-out cubic)"
+    },
+    "usedBy": "before Motion has loaded",
+    "source": "prototypes/withdraw-fund-flow/withdraw.js:657-666",
+    "notes": null,
+    "production": null
+   },
+   {
+    "name": "Intro exit spring (stretched)",
+    "type": "spring",
+    "params": {
+     "stiffness": "240/ts²",
+     "damping": "30/ts",
+     "mass": 1,
+     "restDelta": "0.378/De",
+     "restSpeed": "3.78/De/ts",
+     "ts": "min(2.5, max(1, De/378))",
+     "De": "max(to.t,to.r,to.b,to.l,1) px"
+    },
+    "usedBy": "introExit",
+    "source": "prototypes/withdraw-fund-flow/withdraw.js:979-1003",
+    "notes": null,
+    "production": {
+     "export": "stretchedSpring(travel)",
+     "definedAt": "src/motion/flows/core.ts:86"
+    }
+   },
+   {
+    "name": "Intro exit clocked entrance",
+    "type": "tween",
+    "params": {
+     "duration": 0.34,
+     "ease": [
+      0.22,
+      0.61,
+      0.36,
+      1
+     ],
+     "at": {
+      "label": 0.2,
+      "info": 0.3,
+      "legend1": 0.3,
+      "legend2": 0.36,
+      "bar": 0.38,
+      "amount(used)": 0.4
+     }
+    },
+    "usedBy": "introExit CLK",
+    "source": "prototypes/withdraw-fund-flow/withdraw.js:873-883",
+    "notes": null,
+    "production": {
+     "export": "CLOCK / clock()",
+     "definedAt": "src/motion/flows/core.ts:103"
+    }
+   },
+   {
+    "name": "Intro count-up",
+    "type": "tween",
+    "params": {
+     "duration": 1.0,
+     "delay": 0.1,
+     "ease": "linear",
+     "numberCurve": "1-(1-t)^4",
+     "barCurve": "t*t*(3-2t)",
+     "startsAt": "k >= 0.97 and the amount's entrance done"
+    },
+    "usedBy": "introExit (credit partly used)",
+    "source": "prototypes/withdraw-fund-flow/withdraw.js:964-969",
+    "notes": null,
+    "production": null
+   },
+   {
+    "name": "Credit limit hold",
+    "type": "delay",
+    "params": {
+     "hold": 3000,
+     "safety": 12000,
+     "unit": "ms",
+     "fallbackFade": {
+      "duration": 300,
+      "easing": "linear"
+     }
+    },
+    "usedBy": "intro.js, PS.CreditLimitIntro",
+    "source": [
+     "shared/ps-ui/fx.js:174-179",
+     "prototypes/withdraw-fund-flow/intro.js:18",
+     "prototypes/withdraw-fund-flow/intro.js:185"
+    ],
+    "notes": null,
+    "production": null
+   },
+   {
+    "name": "Protection toggle",
+    "type": "tween (CSS)",
+    "params": {
+     "duration": "150ms",
+     "easing": "cubic-bezier(0.2, 0, 0, 1)",
+     "press": "transform 60ms same curve, scale 0.96"
+    },
+    "usedBy": "order page Protected/Add",
+    "source": "prototypes/withdraw-fund-flow/withdraw.js:1309-1317",
+    "notes": null,
+    "production": null
+   },
+   {
+    "name": "Hero pill press",
+    "type": "scale",
+    "params": {
+     "closed": 0.98,
+     "open": 0.99,
+     "transition": "PRESS"
+    },
+    "usedBy": "home card Withdraw pill",
+    "source": "prototypes/withdraw-fund-flow/withdraw.js:1044-1045",
+    "notes": null,
+    "production": {
+     "export": "PILL_PRESS_SCALE",
+     "definedAt": "src/motion/flows/withdrawTokens.ts:60"
+    }
+   },
+   {
+    "name": "Keypad key press",
+    "type": "scale",
+    "params": {
+     "scale": 0.94,
+     "backgroundColor": "#d6d6dd",
+     "transition": "Motion default (none given)"
+    },
+    "usedBy": "keypad keys",
+    "source": "prototypes/withdraw-fund-flow/withdraw.js:1169",
+    "notes": null,
+    "production": {
+     "export": "KEY_PRESS_SCALE",
+     "definedAt": "src/motion/flows/withdrawTokens.ts:52"
+    }
+   },
+   {
+    "name": "Term chip",
+    "type": "tween",
+    "params": {
+     "colors": {
+      "duration": 0.15
+     },
+     "press": {
+      "scale": 0.96,
+      "transition": "Motion default"
+     }
+    },
+    "usedBy": "4 / 6 / 8 Term chips",
+    "source": "prototypes/withdraw-fund-flow/withdraw.js:1122-1136",
+    "notes": null,
+    "production": {
+     "export": "CHIP_PRESS_SCALE",
+     "definedAt": "src/motion/flows/withdrawTokens.ts:57"
+    }
+   }
+  ],
+  "perasure-card-morph skill engine": [
+   {
+    "name": "PSMorph.MT",
+    "type": "constants",
+    "params": {
+     "REF_TRAVEL": 378,
+     "REST_PX": 0.378,
+     "REST_PXS": 3.78,
+     "REVEAL": 0.34,
+     "BLUR": 3,
+     "Y": {
+      "text": 8,
+      "block": 10,
+      "digit": 6
+     }
+    },
+    "usedBy": "every card morph",
+    "source": ".claude/skills/perasure-card-morph/engine.js:37-46",
+    "notes": null,
+    "production": null
+   },
+   {
+    "name": "PSMorph.springFor(feel, travel, slow)",
+    "type": "spring",
+    "params": {
+     "s": "min(2.5, max(1, travel/378)) * slow",
+     "stiffness": "F.stiffness/s²",
+     "damping": "F.damping/s",
+     "mass": "F.mass",
+     "restDelta": "0.378/travel",
+     "restSpeed": "3.78/travel/s"
+    },
+    "usedBy": "engine",
+    "source": ".claude/skills/perasure-card-morph/engine.js:55-61",
+    "notes": "Never compress below s = 1 (short moves are not sped up).",
+    "production": null
+   },
+   {
+    "name": "win(a,b) / front(t)",
+    "type": "function",
+    "params": {
+     "win": "t = clamp((k-a)/(b-a)); t*t*(3-2t)",
+     "front": "1-(1-t)^2"
+    },
+    "usedBy": "windows / front-loaded paths",
+    "source": ".claude/skills/perasure-card-morph/engine.js:49-50",
+    "notes": null,
+    "production": {
+     "export": "win(k, a, b)",
+     "definedAt": "src/motion/flows/core.ts:33"
+    }
+   },
+   {
+    "name": "f.out / f.inn",
+    "type": "function",
+    "params": {
+     "out": "opacity 1-e, blur 3e px, translateY(-y*e)",
+     "inn": "opacity e, blur 3(1-e) px, translateY(base + y(1-e))"
+    },
+    "usedBy": "engine frames",
+    "source": ".claude/skills/perasure-card-morph/engine.js:82-83",
+    "notes": null,
+    "production": null
+   },
+   {
+    "name": "PSMorph.pressable",
+    "type": "tween",
+    "params": {
+     "down": {
+      "scale": "0.985 (default)",
+      "transition": "PRESS 0.06 s"
+     },
+     "up": {
+      "scale": 1,
+      "duration": 0.12
+     }
+    },
+    "usedBy": "engine press",
+    "source": ".claude/skills/perasure-card-morph/engine.js:142-146",
+    "notes": null,
+    "production": null
+   }
+  ]
+ }
+}

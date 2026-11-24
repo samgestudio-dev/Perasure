@@ -1,0 +1,71 @@
+diff --git a/src/motion/Swap.tsx b/src/motion/Swap.tsx
+new file mode 100644
+index 0000000..2d12a9a
+--- /dev/null
++++ b/src/motion/Swap.tsx
+@@ -0,0 +1,65 @@
++/** @jsxRuntime automatic @jsxImportSource react */
++import type { CSSProperties, Key, ReactNode } from 'react';
++import { AnimatePresence, m } from 'motion/react';
++
++import { fade } from './presets';
++
++/** Props of {@link Swap}. */
++export interface SwapProps {
++  /**
++   * What identifies the content. Key it on the STATE, never on a number that
++   * follows a slider (R-SLIDER-NUM: those just update).
++   */
++  k: Key;
++  /** rise distance (default MT.Y.text 8; MT.Y.digit 6 for small lines) */
++  y?: number;
++  /** fills the width (grid), so text inside can end in … */
++  block?: boolean;
++  className?: string;
++  style?: CSSProperties;
++  children?: ReactNode;
++}
++
++/**
++ * `PS.Swap` (Perasure `shared/ps-ui/core.js:224-231`) — R-FADE: text that
++ * changes after a tap crossfades in place. The old content rises out on LEAVE
++ * while the new one rises in on ENTER (3 px blur between); both sit in the
++ * same grid cell so nothing shifts. No animation on first mount; rapid
++ * changes exit independently (no queue).
++ */
++export function Swap({ k, y, block, className, style, children }: SwapProps) {
++  const f = fade(y);
++  return (
++    <span
++      className={className}
++      style={{
++        position: 'relative',
++        display: block ? 'grid' : 'inline-grid',
++        minWidth: 0,
++        ...(block ? { gridTemplateColumns: 'minmax(0, 1fr)' } : null),
++        ...style,
++      }}
++    >
++      <AnimatePresence initial={false}>
++        <m.span
++          key={k}
++          style={
++            block
++              ? { gridArea: '1 / 1', display: 'block', minWidth: 0 }
++              : {
++                  gridArea: '1 / 1',
++                  display: 'inline-flex',
++                  alignItems: 'baseline',
++                  minWidth: 0,
++                }
++          }
++          {...f}
++        >
++          {children}
++        </m.span>
++      </AnimatePresence>
++    </span>
++  );
++}
++
++export default Swap;

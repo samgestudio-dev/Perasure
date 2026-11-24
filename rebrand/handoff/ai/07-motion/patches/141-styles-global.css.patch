@@ -1,0 +1,15 @@
+diff --git a/src/styles/global.css b/src/styles/global.css
+index 1b2ebec..1fbd603 100644
+--- a/src/styles/global.css
++++ b/src/styles/global.css
+@@ -118,6 +118,10 @@ body,
+ }
+ 
+ .app-shell__main {
++  /* Positioned so a leaving page can overlap the new one during the page
++     crossfade (src/motion/PageTransition.tsx, AnimatePresence popLayout).
++     页面淡入淡出时离开的页面需要相对 main 绝对定位叠放。 */
++  position: relative;
+   box-sizing: border-box;
+   height: 100%;
+   overflow-y: auto;

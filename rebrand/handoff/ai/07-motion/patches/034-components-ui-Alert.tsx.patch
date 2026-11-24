@@ -1,0 +1,85 @@
+diff --git a/src/components/ui/Alert.tsx b/src/components/ui/Alert.tsx
+index 308e3a4..7e63c68 100644
+--- a/src/components/ui/Alert.tsx
++++ b/src/components/ui/Alert.tsx
+@@ -1,5 +1,9 @@
+-import React, { useEffect, useState } from 'react';
++import React from 'react';
++import { m } from 'motion/react';
++
+ import { useI18n } from '@/i18n';
++import { pressProps } from '@/motion/press';
++import { Sheet } from '@/motion/Sheet';
+ 
+ import styles from './Alert.module.css';
+ 
+@@ -11,6 +15,13 @@ interface AlertProps {
+   onClose: () => void;
+ }
+ 
++/**
++ * Legacy centre alert on the shared motion Sheet (centre placement): the card
++ * grows from 0.96 and fades in on ENTER, leaves on LEAVE; the scrim fades
++ * 0.2 s in / LEAVE out. No overshoot (nothing bounces except menus, R-MENU);
++ * it unmounts when the exit ends (no transitionend bookkeeping).
++ * 旧版居中提示框改由共享 Sheet 承担进出场：ENTER 放大淡入、LEAVE 淡出，不再回弹。
++ */
+ const Alert: React.FC<AlertProps> = ({
+   isOpen,
+   title,
+@@ -19,35 +30,29 @@ const Alert: React.FC<AlertProps> = ({
+   onClose,
+ }) => {
+   const { t } = useI18n();
+-  const [render, setRender] = useState(false);
+-
+-  useEffect(() => {
+-    if (isOpen) setRender(true);
+-  }, [isOpen]);
+-
+-  const handleAnimationEnd = () => {
+-    if (!isOpen) setRender(false);
+-  };
+-
+-  if (!render) return null;
+ 
+   return (
+-    <div
+-      className={[
+-        styles.root,
+-        isOpen ? styles.rootOpen : styles.rootClosed,
+-      ].join(' ')}
+-      onTransitionEnd={handleAnimationEnd}
++    <Sheet
++      className={styles.panel}
++      onClose={onClose}
++      open={isOpen}
++      placement="center"
++      rise={false}
++      role="alertdialog"
++      scrimClassName={styles.mask}
++      zIndex={60}
+     >
+-      <div className={styles.mask} onClick={onClose} />
+-      <div className={[styles.panel, isOpen ? styles.panelOpen : ''].join(' ')}>
+-        <h3 className={styles.title}>{title ?? t('ui.alert.notice')}</h3>
+-        <p className={styles.message}>{message}</p>
+-        <button onClick={onClose} className={styles.button} type="button">
+-          {confirmText ?? t('ui.alert.okay')}
+-        </button>
+-      </div>
+-    </div>
++      <h3 className={styles.title}>{title ?? t('ui.alert.notice')}</h3>
++      <p className={styles.message}>{message}</p>
++      <m.button
++        className={styles.button}
++        onClick={onClose}
++        type="button"
++        {...pressProps()}
++      >
++        {confirmText ?? t('ui.alert.okay')}
++      </m.button>
++    </Sheet>
+   );
+ };
+ 

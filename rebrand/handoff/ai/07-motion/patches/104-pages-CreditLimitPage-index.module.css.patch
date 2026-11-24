@@ -1,0 +1,26 @@
+diff --git a/src/pages/CreditLimitPage/index.module.css b/src/pages/CreditLimitPage/index.module.css
+index 4db0859..60c01d5 100644
+--- a/src/pages/CreditLimitPage/index.module.css
++++ b/src/pages/CreditLimitPage/index.module.css
+@@ -141,12 +141,7 @@
+   font-size: var(--font-size-label-md, 14px);
+   font-weight: 600;
+   line-height: var(--font-line-height-label-md, 20px);
+-  transition: transform 160ms ease;
+-}
+-
+-.useCreditButton:active,
+-.historyAction:active {
+-  transform: scale(0.97);
++  /* press: pressProps() — 0.985 in 60 ms (R-PRESS) */
+ }
+ 
+ .historyCard,
+@@ -196,7 +191,6 @@
+   font-weight: 600;
+   line-height: var(--font-line-height-label-sm, 16px);
+   text-align: center;
+-  transition: transform 160ms ease;
+ }
+ 
+ .historyAction > span:last-child {

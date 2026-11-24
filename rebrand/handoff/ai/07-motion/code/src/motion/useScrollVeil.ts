@@ -1,0 +1,87 @@
+import { useEffect, type RefObject } from 'react';
+
+import { VEIL } from './tokens';
+
+/**
+ * R-BARS — the demo's `PS.Screen` update() (Perasure `shared/ps-ui/layout.js:71-89`):
+ * bars have no colour while they cover nothing.
+ * - M-010: the header veil fades in over the first 24 px of scroll:
+ *   `--motion-top-fade = clamp(scrollTop / 24, 0, 1)`.
+ * - M-011: the bottom / tab bar veil fades out over the last stretch of
+ *   scroll, as tall as the bar: `--motion-bot-fade = clamp(left / barHeight, 0, 1)`
+ *   where left = scrollHeight - clientHeight - scrollTop. A page that does not
+ *   scroll shows neither.
+ * Scroll-linked (no easing), written only when the 3-decimal value changes,
+ * straight to CSS variables on `target` (no React state). Unchanged by
+ * reduced motion.
+ *
+ * The scroller is `scrollerRef` (GlobalLayout's <main>), or any descendant
+ * that scrolls vertically and is at least half as tall (a page with its own
+ * full-height scroller), picked up from scroll events in the capture phase.
+ * The bottom bar is measured from `bottomBarSelector` (default: the Home tab
+ * bar) when present, else 108 design px.
+ */
+export function useScrollVeil(
+  scrollerRef: RefObject<HTMLElement | null>,
+  targetRef: RefObject<HTMLElement | null>,
+  options: { bottomBarSelector?: string; resetKey?: unknown } = {},
+): void {
+  const { bottomBarSelector = '[data-motion-bottom-bar]', resetKey } = options;
+
+  useEffect(() => {
+    const main = scrollerRef.current;
+    const target = targetRef.current;
+    if (!main || !target) return undefined;
+    let last = { t: '', o: '' };
+    let frame = 0;
+    let active: HTMLElement = main;
+
+    const write = () => {
+      frame = 0;
+      const s = active.isConnected ? active : main;
+      const t = Math.max(0, Math.min(1, s.scrollTop / VEIL.topPx)).toFixed(3);
+      const bar = target.querySelector<HTMLElement>(bottomBarSelector);
+      const barHeight = bar?.offsetHeight || VEIL.bottomDefaultPx;
+      const left = s.scrollHeight - s.clientHeight - s.scrollTop;
+      const o = Math.max(0, Math.min(1, left / barHeight)).toFixed(3);
+      if (t !== last.t) target.style.setProperty('--motion-top-fade', t);
+      if (o !== last.o) target.style.setProperty('--motion-bot-fade', o);
+      last = { t, o };
+    };
+    const schedule = () => {
+      if (!frame) frame = window.requestAnimationFrame(write);
+    };
+    const onScroll = (event: Event) => {
+      const el = event.target;
+      if (
+        el instanceof HTMLElement &&
+        el !== active &&
+        main.contains(el) &&
+        el.scrollHeight > el.clientHeight + 1 &&
+        el.clientHeight >= main.clientHeight / 2
+      ) {
+        active = el;
+      } else if (el === main) {
+        active = main;
+      }
+      schedule();
+    };
+
+    write();
+    target.addEventListener('scroll', onScroll, {
+      capture: true,
+      passive: true,
+    });
+    const ro =
+      typeof ResizeObserver === 'function'
+        ? new ResizeObserver(schedule)
+        : null;
+    ro?.observe(main);
+    if (main.firstElementChild) ro?.observe(main.firstElementChild);
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      target.removeEventListener('scroll', onScroll, { capture: true });
+      ro?.disconnect();
+    };
+  }, [bottomBarSelector, resetKey, scrollerRef, targetRef]);
+}

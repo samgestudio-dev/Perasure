@@ -1,0 +1,68 @@
+diff --git a/src/components/ui/Select/index.tsx b/src/components/ui/Select/index.tsx
+index dcab234..4a044b6 100644
+--- a/src/components/ui/Select/index.tsx
++++ b/src/components/ui/Select/index.tsx
+@@ -11,8 +11,11 @@ import {
+   type ReactNode,
+ } from 'react';
+ import { ChevronRight } from 'lucide-react';
++import { AnimatePresence, m } from 'motion/react';
+ 
+ import { Popover } from '@/components/ui/Popover';
++import { fade } from '@/motion/presets';
++import { CHOICE_CLOSE_DELAY_MS, MT } from '@/motion/tokens';
+ 
+ import {
+   getInitialActiveOptionIndex,
+@@ -160,7 +163,13 @@ export function Select({
+     [isOpenControlled, onOpenChange],
+   );
+ 
+-  const handleSheetClose = useCallback(() => updateOpen(false), [updateOpen]);
++  const closeTimerRef = useRef<number | undefined>(undefined);
++  useEffect(() => () => window.clearTimeout(closeTimerRef.current), []);
++
++  const handleSheetClose = useCallback(() => {
++    window.clearTimeout(closeTimerRef.current);
++    updateOpen(false);
++  }, [updateOpen]);
+ 
+   const handleTriggerClick = (event: MouseEvent<HTMLButtonElement>) => {
+     onClick?.(event);
+@@ -188,7 +197,18 @@ export function Select({
+     }
+ 
+     onSelect?.(option);
+-    updateOpen(false);
++    if (isPopover) {
++      // the popover already lit the row and waited 90 ms (SelectPopover)
++      updateOpen(false);
++      return;
++    }
++    // M-041 choice sheet: the picked row changes colour (0.15 s), then the
++    // sheet closes 160 ms later (demo form.js:142). 选中后先变色，160ms 后关闭。
++    window.clearTimeout(closeTimerRef.current);
++    closeTimerRef.current = window.setTimeout(
++      () => updateOpen(false),
++      CHOICE_CLOSE_DELAY_MS,
++    );
+   };
+ 
+   const getOptionId = useCallback(
+@@ -297,7 +317,15 @@ export function Select({
+           </span>
+           <ChevronRight aria-hidden="true" className={styles.chevron} />
+         </button>
+-        {hasError ? <div className={styles.error}>{error}</div> : null}
++        {/* The error line rises in 6 px from a 3 px blur (rebrand FormField
++            error, R-FADE). 错误提示从下方 6px、3px 模糊处淡入。 */}
++        <AnimatePresence initial={false}>
++          {hasError ? (
++            <m.div className={styles.error} key="error" {...fade(MT.Y.digit)}>
++              {error}
++            </m.div>
++          ) : null}
++        </AnimatePresence>
+       </div>
+       {isPopover ? (
+         <Popover

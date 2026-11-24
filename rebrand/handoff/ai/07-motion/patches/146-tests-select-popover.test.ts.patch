@@ -1,0 +1,14 @@
+diff --git a/tests/select-popover.test.ts b/tests/select-popover.test.ts
+index 128bc06..343edbd 100644
+--- a/tests/select-popover.test.ts
++++ b/tests/select-popover.test.ts
+@@ -154,7 +154,8 @@ test('keeps both tracking markers on actual buttons and branches presentation on
+     /aria-haspopup=\{isPopover \? 'listbox' : 'dialog'\}/,
+   );
+   assert.match(selectSource, /data-event-type=\{dataEventType\}/);
+-  assert.match(popoverSource, /<button/);
++  // Rows are Motion buttons (rebrand menu row stagger, MENU_ROW).
++  assert.match(popoverSource, /<m\.button/);
+   assert.match(popoverSource, /data-event-type=\{optionDataEventType\}/);
+   assert.match(popoverSource, /role="option"/);
+   assert.match(popoverSource, /role="listbox"/);

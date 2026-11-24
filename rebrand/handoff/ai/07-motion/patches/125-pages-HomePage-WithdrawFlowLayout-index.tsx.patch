@@ -1,0 +1,52 @@
+diff --git a/src/pages/HomePage/WithdrawFlowLayout/index.tsx b/src/pages/HomePage/WithdrawFlowLayout/index.tsx
+index 71f8c3b..01e580a 100644
+--- a/src/pages/HomePage/WithdrawFlowLayout/index.tsx
++++ b/src/pages/HomePage/WithdrawFlowLayout/index.tsx
+@@ -13,7 +13,10 @@ import {
+ } from 'react';
+ import { Outlet, useBlocker, useLocation, useNavigate } from 'react-router-dom';
+ 
+-import { FullScreenLayer } from '@/components/ui/FullScreenLayer';
++import {
++  FullScreenLayer,
++  type FullScreenLayerExit,
++} from '@/components/ui/FullScreenLayer';
+ import { MobileModal } from '@/components/ui/MobileModal';
+ import { Toast } from '@/components/ui/Toast';
+ import { useAppOutletContext } from '@/components/Layout/GlobalLayout';
+@@ -222,6 +225,8 @@ export default function WithdrawFlowLayout() {
+   );
+   const { reset: resetReceivingAccountGuide } = receivingAccountGuide;
+   const submitLockRef = useRef(false);
++  /** The layer's exit motion (M-098): filled by FullScreenLayer while open. */
++  const layerExitRef = useRef<FullScreenLayerExit | null>(null);
+   const shouldRefreshHomeRef = useRef(false);
+   const loginAfterExitRef = useRef(false);
+   const onRequireLoginRef = useRef(onRequireLogin);
+@@ -382,7 +387,17 @@ export default function WithdrawFlowLayout() {
+         reason,
+         surface: 'fullscreen_overlay',
+       });
+-      navigate(-1);
++      // M-098 / M-132: back from the entry slides the layer down (0.3 s,
++      // [0.4, 0, 1, 1]); after a submission home comes back with the page
++      // crossfade (LEAVE). History moves once the motion settles.
++      const exit = layerExitRef.current;
++      const leave = () => navigate(-1);
++      if (!exit) leave();
++      else
++        void exit(reason === 'business-complete' ? 'fade' : 'down').then(
++          leave,
++          leave,
++        );
+     },
+     [blocker.state, navigate, phase],
+   );
+@@ -945,6 +960,7 @@ export default function WithdrawFlowLayout() {
+         <WithdrawStatusContext value={statusController}>
+           <FullScreenLayer
+             ariaLabelledBy="withdraw-flow-title"
++            exitRef={layerExitRef}
+             onCoverageChange={reportCoverage}
+             onCloseIntent={() => {
+               if (isAuxiliaryRoute) navigate(-1);

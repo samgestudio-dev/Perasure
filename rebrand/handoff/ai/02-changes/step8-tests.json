@@ -1,0 +1,40 @@
+{
+ "meta": {
+  "what": "Step 8 test updates: assertions that pinned a stale var() fallback literal that step 8 removes. tools/apply.py --step 8 applies them after the fallback rewrite (exact text, one occurrence each); the generic part (regex patterns var\\(--x, fb\\) of defined tokens -> var\\(--x\\)) needs no list.",
+  "anchor": "exact text in the visual + motion tree after the fallback rewrite of step 8"
+ },
+ "edits": [
+  {
+   "id": "S8T1",
+   "file": "tests/user-status-display.test.ts",
+   "test": "loan application surfaces preserve Figma state-specific treatments",
+   "current": "/data-loan-status='CHANGE_CARD'[\\s\\S]*#2c74be/",
+   "target": "/data-loan-status='CHANGE_CARD'[\\s\\S]*background: var\\(--palette-green-500\\);/",
+   "reason": "the assertion pinned the stale fallback #2c74be of var(--palette-green-500, #2c74be) (LoanHistory .termTag CHANGE_CARD); step 8 removes it, so the test checks the token instead"
+  },
+  {
+   "id": "S8T2",
+   "file": "tests/user-status-display.test.ts",
+   "test": "loan application surfaces preserve Figma state-specific treatments",
+   "current": "/data-loan-status='FINISH'[\\s\\S]*#e0e3e5/",
+   "target": "/data-loan-status='FINISH'[\\s\\S]*background: var\\(--bg-muted\\);/",
+   "reason": "pinned the stale fallback #e0e3e5 of var(--bg-muted, #e0e3e5) (LoanHistory .termTag FINISH); now checks the token"
+  },
+  {
+   "id": "S8T3",
+   "file": "tests/user-status-display.test.ts",
+   "test": "money typography uses Hanken Grotesk (--font-family-number) and preserves the line-height hierarchy",
+   "current": "/\\.confirmSlider \\{[\\s\\S]*--slider-progress-color:[\\s\\S]*#3fa0f0/",
+   "target": "/\\.confirmSlider \\{[\\s\\S]*--slider-progress-color: var\\(--border-selected\\);/",
+   "reason": "pinned the stale fallback #3fa0f0 of var(--border-selected, #3fa0f0) (LoanQuote .confirmSlider); now checks the token"
+  },
+  {
+   "id": "S8T4",
+   "file": "tests/user-status-display.test.ts",
+   "test": "withdraw amount guidance stays in the amount panel with Figma typography",
+   "current": "\\.amountLabel \\{[\\s\\S]*#3c4850[\\s\\S]*font-family:",
+   "target": "\\.amountLabel \\{[\\s\\S]*color: var\\(--fg-muted\\);[\\s\\S]*font-family:",
+   "reason": "pinned the stale fallback #3c4850 of var(--fg-muted, #3c4850) (QuoteForm withdraw-flow .amountLabel); now checks the token"
+  }
+ ]
+}

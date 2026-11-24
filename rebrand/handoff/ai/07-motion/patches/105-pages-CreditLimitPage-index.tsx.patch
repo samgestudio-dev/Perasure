@@ -1,0 +1,31 @@
+diff --git a/src/pages/CreditLimitPage/index.tsx b/src/pages/CreditLimitPage/index.tsx
+index f19e57f..2d0bc22 100644
+--- a/src/pages/CreditLimitPage/index.tsx
++++ b/src/pages/CreditLimitPage/index.tsx
+@@ -23,6 +23,8 @@ import HistorySection from './HistorySection';
+ import { trackCreditLimitEvent } from './tracking';
+ import decorationImage from './assets/card-decoration.svg';
+ import styles from './index.module.css';
++import { m } from 'motion/react';
++import { pressProps } from '@/motion/press';
+ 
+ /** Credit centre renders refreshed summary facts, independent history probes and existing tips. */
+ export default function CreditLimitPage() {
+@@ -132,14 +134,15 @@ export default function CreditLimitPage() {
+                 </div>
+               </dl>
+             </div>
+-            <button
++            <m.button
+               className={styles.useCreditButton}
+               type="button"
+               data-event-type="credit_limit_use_credit"
+               onClick={handleUseCredit}
++              {...pressProps()}
+             >
+               {t('credit.limit.useCredit')}
+-            </button>
++            </m.button>
+           </div>
+         </section>
+         <HistorySection />

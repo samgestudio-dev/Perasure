@@ -1,0 +1,209 @@
+diff --git a/src/pages/RepayPage/components/RepayDetailShell.tsx b/src/pages/RepayPage/components/RepayDetailShell.tsx
+index f3b44e1..97e1687 100644
+--- a/src/pages/RepayPage/components/RepayDetailShell.tsx
++++ b/src/pages/RepayPage/components/RepayDetailShell.tsx
+@@ -1,8 +1,11 @@
+ import type { FC, ReactNode } from 'react';
+ import { useState } from 'react';
+ import { ChevronDown } from 'lucide-react';
++import { AnimatePresence, m } from 'motion/react';
+ 
+ import { useI18n } from '@/i18n';
++import { pressProps } from '@/motion/press';
++import { MT } from '@/motion/tokens';
+ 
+ import type { RepaymentGuide } from '../repaymentGuide';
+ import styles from './RepayDetailShell.module.css';
+@@ -29,7 +32,10 @@ interface RepayDetailShellProps {
+ }
+ 
+ /**
+- * Figma expandable repayment example row.
++ * Figma expandable repayment example row — the demo's PS.Accordion
++ * (pay.js:58-66, M-069): the body opens height 0 ↔ auto on the Smooth spring
++ * with opacity ENTER / LEAVE, the chevron turns on the same spring, the head
++ * presses like a card.
+  * Figma 中的还款示例折叠入口。
+  */
+ const RepaymentExampleRow: FC<{ guide: RepaymentGuide }> = ({ guide }) => {
+@@ -55,91 +61,107 @@ const RepaymentExampleRow: FC<{ guide: RepaymentGuide }> = ({ guide }) => {
+       className={styles.exampleContainer}
+       data-repayment-example-expanded={expanded}
+     >
+-      <button
++      <m.button
+         aria-controls="repayment-example-content"
+         aria-expanded={expanded}
+         className={styles.exampleToggle}
+         data-event-type="repay_detail_example_toggle"
+         type="button"
+         onClick={handleToggle}
++        {...pressProps()}
+       >
+         <span>{t(guide.title)}</span>
+-        <ChevronDown
++        <m.span
++          animate={{ rotate: expanded ? -180 : 0 }}
+           aria-hidden="true"
+-          className={`${styles.exampleChevron} ${
+-            expanded ? styles.exampleChevronExpanded : ''
+-          }`}
+-          size={16}
+-          strokeWidth={1.8}
+-        />
+-      </button>
++          className={styles.exampleChevron}
++          initial={false}
++          transition={MT.SPRING}
++        >
++          <ChevronDown size={16} strokeWidth={1.8} />
++        </m.span>
++      </m.button>
+ 
+-      <div
+-        aria-hidden={!expanded}
+-        className={styles.examplePanel}
+-        id="repayment-example-content"
+-        inert={!expanded}
+-      >
+-        <div className={styles.examplePanelInner}>
+-          {guide.options?.length ? (
+-            <div
+-              aria-label={t(guide.title)}
+-              className={styles.guideOptions}
+-              role="tablist"
+-            >
+-              {guide.options.map((option) => (
+-                <button
+-                  aria-selected={option.id === selectedOption?.id}
+-                  className={`${styles.guideOption} ${
+-                    option.id === selectedOption?.id
+-                      ? styles.guideOptionActive
+-                      : ''
+-                  }`}
+-                  key={option.id}
+-                  role="tab"
+-                  type="button"
+-                  onClick={() => setSelectedOptionId(option.id)}
++      <AnimatePresence initial={false}>
++        {expanded ? (
++          <m.div
++            animate={{
++              height: 'auto',
++              opacity: 1,
++              transition: { height: MT.SPRING, opacity: MT.ENTER },
++            }}
++            className={styles.examplePanel}
++            exit={{
++              height: 0,
++              opacity: 0,
++              transition: { height: MT.SPRING, opacity: MT.LEAVE },
++            }}
++            id="repayment-example-content"
++            initial={{ height: 0, opacity: 0 }}
++            key="body"
++          >
++            <div className={styles.examplePanelInner}>
++              {guide.options?.length ? (
++                <div
++                  aria-label={t(guide.title)}
++                  className={styles.guideOptions}
++                  role="tablist"
+                 >
+-                  {t(option.label)}
+-                </button>
+-              ))}
+-            </div>
+-          ) : null}
+-          <div className={styles.exampleSteps}>
+-            {steps.map((step) => {
+-              const guideStep =
+-                typeof step === 'string'
+-                  ? {
+-                      continuation: undefined,
+-                      image: undefined,
+-                      imageWidth: undefined,
+-                      key: step,
+-                    }
+-                  : step;
++                  {guide.options.map((option) => (
++                    <button
++                      aria-selected={option.id === selectedOption?.id}
++                      className={`${styles.guideOption} ${
++                        option.id === selectedOption?.id
++                          ? styles.guideOptionActive
++                          : ''
++                      }`}
++                      key={option.id}
++                      role="tab"
++                      type="button"
++                      onClick={() => setSelectedOptionId(option.id)}
++                    >
++                      {t(option.label)}
++                    </button>
++                  ))}
++                </div>
++              ) : null}
++              <div className={styles.exampleSteps}>
++                {steps.map((step) => {
++                  const guideStep =
++                    typeof step === 'string'
++                      ? {
++                          continuation: undefined,
++                          image: undefined,
++                          imageWidth: undefined,
++                          key: step,
++                        }
++                      : step;
+ 
+-              return (
+-                <p key={guideStep.key}>
+-                  {t(guideStep.key)}
+-                  {guideStep.image ? (
+-                    <img
+-                      className={styles.exampleStepImage}
+-                      src={guideStep.image}
+-                      width={guideStep.imageWidth}
+-                      alt={t(guideStep.key)}
+-                      loading="lazy"
+-                    />
+-                  ) : null}
+-                  {guideStep.continuation ? (
+-                    <span className={styles.exampleStepContinuation}>
+-                      {t(guideStep.continuation)}
+-                    </span>
+-                  ) : null}
+-                </p>
+-              );
+-            })}
+-          </div>
+-        </div>
+-      </div>
++                  return (
++                    <p key={guideStep.key}>
++                      {t(guideStep.key)}
++                      {guideStep.image ? (
++                        <img
++                          className={styles.exampleStepImage}
++                          src={guideStep.image}
++                          width={guideStep.imageWidth}
++                          alt={t(guideStep.key)}
++                          loading="lazy"
++                        />
++                      ) : null}
++                      {guideStep.continuation ? (
++                        <span className={styles.exampleStepContinuation}>
++                          {t(guideStep.continuation)}
++                        </span>
++                      ) : null}
++                    </p>
++                  );
++                })}
++              </div>
++            </div>
++          </m.div>
++        ) : null}
++      </AnimatePresence>
+     </section>
+   );
+ };

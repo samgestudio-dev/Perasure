@@ -1,0 +1,109 @@
+M-013       sheet.ty                           OK  
+    ref  158.06->0 start 33 t10/50/90 55/128/262 settle 432 over -0.0%
+    prod 167.81->0 start 22 t10/50/90 42/114/248 settle 422 over -0.0%
+    diff v0 +9.75 (first visible frame, info), v1 +0 (geometry, info), start -11, t10 -13, t50 -15, t90 -15, over +0.0%, settle -10 (info)
+M-013       scrim.opacity                      OK  
+    ref  0.073->1 start 33 t10/50/90 28/80/157 settle 215 over 0.0%
+    prod 0->1 start 22 t10/50/90 19/76/156 settle 207 over 0.0%
+    diff v0 -0.073 (first visible frame, info), v1 +0, start -11, t10 -9, t50 -4, t90 -1, over +0.0%, settle -8 (info)
+M-013_close sheet.ty                           OK  
+    ref  0->158.06 start 46 t10/50/90 54/127/263 settle 428 over 0.0%
+    prod 0->168 start 38 t10/50/90 60/133/267 settle 455 over 0.0%
+    diff v0 +0 (first visible frame, info), v1 +9.94 (geometry, info), start -8, t10 +5, t50 +6, t90 +4, over +0.0%, settle +27 (info)
+M-013_close scrim.opacity                      OK  
+    ref  0.997->0 start 29 t10/50/90 45/104/148 settle 162 over -0.0%
+    prod 1->0 start 22 t10/50/90 47/107/150 settle 172 over -0.0%
+    diff v0 +0.003 (first visible frame, info), v1 +0, start -7, t10 +2, t50 +3, t90 +3, over +0.0%, settle +10 (info)
+M-016       toast[2].opacity                   OK  
+    ref  0->0.99 start 94 t10/50/90 89/137/237 settle 328 over 0.0%
+    prod 0->0.995 start 88 t10/50/90 84/132/235 settle 338 over 0.0%
+    diff v0 +0, v1 +0.005, start -6, t10 -5, t50 -5, t90 -2, over +0.0%, settle +10 (info)
+M-016       toast[2].ty                        OK  
+    ref  -15.94->-0.58 start 28 t10/50/90 41/111/231 settle 328 over 0.0%
+    prod -15.99->-0.46 start 20 t10/50/90 36/106/231 settle 338 over 0.0%
+    diff v0 -0.05 (first visible frame, info), v1 +0.12, start -9, t10 -5, t50 -5, t90 +0, over +0.0%, settle +10 (info)
+M-016       toast[1].ty                        OK  
+    ref  0.03->9.06 start 28 t10/50/90 41/111/227 settle 328 over 0.0%
+    prod 0->9.71 start 20 t10/50/90 36/106/227 settle 338 over 0.0%
+    diff v0 -0.03 (first visible frame, info), v1 +0.65, start -9, t10 -5, t50 -6, t90 +0, over +0.0%, settle +10 (info)
+M-016       toast[0].ty                        OK  
+    ref  9.46->16.66 start 28 t10/50/90 41/112/227 settle 328 over 0.0%
+    prod 10->17.76 start 20 t10/50/90 36/106/227 settle 338 over 0.0%
+    diff v0 +0.54 (first visible frame, info), v1 +1.1, start -9, t10 -5, t50 -6, t90 -0, over +0.0%, settle +10 (info)
+M-016       toast[0].opacity                   OK  
+    ref  0.543->0.3 start 28 t10/50/90 24/79/157 settle 211 over -0.0%
+    prod 0.548->0.299 start 20 t10/50/90 16/73/152 settle 338 over -0.0%
+    diff v0 +0.005 (first visible frame, info), v1 -0.001, start -9, t10 -8, t50 -6, t90 -5, over +0.0%, settle +126 (info)
+M-008       leaving page opacity               OK  
+    ref  1->0 start 22 t10/50/90 42/102/145 settle 155 over -0.0%
+    prod 0.996->0 start 38 t10/50/90 55/113/158 settle 172 over -0.0%
+    diff v0 -0.004 (first visible frame, info), v1 +0, start +17, t10 +13, t50 +10, t90 +13, over +0.0%, settle +17 (info)
+M-008       entering page opacity              OK  
+    ref  0->1 start 88 t10/50/90 85/135/238 settle 355 over 0.0%
+    prod 0->1 start 105 t10/50/90 100/150/253 settle 373 over 0.0%
+    diff v0 +0, v1 +0, start +17, t10 +15, t50 +16, t90 +15, over +0.0%, settle +18 (info)
+M-037       pop.opacity                        OK  
+    ref  0.321->1 start 36 t10/50/90 24/37/73 settle 189 over 0.0%
+    prod 0.091->1 start 41 t10/50/90 31/44/78 settle 124 over 0.0%
+    diff v0 -0.23 (first visible frame, info), v1 +0, start +4, t10 +7, t50 +7, t90 +6, over +0.0%, settle -64 (info)
+M-037       pop.sx                             OK  
+    ref  0.518->1 start 36 t10/50/90 33/74/159 settle 322 over 3.9%
+    prod 0.504->1 start 41 t10/50/90 43/83/136 settle 342 over 3.8%
+    diff v0 -0.0143 (first visible frame, info), v1 +0, start +4, t10 +10, t50 +9 gap, t90 -23 gap, over -0.1%, settle +20 (info)
+M-037       pop.sy                             OK  
+    ref  0.241->1 start 36 t10/50/90 36/91/165 settle 372 over 4.7%
+    prod 0.224->1 start 41 t10/50/90 46/94/153 settle 391 over 4.5%
+    diff v0 -0.0164 (first visible frame, info), v1 +0, start +4, t10 +10, t50 +2 gap, t90 -12 gap, over -0.2%, settle +19 (info)
+M-037       pop.blur                           OK  
+    ref  4.77->0 start 36 t10/50/90 26/50/147 settle 189 over -0.0%
+    prod 5.66->0 start 41 t10/50/90 33/57/111 settle 174 over -0.0%
+    diff v0 +0.89 (first visible frame, info), v1 +0, start +4, t10 +7, t50 +6, t90 -36 gap, over +0.0%, settle -14 (info)
+M-099       key[0].opacity                     OK   [aligned appear:key.count: ref +20 ms, prod +345 ms after t0]
+    ref  0->1 start 66 t10/50/90 61/116/234 settle 367 over 0.0%
+    prod 0->1 start 67 t10/50/90 63/119/237 settle 383 over 0.0%
+    diff v0 +0, v1 +0, start +0, t10 +2, t50 +3, t90 +3, over +0.0%, settle +16 (info)
+M-099       key[0].ty                          OK   [aligned appear:key.count: ref +20 ms, prod +345 ms after t0]
+    ref  10->0 start 66 t10/50/90 61/116/234 settle 367 over -0.0%
+    prod 10->0 start 67 t10/50/90 63/119/237 settle 367 over -0.0%
+    diff v0 +0, v1 +0, start +0, t10 +2, t50 +3, t90 +3, over +0.0%, settle -0 (info)
+M-099       key[0].sy                          OK   [aligned appear:key.count: ref +20 ms, prod +345 ms after t0]
+    ref  0.94->1 start 50 t10/50/90 61/117/234 settle 367 over 0.0%
+    prod 0.94->1 start 67 t10/50/90 63/119/237 settle 367 over 0.0%
+    diff v0 +0, v1 +0, start +17, t10 +2, t50 +3, t90 +2, over +0.0%, settle -0 (info)
+M-099       key[5].opacity                     OK   [aligned appear:key.count: ref +20 ms, prod +345 ms after t0]
+    ref  0->1 start 216 t10/50/90 211/266/384 settle 517 over 0.0%
+    prod 0->1 start 215 t10/50/90 212/269/386 settle 533 over 0.0%
+    diff v0 +0, v1 +0, start -1, t10 +1, t50 +3, t90 +2, over +0.0%, settle +16 (info)
+M-099       key[11].opacity                    OK   [aligned appear:key.count: ref +20 ms, prod +345 ms after t0]
+    ref  0->1 start 383 t10/50/90 391/447/564 settle 700 over 0.0%
+    prod 0->1 start 383 t10/50/90 394/449/565 settle 698 over 0.0%
+    diff v0 +0, v1 +0, start -0, t10 +2, t50 +2, t90 +1, over +0.0%, settle -2 (info)
+M-099       key[11].ty                         OK   [aligned appear:key.count: ref +20 ms, prod +345 ms after t0]
+    ref  10->0 start 383 t10/50/90 391/447/564 settle 700 over -0.0%
+    prod 10->0 start 383 t10/50/90 394/449/565 settle 698 over -0.0%
+    diff v0 +0, v1 +0, start -0, t10 +2, t50 +2, t90 +1, over +0.0%, settle -2 (info)
+M-099_via   key[0].opacity                     OK   [aligned appear:key.count: ref +20 ms, prod +344 ms after t0]
+    ref  0->1 start 66 t10/50/90 61/116/234 settle 367 over 0.0%
+    prod 0->1 start 67 t10/50/90 62/116/235 settle 382 over 0.0%
+    diff v0 +0, v1 +0, start +0, t10 +1, t50 -0, t90 +1, over +0.0%, settle +15 (info)
+M-099_via   key[11].opacity                    OK   [aligned appear:key.count: ref +20 ms, prod +344 ms after t0]
+    ref  0->1 start 383 t10/50/90 391/447/564 settle 700 over 0.0%
+    prod 0->1 start 382 t10/50/90 392/447/565 settle 700 over 0.0%
+    diff v0 +0, v1 +0, start -2, t10 +1, t50 +0, t90 +1, over +0.0%, settle +0 (info)
+M-107       card.h                             OK   [aligned change:card.h: ref +54 ms, prod +62 ms after t0]
+    ref  709.98->246.25 start 17 t10/50/90 23/94/227 settle 399 over -0.0%
+    prod 702.42->259 start 16 t10/50/90 19/88/221 settle 399 over -0.0%
+    diff v0 -7.56 (first visible frame, info), v1 +12.8 (geometry, info), start -0, t10 -4, t50 -5, t90 -6, over +0.0%, settle -1 (info)
+M-107       slider.opacity                     OK   [aligned change:card.h: ref +54 ms, prod +62 ms after t0]
+    ref  0->1 start 66 t10/50/90 73/110/159 settle 217 over 0.0%
+    prod 0->1 start 67 t10/50/90 67/103/151 settle 200 over 0.0%
+    diff v0 +0, v1 +0, start +0, t10 -7, t50 -7, t90 -8, over +0.0%, settle -17 (info)
+M-107       divider.opacity                    OK   [aligned change:card.h: ref +54 ms, prod +62 ms after t0]
+    ref  0->1 start 83 t10/50/90 90/126/181 settle 233 over 0.0%
+    prod 0->1 start 83 t10/50/90 82/119/172 settle 231 over 0.0%
+    diff v0 +0, v1 +0, start -1, t10 -8, t50 -7, t90 -8, over +0.0%, settle -2 (info)
+M-107       term.opacity                       OK   [aligned change:card.h: ref +54 ms, prod +62 ms after t0]
+    ref  0->1 start 100 t10/50/90 108/145/206 settle 282 over 0.0%
+    prod 0->1 start 100 t10/50/90 102/138/197 settle 283 over 0.0%
+    diff v0 +0, v1 +0, start +0, t10 -6, t50 -7, t90 -8, over +0.0%, settle +2 (info)
+27 of 27 properties within tolerance

@@ -1,0 +1,17 @@
+diff --git a/src/components/ui/CreditFlowHeader/index.module.css b/src/components/ui/CreditFlowHeader/index.module.css
+index 7dc5021..787134d 100644
+--- a/src/components/ui/CreditFlowHeader/index.module.css
++++ b/src/components/ui/CreditFlowHeader/index.module.css
+@@ -37,11 +37,7 @@
+   box-shadow: 0 0 var(--blur-backdrop-shadow, 24px)
+     var(--shadow-backdrop, rgb(0 1 40 / 8%));
+   backdrop-filter: blur(var(--blur-backdrop-bg, 5px));
+-  transition: transform 160ms ease;
+-}
+-
+-.backButton:active {
+-  transform: scale(0.94);
++  /* press: pressProps(true) — 0.92 in 60 ms (R-PRESS) */
+ }
+ 
+ .title {

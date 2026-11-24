@@ -1,0 +1,74 @@
+diff --git a/tests/popover.test.ts b/tests/popover.test.ts
+index 7bd91bf..89d72e1 100644
+--- a/tests/popover.test.ts
++++ b/tests/popover.test.ts
+@@ -51,22 +51,20 @@ test('Popover source keeps the controlled lifecycle and close contracts', () =>
+     /bottomReservedHeight: positionProbeRect\.height/,
+   );
+   assert.match(popoverSource, /anchor\?\.focus\(\)/);
+-  assert.match(popoverSource, /const EXIT_MOTION_DURATION = 155/);
++  // Motion port (rebrand PS.Popover): MENU_OUT 0.12 s fold-back; reduced motion fades only.
++  assert.match(popoverSource, /const EXIT_MOTION_DURATION = 120/);
+   assert.match(
+     popoverSource,
+     /window\.matchMedia\('\(prefers-reduced-motion: reduce\)'\)/,
+   );
++  assert.match(popoverSource, /popoverMotion\(calm\)/);
+   assert.match(popoverStyles, /background: transparent/);
+   assert.match(popoverStyles, /height: env\(safe-area-inset-bottom\)/);
+   assert.match(
+     popoverStyles,
+     /-webkit-backdrop-filter: blur\(var\(--blur-backdrop-bg\)\)/,
+   );
+-  assert.match(
+-    popoverStyles,
+-    /animation: popover-enter-bottom 592ms linear both/,
+-  );
+-  assert.match(popoverStyles, /@media \(prefers-reduced-motion: reduce\)/);
++  assert.doesNotMatch(popoverStyles, /animation: popover-enter-bottom/);
+ });
+ 
+ test('[static source contract] keeps motion transforms out of placement measurement', () => {
+@@ -158,27 +156,21 @@ test('rearms controlled close requests after the parent keeps open true', () =>
+   );
+ });
+ 
+-test('[static source contract] reproduces the reference popover enter and exit motion', () => {
++test('[static source contract] grows from the tap on the menu springs and folds back on MENU_OUT', () => {
+   const popoverSource = readFileSync(popoverSourcePath, 'utf8');
+   const popoverStyles = readFileSync(popoverStylesPath, 'utf8');
+-
+-  assert.match(
+-    popoverStyles,
+-    /\.popoverOpen\[data-placement='bottom'\] \{[\s\S]*animation: popover-enter-bottom 592ms linear both/,
+-  );
+-  assert.match(
+-    popoverStyles,
+-    /@keyframes popover-enter-bottom \{[\s\S]*translateY\(-7\.94px\) scale\(0\.9007, 0\.603\)[\s\S]*transform: none/,
+-  );
+-  assert.match(
+-    popoverStyles,
+-    /\.popoverClosing\[data-placement='bottom'\] \{[\s\S]*animation: popover-exit-bottom 155ms cubic-bezier\(0\.4, 0, 0\.9, 0\.7\) both/,
+-  );
+-  assert.doesNotMatch(popoverStyles, /translateX\(-108px\)/);
+-  assert.match(popoverSource, /onAnimationEnd=\{handleAnimationEnd\}/);
+-  assert.match(popoverSource, /event\.currentTarget === event\.target/);
+-  assert.match(
+-    popoverStyles,
+-    /@media \(prefers-reduced-motion: reduce\) \{[\s\S]*animation: none/,
+-  );
++  const motionSource = readFileSync(
++    new URL('../src/motion/popover.ts', import.meta.url),
++    'utf8',
++  );
++
++  // Rebrand demo PS.Popover (form.js:165-224): Motion springs replace the
++  // pre-sampled keyframes; the exit unmounts on onAnimationComplete.
++  assert.doesNotMatch(popoverStyles, /@keyframes popover-enter-bottom/);
++  assert.match(popoverSource, /centreOnTap\(/);
++  assert.match(popoverSource, /onAnimationComplete=/);
++  assert.match(popoverSource, /if \(isClosing\) finishClose\(\)/);
++  assert.match(motionSource, /scaleX: MT\.MENU/);
++  assert.match(motionSource, /scaleY: MT\.MENU_Y/);
++  assert.match(motionSource, /transition: MT\.MENU_OUT/);
+ });

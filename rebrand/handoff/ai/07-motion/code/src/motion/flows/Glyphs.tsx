@@ -1,0 +1,48 @@
+/** @jsxRuntime automatic @jsxImportSource react */
+/**
+ * One box per glyph, each carrying an empty inline-block on its baseline —
+ * withdraw.js:394-400 `glyph()` / `BASE`. The morph measures and scales every
+ * glyph around that baseline point (FLIP), so a travelling amount never
+ * re-lays text per frame (no baseline shimmer, page-to-card.md).
+ */
+import type { CSSProperties } from 'react';
+
+/** withdraw.js:399 BASE: zero-size inline-block whose top is the text baseline. */
+export const GLYPH_BASE: CSSProperties = {
+  display: 'inline-block',
+  width: 0,
+  height: 0,
+};
+
+/** withdraw.js:396 GLYPH. */
+export const GLYPH_BOX: CSSProperties = { display: 'inline-block' };
+
+export interface GlyphsProps {
+  text: string;
+  /** data-g group name: "int" (integer + grouping), "tail" (fixed 00), "dec" (.00) */
+  group: string;
+  className?: string;
+}
+
+/** Renders `text` as glyph boxes (`data-g="<group>"`), aria-hidden by the caller. */
+export function Glyphs({ text, group, className }: GlyphsProps) {
+  return (
+    <>
+      {Array.from(text).map((ch, i) => (
+        // Positions are the identity: a glyph box is the n-th character.
+        <span
+          className={className}
+          data-g={group}
+          // eslint-disable-next-line react-x/no-array-index-key
+          key={`${group}-${i}`}
+          style={GLYPH_BOX}
+        >
+          <i style={GLYPH_BASE} />
+          {ch}
+        </span>
+      ))}
+    </>
+  );
+}
+
+export default Glyphs;

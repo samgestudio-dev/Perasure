@@ -1,0 +1,45 @@
+diff --git a/src/motion/Toaster.module.css b/src/motion/Toaster.module.css
+new file mode 100644
+index 0000000..4e81589
+--- /dev/null
++++ b/src/motion/Toaster.module.css
+@@ -0,0 +1,39 @@
++/* Toaster (demo PS.Toasts): a stack at the top, 8 px under the header bar.
++   --motion-header-offset is written by GlobalLayout (0 when the page has no
++   H5 header: the native bar sits above the WebView). The fallbacks are 0rem, not 0px: the px-to-rem
++   build step turns 0px into a unitless 0, which makes max() invalid (the toaster then drops to the
++   bottom of the page wherever the variable is unset). 顶部堆叠提示，位于标题栏下方 8px。 */
++.toaster {
++  position: fixed;
++  top: calc(
++    max(var(--motion-header-offset, 0rem), env(safe-area-inset-top, 0rem)) + 8px
++  );
++  right: 16px;
++  left: 16px;
++  pointer-events: none;
++}
++
++.slot {
++  position: absolute;
++  top: 0;
++  right: 0;
++  left: 0;
++  display: flex;
++  justify-content: center;
++  transform-origin: 50% 0;
++  touch-action: pan-y;
++  cursor: grab;
++}
++
++/* Production toast look: dark bubble, centred text (rebrand navy 80 %, visual edit E051). 保持原有提示外观。 */
++.bubble {
++  max-width: 70vw;
++  padding: 12px 16px;
++  border-radius: 8px;
++  background: rgb(0 1 40 / 0.8);
++  color: #ffffff;
++  font-size: 14px;
++  line-height: 20px;
++  text-align: center;
++  backdrop-filter: blur(4px);
++}

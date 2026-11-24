@@ -1,0 +1,74 @@
+diff --git a/src/motion/flows/useGlide.ts b/src/motion/flows/useGlide.ts
+new file mode 100644
+index 0000000..33df6bf
+--- /dev/null
++++ b/src/motion/flows/useGlide.ts
+@@ -0,0 +1,68 @@
++/**
++ * Slider glide — withdraw-host.js:110-124 `glide(amount)` (M-106, R-SLIDER-GLIDE):
++ * the slider follows the finger at once; when something else moves the amount
++ * or its limit (production: the amount sheet's Confirm, a term whose maximum
++ * is lower), the knob, the fill and the amount glide there on the Smooth
++ * spring (restDelta 0.001, restSpeed 0.01 on a 0→1 progress); the amount
++ * counts in slider steps. A new glide stops the running one. Reduced motion:
++ * jump.
++ */
++import { useCallback, useEffect, useRef, useState } from 'react';
++import { animate } from 'motion';
++
++import { MORPH_SPRING, reduced, type Playback } from './core';
++
++export interface Glide {
++  /** what the slider and the amount show */
++  amount: number;
++  /** the maximum the knob is drawn against */
++  max: number;
++  /** call before a finger-driven change: it is applied at once */
++  finger: () => void;
++}
++
++export function useGlide(amount: number, max: number, step = 1): Glide {
++  const [shown, setShown] = useState({ amount, max });
++  const shownRef = useRef(shown);
++  useEffect(() => {
++    shownRef.current = shown;
++  });
++  const byFinger = useRef(false);
++  const play = useRef<Playback | null>(null);
++
++  useEffect(() => {
++    const from = shownRef.current;
++    if (from.amount === amount && from.max === max) return undefined;
++    play.current?.stop();
++    play.current = null;
++    if (byFinger.current || reduced()) {
++      byFinger.current = false;
++      setShown({ amount, max });
++      return undefined;
++    }
++    const s = step > 0 ? step : 1;
++    play.current = animate(0, 1, {
++      ...MORPH_SPRING,
++      onUpdate: (k) => {
++        setShown({
++          amount:
++            Math.round((from.amount + (amount - from.amount) * k) / s) * s,
++          max: from.max + (max - from.max) * k,
++        });
++      },
++      onComplete: () => {
++        play.current = null;
++        setShown({ amount, max });
++      },
++    });
++    return () => {
++      play.current?.stop();
++      play.current = null;
++    };
++  }, [amount, max, step]);
++
++  const finger = useCallback(() => {
++    byFinger.current = true;
++  }, []);
++  return { amount: shown.amount, max: shown.max, finger };
++}

@@ -1,0 +1,9 @@
+diff --git a/src/components/ui/DatePickerSheet/types.ts b/src/components/ui/DatePickerSheet/types.ts
+index 53b9732..9458ce3 100644
+--- a/src/components/ui/DatePickerSheet/types.ts
++++ b/src/components/ui/DatePickerSheet/types.ts
+@@ -10,4 +10,3 @@ export interface DatePickerSheetProps {
+ }
+ 
+ export type PickerMode = 'date' | 'month' | 'year';
+-export type PaneTransitionDirection = 'forward' | 'backward';

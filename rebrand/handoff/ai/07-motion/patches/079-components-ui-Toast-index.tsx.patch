@@ -1,0 +1,136 @@
+diff --git a/src/components/ui/Toast/index.tsx b/src/components/ui/Toast/index.tsx
+index ea9a383..3f388aa 100644
+--- a/src/components/ui/Toast/index.tsx
++++ b/src/components/ui/Toast/index.tsx
+@@ -1,92 +1,83 @@
+ import type { ReactNode } from 'react';
+-import { createRoot } from 'react-dom/client';
++import { createRoot, type Root } from 'react-dom/client';
+ 
+-import styles from './index.module.css';
+-
+-let currentToastRemover: (() => void) | null = null;
++import { MotionRoot } from '@/motion/MotionRoot';
++import { Toaster } from '@/motion/Toaster';
++import { toastStore } from '@/motion/toastStore';
++import { Z } from '@/motion/tokens';
+ 
+ export type ToastPosition = 'top' | 'bottom' | 'center';
+ 
+ export interface ToastShowOptions {
+   content: ReactNode;
+   duration?: number;
++  /**
++   * Kept for call-site compatibility. Every toast now sits at the top, 8 px
++   * under the header bar (rebrand rule R-TOAST, like iPhone notifications).
++   * 保留以兼容调用方；按改版规则所有提示都显示在顶部标题栏下方 8px。
++   */
+   position?: ToastPosition;
+   zIndex?: number;
+ }
+ 
+ const DEFAULT_DURATION = 2000;
+-// Preserve the original ui Toast behavior for existing Toast.show('message') callers.
+-// 保持已有 Toast.show('message') 调用的原 ui Toast 行为。
+-const DEFAULT_POSITION: ToastPosition = 'center';
+-const DEFAULT_Z_INDEX = 1100;
++const DEFAULT_Z_INDEX = Z.toast;
++
++/* One React root for the whole app's toasts (was: one createRoot per toast). */
++let host: { container: HTMLDivElement; root: Root } | null = null;
+ 
+-function joinClassNames(...classNames: Array<string | false | undefined>) {
+-  return classNames.filter(Boolean).join(' ');
++function ensureToasterHost(): void {
++  if (host || typeof document === 'undefined') return;
++  const container = document.createElement('div');
++  container.setAttribute('data-toaster-host', '');
++  document.body.appendChild(container);
++  const root = createRoot(container);
++  root.render(
++    <MotionRoot>
++      <Toaster />
++    </MotionRoot>,
++  );
++  host = { container, root };
+ }
+ 
++/**
++ * 命令式提示：签名不变（Toast.show(string | options) -> { close }）。
++ * 每次调用立即显示一条新提示（不排队、不合并），新的盖住旧的，旧的下移、缩小、变淡（最多 3 条），
++ * 左滑可关闭；动效见 src/motion/Toaster.tsx（演示 PS.Toasts）。
++ * Imperative toast, same signature. Every call shows a new toast at once
++ * (stack of 3, newest on top, swipe left to close) — src/motion/Toaster.tsx.
++ */
+ export const Toast = {
+   show(options: string | ToastShowOptions) {
+     if (typeof document === 'undefined') {
+       return { close: () => undefined };
+     }
+ 
+-    currentToastRemover?.();
+-
+     const content = typeof options === 'string' ? options : options.content;
+     const duration =
+       typeof options === 'string'
+         ? DEFAULT_DURATION
+         : (options.duration ?? DEFAULT_DURATION);
+-    const position =
+-      typeof options === 'string'
+-        ? DEFAULT_POSITION
+-        : (options.position ?? DEFAULT_POSITION);
+     const zIndex =
+       typeof options === 'string'
+         ? DEFAULT_Z_INDEX
+         : (options.zIndex ?? DEFAULT_Z_INDEX);
+-    const container = document.createElement('div');
+-    document.body.appendChild(container);
+-    const root = createRoot(container);
++
++    ensureToasterHost();
++    const id = toastStore.push({ content, zIndex });
+     let removed = false;
+ 
+     const remove = () => {
+-      // A previous toast timer may fire after a newer toast has already replaced it.
+-      // 旧 Toast 的定时器可能在新 Toast 替换后才触发，这里避免重复卸载。
++      // A toast's own timer may fire after it was swiped away or closed.
++      // 提示自身的定时器可能在左滑或手动关闭之后才触发，这里避免重复移除。
+       if (removed) {
+         return;
+       }
+ 
+       removed = true;
+-      if (currentToastRemover === remove) {
+-        currentToastRemover = null;
+-      }
+-      root.unmount();
+-      container.parentNode?.removeChild(container);
++      toastStore.remove(id);
+     };
+ 
+-    currentToastRemover = remove;
+-
+-    root.render(
+-      <div
+-        className={joinClassNames(
+-          styles.toastOverlay,
+-          position === 'top' && styles.toastOverlayTop,
+-          position === 'bottom' && styles.toastOverlayBottom,
+-        )}
+-        style={{ zIndex }}
+-      >
+-        <div
+-          className={joinClassNames(
+-            styles.toastContent,
+-            position !== 'center' && styles.toastContentPositioned,
+-          )}
+-        >
+-          {content}
+-        </div>
+-      </div>,
+-    );
+-
+     if (duration > 0) {
+       window.setTimeout(remove, duration);
+     }

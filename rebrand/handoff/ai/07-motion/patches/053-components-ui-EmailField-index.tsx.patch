@@ -1,0 +1,29 @@
+diff --git a/src/components/ui/EmailField/index.tsx b/src/components/ui/EmailField/index.tsx
+index 820d30b..c5f1e96 100644
+--- a/src/components/ui/EmailField/index.tsx
++++ b/src/components/ui/EmailField/index.tsx
+@@ -3,6 +3,8 @@ import { useMemo, useState, type ReactNode } from 'react';
+ import { Input } from '../Input';
+ 
+ import styles from './index.module.css';
++import { AnimatePresence, m } from 'motion/react';
++import { fade } from '@/motion/presets';
+ 
+ export interface EmailFieldProps {
+   /** Controlled email value. 外部传入的邮箱值。 */
+@@ -198,7 +200,14 @@ export function EmailField({
+         </div>
+       ) : null}
+ 
+-      {error ? <span className={styles.fieldError}>{error}</span> : null}
++      {/* M-024 field error: drops in 4 px from a 3 px blur (PS.fade(-4)). 错误提示自上方 4px 淡入。 */}
++      <AnimatePresence initial={false}>
++        {error ? (
++          <m.span className={styles.fieldError} key="error" {...fade(-4)}>
++            {error}
++          </m.span>
++        ) : null}
++      </AnimatePresence>
+     </label>
+   );
+ }

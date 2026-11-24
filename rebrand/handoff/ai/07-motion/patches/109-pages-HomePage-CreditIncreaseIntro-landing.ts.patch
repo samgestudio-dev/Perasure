@@ -1,0 +1,816 @@
+diff --git a/src/pages/HomePage/CreditIncreaseIntro/landing.ts b/src/pages/HomePage/CreditIncreaseIntro/landing.ts
+index 31c51d7..21f6591 100644
+--- a/src/pages/HomePage/CreditIncreaseIntro/landing.ts
++++ b/src/pages/HomePage/CreditIncreaseIntro/landing.ts
+@@ -1,11 +1,71 @@
+-import { gsap } from 'gsap';
+-import { formatCreditAmount } from '@/features/creditDisplay/amount';
+-import {
+-  collapseProgress,
+-  interpolateCreditAmount,
+-} from '@/pages/HomePage/creditIncrease/motionMath';
++/**
++ * Credit limit screen → home card (M-117 credit unused / M-118 credit partly
++ * used) — a port of the demo's `introExit(o)`
++ * (prototypes/withdraw-fund-flow/withdraw.js:727-1005), replacing the old
++ * fixed 0.85 s GSAP landing.
++ *
++ * ONE progress k (0 → 1) on the page's Smooth spring, stretched for the long
++ * travel (De = the longest edge travel between the screen and the card,
++ * ts = min(2.5, max(1, De / 378)): stiffness 240 / ts², damping 30 / ts,
++ * restDelta 0.378 / De, restSpeed 3.78 / De / ts; ≈ 508 px → ts ≈ 1.34,
++ * settles ≈ 0.85 s). Its change event writes every style; nothing goes
++ * through React. Values 1:1 with the demo:
++ *   closing box  the screen's own box scales into the card's box from its
++ *                top-left (translate(l·k, t·k) scale(sx, sy)), corners
++ *                24·k / s so they read 24; its content (the frame, the glow
++ *                copy) gets the inverse transform and stays put; colour = a
++ *                dark layer + the card's colour fading in on win(0.15, 0.85);
++ *   number block credit unused: leaves with the number (same path, shrinking
++ *                to the card's scale), fading + blurring out on win(0, 0.5);
++ *                partly used: travels with the box, scale 1 − 0.3k, out on
++ *                win(0, 0.45);
++ *   artwork      travels with the box, scale 1 − 0.4k; coins (canvases) blur
++ *                out on win(0, 0.45) (opacity, blur 4 px), stars on
++ *                win(0.35, 0.8);
++ *   amount       credit unused: the card's amount starts at the big number's
++ *                centre and size and settles on k; tracking and colour reach
++ *                the card's own in 24 steps over win(0, 0.5); decimals on
++ *                win(0.3, 0.75); what is under it makes way while it is larger;
++ *                partly used: enters like the details (clock at k 0.4, dy 10),
++ *                then counts up from (available − increase) once the box has
++ *                closed (k ≥ 0.97): 1.0 s after 0.1 s, number on 1 − (1 − t)⁴,
++ *                the green bar part sliding out on smoothstep(t);
++ *   details      clocked (0.34 s, EASE_IN, rise MT.Y, 3 px blur → sharp):
++ *                label @0.2 (dy 8), info @0.3, legend rows @0.3 / @0.36 (dy 8,
++ *                + push), bar @0.38 (no blur, + push); bar fills revealed left
++ *                to right (row slides in, fills slide back) on win(0.42, 0.95);
++ *   pill         on the box's bottom edge, opacity win(0.38, 0.58); the glow
++ *                copy inside the box brightens on win(0.38, 1);
++ *   shadow       its own layer on the box outline, win(0.65, 1);
++ *   around       the cards below ride the bottom edge up while rising in
++ *                (win(0.25 + 0.07 i, 0.7 + 0.07 i), 16 px), the tab bar first
++ *                (win(0.3, 0.6), 10 px); what is above rides the top edge down
++ *                (win(0.15, 0.6)).
++ * At rest (spring AND every clock done) everything is put back in one frame
++ * and onComplete runs (the controller then removes the overlay).
++ *
++ * Production differences (kept on purpose): the card is not lifted above the
++ * overlay (it lives in the app's stacking contexts), a visual copy of it is
++ * placed in the overlay instead and the real card is shown in the same frame
++ * the copy goes; the "previous / added" values come from the projection.
++ */
++import { animate } from 'motion';
++
++import { formatIntroCountFrame } from '@/pages/HomePage/creditIncrease/motionMath';
+ import type { CreditIntroProjection } from '@/pages/HomePage/creditIncrease/model';
+ import type { IntroMaterial } from '@/pages/HomePage/creditIncrease/materialProtocol';
++import {
++  CLOCK,
++  clamp01,
++  createProgress,
++  mixRgb,
++  r3,
++  StyleLedger,
++  stretchedSpring,
++  win,
++  type Playback,
++} from '@/motion/flows/core';
++import { MT } from '@/motion/tokens';
+ 
+ /** Owned visual nodes and current measured target for one landing; no business state is mutated. */
+ export interface LandingOptions {
+@@ -19,187 +79,567 @@ export interface LandingOptions {
+   onComplete: () => void;
+ }
+ 
+-/** Moves the material's actual amount node for M1, or rolls an independent visual copy for M5/M7. */
++interface Clocked {
++  el: HTMLElement | null;
++  at: number;
++  dy: number;
++  keep?: boolean;
++  push?: boolean;
++  sharp?: boolean;
++  count?: boolean;
++  r: number;
++  on: boolean;
++  play: Playback | null;
++}
++
++/** Runs the exit; returns an idempotent cleanup (it also ends the exit at rest). */
+ export function createCreditLanding(options: LandingOptions): () => void {
+-  const {
+-    overlay,
+-    shell,
+-    frame,
+-    card,
+-    amount,
+-    material,
+-    projection,
+-    onComplete,
+-  } = options;
++  // `amount` (the real card amount) stays hidden under the copy; the copy's amount moves.
++  const { overlay, shell, frame, card, material, projection } = options;
+   material.stop();
+   const handles = material.getVisualHandles();
+-  const source = handles.amount;
+-  const sourceBox = source.getBoundingClientRect();
+-  const frameBox = frame.getBoundingClientRect();
+-  const target = amount.getBoundingClientRect();
+-  const cardBox = card.getBoundingClientRect();
+-  const surface = shell.getBoundingClientRect();
+-  const targetStyle = getComputedStyle(amount);
+-  const fractionStyle = getComputedStyle(amount.lastElementChild!);
+-  const cardStyle = getComputedStyle(card);
+-  const radii = [
+-    cardStyle.borderTopLeftRadius,
+-    cardStyle.borderTopRightRadius,
+-    cardStyle.borderBottomRightRadius,
+-    cardStyle.borderBottomLeftRadius,
+-  ].map((radius) => {
+-    const [x, y = x] = radius.split(' ').map(Number.parseFloat);
+-    return { x, y };
+-  });
+-  const sourceStyle = frame.contentWindow!.getComputedStyle(source);
+-  // Computed styles are live: capture before adopting the node into a different document.
+-  const sourceTypography = {
+-    fontFamily: sourceStyle.fontFamily,
+-    fontWeight: sourceStyle.fontWeight,
+-    fontSize: sourceStyle.fontSize,
+-    lineHeight: sourceStyle.lineHeight,
+-    letterSpacing: sourceStyle.letterSpacing,
+-    fontVariantNumeric: sourceStyle.fontVariantNumeric,
+-    color: sourceStyle.color,
++  const used = projection.landing.kind === 'separateAmount';
++  const L = new StyleLedger();
++  const made: Element[] = [];
++  const plays: Playback[] = [];
++
++  /* ---- measure everything first ---- */
++  const B = shell.getBoundingClientRect();
++  const CR = card.getBoundingClientRect();
++  const to = {
++    t: CR.top - B.top,
++    r: B.right - CR.right,
++    b: B.bottom - CR.bottom,
++    l: CR.left - B.left,
+   };
+-  const landing = projection.landing;
+-  const same = landing.kind === 'sameAmount';
+-  // Preserve the source layout while its actual number moves into the parent overlay.
+-  if (same) {
+-    const placeholder = source.ownerDocument.createElement('div');
+-    Object.assign(placeholder.style, {
+-      width: `${sourceBox.width}px`,
+-      height: `${sourceBox.height}px`,
+-      margin: sourceStyle.margin,
+-      flex: 'none',
+-      visibility: 'hidden',
+-    });
+-    placeholder.setAttribute('aria-hidden', 'true');
+-    source.replaceWith(placeholder);
+-  }
+-  // Reparent the same material number, so its value never resets or counts twice.
+-  const visual = same
+-    ? document.adoptNode(source)
+-    : document.createElement('span');
+-  visual.dataset.testid = same ? 'landing-same-amount' : 'landing-roll-amount';
+-  visual.setAttribute('aria-hidden', 'true');
+-  visual.style.cssText = '';
+-  Object.assign(visual.style, {
++  const W = B.width;
++  const H = B.height;
++  const fr = frame.getBoundingClientRect();
++  const cardStyle = getComputedStyle(card);
++
++  /* ---- the card's copy in the overlay (production's card cannot be lifted) ---- */
++  const copy = card.cloneNode(true) as HTMLElement;
++  copy.setAttribute('aria-hidden', 'true');
++  copy.removeAttribute('data-testid');
++  Object.assign(copy.style, {
+     position: 'fixed',
++    left: `${CR.left}px`,
++    top: `${CR.top}px`,
++    width: `${CR.width}px`,
++    height: `${CR.height}px`,
+     margin: '0',
+-    left: `${same ? frameBox.left + sourceBox.left : target.left}px`,
+-    top: `${same ? frameBox.top + sourceBox.top : target.top}px`,
+-    display: 'block',
+-    width: 'max-content',
+-    padding: '0',
+-    textAlign: 'left',
+-    fontFamily: targetStyle.fontFamily,
+-    fontWeight: targetStyle.fontWeight,
+-    fontSize: targetStyle.fontSize,
+-    lineHeight: targetStyle.lineHeight,
+-    letterSpacing: targetStyle.letterSpacing,
+-    color: targetStyle.color,
+-    ...(same ? sourceTypography : {}),
+-    whiteSpace: 'nowrap',
+-    transformOrigin: '0 0',
++    zIndex: '1',
++    background: 'transparent',
++    backgroundImage: 'none',
++    boxShadow: 'none',
++    overflow: 'visible',
+     pointerEvents: 'none',
+   });
+-  const integer = document.createElement('span');
+-  const fraction = document.createElement('span');
+-  // Use the actual rem-scaled card fraction, including any future typography changes.
+-  fraction.style.fontSize = fractionStyle.fontSize;
+-  fraction.style.letterSpacing = fractionStyle.letterSpacing;
+-  visual.replaceChildren(integer, fraction);
+-  overlay.appendChild(visual);
+-  // The moved number has a different path from the shell; hide residual copy before they intersect.
+-  if (same) handles.hero.style.visibility = 'hidden';
+-  /** Writes only owned overlay text; the confirmed React card remains the final authority. */
+-  const write = (value: string) => {
+-    const parts = formatCreditAmount(value, true).split('.');
+-    integer.textContent = parts[0];
+-    fraction.textContent = `.${parts[1]}`;
++  overlay.appendChild(copy);
++  made.push(copy);
++  L.set(card, 'visibility', 'hidden');
++  const q = <T extends Element = HTMLElement>(sel: string) =>
++    copy.querySelector<T & HTMLElement>(sel);
++  const amt =
++    q('[data-testid="available-amount"]') ??
++    copy.querySelector<HTMLElement>('strong span');
++  const dec = amt?.querySelector<HTMLElement>('span') ?? null;
++  const label = q<HTMLElement>(':scope > div > div > div > span');
++  const info = q<HTMLElement>(':scope > div > div > :nth-child(2)');
++  const leg0 = q('[data-testid="total-credit"]');
++  const leg1 = q('[data-testid="temporary-credit"]');
++  const bar = q('[data-testid="credit-bar"]');
++  const pill = q('button');
++  const glowSrc = q('img');
++
++  /* the integer as its own box (the tracking and colour change on it) */
++  let intSpan: HTMLElement | null = null;
++  if (amt && amt.firstChild && amt.firstChild.nodeType === Node.TEXT_NODE) {
++    intSpan = document.createElement('span');
++    intSpan.textContent = amt.firstChild.nodeValue;
++    amt.replaceChild(intSpan, amt.firstChild);
++  }
++  if (amt) amt.style.display = 'inline-block';
++  /* the bar's fills in their own row (revealed left to right by two slides) */
++  let fill: HTMLElement | null = null;
++  const segs: HTMLElement[] = [];
++  if (bar) {
++    fill = document.createElement('div');
++    Object.assign(fill.style, {
++      position: 'absolute',
++      inset: '0',
++      display: 'flex',
++      alignItems: 'center',
++      overflow: 'hidden',
++    });
++    Array.from(bar.children).forEach((seg) => {
++      segs.push(seg as HTMLElement);
++      fill!.appendChild(seg);
++    });
++    bar.style.position = 'relative';
++    bar.appendChild(fill);
++  }
++  const W0 = fill ? fill.getBoundingClientRect().width : 0;
++  const greenSeg = segs.length === 2 ? segs[1] : null;
++
++  /* ---- the source number (the big one on the Credit limit screen) ---- */
++  const fd = (() => {
++    try {
++      return frame.contentDocument;
++    } catch {
++      return null;
++    }
++  })();
++  const srcEl = handles.amount;
++  const sr = srcEl.getBoundingClientRect();
++  const srcCs = frame.contentWindow?.getComputedStyle(srcEl);
++  const src = {
++    x: fr.left + sr.left + sr.width / 2,
++    y: fr.top + sr.top + sr.height / 2,
++    size: parseFloat(srcCs?.fontSize ?? '') || 64,
++    color: srcCs?.color ?? 'rgb(255,255,255)',
++  };
++  const ar = amt?.getBoundingClientRect();
++  const ir = (intSpan ?? amt)?.getBoundingClientRect();
++  const cardSize = intSpan
++    ? parseFloat(getComputedStyle(intSpan).fontSize) || 36
++    : 36;
++  const s0 = src.size / cardSize;
++  const mx = ar && ir ? (ir.left + ir.right) / 2 - ar.left : 0;
++  const my = ar && ir ? (ir.top + ir.bottom) / 2 - ar.top : 0;
++  const from = { x: src.x, y: src.y };
++  const toC = ar ? { x: ar.left + mx, y: ar.top + my } : from;
++  const ah = ar?.height ?? 0;
++  const ls0 = -0.02 * cardSize;
++  const ls1 = intSpan
++    ? parseFloat(getComputedStyle(intSpan).letterSpacing) || 0
++    : 0;
++  const nD = intSpan?.textContent?.length ?? 0;
++  const cardColor = amt ? getComputedStyle(amt).color : '#ffffff';
++
++  /* ---- the iframe's page turns see-through; its loops are already paused ---- */
++  if (fd?.head) {
++    const st = fd.createElement('style');
++    st.textContent =
++      ':root{color-scheme:normal!important}html,body,main{background:transparent!important}';
++    fd.head.appendChild(st);
++    made.push(st);
++  }
++  const fHero = handles.hero;
++  const fArt = handles.art;
++  const fStars = handles.stars;
++  const fCanvases = handles.canvases;
++  const hr0 = fHero.getBoundingClientRect();
++  const heroM = {
++    ax: fr.left + hr0.left + hr0.width / 2,
++    ay: fr.top + hr0.top + hr0.height / 2,
++    sx: (W - to.l - to.r) / W,
++    sy: (H - to.t - to.b) / H,
+   };
+-  write(landing.kind === 'sameAmount' ? projection.total : landing.from);
+-  const context = gsap.context(() => {
+-    gsap.set(amount, { opacity: 0 });
+-    gsap.set(visual, { opacity: same ? 1 : 0 });
+-    if (same) gsap.set(fraction, { opacity: 0 });
++  if (used) L.set(fHero, 'transformOrigin', '50% 50%');
++  else
++    L.set(
++      fHero,
++      'transformOrigin',
++      `${r3(from.x - fr.left - hr0.left)}px ${r3(from.y - fr.top - hr0.top)}px`,
++    );
++  L.set(fHero, 'willChange', 'transform, opacity, filter');
++  let artM: { ax: number; ay: number; sx: number; sy: number } | null = null;
++  if (fArt) {
++    const rr = fArt.getBoundingClientRect();
++    artM = {
++      ax: fr.left + rr.left + rr.width / 2,
++      ay: fr.top + rr.top + rr.height / 2,
++      sx: heroM.sx,
++      sy: heroM.sy,
++    };
++    L.set(fArt, 'transformOrigin', '50% 50%');
++    L.set(fArt, 'willChange', 'transform');
++  }
++  fCanvases.forEach((cv) => L.set(cv, 'willChange', 'opacity, filter'));
++  if (fStars) L.set(fStars, 'willChange', 'transform, opacity');
++  if (!used) L.set(srcEl, 'visibility', 'hidden');
++
++  /* ---- the closing box: the screen's box, flat colour layers inside ---- */
++  L.set(shell, 'background', 'transparent');
++  L.set(shell, 'transformOrigin', '0 0');
++  L.set(shell, 'willChange', 'transform');
++  L.set(shell, 'overflow', 'hidden');
++  const flat = (css: Partial<CSSStyleDeclaration>) => {
++    const d = document.createElement('div');
++    d.setAttribute('aria-hidden', 'true');
++    Object.assign(d.style, {
++      position: 'absolute',
++      left: '0',
++      top: '0',
++      width: `${W}px`,
++      height: `${H}px`,
++      pointerEvents: 'none',
++      ...css,
++    });
++    made.push(d);
++    return d;
++  };
++  const bgDark = flat({ background: '#0d1620' });
++  const bgCard = flat({
++    backgroundColor: cardStyle.backgroundColor,
++    backgroundImage: cardStyle.backgroundImage,
++    opacity: '0',
++    willChange: 'opacity',
+   });
+-  const timeline = gsap.timeline({ onComplete });
+-  const geometry = { progress: 0 };
+-  // One progress drives the outer transform and the inverse child scale, avoiding canvas stretching.
+-  timeline.to(
+-    geometry,
+-    {
+-      progress: 1,
+-      duration: 0.85,
+-      ease: collapseProgress,
+-      onUpdate: () => {
+-        const p = geometry.progress;
+-        const sx = 1 + (cardBox.width / surface.width - 1) * p;
+-        const sy = 1 + (cardBox.height / surface.height - 1) * p;
+-        shell.style.transform = `translate(${(cardBox.left - surface.left) * p}px, ${(cardBox.top - surface.top) * p}px) scale(${sx}, ${sy})`;
+-        shell.style.borderRadius = `${radii.map(({ x }) => `${(x * p) / sx}px`).join(' ')} / ${radii.map(({ y }) => `${(y * p) / sy}px`).join(' ')}`;
+-        frame.style.transform = `scale(${1 / sx}, ${1 / sy})`;
+-      },
+-    },
+-    0,
++  shell.insertBefore(bgCard, shell.firstChild);
++  shell.insertBefore(bgDark, bgCard);
++  L.set(frame, 'background', 'transparent');
++  L.set(frame, 'transformOrigin', '0 0');
++  L.set(frame, 'willChange', 'transform');
++  /* the glow: inside the box (clipped by it), under the card copy */
++  let glow: HTMLElement | null = null;
++  if (glowSrc) {
++    const GR = glowSrc.getBoundingClientRect();
++    glow = glowSrc.cloneNode(true) as HTMLElement;
++    Object.assign(glow.style, {
++      position: 'absolute',
++      left: `${r3(GR.left - B.left)}px`,
++      top: `${r3(GR.top - B.top)}px`,
++      bottom: 'auto',
++      width: `${r3(GR.width)}px`,
++      height: `${r3(GR.height)}px`,
++      transform: 'none',
++      transformOrigin: `${r3(B.left - GR.left)}px ${r3(B.top - GR.top)}px`,
++      opacity: '0',
++      zIndex: '',
++      willChange: 'transform, opacity',
++    });
++    shell.appendChild(glow);
++    made.push(glow);
++    glowSrc.style.visibility = 'hidden';
++  }
++  /* the card copy's shadow: a layer of its own on the box outline */
++  const shd = document.createElement('div');
++  Object.assign(shd.style, {
++    position: 'absolute',
++    left: '0',
++    top: '0',
++    right: '0',
++    bottom: '0',
++    borderRadius: '24px',
++    zIndex: '-1',
++    boxShadow: cardStyle.boxShadow,
++    opacity: '0',
++    willChange: 'opacity',
++    pointerEvents: 'none',
++  });
++  copy.insertBefore(shd, copy.firstChild);
++  if (!used && amt) {
++    amt.style.transformOrigin = '0 0';
++    amt.style.willChange = 'transform';
++  }
++
++  /* ---- the page around the card ---- */
++  const column = (() => {
++    let n: HTMLElement | null = card;
++    while (n && n.parentElement && n.parentElement.childElementCount < 2)
++      n = n.parentElement;
++    return n?.parentElement ? { parent: n.parentElement, branch: n } : null;
++  })();
++  const siblings = column
++    ? (Array.from(column.parent.children) as HTMLElement[])
++    : [];
++  const bi = column ? siblings.indexOf(column.branch) : -1;
++  const head = siblings.slice(0, Math.max(0, bi));
++  const tabBar = document.querySelector<HTMLElement>(
++    'nav[data-motion-bottom-bar]',
+   );
+-  timeline.to(frame, { opacity: 0, duration: 0.32 }, 0);
+-  timeline.to(
+-    shell,
+-    { backgroundColor: cardStyle.backgroundColor, duration: 0.6 },
+-    0,
++  const rise = siblings.slice(bi + 1).concat(tabBar ? [tabBar] : []);
++  const below = rise.map(
++    (el) => el !== tabBar && el.getBoundingClientRect().top >= CR.bottom - 1,
+   );
+-  timeline.to(shell, { opacity: 0, duration: 0.25 }, 0.6);
+-  if (same) {
+-    timeline.to(
+-      visual,
+-      {
+-        left: target.left,
+-        // Match the target line box; the inline span's bounds include font leading.
+-        top: amount.parentElement!.getBoundingClientRect().top,
+-        letterSpacing: targetStyle.letterSpacing,
+-        color: targetStyle.color,
+-        fontSize: targetStyle.fontSize,
+-        lineHeight: targetStyle.lineHeight,
+-        duration: 0.85,
+-        ease: collapseProgress,
+-      },
++  head
++    .concat(rise)
++    .forEach((el) => L.set(el, 'willChange', 'transform, opacity'));
++
++  /* ---- clocked details (the same 0.34 s entrance, started by the progress) ---- */
++  const CLK: Clocked[] = [
++    { el: label, at: 0.2, dy: MT.Y.text, keep: true },
++    { el: info, at: 0.3, dy: 0 },
++    { el: leg0, at: 0.3, dy: MT.Y.text, push: true },
++    { el: leg1, at: 0.36, dy: MT.Y.text, push: true },
++    { el: bar, at: 0.38, dy: 0, push: true, sharp: true },
++    ...(used ? [{ el: amt, at: 0.4, dy: MT.Y.block, count: true }] : []),
++  ]
++    .filter((c) => c.el)
++    .map((c) => ({ ...c, r: 0, on: false, play: null }) as Clocked);
++  CLK.forEach((c) =>
++    L.set(
++      c.el!,
++      'willChange',
++      c.sharp ? 'transform, opacity' : 'transform, opacity, filter',
++    ),
++  );
++  const baseOpacity = (el: HTMLElement) =>
++    parseFloat(getComputedStyle(el).opacity) || 1;
++  const keepBase = new Map(
++    CLK.filter((c) => c.keep).map((c) => [c.el!, baseOpacity(c.el!)]),
++  );
++
++  /* ---- partly used: the count ---- */
++  const landing = projection.landing;
++  const cnt =
++    landing.kind === 'separateAmount' && intSpan
++      ? {
++          node: intSpan,
++          r: 0,
++          on: false,
++          go: false,
++          play: null as Playback | null,
++          last: '',
++        }
++      : null;
++  const gHide =
++    cnt && greenSeg
++      ? Math.max(0, greenSeg.getBoundingClientRect().width - 4)
++      : 0;
++  if (cnt && landing.kind === 'separateAmount')
++    cnt.node.textContent = formatIntroCountFrame(
++      landing.from,
++      landing.to,
+       0,
++    ).split('.')[0];
++
++  /* ---- one frame ---- */
++  let lastK = 0;
++  let springDone = false;
++  let ended = false;
++  const V = (k: number) => {
++    const c = clamp01(k);
++    const u = 1 - c;
++    const Lx = to.l * c;
++    const T = to.t * c;
++    const sx = (W - (to.l + to.r) * c) / W;
++    const sy = (H - (to.t + to.b) * c) / H;
++    L.set(
++      shell,
++      'transform',
++      `translate(${r3(Lx)}px,${r3(T)}px) scale(${r3(sx * 1e4) / 1e4},${r3(sy * 1e4) / 1e4})`,
+     );
+-    timeline.to(fraction, { opacity: 1, duration: 0.35 }, 0.4);
+-    // Font families cannot interpolate. Keep the source face throughout motion and
+-    // crossfade to the real card only after arrival, with no second number animation.
+-    timeline.to(visual, { opacity: 0, duration: 0.15 }, 0.85);
+-    timeline.to(amount, { opacity: 1, duration: 0.15 }, 0.85);
+-  } else if (landing.kind === 'separateAmount') {
+-    const progress = { value: 0 };
+-    timeline.set(visual, { opacity: 1 }, 0.85);
+-    timeline.to(
+-      progress,
+-      {
+-        value: 1,
+-        duration: 1,
+-        ease: 'power2.out',
+-        onUpdate: () =>
+-          write(
+-            interpolateCreditAmount(landing.from, landing.to, progress.value),
+-          ),
+-      },
+-      0.85,
++    L.set(
++      shell,
++      'borderRadius',
++      `${r3((24 * c) / sx)}px / ${r3((24 * c) / sy)}px`,
+     );
+-    const track = card.querySelector('[data-testid="credit-bar"]');
+-    if (track) {
+-      // Reveal confirmed proportions together; independent scaling would separate adjacent segments.
+-      context.add(() => gsap.set(track, { opacity: 0 }));
+-      timeline.to(track, { opacity: 1, duration: 1 }, 0.85);
++    const inv = `scale(${r3(1e4 / sx) / 1e4},${r3(1e4 / sy) / 1e4}) translate(${r3(-Lx)}px,`;
++    const down = r3(to.b * u);
++    L.set(frame, 'transform', `${inv}${r3(-T)}px)`);
++    if (glow) {
++      L.set(glow, 'transform', `${inv}${r3(-T + down)}px)`);
++      L.set(glow, 'opacity', String(r3(win(k, 0.38, 1))));
+     }
+-  }
+-  /** Cancels owned tweens and restores only properties acquired by this landing. */
+-  return () => {
+-    timeline.kill();
+-    context.revert();
+-    visual.remove();
++    L.set(bgCard, 'opacity', String(r3(win(k, 0.15, 0.85))));
++    // the number's path (the card's amount and the screen's number block share it)
++    const sc = s0 + (1 - s0) * k;
++    const cx = from.x + (toC.x - from.x) * k;
++    const cy = from.y + (toC.y - from.y) * k;
++    if (used) {
++      const fe0 = win(k, 0, 0.45);
++      L.set(
++        fHero,
++        'transform',
++        `translate(${r3((heroM.ax * (heroM.sx - 1) + to.l) * c)}px,${r3((heroM.ay * (heroM.sy - 1) + to.t) * c)}px) scale(${r3(1 - 0.3 * c)})`,
++      );
++      L.set(fHero, 'opacity', String(r3(1 - fe0)));
++      L.set(fHero, 'filter', `blur(${r3(fe0 * 4)}px)`);
++    } else {
++      const fe = win(k, 0, 0.5);
++      L.set(
++        fHero,
++        'transform',
++        `translate(${r3(cx - from.x)}px,${r3(cy - from.y)}px) scale(${r3(1 + (1 / s0 - 1) * k)})`,
++      );
++      L.set(fHero, 'opacity', String(r3(1 - fe)));
++      L.set(fHero, 'filter', `blur(${r3(fe * 4)}px)`);
++    }
++    if (artM && fArt)
++      L.set(
++        fArt,
++        'transform',
++        `translate(${r3((artM.ax * (artM.sx - 1) + to.l) * c)}px,${r3((artM.ay * (artM.sy - 1) + to.t) * c)}px) scale(${r3(1 - 0.4 * c)})`,
++      );
++    const ce = win(k, 0, 0.45);
++    fCanvases.forEach((cv) => {
++      L.set(cv, 'opacity', String(r3(1 - ce)));
++      L.set(cv, 'filter', `blur(${r3(ce * 4)}px)`);
++    });
++    if (fStars) L.set(fStars, 'opacity', String(r3(1 - win(k, 0.35, 0.8))));
++    // the amount settles from the big number (credit unused)
++    let push = 0;
++    if (!used && amt) {
++      const qk = Math.round(win(k, 0, 0.5) * 24) / 24;
++      const ls = ls0 + (ls1 - ls0) * qk;
++      if (intSpan) L.set(intSpan, 'letterSpacing', `${r3(ls)}px`);
++      const mxk = mx + ((ls - ls1) * nD) / 2;
++      L.set(
++        amt,
++        'transform',
++        `translate(${r3(cx - (ar?.left ?? 0) - sc * mxk)}px,${r3(cy - (ar?.top ?? 0) - sc * my)}px) scale(${r3(sc)})`,
++      );
++      L.set(amt, 'color', mixRgb(src.color, cardColor, qk));
++      if (dec) L.set(dec, 'opacity', String(r3(win(k, 0.3, 0.75))));
++      push = Math.max(0, cy - sc * my + sc * ah - (toC.y - my + ah));
++    }
++    // clocked details
++    CLK.forEach((cl) => {
++      const el = cl.el!;
++      const e = cl.r;
++      L.set(
++        el,
++        'opacity',
++        String(r3((cl.keep ? (keepBase.get(el) ?? 1) : 1) * e)),
++      );
++      if (!cl.sharp) L.set(el, 'filter', `blur(${r3((1 - e) * 3)}px)`);
++      if (cl.dy || cl.push)
++        L.set(
++          el,
++          'transform',
++          `translateY(${r3((1 - e) * cl.dy + (cl.push ? push : 0))}px)`,
++        );
++    });
++    // fills revealed left to right; the green part slides out with the count
++    const fw = r3((1 - win(k, 0.42, 0.95)) * W0);
++    if (fill) L.set(fill, 'transform', `translateX(${-fw}px)`);
++    const cT = cnt ? cnt.r : 1;
++    const cNum = 1 - Math.pow(1 - cT, 4);
++    const cBar = cT * cT * (3 - 2 * cT);
++    segs.forEach((el) =>
++      L.set(
++        el,
++        'transform',
++        `translateX(${r3(fw - (el === greenSeg ? gHide * (1 - cBar) : 0))}px)`,
++      ),
++    );
++    if (cnt && landing.kind === 'separateAmount') {
++      const tv = formatIntroCountFrame(landing.from, landing.to, cNum).split(
++        '.',
++      )[0];
++      if (tv !== cnt.last) {
++        cnt.last = tv;
++        cnt.node.textContent = tv;
++      }
++    }
++    // the pill rides the box's bottom edge
++    if (pill) {
++      L.set(pill, 'opacity', String(r3(win(k, 0.38, 0.58))));
++      L.set(pill, 'transform', `translateY(${down}px)`);
++    }
++    // the shadow on the closing box's outline
++    const sa = win(k, 0.65, 1);
++    if (sa > 0) {
++      shd.style.opacity = String(r3(sa));
++      shd.style.top = `${r3(-to.t * u)}px`;
++      shd.style.right = `${r3(-to.r * u)}px`;
++      shd.style.bottom = `${r3(-to.b * u)}px`;
++      shd.style.left = `${r3(-to.l * u)}px`;
++      shd.style.borderRadius = `${r3(24 * c)}px`;
++    } else shd.style.opacity = '0';
++    // around it
++    head.forEach((el) => {
++      L.set(el, 'opacity', String(r3(win(k, 0.15, 0.6))));
++      L.set(el, 'transform', `translateY(${r3(-to.t * u)}px)`);
++    });
++    rise.forEach((el, i) => {
++      const e2 =
++        el === tabBar
++          ? win(k, 0.3, 0.6)
++          : win(k, 0.25 + i * 0.07, 0.7 + i * 0.07);
++      L.set(el, 'opacity', String(r3(e2)));
++      L.set(
++        el,
++        'transform',
++        `translateY(${r3((1 - e2) * (el === tabBar ? MT.Y.block : MT.Y.block * 1.6) + (below[i] ? to.b * u : 0))}px)`,
++      );
++    });
++  };
++
++  const end = () => {
++    if (
++      ended ||
++      !springDone ||
++      CLK.some((cl) => cl.r < 1) ||
++      (cnt && cnt.r < 1)
++    )
++      return;
++    ended = true;
++    V(1);
++    finish();
++    options.onComplete();
+   };
++  const apply = (k: number) => {
++    lastK = k;
++    // partly used: the count is a beat of its own, after the amount came in AND the box closed
++    if (cnt && !cnt.on && cnt.go && k >= 0.97) {
++      cnt.on = true;
++      cnt.play = animate(0, 1, {
++        duration: 1.0,
++        delay: 0.1,
++        ease: 'linear',
++        onUpdate: (v) => {
++          cnt.r = v;
++          V(lastK);
++        },
++        onComplete: () => {
++          cnt.play = null;
++          cnt.r = 1;
++          V(lastK);
++          end();
++        },
++      });
++      plays.push(cnt.play);
++    }
++    CLK.forEach((cl) => {
++      if (cl.on || k < cl.at) return;
++      cl.on = true;
++      cl.play = animate(0, 1, {
++        duration: CLOCK.duration,
++        ease: CLOCK.ease,
++        onUpdate: (v) => {
++          cl.r = v;
++          V(lastK);
++        },
++        onComplete: () => {
++          cl.play = null;
++          cl.r = 1;
++          if (cl.count && cnt) {
++            cnt.go = true;
++            apply(lastK);
++          }
++          V(lastK);
++          end();
++        },
++      });
++      plays.push(cl.play);
++    });
++    V(k);
++  };
++
++  const De = Math.max(to.t, to.r, to.b, to.l, 1);
++  const spring = stretchedSpring(De);
++  const progress = createProgress(0, apply);
++  apply(0);
++  plays.push(
++    progress.to(1, spring.transition, () => {
++      springDone = true;
++      apply(1);
++      end();
++    }),
++  );
++
++  let finished = false;
++  function finish() {
++    if (finished) return;
++    finished = true;
++    plays.forEach((p) => p.stop());
++    progress.dispose();
++    L.restore();
++    made.forEach((el) => el.remove());
++  }
++  return finish;
+ }

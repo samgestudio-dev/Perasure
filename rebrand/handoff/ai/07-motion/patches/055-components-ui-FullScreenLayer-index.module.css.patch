@@ -1,0 +1,47 @@
+diff --git a/src/components/ui/FullScreenLayer/index.module.css b/src/components/ui/FullScreenLayer/index.module.css
+index f8d730d..013f7e8 100644
+--- a/src/components/ui/FullScreenLayer/index.module.css
++++ b/src/components/ui/FullScreenLayer/index.module.css
+@@ -28,40 +28,5 @@
+   pointer-events: none;
+ }
+ 
+-@keyframes slide-up {
+-  from {
+-    transform: translateY(24px);
+-    opacity: 0;
+-  }
+-
+-  to {
+-    transform: translateY(0);
+-    opacity: 1;
+-  }
+-}
+-
+-.backdrop[data-transition='slide-up'] .panel {
+-  /* Apply the entering frame only while the layer mounts. Retaining a final
+-     transform would turn this scroll panel into the containing block for
+-     fixed descendants, making bottom actions scroll upward with the content. */
+-  animation: slide-up 300ms ease-out backwards;
+-}
+-
+-@media (min-width: 768px) {
+-  .backdrop[data-transition='slide-up'] .panel {
+-    animation-name: none;
+-  }
+-
+-  .backdrop {
+-    /* Release the transform after entry so viewport-fixed children keep using
+-       the viewport as their containing block on wide layouts as well. */
+-    animation: slide-up 180ms ease-out backwards;
+-  }
+-}
+-
+-@media (prefers-reduced-motion: reduce) {
+-  .backdrop,
+-  .backdrop .panel {
+-    animation: none;
+-  }
+-}
++/* The entry (rise from full height on the Smooth spring) and the exit are
++   driven by Motion in FullScreenLayer.tsx (rebrand withdraw sheet, M-098). */

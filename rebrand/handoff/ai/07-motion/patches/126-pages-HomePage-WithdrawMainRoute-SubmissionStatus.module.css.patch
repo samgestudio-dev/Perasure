@@ -1,0 +1,55 @@
+diff --git a/src/pages/HomePage/WithdrawMainRoute/SubmissionStatus.module.css b/src/pages/HomePage/WithdrawMainRoute/SubmissionStatus.module.css
+index 07224e4..6e15665 100644
+--- a/src/pages/HomePage/WithdrawMainRoute/SubmissionStatus.module.css
++++ b/src/pages/HomePage/WithdrawMainRoute/SubmissionStatus.module.css
+@@ -17,10 +17,11 @@
+ }
+ 
+ .animationFrame {
++  /* Order submit's coin is 72 px, the Loader's size (fx.js:69, owner). */
+   position: relative;
+-  width: 56px;
+-  height: 56px;
+-  flex: 0 0 56px;
++  width: 72px;
++  height: 72px;
++  flex: 0 0 72px;
+ }
+ 
+ .copyFrame {
+@@ -55,27 +56,7 @@
+   white-space: pre;
+ }
+ 
+-.confirmingDot {
+-  animation: confirming-dot 2s ease-in-out infinite;
+-}
+-
+-@keyframes confirming-dot {
+-  0%,
+-  20%,
+-  100% {
+-    opacity: 0.32;
+-  }
+-
+-  50% {
+-    opacity: 1;
+-  }
+-}
+-
+ @media (prefers-reduced-motion: reduce) {
+-  .confirmingDot {
+-    animation: none;
+-  }
+-
+   .copyCharacter {
+     filter: none;
+     opacity: 1;
+@@ -87,7 +68,3 @@
+ .copyFrame h2[hidden] {
+   display: none;
+ }
+-
+-.root[data-motion-visible='false'] .confirmingDot {
+-  animation-play-state: paused;
+-}

@@ -1,0 +1,72 @@
+diff --git a/src/components/ui/CreditValidityTooltip/index.tsx b/src/components/ui/CreditValidityTooltip/index.tsx
+index cea689c..d9e111d 100644
+--- a/src/components/ui/CreditValidityTooltip/index.tsx
++++ b/src/components/ui/CreditValidityTooltip/index.tsx
+@@ -1,5 +1,15 @@
+-import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
++import {
++  useEffect,
++  useId,
++  useLayoutEffect,
++  useRef,
++  useState,
++  type ReactNode,
++} from 'react';
+ import { createPortal } from 'react-dom';
++import { m } from 'motion/react';
++
++import { anchorOrigin, tooltipToggle } from '@/motion/tooltip';
+ 
+ import infoIcon from '@/assets/svg/credit-validity/info.svg';
+ import pendingIcon from '@/assets/svg/credit-validity/pending.svg';
+@@ -24,8 +34,25 @@ export default function CreditValidityTooltip({
+   const triggerRef = useRef<HTMLButtonElement>(null);
+   const [open, setOpen] = useState(false);
+   const [position, setPosition] = useState({ top: 0, right: 0 });
++  const bubbleRef = useRef<HTMLDivElement>(null);
++  const [origin, setOrigin] = useState<string | undefined>(undefined);
+   const visible = open && Boolean(dateText);
+ 
++  // The bubble grows out of the tapped icon (demo PS.Tooltip, R-TOOLTIP):
++  // transform-origin = the icon's centre, measured without the running scale.
++  // 气泡从被点击的图标中心长出：以图标中心为变换原点（不受缩放影响的布局坐标）。
++  useLayoutEffect(() => {
++    const bubble = bubbleRef.current;
++    const trigger = triggerRef.current;
++    if (!visible || !bubble || !trigger) return;
++    setOrigin(
++      anchorOrigin(trigger.getBoundingClientRect(), {
++        left: bubble.offsetLeft,
++        top: bubble.offsetTop,
++      }),
++    );
++  }, [position, visible]);
++
+   const close = () => {
+     setOpen(false);
+     triggerRef.current?.focus();
+@@ -107,10 +134,13 @@ export default function CreditValidityTooltip({
+           aria-hidden={!visible}
+         >
+           <div className={styles.scrim} onClick={close} />
+-          <div
++          <m.div
+             id={id}
++            ref={bubbleRef}
+             className={styles.bubble}
+-            style={position}
++            style={{ ...position, transformOrigin: origin }}
++            initial={false}
++            animate={tooltipToggle(visible)}
+             role="dialog"
+             aria-label={t('creditValidity.open')}
+           >
+@@ -129,7 +159,7 @@ export default function CreditValidityTooltip({
+                 <img src={closeIcon} alt="" />
+               </button>
+             </div>
+-          </div>
++          </m.div>
+         </div>,
+         document.body,
+       )}

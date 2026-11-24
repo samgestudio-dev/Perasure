@@ -1,0 +1,19 @@
+diff --git a/src/App.tsx b/src/App.tsx
+index fecf28f..b93b12c 100644
+--- a/src/App.tsx
++++ b/src/App.tsx
+@@ -1,10 +1,13 @@
+ import AppRouter from './router';
+ import GlobalErrorHandler from './components/GlobalErrorHandler';
++import { MotionRoot } from './motion/MotionRoot';
+ 
+ const App = () => {
+   return (
+     <GlobalErrorHandler>
+-      <AppRouter />
++      <MotionRoot>
++        <AppRouter />
++      </MotionRoot>
+     </GlobalErrorHandler>
+   );
+ };

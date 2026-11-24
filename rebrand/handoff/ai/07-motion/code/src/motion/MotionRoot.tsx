@@ -1,0 +1,26 @@
+/** @jsxRuntime automatic @jsxImportSource react */
+import type { ReactNode } from 'react';
+import { LazyMotion, MotionConfig, domMax } from 'motion/react';
+
+/**
+ * Motion provider for the whole app — the demo's `PS.Shell`
+ * (Perasure `shared/ps-ui/layout.js:8-12`):
+ * - `LazyMotion features={domMax} strict`: only the light `m.*` components are
+ *   allowed (strict throws on `motion.*`), with the full feature set the
+ *   shared motions need (layout / layoutId pills, drag sheets and toasts).
+ * - `MotionConfig reducedMotion="user"` (R-REDUCED): with
+ *   prefers-reduced-motion, transform / layout animations (x, y, scale,
+ *   rotate, layoutId) jump to the end while opacity / filter / colour still
+ *   animate.
+ *
+ * Wrap the app once, in `src/App.tsx`.
+ */
+export function MotionRoot({ children }: { children: ReactNode }) {
+  return (
+    <LazyMotion features={domMax} strict>
+      <MotionConfig reducedMotion="user">{children}</MotionConfig>
+    </LazyMotion>
+  );
+}
+
+export default MotionRoot;

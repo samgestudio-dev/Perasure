@@ -1,0 +1,83 @@
+diff --git a/src/motion/flows/agreementNudge.ts b/src/motion/flows/agreementNudge.ts
+new file mode 100644
+index 0000000..7be94d1
+--- /dev/null
++++ b/src/motion/flows/agreementNudge.ts
+@@ -0,0 +1,77 @@
++/**
++ * Confirm tapped before the agreement is ticked — withdraw.js:538-558
++ * (M-111 / M-112 / M-073): the page scrolls to its end on the page's spring
++ * (Smooth + restDelta 0.5, restSpeed 5); as it arrives (within 24 px) the
++ * empty circle ripples — a brand ring grows 1 → 2.4× while fading 0.6 → 0
++ * over 0.6 s on the ENTER curve, twice, chained (not `repeat`). A touch on the
++ * page stops the scroll. No error state: no red, no shake, no text change
++ * (owner's rule). Reduced motion: jump to the end, no ripple.
++ */
++import { animate } from 'motion';
++
++import { NUDGE, AGREE_SCROLL } from './withdrawTokens';
++import { SMOOTH, reduced, type Playback } from './core';
++
++let running: Playback | null = null;
++
++/** Plays the ripple twice on `halo` (an absolutely placed ring over the circle). */
++export function rippleAgreement(halo: HTMLElement | null | undefined): void {
++  if (!halo || reduced()) return;
++  const ring = () =>
++    animate(
++      halo,
++      { scale: [...NUDGE.scale], opacity: [...NUDGE.opacity] },
++      { duration: NUDGE.duration, ease: NUDGE.ease },
++    );
++  void ring().then(() => ring());
++}
++
++/**
++ * Scrolls `scroller` to its end on the spring and nudges the agreement halo
++ * (`[data-agreement-halo]` inside `root`) as it arrives.
++ */
++export function scrollToAgreement(
++  scroller: HTMLElement | null | undefined,
++  root: ParentNode = document,
++): void {
++  const halo = root.querySelector<HTMLElement>('[data-agreement-halo]');
++  let fired = false;
++  const fire = () => {
++    if (fired) return;
++    fired = true;
++    rippleAgreement(halo);
++  };
++  running?.stop();
++  running = null;
++  if (!scroller) {
++    fire();
++    return;
++  }
++  const to = scroller.scrollHeight - scroller.clientHeight;
++  const from = scroller.scrollTop;
++  if (to - from < AGREE_SCROLL.arriveWithinPx || reduced()) {
++    scroller.scrollTop = to;
++    fire();
++    return;
++  }
++  const stop = () => {
++    running?.stop();
++    running = null;
++    scroller.removeEventListener('touchstart', stop);
++  };
++  scroller.addEventListener('touchstart', stop, { passive: true, once: true });
++  running = animate(from, to, {
++    ...SMOOTH,
++    restDelta: AGREE_SCROLL.restDelta,
++    restSpeed: AGREE_SCROLL.restSpeed,
++    onUpdate: (v) => {
++      scroller.scrollTop = v;
++      if (to - v < AGREE_SCROLL.arriveWithinPx) fire();
++    },
++    onComplete: () => {
++      running = null;
++      scroller.removeEventListener('touchstart', stop);
++      fire();
++    },
++  });
++}

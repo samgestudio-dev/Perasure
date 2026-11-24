@@ -1,0 +1,76 @@
+diff --git a/src/motion/motion.module.css b/src/motion/motion.module.css
+new file mode 100644
+index 0000000..714db8f
+--- /dev/null
++++ b/src/motion/motion.module.css
+@@ -0,0 +1,70 @@
++/* Shared CSS motions of the rebrand demo (Perasure shared/ps-ui/ps-ui.css).
++   CSS keyframes are not seen by MotionConfig, so each loop carries its own
++   reduced-motion override where the demo has one.
++   演示中的共享 CSS 动效；CSS 动画不受 MotionConfig 影响，需单独处理减少动态效果。 */
++
++/* M-055 Busy dots (ps-ui.css:596-600): three dots pulse 0.35 → 1, 0.9s, 150 ms apart. */
++.busy {
++  display: inline-flex;
++  align-items: center;
++  gap: var(--spacing-gap-xs, 4px);
++  height: 20px;
++}
++
++.busy > i {
++  width: 6px;
++  height: 6px;
++  border-radius: var(--radius-full, 999px);
++  background: currentcolor;
++  opacity: 0.35;
++  animation: motion-busy 0.9s ease-in-out infinite;
++}
++
++.busy > i:nth-child(2) {
++  animation-delay: 0.15s;
++}
++
++.busy > i:nth-child(3) {
++  animation-delay: 0.3s;
++}
++
++@keyframes motion-busy {
++  0%,
++  60%,
++  100% {
++    opacity: 0.35;
++  }
++
++  30% {
++    opacity: 1;
++  }
++}
++
++@media (prefers-reduced-motion: reduce) {
++  .busy > i {
++    animation: none;
++    opacity: 0.7;
++  }
++}
++
++/* M-075 Caret blink (ps-ui.css:1298-1299): hidden for the second half of
++   every 1.06s, stepped (no fade). The demo has no reduced-motion override. */
++.caret {
++  animation: motion-caret 1.06s steps(1, end) infinite;
++}
++
++@keyframes motion-caret {
++  50% {
++    opacity: 0;
++  }
++}
++
++/* R-COLOR: a state change that moves nothing changes colour only, in 150 ms. */
++.color {
++  transition:
++    color 0.15s ease,
++    background-color 0.15s ease,
++    border-color 0.15s ease,
++    box-shadow 0.15s ease,
++    opacity 0.15s ease;
++}

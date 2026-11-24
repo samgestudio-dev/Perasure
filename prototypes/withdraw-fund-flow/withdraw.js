@@ -1439,7 +1439,8 @@ class Component extends DCLogic {
             mv ? { x: this._capX, y: this._capY, opacity: this._capO, visibility: this._capV } : { transform: 'translate(' + this.capX() + 'px,' + this.capY() + 'px)', opacity: this.capO(), visibility: this.capO() > 0 ? 'visible' : 'hidden' })
         }, 'Flexible amounts from ₱500–₱50,000');
       })(),
-      this.ap({ key:'pinned', initial:false }, cf ? null : [ this.padLine(), this.keypad() ])
+      /* initial left on: the keypad's key-by-key cascade plays on first open (initial:false here skipped it — owner rule, 2026-11-24) */
+      this.ap({ key:'pinned' }, cf ? null : [ this.padLine(), this.keypad() ])
     ]);
 
     /* Progressive blur: stacked backdrop layers, each blurrier and masked to a

@@ -1,0 +1,29 @@
+diff --git a/src/pages/HomePage/Payment/components/RepaymentList/index.tsx b/src/pages/HomePage/Payment/components/RepaymentList/index.tsx
+index ca691dd..6c2205a 100644
+--- a/src/pages/HomePage/Payment/components/RepaymentList/index.tsx
++++ b/src/pages/HomePage/Payment/components/RepaymentList/index.tsx
+@@ -1,4 +1,7 @@
+-import type { FC } from 'react';
++import { useRef, type FC } from 'react';
++
++import { useRise } from '@/motion/Rise';
++import { SCREEN_RISE } from '@/motion/tokens';
+ 
+ import RepaymentCard from '../RepaymentCard';
+ import styles from './index.module.css';
+@@ -22,8 +25,14 @@ const RepaymentList: FC<RepaymentListProps> = ({
+   onItemDetail,
+   onItemSelect,
+ }) => {
++  const listRef = useRef<HTMLDivElement | null>(null);
++  // What was waited for rises in piece by piece once loaded (rebrand R-LOADING /
++  // R-RISE: 0.34 s, 40 ms apart, from 10 px and a 3 px blur).
++  // 加载完成后的还款卡片逐个上浮进场。
++  useRise(listRef, { delay: SCREEN_RISE.delay });
++
+   return (
+-    <div className={styles.list} data-scene-type="repayment-list">
++    <div className={styles.list} data-scene-type="repayment-list" ref={listRef}>
+       {groups.map((group) => (
+         <RepaymentCard
+           group={group}

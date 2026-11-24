@@ -1,0 +1,48 @@
+diff --git a/src/components/ui/PageLoading/index.tsx b/src/components/ui/PageLoading/index.tsx
+index 5bd00ab..b74d2ec 100644
+--- a/src/components/ui/PageLoading/index.tsx
++++ b/src/components/ui/PageLoading/index.tsx
+@@ -1,4 +1,4 @@
+-import BrandLogo from '@/components/BrandLogo';
++import { CoinLoader } from '@/motion/flows/CoinLoader';
+ 
+ import styles from './index.module.css';
+ 
+@@ -7,32 +7,15 @@ export interface PageLoadingProps {
+   label?: string;
+ }
+ 
+-const LOADING_DOTS = ['brand', 'positive', 'light', 'warning'] as const;
+-
+ /**
+- * Full-screen fallback for lazy route chunks.
+- * 路由懒加载期间的全屏兜底，避免动态资源尚未完成时出现白屏。
++ * Full-screen fallback for lazy route chunks: the rebrand Loader (coin + dots)
++ * in the very middle of the screen (PS.Loader fill, M-054).
++ * 路由懒加载期间的全屏兜底：品牌金币 + 圆点，居中。
+  */
+ export function PageLoading({ label = 'Loading page' }: PageLoadingProps) {
+   return (
+-    <div
+-      aria-busy="true"
+-      aria-live="polite"
+-      className={styles.root}
+-      role="status"
+-    >
+-      <div aria-hidden="true" className={styles.indicator}>
+-        <BrandLogo className={styles.logo} />
+-        <span className={styles.dots}>
+-          {LOADING_DOTS.map((tone) => (
+-            <span
+-              className={`${styles.dot} ${styles[`dot_${tone}`]}`}
+-              key={tone}
+-            />
+-          ))}
+-        </span>
+-      </div>
+-      <span className={styles.screenReaderText}>{label}</span>
++    <div aria-busy="true" aria-live="polite" className={styles.root}>
++      <CoinLoader label={label} />
+     </div>
+   );
+ }

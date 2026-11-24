@@ -1,0 +1,71 @@
+diff --git a/src/motion/toastStore.ts b/src/motion/toastStore.ts
+new file mode 100644
+index 0000000..80de20e
+--- /dev/null
++++ b/src/motion/toastStore.ts
+@@ -0,0 +1,65 @@
++import type { ReactNode } from 'react';
++
++/**
++ * The toasts on screen, oldest first — fed by the imperative `Toast.show`
++ * (src/components/ui/Toast, 132 call sites, signature unchanged) and read by
++ * `<Toaster/>`. A tiny external store (useSyncExternalStore) so `Toast.show`
++ * works from anywhere, inside or outside React.
++ */
++export interface ToastItem {
++  id: number;
++  content: ReactNode;
++  /** stacking of the toast layer while this toast shows (Toast.show zIndex, default 1100) */
++  zIndex: number;
++  /** closed by a swipe to the left (exits sideways) */
++  swiped?: boolean;
++}
++
++type Listener = () => void;
++
++let items: ToastItem[] = [];
++let nextId = 1;
++const listeners = new Set<Listener>();
++
++function emit() {
++  listeners.forEach((listener) => listener());
++}
++
++export const toastStore = {
++  subscribe(listener: Listener): () => void {
++    listeners.add(listener);
++    return () => listeners.delete(listener);
++  },
++  getSnapshot(): ToastItem[] {
++    return items;
++  },
++  /** R-TOAST: every call shows a new toast at once — never queued or merged. */
++  push(item: Omit<ToastItem, 'id'>): number {
++    const id = nextId;
++    nextId += 1;
++    items = [...items, { ...item, id }];
++    emit();
++    return id;
++  },
++  /** Closes one toast (timer, close(), or swipe). Unknown ids are ignored. */
++  remove(id: number, how?: 'swipe'): void {
++    if (!items.some((item) => item.id === id)) return;
++    if (how === 'swipe') {
++      // Mark first and render once, so the toast's exit is the sideways one,
++      // then drop it on the next tick (the demo's setTimeout 0, layout.js:251).
++      items = items.map((item) =>
++        item.id === id ? { ...item, swiped: true } : item,
++      );
++      emit();
++      setTimeout(() => toastStore.remove(id), 0);
++      return;
++    }
++    items = items.filter((item) => item.id !== id);
++    emit();
++  },
++  /** Test hook. */
++  reset(): void {
++    items = [];
++    emit();
++  },
++};

@@ -1,0 +1,56 @@
+diff --git a/src/components/ui/Toast/index.module.css b/src/components/ui/Toast/index.module.css
+deleted file mode 100644
+index f305f20..0000000
+--- a/src/components/ui/Toast/index.module.css
++++ /dev/null
+@@ -1,50 +0,0 @@
+-.toastOverlay {
+-  position: fixed;
+-  inset: 0;
+-  z-index: 1100;
+-  display: flex;
+-  align-items: center;
+-  justify-content: center;
+-  padding-inline: 24px;
+-  pointer-events: none;
+-}
+-
+-.toastOverlayTop {
+-  align-items: flex-start;
+-  padding-top: calc(
+-    var(--app-safe-area-top) + var(--app-header-content-height) + 0.5rem
+-  );
+-}
+-
+-.toastOverlayBottom {
+-  align-items: flex-end;
+-  padding-bottom: 96px;
+-}
+-
+-.toastContent {
+-  max-width: 70vw;
+-  padding: 12px 16px;
+-  border-radius: 8px;
+-  background: rgb(0 1 40 / 0.8);
+-  color: #ffffff;
+-  font-size: 14px;
+-  line-height: 20px;
+-  text-align: center;
+-  backdrop-filter: blur(4px);
+-}
+-
+-.toastContentPositioned {
+-  animation: toast-positioned-enter 180ms ease-out;
+-}
+-
+-@keyframes toast-positioned-enter {
+-  from {
+-    opacity: 0;
+-    transform: translateY(8px);
+-  }
+-
+-  to {
+-    opacity: 1;
+-    transform: translateY(0);
+-  }
+-}

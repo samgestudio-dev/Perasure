@@ -1,0 +1,109 @@
+diff --git a/src/pages/HomePage/WithdrawMainRoute/submissionMotion.ts b/src/pages/HomePage/WithdrawMainRoute/submissionMotion.ts
+index aa79974..6299360 100644
+--- a/src/pages/HomePage/WithdrawMainRoute/submissionMotion.ts
++++ b/src/pages/HomePage/WithdrawMainRoute/submissionMotion.ts
+@@ -56,7 +56,38 @@ export interface SubmissionPresentationOptions {
+   ): Promise<void>;
+   onEnd(): void;
+   onFailure?(reason: 'loop-fallback' | 'completion-fallback'): void;
++  /**
++   * How long a line's entrance lasts (560 ms + 16 ms per letter after the
++   * first, spaces not counted — fx.js:22 `tail(i)`). The coin starts turning
++   * into the tick halfway through the last line's entrance (fx.js:60).
++   * Defaults to 560 ms when the caller cannot count letters.
++   */
++  entranceMs?(stage: SubmissionVisualState): number;
+ }
++
++/**
++ * Order submit timings — demo `shared/ps-ui/fx.js:16` (PS.OrderSubmit, M-090):
++ * a line holds 1500 ms after its last letter is in (holdMs); 120 ms between
++ * lines (GAP). The confirming line holds for the real request (the demo's
++ * submitMs stands in for it), at most 15 s here.
++ */
++export const ORDER_SUBMIT = {
++  IN_MS: 560,
++  OUT_MS: 400,
++  STAGGER_MS: 16,
++  GAP_MS: 120,
++  HOLD_MS: 1500,
++  RISE: 12,
++  EXIT: 10,
++  BLUR: 5,
++  IN_EASE: 'cubic-bezier(0.34, 0.02, 0.2, 1)',
++  OUT_EASE: 'cubic-bezier(0.4, 0.05, 0.6, 0.4)',
++  /** the counting dots start 40 ms after the confirming line is in (fx.js:57) */
++  DOTS_AFTER_MS: 40,
++  /** fx.js:48: one count = 2000 ms, dot i lights at 0.25 / 0.5 / 0.75 */
++  DOTS_PERIOD_MS: 2000,
++  REQUEST_MAX_MS: 15000,
++} as const;
+ /** Owns one sequential presentation and a boolean completion intent, with no callback queue. */
+ export function createSubmissionPresentation(
+   options: SubmissionPresentationOptions,
+@@ -115,7 +146,7 @@ export function createSubmissionPresentation(
+   /** Keeps the original exit animation and 120ms gap between ordinary copy stages. */
+   async function leave(stage: SubmissionVisualState) {
+     await animate(stage, 'out');
+-    await motionWait(120);
++    await motionWait(ORDER_SUBMIT.GAP_MS);
+   }
+   /** Engine failures remove only the optional visual gate, never the real completion gate. */
+   async function runCoin(stage: 'loop' | 'completion') {
+@@ -134,26 +165,39 @@ export function createSubmissionPresentation(
+       options.onFailure?.(`${stage}-fallback`);
+     }
+   }
+-  /** 确认阶段最多等 15 秒；提前完成则立即进入结束动画，再按原时序退出。 */
++  /**
++   * The demo's chain (fx.js:52-63, M-090): line 1 in + hold 1500 → out → 120 →
++   * line 2 in (dots count) → holds for the request (≤ 15 s) → out → 120 →
++   * line 3 in at once; halfway through its entrance the coin finishes its
++   * current turn and plays the tick (no deadline); the end comes only when
++   * line 3 has held 1500 ms AND the tick has finished.
++   */
+   async function run() {
+-    await showAndHold('submitting', 1500);
++    await showAndHold('submitting', ORDER_SUBMIT.HOLD_MS);
+     await leave('submitting');
+     await showAndHold('confirming', 0);
+-    if (!completed) await Promise.race([completion, scope.wait(15000)]);
++    if (!completed)
++      await Promise.race([completion, scope.wait(ORDER_SUBMIT.REQUEST_MAX_MS)]);
+     assertActive();
+     await leave('confirming');
+-    if (coin && !reduced) {
+-      await runCoin('loop');
+-    }
+     assertActive();
+     ending = true;
+     options.showStage('completed');
+-    const coinEnd = runCoin('completion');
++    const coinEnd = (async () => {
++      if (coin && !reduced) {
++        await motionWait(
++          (options.entranceMs?.('completed') ?? ORDER_SUBMIT.IN_MS) / 2,
++        );
++        await runCoin('loop');
++      }
++      assertActive();
++      await runCoin('completion');
++    })();
+     await Promise.all([
+       coinEnd,
+       (async () => {
+         await animate('completed', 'in');
+-        await scope.wait(3000);
++        await scope.wait(ORDER_SUBMIT.HOLD_MS);
+       })(),
+     ]);
+     assertActive();
+@@ -188,7 +232,7 @@ export function createSubmissionPresentation(
+     closeCoinLoading() {
+       coinLoadingClosed = true;
+     },
+-    /** Updates preference without restarting copy or resetting its final 3000ms hold. */
++    /** Updates preference without restarting copy or resetting its final 1500ms hold. */
+     setReducedMotion(next: boolean) {
+       reduced = next;
+       coin?.setReducedMotion(next);

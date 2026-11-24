@@ -1,0 +1,295 @@
+diff --git a/src/pages/AuthPage/Identity/components/IdentityVerifyFailedDialog/index.tsx b/src/pages/AuthPage/Identity/components/IdentityVerifyFailedDialog/index.tsx
+index 60d07d1..43f502c 100644
+--- a/src/pages/AuthPage/Identity/components/IdentityVerifyFailedDialog/index.tsx
++++ b/src/pages/AuthPage/Identity/components/IdentityVerifyFailedDialog/index.tsx
+@@ -1,8 +1,7 @@
+-import { useEffect, useRef, useState } from 'react';
+-import { createPortal } from 'react-dom';
++import { useEffect, useRef } from 'react';
++import { m } from 'motion/react';
+ import { CircleAlert, X } from 'lucide-react';
+ 
+-import { useBottomSheetDragDismiss } from '@/components/ui/useBottomSheetDragDismiss';
+ import avoidBlurryImage from '@/assets/identity/ocr-fail/avoid-blurry.png';
+ import avoidFalseDocumentsImage from '@/assets/identity/ocr-fail/avoid-false-documents.png';
+ import avoidFlashImage from '@/assets/identity/ocr-fail/avoid-flash.png';
+@@ -10,6 +9,9 @@ import avoidIncompleteImage from '@/assets/identity/ocr-fail/avoid-incomplete.pn
+ import { lockScroll, unlockScroll } from '@/utils/browser/dom/scrollLock';
+ 
+ import styles from './index.module.css';
++import { pressProps } from '@/motion/press';
++import { Sheet } from '@/motion/Sheet';
++import { useScrimAttributes } from '@/motion/useScrimAttributes';
+ 
+ export type IdentityVerifyFailedDialogVariant =
+   'notIdentifyCard' | 'other' | 'unSupportedCard';
+@@ -35,7 +37,8 @@ export interface IdentityVerifyFailedDialogProps {
+   zIndex?: number;
+ }
+ 
+-const MOTION_DURATION = 220;
++/** Drag strip = the card's 16 px top padding, so it never covers a control. */
++const DRAG_STRIP_HEIGHT = '1rem';
+ 
+ const FAILED_GUIDES = [
+   {
+@@ -68,28 +71,12 @@ export function IdentityVerifyFailedDialog({
+   dataEventPrefix = 'identity_verify_failed',
+   zIndex = 1000,
+ }: IdentityVerifyFailedDialogProps) {
+-  const [rendered, setRendered] = useState(open);
+-  const [visible, setVisible] = useState(open);
+-  const sheetRef = useRef<HTMLElement | null>(null);
+-  const { backdropRef, isDragging, sheetDragProps } = useBottomSheetDragDismiss(
+-    {
+-      active: visible,
+-      onDismiss: onClose,
+-      sheetRef,
+-    },
+-  );
+-
+-  useEffect(() => {
+-    if (open) {
+-      setRendered(true);
+-      const frame = window.requestAnimationFrame(() => setVisible(true));
+-      return () => window.cancelAnimationFrame(frame);
+-    }
+-
+-    setVisible(false);
+-    const timer = window.setTimeout(() => setRendered(false), MOTION_DURATION);
+-    return () => window.clearTimeout(timer);
+-  }, [open]);
++  const sheetRef = useRef<HTMLDivElement | null>(null);
++  // the scrim keeps the old mask's tap tracking and label
++  useScrimAttributes(sheetRef, open, {
++    'aria-label': 'Close ID verify failed dialog',
++    'data-event-type': `${dataEventPrefix}_mask`,
++  });
+ 
+   useEffect(() => {
+     if (!open) return undefined;
+@@ -111,7 +98,7 @@ export function IdentityVerifyFailedDialog({
+     return () => window.removeEventListener('keydown', handleKeyDown);
+   }, [onClose, open]);
+ 
+-  if (!rendered || typeof document === 'undefined') {
++  if (typeof document === 'undefined') {
+     return null;
+   }
+ 
+@@ -143,115 +130,111 @@ export function IdentityVerifyFailedDialog({
+       ? (onUseDifferentId ?? onTryAgain)
+       : onTryAgain;
+ 
+-  return createPortal(
+-    <div
+-      className={`${styles.overlay} ${visible ? styles.overlayVisible : styles.overlayHidden}`}
+-      role="presentation"
+-      style={{ zIndex }}
++  // Motion: shared Sheet (M-013 slide on SPRING_PCT both ways, M-014 scrim
++  // 0.2 s in / LEAVE out, M-015 drag the top strip down, M-021 rows rise).
++  // The old 220 ms unmount timer vs 340 ms CSS transition mismatch is gone.
++  // 动效由共享 Sheet 承担；原 220ms 定时器与 340ms CSS 过渡不一致的问题随之消失。
++  return (
++    <Sheet
++      ariaLabelledBy="identity-verify-failed-title"
++      ariaModal
++      className={styles.sheet}
++      dragStripHeight={DRAG_STRIP_HEIGHT}
++      onClose={onClose}
++      open={open}
++      panelRef={sheetRef}
++      positionPanel={false}
++      riseSkip={1}
++      role="dialog"
++      scrimClassName={styles.mask}
++      zIndex={zIndex}
+     >
+-      <button
+-        aria-label="Close ID verify failed dialog"
+-        ref={backdropRef}
+-        className={styles.mask}
+-        data-event-type={`${dataEventPrefix}_mask`}
+-        onClick={onClose}
+-        type="button"
+-      />
+-      <section
+-        aria-labelledby="identity-verify-failed-title"
+-        aria-modal="true"
+-        className={`${styles.sheet} ${visible ? styles.sheetVisible : styles.sheetHidden} ${isDragging ? styles.sheetDragging : ''}`}
+-        ref={sheetRef}
+-        role="dialog"
+-        {...sheetDragProps}
+-      >
+-        <span aria-hidden="true" className={styles.handle} />
+-
+-        <header className={styles.header}>
+-          <div className={styles.titleRow}>
+-            <div className={styles.titleText}>
+-              <CircleAlert aria-hidden="true" className={styles.warningIcon} />
+-              <h2 className={styles.title} id="identity-verify-failed-title">
+-                ID verify failed
+-              </h2>
+-            </div>
+-            <button
+-              aria-label="Close"
+-              className={styles.closeButton}
+-              data-event-type={`${dataEventPrefix}_close`}
+-              onClick={onClose}
+-              type="button"
+-            >
+-              <X aria-hidden="true" size={14} strokeWidth={3} />
+-            </button>
+-          </div>
+-          <p className={styles.description}>{description}</p>
+-        </header>
+-
+-        {shouldShowSupportedCards ? (
+-          <div className={styles.supportedCardPanel}>
+-            {/* Unsupported-card follows 011: show the whitelist instead of photo tips. */}
+-            {/* 不支持证件时对齐 011：展示支持证件白名单，而不是拍摄提示。 */}
+-            <p className={styles.supportedCardTitle}>
+-              Please use the following cards:
+-            </p>
+-            <p className={styles.supportedCardText}>
+-              UMID / TIN / SSS / PASSPORT / DRIVER LICENSE / PhilHealth /
+-              voters'ID / Postal Card / National ID
+-            </p>
+-            <p className={styles.supportedCardTip}>
+-              *Tips: Don’t use the cards except the types above.
+-            </p>
++      <span aria-hidden="true" className={styles.handle} />
++
++      <header className={styles.header}>
++        <div className={styles.titleRow}>
++          <div className={styles.titleText}>
++            <CircleAlert aria-hidden="true" className={styles.warningIcon} />
++            <h2 className={styles.title} id="identity-verify-failed-title">
++              ID verify failed
++            </h2>
+           </div>
+-        ) : (
+-          <div className={styles.guidePanel}>
+-            {FAILED_GUIDES.map((guide) => (
+-              <div className={styles.guideItem} key={guide.label}>
+-                {/* These assets are copied from 011's OCR failure component so the
+-                    failed-state visual matches the existing business guidance. */}
+-                {/* 失败示例图复用 011 的 OCR 失败组件资源，保证提示内容与旧链路一致。 */}
+-                <img
+-                  alt=""
+-                  aria-hidden="true"
+-                  className={styles.guidePreview}
+-                  src={guide.image}
+-                />
+-                <span className={styles.guideLabel}>{guide.label}</span>
+-              </div>
+-            ))}
+-          </div>
+-        )}
+-
+-        <div className={styles.actions}>
+-          <button
+-            className={
+-              shouldShowManualEntry
+-                ? styles.tryAgainButton
+-                : styles.primaryButton
+-            }
+-            data-event-type={`${dataEventPrefix}_${variant === 'unSupportedCard' ? 'use_different_id' : 'try_again'}`}
+-            onClick={handlePrimaryAction}
++          <m.button
++            aria-label="Close"
++            className={styles.closeButton}
++            data-event-type={`${dataEventPrefix}_close`}
++            onClick={onClose}
+             type="button"
++            {...pressProps(true)}
+           >
+-            {primaryActionText}
+-          </button>
+-          {shouldShowManualEntry ? (
+-            // Manual entry is only available when OCR found a card type but
+-            // failed to extract usable fields. Unsupported cards must switch ID.
+-            // 只有识别到证件类型但字段不可用时允许手填；不支持证件必须换证件。
+-            <button
+-              className={styles.enterManuallyButton}
+-              data-event-type={`${dataEventPrefix}_enter_manually`}
+-              onClick={onEnterManually}
+-              type="button"
+-            >
+-              Enter manually
+-            </button>
+-          ) : null}
++            <X aria-hidden="true" size={14} strokeWidth={3} />
++          </m.button>
+         </div>
+-      </section>
+-    </div>,
+-    document.body,
++        <p className={styles.description}>{description}</p>
++      </header>
++
++      {shouldShowSupportedCards ? (
++        <div className={styles.supportedCardPanel}>
++          {/* Unsupported-card follows 011: show the whitelist instead of photo tips. */}
++          {/* 不支持证件时对齐 011：展示支持证件白名单，而不是拍摄提示。 */}
++          <p className={styles.supportedCardTitle}>
++            Please use the following cards:
++          </p>
++          <p className={styles.supportedCardText}>
++            UMID / TIN / SSS / PASSPORT / DRIVER LICENSE / PhilHealth /
++            voters'ID / Postal Card / National ID
++          </p>
++          <p className={styles.supportedCardTip}>
++            *Tips: Don’t use the cards except the types above.
++          </p>
++        </div>
++      ) : (
++        <div className={styles.guidePanel}>
++          {FAILED_GUIDES.map((guide) => (
++            <div className={styles.guideItem} key={guide.label}>
++              {/* These assets are copied from 011's OCR failure component so the
++                    failed-state visual matches the existing business guidance. */}
++              {/* 失败示例图复用 011 的 OCR 失败组件资源，保证提示内容与旧链路一致。 */}
++              <img
++                alt=""
++                aria-hidden="true"
++                className={styles.guidePreview}
++                src={guide.image}
++              />
++              <span className={styles.guideLabel}>{guide.label}</span>
++            </div>
++          ))}
++        </div>
++      )}
++
++      <div className={styles.actions}>
++        <m.button
++          className={
++            shouldShowManualEntry ? styles.tryAgainButton : styles.primaryButton
++          }
++          data-event-type={`${dataEventPrefix}_${variant === 'unSupportedCard' ? 'use_different_id' : 'try_again'}`}
++          onClick={handlePrimaryAction}
++          type="button"
++          {...pressProps()}
++        >
++          {primaryActionText}
++        </m.button>
++        {shouldShowManualEntry ? (
++          // Manual entry is only available when OCR found a card type but
++          // failed to extract usable fields. Unsupported cards must switch ID.
++          // 只有识别到证件类型但字段不可用时允许手填；不支持证件必须换证件。
++          <m.button
++            className={styles.enterManuallyButton}
++            data-event-type={`${dataEventPrefix}_enter_manually`}
++            onClick={onEnterManually}
++            type="button"
++            {...pressProps()}
++          >
++            Enter manually
++          </m.button>
++        ) : null}
++      </div>
++    </Sheet>
+   );
+ }
+ 

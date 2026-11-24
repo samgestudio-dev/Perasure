@@ -1,37 +1,54 @@
 {
  "meta": {
-  "designRepo": "/Users/samge/Documents/PeraSure Project/Perasure/ (branch tokens/rebrand-v3)",
+  "designRepo": "samgestudio-dev/Perasure, branch tokens/rebrand-v3 (rebrandSource paths are relative to that repo; rebrandSourceInPackage = the copy in this package, or null when the file is not shipped)",
   "production": "phi_h5_025 master 0d9bdd4",
-  "rule": "G-004/G-005: one typeface, Hanken Grotesk, for everything including amounts and the ₱ sign. Colour rule G-001: legacy blue → green at the same role, old neutral → navy."
+  "rule": "G-004/G-005: one typeface, Hanken Grotesk, for everything including amounts and the ₱ sign. Colour rule G-001: legacy blue → green at the same role, old neutral → navy.",
+  "applyPy": "tools/apply.py --step 5 (also part of --step all) does every row with applyPy = \"recolour\" (replace each colourReplacements from-hex with its to-hex in the file, case-insensitive) or \"remove\" (delete removePaths); applyPy = null rows are code edits in 02-changes (applied by the same step), kept as they are, or need design / owner (see action / note)"
  },
  "fonts": [
   {
    "productionPath": "public/fonts/hanken-grotesk/HankenGrotesk-Variable.woff2",
    "action": "keep (now the only face)",
-   "rebrandSource": "/Users/samge/Documents/PeraSure Project/Perasure/assets/fonts/hanken-grotesk-var.woff2",
-   "note": "Production file (56,020 B, weights 300–900 declared) is larger than the design repo copy (37,148 B, 100–900), so keep production. Check it has U+20B1 ₱ (G-007) and U+2011 non-breaking hyphen (G-008); if not, swap in the design-repo file and widen the @font-face weight to 100 900.",
-   "changeId": "G-004, G-005, G-007, G-008"
+   "rebrandSource": "assets/fonts/hanken-grotesk-var.woff2",
+   "note": "Production file (56,020 B, weights 300–900 declared) is larger than the design repo copy (37,148 B, 100–900), so keep production. Glyph check done 2026-11-25 (glyphCheck): U+20B1 present, U+2011 missing in both files.",
+   "changeId": "G-004, G-005, G-007, G-008",
+   "rebrandSourceInPackage": "04-assets/files/assets/fonts/hanken-grotesk-var.woff2",
+   "applyPy": null,
+   "glyphCheck": {
+    "command": "python3 -m venv .venv && .venv/bin/pip install fonttools brotli && .venv/bin/python -c \"from fontTools.ttLib import TTFont; import sys; cm = TTFont(sys.argv[1]).getBestCmap(); print({hex(u): u in cm for u in (0x20B1, 0x2011)})\" public/fonts/hanken-grotesk/HankenGrotesk-Variable.woff2",
+    "result2026-11-25": "production HankenGrotesk-Variable.woff2: U+20B1 (peso) present, U+2011 (non-breaking hyphen) MISSING. Design-repo hanken-grotesk-var.woff2: U+20B1 present, U+2011 MISSING too, so swapping the file does not help.",
+    "consequence": "the U+2011 characters of step 6 (E-wallet, 10-digit, e-wallet …) are drawn from the next font in the stack (the system sans-serif) for that one glyph; the line still never breaks there. Open item: OPEN-QUESTIONS.md \"U+2011 glyph\"."
+   }
   },
   {
    "productionPath": "public/fonts/inter/Inter-Variable.woff2 (+ OFL.txt)",
    "action": "remove",
    "rebrandSource": null,
    "note": "After global.css L4-10 and baked-heap.css L1-6 are deleted and body uses --font-family-body. Stale var(…, Inter) fallbacks never render.",
-   "changeId": "G-004"
+   "changeId": "G-004",
+   "applyPy": "remove",
+   "removePaths": [
+    "public/fonts/inter"
+   ]
   },
   {
    "productionPath": "public/fonts/satoshi/Satoshi-Medium.woff2, Satoshi-Bold.woff2 (+ README.md)",
    "action": "remove",
    "rebrandSource": null,
    "note": "Satoshi drew money digits in 7 files; they move to --font-family-number (Hanken 700). @font-face at global.css L20-34 and baked-heap.css L7-18 deleted.",
-   "changeId": "G-005"
+   "changeId": "G-005",
+   "applyPy": "remove",
+   "removePaths": [
+    "public/fonts/satoshi"
+   ]
   },
   {
    "productionPath": "'Nunito Sans' (QrCodePayment save button), Roboto/Arial Black/Helvetica (DisclosureStatementForm)",
    "action": "Nunito → Hanken (edited); disclosure fonts kept",
    "rebrandSource": null,
    "note": "Never loaded in production; QR button restyled to C-115. The legal document keeps its own fonts.",
-   "changeId": "C-115"
+   "changeId": "C-115",
+   "applyPy": null
   }
  ],
  "animations": [
@@ -39,7 +56,7 @@
    "productionPath": "src/pages/HomePage/WithdrawMainRoute/motion/loadingCoin.ts",
    "kind": "GSAP/SVG in code (from Lottie)",
    "action": "recolour in code",
-   "rebrandSource": "/Users/samge/Documents/PeraSure Project/Perasure/rebrand/animations/coins-loading/gsap/loading-coin.js",
+   "rebrandSource": "rebrand/animations/coins-loading/gsap/loading-coin.js",
    "colourReplacements": [
     {
      "from": "rgb(43,116,189) ×10 (line 117)",
@@ -52,13 +69,15 @@
      "token": null
     }
    ],
-   "changeId": "G-031"
+   "changeId": "G-031",
+   "rebrandSourceInPackage": "04-assets/files/rebrand/animations/coins-loading/gsap/loading-coin.js",
+   "applyPy": null
   },
   {
    "productionPath": "src/pages/HomePage/WithdrawMainRoute/motion/successCoin.ts",
    "kind": "GSAP/SVG in code (from Lottie)",
    "action": "recolour in code",
-   "rebrandSource": "/Users/samge/Documents/PeraSure Project/Perasure/rebrand/animations/coins-loading/gsap/success-coin.js",
+   "rebrandSource": "rebrand/animations/coins-loading/gsap/success-coin.js",
    "colourReplacements": [
     {
      "from": "rgb(43,116,189) ×39 (line 144)",
@@ -77,13 +96,15 @@
     }
    ],
    "changeId": "G-031",
-   "note": "Rebrand Lottie JSON (rebrand/animations/coins-loading/*.json) holds the same colours if production ever re-bakes. preview.png there is NOT regenerated."
+   "note": "Rebrand Lottie JSON (rebrand/animations/coins-loading/*.json) holds the same colours if production ever re-bakes. preview.png there is NOT regenerated.",
+   "rebrandSourceInPackage": "04-assets/files/rebrand/animations/coins-loading/gsap/success-coin.js",
+   "applyPy": null
   },
   {
    "productionPath": "index.html .static-boot__dot (line 68)",
    "kind": "CSS keyframes",
    "action": "recolour",
-   "rebrandSource": "/Users/samge/Documents/PeraSure Project/Perasure/shared/ps-ui/assets/lottie/loading-dots.json",
+   "rebrandSource": "shared/ps-ui/assets/lottie/loading-dots.json",
    "colourReplacements": [
     {
      "from": "#2c74be",
@@ -91,13 +112,15 @@
      "token": "--fg-accent"
     }
    ],
-   "changeId": "G-032"
+   "changeId": "G-032",
+   "rebrandSourceInPackage": "04-assets/files/shared/ps-ui/assets/lottie/loading-dots.json",
+   "applyPy": null
   },
   {
    "productionPath": "src/components/ui/PageLoading (4 dots)",
    "kind": "CSS keyframes",
    "action": "recolour (all dots one colour)",
-   "rebrandSource": "/Users/samge/Documents/PeraSure Project/Perasure/shared/ps-ui/assets/lottie/loading-dots.json",
+   "rebrandSource": "shared/ps-ui/assets/lottie/loading-dots.json",
    "colourReplacements": [
     {
      "from": "brand / positive / warning / light dot colours",
@@ -106,7 +129,9 @@
     }
    ],
    "changeId": "G-032",
-   "note": "Edits in changes-by-file (owner: multi-colour dots become one colour)."
+   "note": "Edits in changes-by-file (owner: multi-colour dots become one colour).",
+   "rebrandSourceInPackage": "04-assets/files/shared/ps-ui/assets/lottie/loading-dots.json",
+   "applyPy": null
   },
   {
    "productionPath": "src/pages/OutPages/DiversionPage/Landing/components/DiversionLandingLoading",
@@ -120,13 +145,14 @@
      "token": "--fg-accent"
     }
    ],
-   "changeId": "G-032"
+   "changeId": "G-032",
+   "applyPy": null
   },
   {
    "productionPath": "src/pages/HomePage/CreditIncreaseIntro/material/ (baked-heap.css/.html/.js, entry.ts) + adapter.ts",
    "kind": "baked canvas + GSAP in an iframe",
    "action": "recolour + font swap in code",
-   "rebrandSource": "/Users/samge/Documents/PeraSure Project/Perasure/rebrand/prototypes/credit-limit-coins/baked/",
+   "rebrandSource": "rebrand/prototypes/credit-limit-coins/baked/",
    "colourReplacements": [
     {
      "from": "#3fa0f0 accent",
@@ -160,16 +186,20 @@
     }
    ],
    "changeId": "G-001, G-004, G-005",
-   "note": "Line-level edits in changes-by-file. Rebrand copy is not wired in the demo (owner to confirm)."
+   "note": "Line-level edits in changes-by-file. Rebrand copy is not wired in the demo (owner to confirm).",
+   "rebrandSourceInPackage": null,
+   "applyPy": null
   },
   {
    "productionPath": "(none) empty-box animation",
    "kind": "Lottie / GSAP",
    "action": "optional add",
-   "rebrandSource": "/Users/samge/Documents/PeraSure Project/Perasure/animations/empty-box/gsap/empty-box.js",
+   "rebrandSource": "animations/empty-box/gsap/empty-box.js",
    "colourReplacements": [],
    "changeId": "P-003, C-144",
-   "note": "Rebrand plays it on full-page empty states (GuestPay). Adding it to production is a structure change; static empty-state images stay valid."
+   "note": "Rebrand plays it on full-page empty states (GuestPay). Adding it to production is a structure change; static empty-state images stay valid.",
+   "rebrandSourceInPackage": null,
+   "applyPy": null
   }
  ],
  "logos": [
@@ -184,7 +214,8 @@
    "usedBy": [
     "src/components/BrandLogo.tsx",
     "src/pages/OutPages/DiversionPage/Landing/components/DiversionLandingLoading/index.tsx"
-   ]
+   ],
+   "applyPy": null
   },
   {
    "productionPath": "src/assets/about-footer-brand.svg",
@@ -202,7 +233,8 @@
    "note": "Footer wordmark grey #97a0a6 → #8a8a9c (--fg-disabled).",
    "usedBy": [
     "src/pages/SupportPage/AboutPage/index.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/assets/home/partner-logos.svg",
@@ -226,13 +258,14 @@
    "usedBy": [
     "src/pages/HomePage/Home/components/MadeForFilipinos/index.tsx",
     "src/pages/OutPages/DiversionPage/Home/components/MadeForFilipinos/index.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/assets/home/sec-registration.svg",
    "category": "third-party-logo/credential",
    "action": "recolour",
-   "rebrandSource": "/Users/samge/Documents/PeraSure Project/Perasure/shared/ps-ui/assets/logos/sec-shape.svg",
+   "rebrandSource": "shared/ps-ui/assets/logos/sec-shape.svg",
    "colourReplacements": [
     {
      "from": "#2c74be",
@@ -245,7 +278,9 @@
    "usedBy": [
     "src/pages/HomePage/Home/components/MadeForFilipinos/index.tsx",
     "src/pages/OutPages/DiversionPage/Home/components/MadeForFilipinos/index.tsx"
-   ]
+   ],
+   "rebrandSourceInPackage": "04-assets/files/shared/ps-ui/assets/logos/sec-shape.svg",
+   "applyPy": "recolour"
   },
   {
    "productionPath": "public/logo.svg",
@@ -260,7 +295,8 @@
     "src/config/env.ts",
     "src/pages/ConfirmPage/DisclosureLetterPage/DisclosureLetter/DisclosureStatementForm.tsx",
     "src/pages/HomePage/Home/rejectDiversion/registry.ts"
-   ]
+   ],
+   "applyPy": null
   }
  ],
  "icons": [
@@ -286,13 +322,14 @@
     "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx",
     "src/pages/SupportPage/AboutPage/index.tsx",
     "src/pages/SupportPage/CustomerServicePage/index.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/assets/home/quote-mark.svg",
    "category": "icon",
    "action": "replace",
-   "rebrandSource": "/Users/samge/Documents/PeraSure Project/Perasure/shared/ps-ui/assets/art/quote.svg",
+   "rebrandSource": "shared/ps-ui/assets/art/quote.svg",
    "colourReplacements": [
     {
      "from": "#cdd1d4",
@@ -306,7 +343,9 @@
     "src/pages/HomePage/Home/components/HomePromotionSection/index.tsx",
     "src/pages/HomePage/Home/components/NewCustomer/index.tsx",
     "src/pages/OutPages/DiversionPage/Home/components/HomeMarketingSections/index.tsx"
-   ]
+   ],
+   "rebrandSourceInPackage": "04-assets/files/shared/ps-ui/assets/art/quote.svg",
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/assets/loan/loan-detail-reviewing.svg",
@@ -324,7 +363,8 @@
    "note": "Glyph unchanged; swap the hex in the file (or switch fills to currentColor and colour from CSS, as the rebrand icons do).",
    "usedBy": [
     "src/pages/AuthPage/LoanDetail/index.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/assets/payment-methods/default-wallet.svg",
@@ -342,7 +382,8 @@
    "note": "Glyph unchanged; swap the hex in the file (or switch fills to currentColor and colour from CSS, as the rebrand icons do).",
    "usedBy": [
     "src/components/ui/PaymentMethodIcon/index.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/assets/svg/credit-validity/close.svg",
@@ -363,7 +404,8 @@
     "src/pages/ConfirmPage/Order/components/ReceivingAccountGuideSheet/index.tsx",
     "src/pages/HomePage/Account/index.tsx",
     "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/assets/svg/withdraw-amount-edit.svg",
@@ -381,7 +423,8 @@
    "note": "Glyph unchanged; swap the hex in the file (or switch fills to currentColor and colour from CSS, as the rebrand icons do).",
    "usedBy": [
     "src/components/ui/LoanQuote/index.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/components/ui/NoticeTicker/assets/info.svg",
@@ -401,7 +444,8 @@
     "src/components/ui/CreditValidityTooltip/index.tsx",
     "src/components/ui/NoticeTicker/index.tsx",
     "src/pages/HomePage/Account/index.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/features/workProfile/documents/assets/10347-9087.svg",
@@ -419,7 +463,8 @@
    "note": "Glyph unchanged; swap the hex in the file (or switch fills to currentColor and colour from CSS, as the rebrand icons do).",
    "usedBy": [
     "src/features/workProfile/documents/WorkDocumentsField.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/features/workProfile/documents/assets/9565-10122.svg",
@@ -437,7 +482,8 @@
    "note": "Glyph unchanged; swap the hex in the file (or switch fills to currentColor and colour from CSS, as the rebrand icons do).",
    "usedBy": [
     "src/features/workProfile/documents/WorkDocumentsField.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/features/workProfile/documents/assets/9565-10124.svg",
@@ -455,7 +501,8 @@
    "note": "Glyph unchanged; swap the hex in the file (or switch fills to currentColor and colour from CSS, as the rebrand icons do).",
    "usedBy": [
     "src/features/workProfile/documents/WorkDocumentsField.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/features/workProfile/documents/assets/9565-10137.svg",
@@ -473,7 +520,8 @@
    "note": "Glyph unchanged; swap the hex in the file (or switch fills to currentColor and colour from CSS, as the rebrand icons do).",
    "usedBy": [
     "src/features/workProfile/documents/WorkDocumentsField.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/features/workProfile/documents/assets/9565-10156.svg",
@@ -491,7 +539,8 @@
    "note": "Glyph unchanged; swap the hex in the file (or switch fills to currentColor and colour from CSS, as the rebrand icons do).",
    "usedBy": [
     "src/features/workProfile/documents/WorkDocumentsField.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/AccountPage/AccountDeletion/assets/chevron-right.svg",
@@ -515,7 +564,8 @@
     "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx",
     "src/pages/SupportPage/AboutPage/index.tsx",
     "src/pages/SupportPage/CustomerServicePage/index.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/AccountPage/AccountDeletionReason/assets/radio-selected.svg",
@@ -533,7 +583,8 @@
    "note": "Selected radio: ring --border-accent-strong #298648, dot --fg-accent #298648.",
    "usedBy": [
     "src/pages/AccountPage/AccountDeletionReason/index.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/AccountPage/Inbox/assets/notification.svg",
@@ -551,7 +602,8 @@
    "note": "Glyph unchanged; swap the hex in the file (or switch fills to currentColor and colour from CSS, as the rebrand icons do).",
    "usedBy": [
     "src/pages/AccountPage/Inbox/VirtualMessageList.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/AuthPage/Liveness/assets/profile-icon-area.svg",
@@ -569,7 +621,8 @@
    "note": "Glyph unchanged; swap the hex in the file (or switch fills to currentColor and colour from CSS, as the rebrand icons do).",
    "usedBy": [
     "src/pages/AuthPage/Liveness/components/LivenessStatusCircle/index.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/ConfirmPage/Order/components/ReceivingAccountGuideSheet/close.svg",
@@ -590,7 +643,8 @@
     "src/pages/ConfirmPage/Order/components/ReceivingAccountGuideSheet/index.tsx",
     "src/pages/HomePage/Account/index.tsx",
     "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/CreditLimitPage/assets/pending.svg",
@@ -609,7 +663,8 @@
    "usedBy": [
     "src/components/ui/CreditValidityTooltip/index.tsx",
     "src/pages/CreditLimitPage/HistorySection.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/HomePage/Account/assets/icons/contact.svg",
@@ -627,7 +682,8 @@
    "note": "Glyph unchanged; swap the hex in the file (or switch fills to currentColor and colour from CSS, as the rebrand icons do).",
    "usedBy": [
     "src/pages/HomePage/Account/index.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/HomePage/Account/assets/icons/customer-service.svg",
@@ -646,7 +702,8 @@
    "usedBy": [
     "src/pages/HomePage/Payment/components/FraudWarningSheet/index.tsx",
     "src/pages/HomePage/index.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/HomePage/Account/assets/icons/inbox.svg",
@@ -665,7 +722,8 @@
    "usedBy": [
     "src/pages/HomePage/Account/index.tsx",
     "src/pages/HomePage/index.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/HomePage/Account/assets/icons/logout-close.svg",
@@ -683,7 +741,8 @@
    "note": "Glyph unchanged; swap the hex in the file (or switch fills to currentColor and colour from CSS, as the rebrand icons do).",
    "usedBy": [
     "src/pages/HomePage/Account/index.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/HomePage/Account/assets/icons/manage-account.svg",
@@ -701,13 +760,14 @@
    "note": "Glyph unchanged; swap the hex in the file (or switch fills to currentColor and colour from CSS, as the rebrand icons do).",
    "usedBy": [
     "src/pages/HomePage/Account/index.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/HomePage/Account/assets/icons/nav-account.svg",
    "category": "icon",
    "action": "recolour + currentColor",
-   "rebrandSource": "/Users/samge/Documents/PeraSure Project/Perasure/shared/ps-ui/assets/icons/nav-account.svg",
+   "rebrandSource": "shared/ps-ui/assets/icons/nav-account.svg",
    "colourReplacements": [
     {
      "from": "#141e24",
@@ -720,13 +780,15 @@
    "usedBy": [
     "src/pages/HomePage/Account/index.tsx",
     "src/pages/HomePage/BottomNavigation/index.tsx"
-   ]
+   ],
+   "rebrandSourceInPackage": "04-assets/files/shared/ps-ui/assets/icons/nav-account.svg",
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/HomePage/Account/assets/icons/nav-home.svg",
    "category": "icon",
    "action": "recolour + currentColor",
-   "rebrandSource": "/Users/samge/Documents/PeraSure Project/Perasure/shared/ps-ui/assets/icons/nav-home.svg",
+   "rebrandSource": "shared/ps-ui/assets/icons/nav-home.svg",
    "colourReplacements": [
     {
      "from": "#141e24",
@@ -738,13 +800,15 @@
    "note": "As nav-account.",
    "usedBy": [
     "src/pages/HomePage/BottomNavigation/index.tsx"
-   ]
+   ],
+   "rebrandSourceInPackage": "04-assets/files/shared/ps-ui/assets/icons/nav-home.svg",
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/HomePage/Account/assets/icons/nav-payment.svg",
    "category": "icon",
    "action": "recolour + currentColor",
-   "rebrandSource": "/Users/samge/Documents/PeraSure Project/Perasure/shared/ps-ui/assets/icons/nav-payment.svg",
+   "rebrandSource": "shared/ps-ui/assets/icons/nav-payment.svg",
    "colourReplacements": [
     {
      "from": "#141e24",
@@ -756,7 +820,9 @@
    "note": "As nav-account.",
    "usedBy": [
     "src/pages/HomePage/BottomNavigation/index.tsx"
-   ]
+   ],
+   "rebrandSourceInPackage": "04-assets/files/shared/ps-ui/assets/icons/nav-payment.svg",
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/HomePage/Home/assets/loan-update.svg",
@@ -774,7 +840,8 @@
    "note": "Glyph unchanged; swap the hex in the file (or switch fills to currentColor and colour from CSS, as the rebrand icons do).",
    "usedBy": [
     "src/pages/HomePage/Home/HomeComposite.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/HomePage/Home/assets/repayment-calendar.svg",
@@ -792,7 +859,8 @@
    "note": "Glyph unchanged; swap the hex in the file (or switch fills to currentColor and colour from CSS, as the rebrand icons do).",
    "usedBy": [
     "src/pages/HomePage/Home/HomeComposite.module.css"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/HomePage/Payment/components/PaymentMethodDrawer/assets/category-bank-roof.svg",
@@ -810,7 +878,8 @@
    "note": "Glyph unchanged; swap the hex in the file (or switch fills to currentColor and colour from CSS, as the rebrand icons do).",
    "usedBy": [
     "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/HomePage/Payment/components/PaymentMethodDrawer/assets/category-bill.svg",
@@ -828,7 +897,8 @@
    "note": "Glyph unchanged; swap the hex in the file (or switch fills to currentColor and colour from CSS, as the rebrand icons do).",
    "usedBy": [
     "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/HomePage/Payment/components/PaymentMethodDrawer/assets/category-phone.svg",
@@ -846,7 +916,8 @@
    "note": "Glyph unchanged; swap the hex in the file (or switch fills to currentColor and colour from CSS, as the rebrand icons do).",
    "usedBy": [
     "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/HomePage/Payment/components/PaymentMethodDrawer/assets/category-qr.svg",
@@ -864,7 +935,8 @@
    "note": "Glyph unchanged; swap the hex in the file (or switch fills to currentColor and colour from CSS, as the rebrand icons do).",
    "usedBy": [
     "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/HomePage/Payment/components/PaymentMethodDrawer/assets/category-shop.svg",
@@ -882,7 +954,8 @@
    "note": "Glyph unchanged; swap the hex in the file (or switch fills to currentColor and colour from CSS, as the rebrand icons do).",
    "usedBy": [
     "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/HomePage/Payment/components/PaymentMethodDrawer/assets/chevron-right.svg",
@@ -906,7 +979,8 @@
     "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx",
     "src/pages/SupportPage/AboutPage/index.tsx",
     "src/pages/SupportPage/CustomerServicePage/index.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/HomePage/Payment/components/PaymentMethodDrawer/assets/close.svg",
@@ -927,7 +1001,8 @@
     "src/pages/ConfirmPage/Order/components/ReceivingAccountGuideSheet/index.tsx",
     "src/pages/HomePage/Account/index.tsx",
     "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/HomePage/Payment/components/PaymentMethodDrawer/assets/search.svg",
@@ -946,7 +1021,8 @@
    "usedBy": [
     "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx",
     "src/pages/SupportPage/FaqPage/index.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/RepayPage/QrCodePayment/assets/download.svg",
@@ -964,7 +1040,8 @@
    "note": "Glyph unchanged; swap the hex in the file (or switch fills to currentColor and colour from CSS, as the rebrand icons do).",
    "usedBy": [
     "src/pages/RepayPage/QrCodePayment/index.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/SupportPage/BirRegistrationPage/assets/external-link.svg",
@@ -982,7 +1059,8 @@
    "note": "Glyph unchanged; swap the hex in the file (or switch fills to currentColor and colour from CSS, as the rebrand icons do).",
    "usedBy": [
     "src/pages/SupportPage/BirRegistrationPage/index.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/SupportPage/CustomerServicePage/assets/chevron-right.svg",
@@ -1006,7 +1084,8 @@
     "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx",
     "src/pages/SupportPage/AboutPage/index.tsx",
     "src/pages/SupportPage/CustomerServicePage/index.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/SupportPage/CustomerServicePage/assets/online-customer-support.svg",
@@ -1024,7 +1103,8 @@
    "note": "Glyph unchanged; swap the hex in the file (or switch fills to currentColor and colour from CSS, as the rebrand icons do).",
    "usedBy": [
     "src/pages/SupportPage/CustomerServicePage/index.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/SupportPage/CustomerServicePage/assets/phone.svg",
@@ -1044,7 +1124,8 @@
     "src/pages/AuthPage/OtpVerify/index.tsx",
     "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx",
     "src/pages/SupportPage/CustomerServicePage/index.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/SupportPage/FaqPage/assets/search.svg",
@@ -1063,7 +1144,8 @@
    "usedBy": [
     "src/pages/HomePage/Payment/components/PaymentMethodDrawer/CategoryIcons.tsx",
     "src/pages/SupportPage/FaqPage/index.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/pages/HomePage/Payment/components/PaymentMethodDrawer/index.module.css (category icon filter chains)",
@@ -1083,7 +1165,8 @@
     }
    ],
    "changeId": "C-116",
-   "note": "Category icons are tinted by hard-coded CSS filter chains; recompute the chains or switch to mask-image + background-color. See changes-by-file for the lines."
+   "note": "Category icons are tinted by hard-coded CSS filter chains; recompute the chains or switch to mask-image + background-color. See changes-by-file for the lines.",
+   "applyPy": null
   }
  ],
  "emptyStatesAndIllustrations": [
@@ -1098,7 +1181,8 @@
    "usedBy": [
     "src/pages/AuthPage/BankCard/components/BankSearchSelect/index.tsx",
     "src/pages/HomePage/Payment/components/PaymentMethodDrawer/index.tsx"
-   ]
+   ],
+   "applyPy": null
   },
   {
    "productionPath": "src/assets/empty-states/history-empty.svg",
@@ -1112,7 +1196,8 @@
     "src/pages/AuthPage/LoanHistory/index.tsx",
     "src/pages/CreditHistoryPage/index.tsx",
     "src/pages/HomePage/Payment/components/EmptyPaymentState/index.tsx"
-   ]
+   ],
+   "applyPy": null
   },
   {
    "productionPath": "src/assets/home/application-state-glow.svg",
@@ -1124,20 +1209,23 @@
    "note": "Cyan glow #9ae8ff on the (now navy) application card; no rebrand counterpart.",
    "usedBy": [
     "src/pages/HomePage/Home/components/ApplicationStateCard/index.tsx"
-   ]
+   ],
+   "applyPy": null
   },
   {
    "productionPath": "src/assets/home/made-for-filipinos-avatars.png",
    "category": "illustration",
    "action": "needs owner",
-   "rebrandSource": "/Users/samge/Documents/PeraSure Project/Perasure/shared/ps-ui/assets/art/review-avatars.png",
+   "rebrandSource": "shared/ps-ui/assets/art/review-avatars.png",
    "colourReplacements": [],
    "changeId": "C-083",
    "note": "Rebrand review cards use 3 separate Figma photos (28 px, 2 px white line, elevation-1). Production cuts avatars from this group photo; swapping is a small structural change.",
    "usedBy": [
     "src/pages/HomePage/Home/components/MadeForFilipinos/index.tsx",
     "src/pages/OutPages/DiversionPage/Home/components/MadeForFilipinos/index.tsx"
-   ]
+   ],
+   "rebrandSourceInPackage": "04-assets/files/shared/ps-ui/assets/art/review-avatars.png",
+   "applyPy": null
   },
   {
    "productionPath": "src/assets/payment-methods/empty-account.svg",
@@ -1155,7 +1243,8 @@
    "note": "Legacy blue #2c74be → #298648.",
    "usedBy": [
     "src/pages/HomePage/WithdrawMainRoute/index.tsx"
-   ]
+   ],
+   "applyPy": "recolour"
   },
   {
    "productionPath": "src/components/ui/AppEntryLanding/assets/app-entry-showcase.png",
@@ -1167,7 +1256,8 @@
    "note": "Raster artwork showing the old blue brand / UI; needs a new export.",
    "usedBy": [
     "src/components/ui/AppEntryLanding/index.tsx"
-   ]
+   ],
+   "applyPy": null
   },
   {
    "productionPath": "src/components/ui/AppEntryLanding/assets/app-entry-showcase.webp",
@@ -1179,7 +1269,8 @@
    "note": "Raster artwork showing the old blue brand / UI; needs a new export.",
    "usedBy": [
     "src/components/ui/AppEntryLanding/index.tsx"
-   ]
+   ],
+   "applyPy": null
   },
   {
    "productionPath": "src/pages/AccountPage/Inbox/assets/inbox-empty.svg",
@@ -1191,7 +1282,8 @@
    "note": "As above.",
    "usedBy": [
     "src/pages/AccountPage/Inbox/index.tsx"
-   ]
+   ],
+   "applyPy": null
   },
   {
    "productionPath": "src/pages/HomePage/Home/feedbackInvitation/assets/satisfaction.svg",
@@ -1203,7 +1295,8 @@
    "note": "Off-palette pink/lime/teal illustration; no rebrand version exists.",
    "usedBy": [
     "src/pages/HomePage/Home/feedbackInvitation/FeedbackInvitationSheet.tsx"
-   ]
+   ],
+   "applyPy": null
   },
   {
    "productionPath": "src/pages/HomePage/Home/feedbackInvitation/assets/support.svg",
@@ -1216,7 +1309,8 @@
    "usedBy": [
     "src/pages/HomePage/Home/feedbackInvitation/FeedbackInvitationSheet.tsx",
     "src/pages/SupportPage/CustomerServicePage/index.tsx"
-   ]
+   ],
+   "applyPy": null
   },
   {
    "productionPath": "src/pages/HomePage/Payment/components/FraudWarningSheet/assets/customer-service.svg",
@@ -1229,7 +1323,8 @@
    "usedBy": [
     "src/pages/HomePage/Payment/components/FraudWarningSheet/index.tsx",
     "src/pages/HomePage/index.tsx"
-   ]
+   ],
+   "applyPy": null
   },
   {
    "productionPath": "src/pages/HomePage/Payment/components/FraudWarningSheet/assets/transaction.svg",
@@ -1241,7 +1336,8 @@
    "note": "Off-palette pink/lime/teal illustration; no rebrand version exists.",
    "usedBy": [
     "src/pages/HomePage/Payment/components/FraudWarningSheet/index.tsx"
-   ]
+   ],
+   "applyPy": null
   },
   {
    "productionPath": "src/pages/HomePage/Payment/components/FraudWarningSheet/assets/verification-code-keyhole.svg",
@@ -1251,7 +1347,8 @@
    "colourReplacements": [],
    "changeId": null,
    "note": "Off-palette pink/lime/teal illustration; no rebrand version exists.",
-   "usedBy": []
+   "usedBy": [],
+   "applyPy": null
   },
   {
    "productionPath": "src/pages/HomePage/Payment/components/FraudWarningSheet/assets/verification-code-lock.svg",
@@ -1261,7 +1358,8 @@
    "colourReplacements": [],
    "changeId": null,
    "note": "Off-palette pink/lime/teal illustration; no rebrand version exists.",
-   "usedBy": []
+   "usedBy": [],
+   "applyPy": null
   },
   {
    "productionPath": "src/pages/HomePage/Payment/components/FraudWarningSheet/assets/verification-code.svg",
@@ -1273,7 +1371,8 @@
    "note": "Off-palette pink/lime/teal illustration; no rebrand version exists.",
    "usedBy": [
     "src/pages/HomePage/Payment/components/FraudWarningSheet/index.tsx"
-   ]
+   ],
+   "applyPy": null
   },
   {
    "productionPath": "src/pages/OutPages/ShortLink/Repay/assets/link-expired.svg",
@@ -1286,7 +1385,8 @@
    "usedBy": [
     "src/pages/OutPages/ShortLink/Loan/index.tsx",
     "src/pages/OutPages/ShortLink/Repay/index.tsx"
-   ]
+   ],
+   "applyPy": null
   },
   {
    "productionPath": "src/pages/OutPages/ShortLink/Repay/assets/reloan-banner.jpg",
@@ -1298,7 +1398,8 @@
    "note": "Raster artwork showing the old blue brand / UI; needs a new export.",
    "usedBy": [
     "src/pages/OutPages/ShortLink/Repay/index.tsx"
-   ]
+   ],
+   "applyPy": null
   }
  ]
 }

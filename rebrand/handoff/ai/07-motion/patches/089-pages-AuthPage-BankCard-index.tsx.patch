@@ -1,0 +1,58 @@
+diff --git a/src/pages/AuthPage/BankCard/index.tsx b/src/pages/AuthPage/BankCard/index.tsx
+index a75706b..97da56d 100644
+--- a/src/pages/AuthPage/BankCard/index.tsx
++++ b/src/pages/AuthPage/BankCard/index.tsx
+@@ -8,6 +8,7 @@ import {
+   useState,
+ } from 'react';
+ import { X } from 'lucide-react';
++import { m } from 'motion/react';
+ import { useNavigate, useSearchParams } from 'react-router-dom';
+ 
+ import { PaymentMethodIcon } from '@/components/ui/PaymentMethodIcon';
+@@ -16,6 +17,7 @@ import { BottomActionButton } from '@/components/ui/BottomActionButton';
+ import { MobileModal } from '@/components/ui/MobileModal';
+ import { Toast } from '@/components/ui/Toast';
+ import { useI18n } from '@/i18n';
++import { MT } from '@/motion/tokens';
+ import {
+   changeBankCard,
+   getBankMap,
+@@ -851,7 +853,6 @@ export default function BankCard({
+             data-active-tab={activeTab}
+             role="tablist"
+           >
+-            <span aria-hidden="true" className={styles.tabIndicator} />
+             <button
+               aria-selected={activeTab === 'wallet'}
+               className={[
+@@ -865,6 +866,14 @@ export default function BankCard({
+               role="tab"
+               type="button"
+             >
++              {activeTab === 'wallet' ? (
++                <m.span
++                  aria-hidden="true"
++                  className={styles.tabIndicator}
++                  layoutId="bank-card-tab-pill"
++                  transition={MT.SPRING}
++                />
++              ) : null}
+               {t('auth.bankCard.wallet')}
+             </button>
+             <button
+@@ -880,6 +889,14 @@ export default function BankCard({
+               role="tab"
+               type="button"
+             >
++              {activeTab === 'bank' ? (
++                <m.span
++                  aria-hidden="true"
++                  className={styles.tabIndicator}
++                  layoutId="bank-card-tab-pill"
++                  transition={MT.SPRING}
++                />
++              ) : null}
+               {t('auth.bankCard.onlineBank')}
+             </button>
+           </div>

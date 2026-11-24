@@ -1,0 +1,313 @@
+diff --git a/src/pages/HomePage/WithdrawMainRoute/index.tsx b/src/pages/HomePage/WithdrawMainRoute/index.tsx
+index 3f9d470..bdc4f62 100644
+--- a/src/pages/HomePage/WithdrawMainRoute/index.tsx
++++ b/src/pages/HomePage/WithdrawMainRoute/index.tsx
+@@ -54,7 +54,14 @@ import {
+   useWithdrawFlowController,
+   type WithdrawFlowController,
+ } from '../WithdrawFlowLayout';
+-import { playCardTransition, type CardRect } from './motion/cardMotion';
++import { scrollToAgreement } from '@/motion/flows/agreementNudge';
++import { useGlide } from '@/motion/flows/useGlide';
++import { VEIL_END_PX } from '@/motion/flows/withdrawTokens';
++import {
++  captureWithdrawMorph,
++  playWithdrawMorph,
++  type WithdrawMorphSnapshot,
++} from './motion/withdrawMorph';
+ import SubmissionStatus from './SubmissionStatus';
+ import styles from './index.module.css';
+ 
+@@ -63,6 +70,13 @@ interface WithdrawMainRouteProps {
+   homeSnapshot: HomeIndexData;
+ }
+ 
++/**
++ * Confirm before the agreement is ticked: the rebrand demo scrolls to the
++ * agreement and nudges its circle (M-111 / M-112, no error state, owner's
++ * rule). `false` restores production's agreement prompt sheet.
++ */
++const AGREEMENT_NUDGE = true;
++
+ const pesoRangeFormatter = new Intl.NumberFormat('en-PH', {
+   currency: 'PHP',
+   maximumFractionDigits: 0,
+@@ -233,7 +247,7 @@ export default function WithdrawMainRoute({
+   const repayPlanDecision = useRepayPlanDecision(true);
+   const stableLayerTarget = useFullScreenLayerStableTarget();
+   const [pageElement, setPageElement] = useState<HTMLElement | null>(null);
+-  const originRef = useRef<CardRect | undefined>(undefined);
++  const snapshotRef = useRef<WithdrawMorphSnapshot | undefined>(undefined);
+   const [repaymentPlanOpen, setRepaymentPlanOpen] = useState(false);
+   const [amountEditOpen, setAmountEditOpen] = useState(false);
+   const [agreementPromptOpen, setAgreementPromptOpen] = useState(false);
+@@ -249,6 +263,13 @@ export default function WithdrawMainRoute({
+   const confirmedAmountRange = getLoanAmountRange(
+     confirmedTermOption?.product ?? controller.selection?.product ?? {},
+   );
++  // M-106: the knob, fill and amount glide when something other than the
++  // finger moves them (amount sheet, a term with a lower maximum).
++  const glide = useGlide(
++    controller.selection?.selectedAmount ?? confirmedAmountRange.min,
++    confirmedAmountRange.max,
++    confirmedAmountRange.step,
++  );
+ 
+   useLayoutEffect(() => {
+     // Quote and confirmation have very different heights. Reset the owning
+@@ -263,26 +284,51 @@ export default function WithdrawMainRoute({
+ 
+   useLayoutEffect(() => {
+     if (!isConfirmation || !pageElement) return;
+-    const card = pageElement.querySelector<HTMLElement>('[data-confirm-card]');
++    // M-107: the amount entry closes into the order card on one spring
++    // progress (withdrawMorph.ts). Direct confirmation (no entry was on
++    // screen) shows the order page at rest.
++    const snapshot = snapshotRef.current;
++    snapshotRef.current = undefined;
++    if (!snapshot) return;
++    return playWithdrawMorph({
++      page: pageElement,
++      snapshot,
++      cta:
++        stableLayerTarget?.querySelector<HTMLElement>('[data-morph-cta]') ??
++        null,
++    });
++    // The morph plays once per entry into confirmation.
++    // eslint-disable-next-line react-hooks/exhaustive-deps
++  }, [isConfirmation, pageElement]);
++
++  // M-114: the Confirm bar's veil fades out over the last bar-height of
++  // scroll; a page that does not scroll shows none (withdraw.js updEnd).
++  useLayoutEffect(() => {
++    if (!isConfirmation || !pageElement || !stableLayerTarget) return;
+     const panel = pageElement.closest<HTMLElement>(
+       '[data-full-screen-scroll-container]',
+     );
+-    const header = pageElement.querySelector('header');
+-    if (!card || !panel || !header) return;
+-    // Direct confirmation has no editing DOM; derive the same full-height starting card.
+-    const bounds = card.parentElement!.getBoundingClientRect();
+-    const origin = originRef.current ?? {
+-      left: bounds.left,
+-      top: header.getBoundingClientRect().bottom,
+-      width: bounds.width,
+-      height: Math.max(
+-        0,
+-        panel.clientHeight - header.getBoundingClientRect().height,
+-      ),
++    const veil = stableLayerTarget.querySelector<HTMLElement>(
++      '[data-morph-cta]',
++    )?.parentElement?.firstElementChild as HTMLElement | null | undefined;
++    if (!panel || !veil) return;
++    const update = () => {
++      const bar = veil.parentElement?.offsetHeight || VEIL_END_PX.orderBar;
++      const left = panel.scrollHeight - panel.clientHeight - panel.scrollTop;
++      veil.style.setProperty(
++        '--withdraw-veil',
++        String(Math.round(Math.max(0, Math.min(1, left / bar)) * 1000) / 1000),
++      );
+     };
+-    originRef.current = undefined;
+-    return playCardTransition(card, origin);
+-  }, [isConfirmation, pageElement]);
++    update();
++    panel.addEventListener('scroll', update, { passive: true });
++    window.addEventListener('resize', update);
++    return () => {
++      panel.removeEventListener('scroll', update);
++      window.removeEventListener('resize', update);
++      veil.style.removeProperty('--withdraw-veil');
++    };
++  }, [isConfirmation, pageElement, stableLayerTarget]);
+ 
+   /** Adds the new flow marker while preserving existing apply event names. */
+   const handleTrack = (event: string, payload?: ReLoanQuoteTrackPayload) => {
+@@ -301,10 +347,12 @@ export default function WithdrawMainRoute({
+       '[data-full-screen-scroll-container]',
+     );
+     if (panel) panel.scrollTop = 0;
+-    const card = pageElement?.querySelector<HTMLElement>(
+-      '[data-withdraw-card]',
++    // The entry is replaced this commit: read it (and clone what only it
++    // has) first, so the morph can start from it (withdrawMorph.ts).
++    snapshotRef.current = captureWithdrawMorph(
++      pageElement?.querySelector<HTMLElement>('[data-apply-page]'),
++      stableLayerTarget,
+     );
+-    originRef.current = card?.getBoundingClientRect();
+     controller.setSelection(selection);
+     controller.setPhase('confirming');
+     trackApplyEvent('apply_order_confirm_click', {
+@@ -370,7 +418,14 @@ export default function WithdrawMainRoute({
+     }
+ 
+     if (!controller.agreementAccepted) {
+-      setAgreementPromptOpen(true);
++      if (AGREEMENT_NUDGE)
++        scrollToAgreement(
++          pageElement?.closest<HTMLElement>(
++            '[data-full-screen-scroll-container]',
++          ),
++          pageElement ?? document,
++        );
++      else setAgreementPromptOpen(true);
+       trackConfirmEvent('confirm_order_confirm_click', {
+         flowVariant: 'status_v2_overlay',
+         phase: 'confirm',
+@@ -443,7 +498,7 @@ export default function WithdrawMainRoute({
+                 amountLabel={t('home.apply.disbursementAmount')}
+                 amountControl={
+                   <LoanAmountButton
+-                    amount={selection.selectedAmount}
++                    amount={glide.amount}
+                     onClick={() => setAmountEditOpen(true)}
+                   />
+                 }
+@@ -451,11 +506,12 @@ export default function WithdrawMainRoute({
+                   'aria-label': t('home.apply.loanAmount'),
+                   dataEventType: 'confirm_order_amount_slider',
+                   formatLabel: (value) => pesoRangeFormatter.format(value),
+-                  max: amountRange.max,
++                  max: Math.max(amountRange.min, glide.max),
+                   min: amountRange.min,
+                   step: amountRange.step,
+-                  value: selection.selectedAmount,
++                  value: glide.amount,
+                   onChange: (nextAmount) => {
++                    glide.finger();
+                     if (selectedTermOption)
+                       updateConfirmedSelection(
+                         selection,
+@@ -495,55 +551,57 @@ export default function WithdrawMainRoute({
+             </div>
+           </section>
+ 
+-          <LoanQuoteDetails
+-            title={t('home.withdraw.orderDetails')}
+-            rows={[
+-              [t('home.withdraw.dailyFee'), dailyFee],
+-              [
+-                t('home.withdraw.firstPaymentDate'),
+-                firstSchedule?.dueDate ?? '-',
+-              ],
+-              [
+-                t('home.withdraw.perInstallment'),
+-                firstSchedule?.totalAmount ?? '-',
+-              ],
+-              [t('home.withdraw.totalPayment'), totalPayment],
+-            ]}
+-            scheduleLabel={t('home.withdraw.schedule.open')}
+-            onSchedule={handleRepaymentPlanOpen}
+-          />
+-
+-          <BorrowerProtectionFeedback
+-            status={controller.protection.status}
+-            disabled={controller.protection.disabled}
+-            onRetry={controller.protection.retry}
+-          />
+-          <BorrowerProtectionCard
+-            visible={controller.protection.visible}
+-            checked={controller.protection.checked}
+-            disabled={controller.protection.disabled}
+-            previewBusy={protectionPreview.busy}
+-            onToggle={controller.protection.toggle}
+-            onPreview={() => {
+-              if (controller.protection.disabled) return;
+-              if (protectionPreview.open(controller.protection.premium))
+-                controller.protection.trackPreview();
+-            }}
+-          />
+-          <WithdrawalMethod />
+-
+-          <WithdrawAgreement
+-            checked={controller.agreementAccepted}
+-            onChange={controller.setAgreementAccepted}
+-            onLoanAgreementClick={openLoanAgreement}
+-            onPlatformServiceClick={controller.openDisclosure}
+-          />
+-
+-          {controller.error ? (
+-            <p className={styles.error} role="alert">
+-              {controller.error}
+-            </p>
+-          ) : null}
++          <div className={styles.confirmBlocks} data-morph="blocks">
++            <LoanQuoteDetails
++              title={t('home.withdraw.orderDetails')}
++              rows={[
++                [t('home.withdraw.dailyFee'), dailyFee],
++                [
++                  t('home.withdraw.firstPaymentDate'),
++                  firstSchedule?.dueDate ?? '-',
++                ],
++                [
++                  t('home.withdraw.perInstallment'),
++                  firstSchedule?.totalAmount ?? '-',
++                ],
++                [t('home.withdraw.totalPayment'), totalPayment],
++              ]}
++              scheduleLabel={t('home.withdraw.schedule.open')}
++              onSchedule={handleRepaymentPlanOpen}
++            />
++
++            <BorrowerProtectionFeedback
++              status={controller.protection.status}
++              disabled={controller.protection.disabled}
++              onRetry={controller.protection.retry}
++            />
++            <BorrowerProtectionCard
++              visible={controller.protection.visible}
++              checked={controller.protection.checked}
++              disabled={controller.protection.disabled}
++              previewBusy={protectionPreview.busy}
++              onToggle={controller.protection.toggle}
++              onPreview={() => {
++                if (controller.protection.disabled) return;
++                if (protectionPreview.open(controller.protection.premium))
++                  controller.protection.trackPreview();
++              }}
++            />
++            <WithdrawalMethod />
++
++            <WithdrawAgreement
++              checked={controller.agreementAccepted}
++              onChange={controller.setAgreementAccepted}
++              onLoanAgreementClick={openLoanAgreement}
++              onPlatformServiceClick={controller.openDisclosure}
++            />
++
++            {controller.error ? (
++              <p className={styles.error} role="alert">
++                {controller.error}
++              </p>
++            ) : null}
++          </div>
+         </section>
+       );
+     }
+@@ -620,6 +678,15 @@ export default function WithdrawMainRoute({
+       data-withdraw-phase={controller.phase}
+       ref={setPageElement}
+     >
++      {isConfirmation ? (
++        // The order page's tint fades in with the morph (withdraw.js
++        // gradLayer / mpGrad, opacity = bk).
++        <div
++          aria-hidden="true"
++          className={styles.confirmTint}
++          data-morph="grad"
++        />
++      ) : null}
+       {controller.phase === 'editing' || isConfirmation ? (
+         <WithdrawHeader
+           isConfirmation={isConfirmation}
+@@ -632,6 +699,8 @@ export default function WithdrawMainRoute({
+         ? createPortal(
+             <BottomActionButton
+               className={styles.submitAction}
++              data-agree={String(controller.agreementAccepted)}
++              data-morph-cta=""
+               dataEventType="confirm_order_confirm"
+               disabled={
+                 controller.submissionBlocked || controller.bankState === 'error'

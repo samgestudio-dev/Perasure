@@ -1,0 +1,40 @@
+diff --git a/src/pages/HomePage/CreditIncreaseIntro/material/README.md b/src/pages/HomePage/CreditIncreaseIntro/material/README.md
+index dcba0ec..2ff3d3a 100644
+--- a/src/pages/HomePage/CreditIncreaseIntro/material/README.md
++++ b/src/pages/HomePage/CreditIncreaseIntro/material/README.md
+@@ -5,7 +5,8 @@ Source: the user-supplied `65095db7-phl1676-phase1-motion-assets.base64.txt`,
+ Only baked-heap is integrated. The supplied 44-coin / 60fps recording and source
+ coin painter, shadows, burst and star choreography are retained. No physics
+ engine runs in the browser. The 354 recorded frames settle through 5.8833s;
+-the UI sends done at 3.4s and continues settling during the 3s hold.
++the UI sends done at 3.2s (the demo's `'end-=.2'`) and continues settling during
++the 3s hold.
+ 
+ The demo shell was replaced with a typed local protocol. It has no sample data,
+ query input, autoplay, Replay, native messages, wildcard target origin, tuning
+@@ -29,14 +30,16 @@ builds, including the existing legacy transform. The frame uses the same origin
+ as the Home host and its URL contains no amounts. Do not copy the HTML to public/
+ or serve its source without Vite transformation.
+ 
+-Typography keeps the source 64px / 700 amount style at 360px width, with Satoshi
+-for digits and explicit Inter fallback for the peso sign. Both 500 and 700
+-Satoshi faces are loaded before playback; the previous-limit value uses 500.
++Typography keeps the source 64px / 700 amount style at 360px width in the
++rebrand number font, Hanken Grotesk (`--font-family-number`; owner rule: Hanken
++for every amount, digits and ₱). The small numbers (the increase pill,
++"Previous limit") use the same number font. Rebrand colours:
++accent #5CD680 (burst, star S2, landing), "Previous limit" #8A8A9C.
+ 
+ The isolated CSS is excluded from host px-to-rem conversion: the Demo's `--u`
+-controls its sizing. The card still uses project rem. Landing captures source
+-Satoshi typography before adoption, interpolates geometry and spacing, then
+-crossfades to the actual card after arrival. Radius and fraction size come from
+-computed target styles. The host preloads Satoshi in its own FontFaceSet so
+-adoption cannot trigger a fallback font frame. The compact recording is kept
+-byte-for-byte from the supplied archive and excluded from Prettier.
++controls its sizing. The card still uses project rem. The exit into the home
++card is the rebrand demo's `introExit` (landing.ts: one stretched Smooth spring,
++the screen's box closing into the card, clocked details, the count-up in the
++partly-used state); `getVisualHandles()` hands it the number block, the big
++number, the artwork, the stars and both coin canvases. The compact recording is
++kept byte-for-byte from the supplied archive and excluded from Prettier.

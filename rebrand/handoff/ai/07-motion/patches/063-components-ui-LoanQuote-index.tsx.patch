@@ -1,0 +1,92 @@
+diff --git a/src/components/ui/LoanQuote/index.tsx b/src/components/ui/LoanQuote/index.tsx
+index 9bb1baa..ca8ab73 100644
+--- a/src/components/ui/LoanQuote/index.tsx
++++ b/src/components/ui/LoanQuote/index.tsx
+@@ -1,4 +1,8 @@
+ import type { ComponentProps, ReactNode } from 'react';
++import { m } from 'motion/react';
++import { Glyphs, GLYPH_BASE } from '@/motion/flows/Glyphs';
++import { MT } from '@/motion/tokens';
++import { CHIP_PRESS_SCALE } from '@/motion/flows/withdrawTokens';
+ import { resolveLoanTermLayout } from '@/features/reloan/loanProductOptions';
+ import { Slider } from '@/components/ui/Slider';
+ import editIcon from '@/assets/svg/withdraw-amount-edit.svg';
+@@ -26,14 +30,25 @@ export function LoanAmountButton({
+       aria-label={label}
+       type="button"
+     >
++      {/* One box per glyph (each on its baseline marker): the amount entry →
++          order card morph FLIPs every glyph (withdraw.js glyph(), M-107). */}
+       <strong aria-label={parts.formatted} className={styles.confirmAmount}>
+-        <span aria-hidden="true" className={styles.confirmAmountCurrency}>
++        <span
++          aria-hidden="true"
++          className={styles.confirmAmountCurrency}
++          data-morph="peso"
++        >
++          <i style={GLYPH_BASE} />
+           {parts.currency}
+         </span>
+-        <span aria-hidden="true">{parts.integer}</span>
+-        <span aria-hidden="true">{parts.fraction}</span>
++        <span aria-hidden="true">
++          <Glyphs group="int" text={parts.integer} />
++        </span>
++        <span aria-hidden="true">
++          <Glyphs group="dec" text={parts.fraction} />
++        </span>
+       </strong>
+-      <img alt="" aria-hidden="true" src={editIcon} />
++      <img alt="" aria-hidden="true" data-morph="pencil" src={editIcon} />
+     </button>
+   );
+ }
+@@ -63,15 +78,18 @@ export function LoanQuoteControls({
+ }: LoanQuoteControlsProps) {
+   return (
+     <div className={styles.controls}>
+-      <span className={styles.confirmAmountLabel}>{amountLabel}</span>
++      <span className={styles.confirmAmountLabel} data-morph="label">
++        {amountLabel}
++      </span>
+       {amountControl}
+       <Slider
+         {...slider}
+         disabled={disabled}
+         className={styles.confirmSlider}
++        data-morph="slider"
+       />
+-      <div className={styles.confirmDivider} />
+-      <div className={styles.confirmTermHeading}>
++      <div className={styles.confirmDivider} data-morph="divider" />
++      <div className={styles.confirmTermHeading} data-morph="term">
+         <span>{termLabel}</span>
+         <strong>{termDescription}</strong>
+       </div>
+@@ -80,18 +98,24 @@ export function LoanQuoteControls({
+         data-layout={resolveLoanTermLayout(terms.length)}
+         role="group"
+         aria-label={termLabel}
++        data-morph="chips"
+       >
++        {/* Term chips: press 0.96 (withdraw.js:1127); the selection changes
++            colour only, 150 ms (R-COLOR). */}
+         {terms.map((term) => (
+-          <button
++          <m.button
+             key={term.id}
+             type="button"
+             aria-pressed={term.selected}
++            data-morph-chip={term.id}
+             data-selected={term.selected}
+             disabled={disabled}
+             onClick={() => onTermChange(term.id)}
++            transition={MT.PRESS}
++            whileTap={disabled ? undefined : { scale: CHIP_PRESS_SCALE }}
+           >
+             {term.label}
+-          </button>
++          </m.button>
+         ))}
+       </div>
+     </div>

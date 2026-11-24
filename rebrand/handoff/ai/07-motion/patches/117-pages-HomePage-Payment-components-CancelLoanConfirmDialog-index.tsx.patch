@@ -1,0 +1,178 @@
+diff --git a/src/pages/HomePage/Payment/components/CancelLoanConfirmDialog/index.tsx b/src/pages/HomePage/Payment/components/CancelLoanConfirmDialog/index.tsx
+index c0fdfcf..a9f097f 100644
+--- a/src/pages/HomePage/Payment/components/CancelLoanConfirmDialog/index.tsx
++++ b/src/pages/HomePage/Payment/components/CancelLoanConfirmDialog/index.tsx
+@@ -1,6 +1,10 @@
+-import type { FC, MouseEvent } from 'react';
++import { useRef, useState, type FC } from 'react';
+ import { AlertTriangle } from 'lucide-react';
++import { m } from 'motion/react';
+ 
++import { pressProps } from '@/motion/press';
++import { Sheet } from '@/motion/Sheet';
++import { useScrimAttributes } from '@/motion/useScrimAttributes';
+ import type { RepayPlan } from '@/services/api/repay';
+ 
+ import styles from './index.module.css';
+@@ -63,82 +67,98 @@ const CancelLoanConfirmDialog: FC<CancelLoanConfirmDialogProps> = ({
+   open,
+   plan,
+ }) => {
+-  if (!open || !plan) {
++  const dialogRef = useRef<HTMLDivElement | null>(null);
++  // Keep the last plan while the exit plays so the copy doesn't blank.
++  // 退场动画期间保留上一次的期数，避免内容闪空。
++  const [shownPlan, setShownPlan] = useState(plan);
++  if (plan && plan !== shownPlan) setShownPlan(plan);
++  const dialogOpen = open && Boolean(plan);
++  const cancelAmount = shownPlan ? getCancelAmount(shownPlan) : 0;
++
++  // tracking stays on the scrim / panel the Sheet draws
++  useScrimAttributes(
++    dialogRef,
++    dialogOpen,
++    {
++      'data-event-type': 'payment_cancel_confirm_overlay',
++      'data-repayment-apply-code': shownPlan?.applyCode,
++      'data-repayment-period': shownPlan ? String(shownPlan.period) : undefined,
++    },
++    {
++      'data-event-type': 'payment_cancel_confirm_dialog',
++      'data-repayment-apply-code': shownPlan?.applyCode,
++      'data-repayment-cancel-amount': String(cancelAmount),
++      'data-repayment-period': shownPlan ? String(shownPlan.period) : undefined,
++    },
++  );
++
++  if (!shownPlan) {
+     return null;
+   }
+ 
+-  const cancelAmount = getCancelAmount(plan);
+-
+-  const handleDialogClick = (event: MouseEvent<HTMLElement>) => {
+-    // Keep inner button taps from closing through the overlay.
+-    // 阻止弹窗内部点击冒泡，避免触发蒙层关闭。
+-    event.stopPropagation();
+-  };
+-
+   const handleConfirmClick = () => {
+     // Confirming only advances to payment-method selection.
+     // 点击确认只进入支付方式选择，真正取消支付由后续 API 完成。
+-    onConfirm(plan);
++    onConfirm(shownPlan);
+   };
+ 
++  // Motion: shared Sheet, centre placement (production's centred card): it
++  // grows from 0.96 and fades in on ENTER, leaves on LEAVE, the scrim fades
++  // 0.2 s in / LEAVE out (it used to return null: no enter / exit).
++  // 居中卡片由共享 Sheet 承担进出场（原先直接 return null，无动效）。
+   return (
+-    <div
+-      className={styles.overlay}
+-      data-event-type="payment_cancel_confirm_overlay"
+-      data-repayment-apply-code={plan.applyCode}
+-      data-repayment-period={plan.period}
+-      onClick={onClose}
++    <Sheet
++      ariaLabel={copy.label}
++      ariaModal
++      className={styles.dialog}
++      kind="card"
++      onClose={onClose}
++      open={dialogOpen}
++      panelRef={dialogRef}
++      placement="center"
++      rise={false}
++      role="dialog"
++      scrimClassName={styles.overlay}
++      zIndex={1010}
+     >
+-      <section
+-        aria-label={copy.label}
+-        aria-modal="true"
+-        className={styles.dialog}
+-        data-event-type="payment_cancel_confirm_dialog"
+-        data-repayment-apply-code={plan.applyCode}
+-        data-repayment-cancel-amount={cancelAmount}
+-        data-repayment-period={plan.period}
+-        onClick={handleDialogClick}
+-        role="dialog"
+-      >
+-        <div className={styles.iconWrap} aria-hidden="true">
+-          <AlertTriangle size={22} strokeWidth={2.2} />
+-        </div>
++      <div className={styles.iconWrap} aria-hidden="true">
++        <AlertTriangle size={22} strokeWidth={2.2} />
++      </div>
+ 
+-        <div className={styles.content}>
+-          <h2 className={styles.title}>{copy.title}</h2>
+-          <p className={styles.description}>{copy.description}</p>
+-
+-          <div className={styles.amountBox}>
+-            <span className={styles.amountLabel}>{copy.amount}</span>
+-            <span className={styles.amountValue}>
+-              {formatPeso(cancelAmount)}
+-            </span>
+-          </div>
+-        </div>
++      <div className={styles.content}>
++        <h2 className={styles.title}>{copy.title}</h2>
++        <p className={styles.description}>{copy.description}</p>
+ 
+-        <div className={styles.actions}>
+-          <button
+-            className={styles.secondaryButton}
+-            data-event-type="payment_cancel_confirm_close"
+-            type="button"
+-            onClick={onClose}
+-          >
+-            {copy.keep}
+-          </button>
+-          <button
+-            className={styles.primaryButton}
+-            data-event-type="payment_cancel_confirm_continue"
+-            data-repayment-apply-code={plan.applyCode}
+-            data-repayment-cancel-amount={cancelAmount}
+-            data-repayment-period={plan.period}
+-            type="button"
+-            onClick={handleConfirmClick}
+-          >
+-            {copy.continue}
+-          </button>
++        <div className={styles.amountBox}>
++          <span className={styles.amountLabel}>{copy.amount}</span>
++          <span className={styles.amountValue}>{formatPeso(cancelAmount)}</span>
+         </div>
+-      </section>
+-    </div>
++      </div>
++
++      <div className={styles.actions}>
++        <m.button
++          className={styles.secondaryButton}
++          data-event-type="payment_cancel_confirm_close"
++          type="button"
++          onClick={onClose}
++          {...pressProps()}
++        >
++          {copy.keep}
++        </m.button>
++        <m.button
++          className={styles.primaryButton}
++          data-event-type="payment_cancel_confirm_continue"
++          data-repayment-apply-code={shownPlan.applyCode}
++          data-repayment-cancel-amount={cancelAmount}
++          data-repayment-period={shownPlan.period}
++          type="button"
++          onClick={handleConfirmClick}
++          {...pressProps()}
++        >
++          {copy.continue}
++        </m.button>
++      </div>
++    </Sheet>
+   );
+ };
+ 

@@ -1,0 +1,350 @@
+diff --git a/src/components/ui/DatePickerSheet/index.module.css b/src/components/ui/DatePickerSheet/index.module.css
+index fb9f039..b4479c5 100644
+--- a/src/components/ui/DatePickerSheet/index.module.css
++++ b/src/components/ui/DatePickerSheet/index.module.css
+@@ -1,7 +1,7 @@
++/* The Sheet layer (fixed, inset 0, z-index and pointer-events set by the
++   shared Sheet); it lays the floating card out at the bottom.
++   / 共享 Sheet 的层（fixed、层级和指针事件由 Sheet 设置），负责把卡片排在底部。 */
+ .root {
+-  position: fixed;
+-  inset: 0;
+-  z-index: 1000;
+   box-sizing: border-box;
+   display: flex;
+   align-items: flex-end;
+@@ -12,14 +12,6 @@
+   padding-bottom: var(--spacing-gap-sm);
+   padding-inline: clamp(8px, 2.222vw, 16px);
+   overflow: hidden;
+-  opacity: 0;
+-  pointer-events: none;
+-  transition: opacity 220ms ease;
+-}
+-
+-.rootVisible {
+-  opacity: 1;
+-  pointer-events: auto;
+ }
+ 
+ .backdrop {
+@@ -57,20 +49,9 @@
+   overflow: hidden;
+   overscroll-behavior-y: contain;
+   touch-action: pan-y;
+-  transform: translate3d(0, 104%, 0);
+-  transition: transform 260ms cubic-bezier(0.32, 0.72, 0, 1);
+   box-shadow: var(--elevation-2);
+ }
+ 
+-.rootVisible .sheet {
+-  transform: translate3d(0, var(--bottom-sheet-drag-offset, 0), 0);
+-}
+-
+-.sheetDragging {
+-  transition: none;
+-  will-change: transform;
+-}
+-
+ .handle {
+   position: absolute;
+   top: 8px;
+@@ -116,18 +97,9 @@
+   color: var(--fg-default, #141e24);
+   -webkit-backdrop-filter: blur(var(--blur-backdrop-bg, 10px));
+   backdrop-filter: blur(var(--blur-backdrop-bg, 10px));
+-  transition:
+-    transform 180ms ease,
+-    opacity 180ms ease;
+ }
+ 
+-.navButton:active,
+-.selectorArrow:active,
+-.selectorValue:active,
+-.wheelButton:active,
+-.dateCell:active {
+-  transform: scale(0.96);
+-}
++/* Press: motion pressProps (60 ms, 0.92 icon / 0.985 pill) on the m.buttons. */
+ 
+ .content {
+   display: flex;
+@@ -164,8 +136,8 @@
+   border-radius: var(--radius-full, 9999px);
+   background: transparent;
+   transition:
+-    transform 180ms ease,
+-    opacity 180ms ease;
++    color 0.15s ease,
++    opacity 0.15s ease;
+ }
+ 
+ .selectorArrow {
+@@ -179,6 +151,11 @@
+   color: var(--fg-accent, #2c74be);
+ }
+ 
++/* R-DATES: nothing further that way. */
++.selectorArrow:disabled {
++  opacity: 0.35;
++}
++
+ @supports (gap: 1px) {
+   .selectorValue {
+     margin-right: 0;
+@@ -200,11 +177,16 @@
+   white-space: nowrap;
+ }
+ 
++.selectorText {
++  display: block;
++  overflow: hidden;
++  text-overflow: ellipsis;
++  white-space: nowrap;
++}
++
+ .calendarPane {
+   width: 100%;
+   touch-action: pan-y;
+-  transform-origin: center 50%;
+-  will-change: opacity, transform;
+ }
+ 
+ .paneViewport {
+@@ -216,12 +198,18 @@
+   overflow: hidden;
+ }
+ 
+-.paneViewport .calendarPane,
+-.paneViewport .wheelPane {
++/* Days and wheel sit in the same box; Crossfade (popLayout) swaps them. */
++.paneView {
+   position: absolute;
+   inset: 0;
+ }
+ 
++/* The month grid crossfades in place (popLayout needs a positioned parent). */
++.gridViewport {
++  position: relative;
++  margin-top: var(--spacing-gap-lg, 16px);
++}
++
+ .weekdays {
+   display: flex;
+   display: grid;
+@@ -251,7 +239,6 @@
+   width: 100%;
+   height: 216px;
+   height: clamp(192px, 60vw, 216px);
+-  margin-top: var(--spacing-gap-lg, 16px);
+   padding-right: 16px;
+   padding-left: 16px;
+   padding-inline: clamp(8px, 4.444vw, var(--spacing-gap-lg, 16px));
+@@ -291,9 +278,7 @@
+   isolation: isolate;
+   line-height: var(--font-line-height-body-md, 20px);
+   letter-spacing: 0.02em;
+-  transition:
+-    transform 180ms ease,
+-    color 180ms ease;
++  transition: color 0.15s ease;
+ }
+ 
+ .dateCell:disabled {
+@@ -304,7 +289,8 @@
+   color: var(--fg-on-accent);
+ }
+ 
+-.dateCellActive::before {
++/* M-050: the chosen day's circle fades in 0.15 s, its number turns white in 0.15 s. */
++.dateCell::before {
+   position: absolute;
+   z-index: -1;
+   top: 50%;
+@@ -316,7 +302,13 @@
+   border-radius: var(--radius-full, 9999px);
+   background: var(--bg-accent-emphasis, #2c74be);
+   content: '';
++  opacity: 0;
+   transform: translate(-50%, -50%);
++  transition: opacity 0.15s ease;
++}
++
++.dateCellActive::before {
++  opacity: 1;
+ }
+ 
+ .wheelPane {
+@@ -334,13 +326,12 @@
+   flex-direction: column;
+   align-items: center;
+   padding-top: 28px;
+-  transform-origin: center 50%;
+-  will-change: opacity, transform;
+ }
+ 
++/* Centre of the 40 px-row wheel (height round(2·40/tan 30° + 10) = 149): 28 + 74.5 − 19. */
+ .wheelSelection {
+   position: absolute;
+-  top: 77px;
++  top: 84px;
+   left: 50%;
+   width: calc(100% - 24px);
+   width: var(--wheel-highlight-width);
+@@ -450,156 +441,6 @@
+   font-weight: var(--font-weight-semi-bold, 600);
+   line-height: var(--font-line-height-label-md, 20px);
+   text-align: center;
+-  transition:
+-    transform 180ms ease,
+-    opacity 180ms ease;
+   -webkit-backdrop-filter: blur(var(--blur-backdrop-bg, 10px));
+   backdrop-filter: blur(var(--blur-backdrop-bg, 10px));
+ }
+-
+-.paneEnterForward {
+-  animation: paneEnterForward 240ms cubic-bezier(0.32, 0.72, 0, 1) both;
+-}
+-
+-.paneExitForward {
+-  animation: paneExitForward 240ms cubic-bezier(0.32, 0.72, 0, 1) both;
+-  pointer-events: none;
+-}
+-
+-.paneEnterBackward {
+-  animation: paneEnterBackward 240ms cubic-bezier(0.32, 0.72, 0, 1) both;
+-}
+-
+-.paneExitBackward {
+-  animation: paneExitBackward 240ms cubic-bezier(0.32, 0.72, 0, 1) both;
+-  pointer-events: none;
+-}
+-
+-.calendarEnterNext,
+-.calendarEnterPrevious {
+-  z-index: 2;
+-  animation-duration: 260ms;
+-  animation-fill-mode: both;
+-  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+-}
+-
+-.calendarExitNext,
+-.calendarExitPrevious {
+-  z-index: 1;
+-  pointer-events: none;
+-  animation-duration: 260ms;
+-  animation-fill-mode: both;
+-  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+-}
+-
+-.calendarEnterNext {
+-  animation-name: calendarEnterNext;
+-}
+-
+-.calendarExitNext {
+-  animation-name: calendarExitNext;
+-}
+-
+-.calendarEnterPrevious {
+-  animation-name: calendarEnterPrevious;
+-}
+-
+-.calendarExitPrevious {
+-  animation-name: calendarExitPrevious;
+-}
+-
+-@keyframes paneEnterForward {
+-  from {
+-    opacity: 0;
+-    transform: translateY(10px) scale(1.04);
+-  }
+-
+-  to {
+-    opacity: 1;
+-    transform: translateY(0) scale(1);
+-  }
+-}
+-
+-@keyframes paneExitForward {
+-  from {
+-    opacity: 1;
+-    transform: translateY(0) scale(1);
+-  }
+-
+-  to {
+-    opacity: 0;
+-    transform: translateY(-8px) scale(0.94);
+-  }
+-}
+-
+-@keyframes paneEnterBackward {
+-  from {
+-    opacity: 0;
+-    transform: translateY(-8px) scale(0.94);
+-  }
+-
+-  to {
+-    opacity: 1;
+-    transform: translateY(0) scale(1);
+-  }
+-}
+-
+-@keyframes paneExitBackward {
+-  from {
+-    opacity: 1;
+-    transform: translateY(0) scale(1);
+-  }
+-
+-  to {
+-    opacity: 0;
+-    transform: translateY(10px) scale(1.04);
+-  }
+-}
+-
+-@keyframes calendarEnterNext {
+-  from {
+-    opacity: 0.72;
+-    transform: translateX(100%);
+-  }
+-
+-  to {
+-    opacity: 1;
+-    transform: translateX(0);
+-  }
+-}
+-
+-@keyframes calendarExitNext {
+-  from {
+-    opacity: 1;
+-    transform: translateX(0);
+-  }
+-
+-  to {
+-    opacity: 0.72;
+-    transform: translateX(-100%);
+-  }
+-}
+-
+-@keyframes calendarEnterPrevious {
+-  from {
+-    opacity: 0.72;
+-    transform: translateX(-100%);
+-  }
+-
+-  to {
+-    opacity: 1;
+-    transform: translateX(0);
+-  }
+-}
+-
+-@keyframes calendarExitPrevious {
+-  from {
+-    opacity: 1;
+-    transform: translateX(0);
+-  }
+-
+-  to {
+-    opacity: 0.72;
+-    transform: translateX(100%);
+-  }
+-}

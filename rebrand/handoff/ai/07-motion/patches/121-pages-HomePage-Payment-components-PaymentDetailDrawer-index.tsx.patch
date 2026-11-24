@@ -1,0 +1,218 @@
+diff --git a/src/pages/HomePage/Payment/components/PaymentDetailDrawer/index.tsx b/src/pages/HomePage/Payment/components/PaymentDetailDrawer/index.tsx
+index e23b94b..ba8a3ed 100644
+--- a/src/pages/HomePage/Payment/components/PaymentDetailDrawer/index.tsx
++++ b/src/pages/HomePage/Payment/components/PaymentDetailDrawer/index.tsx
+@@ -1,12 +1,16 @@
+-import { useRef, type FC, type MouseEvent } from 'react';
++import { useRef, useState, type FC } from 'react';
+ import { X } from 'lucide-react';
++import { m } from 'motion/react';
+ 
+-import { useBottomSheetDragDismiss } from '@/components/ui/useBottomSheetDragDismiss';
+ import { useI18n, type TranslationKey } from '@/i18n';
+ import { hasCompleteRepayFeeParts } from '@/pages/RepayPage/repayAmount';
+ import type { RepayPlan } from '@/services/api/repay';
+ 
+ import styles from './index.module.css';
++import { pressProps } from '@/motion/press';
++import { Sheet } from '@/motion/Sheet';
++import { SheetDragArea } from '@/motion/SheetDragArea';
++import { useScrimAttributes } from '@/motion/useScrimAttributes';
+ 
+ interface PaymentDetailDrawerProps {
+   // Selected repayment plan from the list; null means drawer is closed.
+@@ -218,105 +222,110 @@ const buildDetailRows = (plan: RepayPlan, t: Translate): DetailRow[] => {
+  * Bottom drawer that shows details for one repayment plan.
+  * 展示单个还款期数详情的底部抽屉。
+  */
++/** Drag strip = the header's top padding, so it never covers the close button. */
++const DRAG_STRIP_HEIGHT = '1rem';
++
+ const PaymentDetailDrawer: FC<PaymentDetailDrawerProps> = ({
+   onClose,
+   plan,
+ }) => {
+   const { t } = useI18n();
+-  const drawerRef = useRef<HTMLElement | null>(null);
+-  const { backdropRef, isDragging, sheetDragProps } = useBottomSheetDragDismiss(
++  const drawerRef = useRef<HTMLDivElement | null>(null);
++  // Keep the last plan while the exit plays so the content doesn't blank
++  // during the slide-down. 退场动画期间保留上一次的期数，避免内容闪空。
++  const [shownPlan, setShownPlan] = useState(plan);
++  if (plan && plan !== shownPlan) setShownPlan(plan);
++  const open = Boolean(plan);
++
++  // tracking stays on the scrim / panel the Sheet draws
++  useScrimAttributes(
++    drawerRef,
++    open,
++    {
++      'data-event-type': 'payment_detail_overlay',
++      'data-repayment-apply-code': shownPlan?.applyCode,
++      'data-repayment-period': shownPlan ? String(shownPlan.period) : undefined,
++    },
+     {
+-      active: Boolean(plan),
+-      onDismiss: onClose,
+-      sheetRef: drawerRef,
++      'data-event-type': 'payment_detail_drawer',
++      'data-repayment-apply-code': shownPlan?.applyCode,
++      'data-repayment-overdue-days': shownPlan
++        ? String(toNumber(shownPlan.overdueDays))
++        : undefined,
++      'data-repayment-period': shownPlan ? String(shownPlan.period) : undefined,
+     },
+   );
+ 
+-  if (!plan) {
++  if (!shownPlan) {
+     return null;
+   }
+ 
+-  const rows = buildDetailRows(plan, t);
+-
+-  /**
+-   * Stops click propagation inside the drawer so only overlay taps close it.
+-   * 阻止抽屉内部点击冒泡，确保只有点击蒙层才关闭。
+-   */
+-  const handleDrawerClick = (event: MouseEvent<HTMLElement>) => {
+-    // Prevent overlay click-to-close when users tap inside the drawer.
+-    // 阻止弹窗内部点击冒泡，避免误触蒙层关闭。
+-    event.stopPropagation();
+-  };
++  const rows = buildDetailRows(shownPlan, t);
+ 
++  // Motion: shared Sheet — real enter / exit (it used to return null), slide
++  // on SPRING_PCT, scrim 0.2 s in / LEAVE out, drag the top strip or the
++  // header down, rows rise. 进出场与拖拽关闭由共享 Sheet 承担。
+   return (
+-    <div
+-      className={styles.overlay}
+-      data-event-type="payment_detail_overlay"
+-      data-repayment-apply-code={plan.applyCode}
+-      data-repayment-period={plan.period}
+-      onClick={onClose}
++    <Sheet
++      ariaLabel={t('home.payment.detail.label')}
++      ariaModal
++      className={styles.drawer}
++      dragStripHeight={DRAG_STRIP_HEIGHT}
++      layerClassName={styles.overlay}
++      onClose={onClose}
++      open={open}
++      panelRef={drawerRef}
++      positionPanel={false}
++      riseSkip={2}
++      role="dialog"
++      scrimClassName={styles.backdrop}
++      zIndex={1000}
+     >
+-      <div aria-hidden="true" className={styles.backdrop} ref={backdropRef} />
+-      {/* Bottom drawer follows the Figma node 518:4090 and reads only the selected plan. */}
+-      {/* 底部抽屉对齐 Figma 节点 518:4090，数据只来自当前点击的还款期数。 */}
+-      <section
+-        aria-label={t('home.payment.detail.label')}
+-        aria-modal="true"
+-        className={`${styles.drawer} ${isDragging ? styles.drawerDragging : ''}`}
+-        data-event-type="payment_detail_drawer"
+-        data-repayment-apply-code={plan.applyCode}
+-        data-repayment-overdue-days={toNumber(plan.overdueDays)}
+-        data-repayment-period={plan.period}
+-        onClick={handleDrawerClick}
+-        ref={drawerRef}
+-        role="dialog"
+-        {...sheetDragProps}
+-      >
+-        <span
+-          aria-hidden="true"
+-          className={styles.dragHandle}
+-          data-drawer-drag-region="true"
+-        />
+-
+-        <header className={styles.header}>
+-          <button
+-            aria-label={t('home.payment.detail.close')}
+-            className={styles.closeButton}
+-            data-event-type="payment_detail_close"
+-            type="button"
+-            onClick={onClose}
+-          >
+-            <X size={20} strokeWidth={2.4} />
+-          </button>
+-          <h2 className={styles.title}>{t('home.payment.detail.title')}</h2>
+-          <span className={styles.headerSpacer} aria-hidden="true" />
+-        </header>
+-
+-        <div className={styles.content}>
+-          {/* Amount, dates, fees, and overdue days are normalized before rendering. */}
+-          {/* 金额、日期、费用、逾期天数在渲染前统一格式化。 */}
+-          <section className={styles.detailSection}>
+-            <p className={styles.sectionLabel}>
+-              {t('home.payment.detail.section')}
+-            </p>
+-            <div className={styles.detailCard}>
+-              {rows.map((row) => (
+-                <div className={styles.detailRow} key={row.label}>
+-                  <span className={styles.detailLabel}>{row.label}</span>
+-                  <span
+-                    className={`${styles.detailValue} ${
+-                      row.tone === 'positive' ? styles.positiveValue : ''
+-                    }`}
+-                  >
+-                    {row.value}
+-                  </span>
+-                </div>
+-              ))}
+-            </div>
+-          </section>
+-        </div>
+-      </section>
+-    </div>
++      <span
++        aria-hidden="true"
++        className={styles.dragHandle}
++        data-drawer-drag-region="true"
++      />
++
++      <SheetDragArea as="header" className={styles.header}>
++        <m.button
++          aria-label={t('home.payment.detail.close')}
++          className={styles.closeButton}
++          data-event-type="payment_detail_close"
++          type="button"
++          onClick={onClose}
++          {...pressProps(true)}
++        >
++          <X size={20} strokeWidth={2.4} />
++        </m.button>
++        <h2 className={styles.title}>{t('home.payment.detail.title')}</h2>
++        <span className={styles.headerSpacer} aria-hidden="true" />
++      </SheetDragArea>
++
++      <div className={styles.content}>
++        {/* Amount, dates, fees, and overdue days are normalized before rendering. */}
++        {/* 金额、日期、费用、逾期天数在渲染前统一格式化。 */}
++        <section className={styles.detailSection}>
++          <p className={styles.sectionLabel}>
++            {t('home.payment.detail.section')}
++          </p>
++          <div className={styles.detailCard}>
++            {rows.map((row) => (
++              <div className={styles.detailRow} key={row.label}>
++                <span className={styles.detailLabel}>{row.label}</span>
++                <span
++                  className={`${styles.detailValue} ${
++                    row.tone === 'positive' ? styles.positiveValue : ''
++                  }`}
++                >
++                  {row.value}
++                </span>
++              </div>
++            ))}
++          </div>
++        </section>
++      </div>
++    </Sheet>
+   );
+ };
+ 

@@ -1,0 +1,33 @@
+diff --git a/src/pages/CreditLimitPage/HistorySection.tsx b/src/pages/CreditLimitPage/HistorySection.tsx
+index d36f970..a43ccf4 100644
+--- a/src/pages/CreditLimitPage/HistorySection.tsx
++++ b/src/pages/CreditLimitPage/HistorySection.tsx
+@@ -13,6 +13,8 @@ import {
+   type HistorySectionContent,
+ } from './historySectionContent';
+ import { trackCreditLimitHistoryQuery } from './tracking';
++import { m } from 'motion/react';
++import { pressProps } from '@/motion/press';
+ 
+ /** Mounts list probes only after the gate confirms B; unknown or closed gates render no module. */
+ export default function HistorySection() {
+@@ -85,16 +87,17 @@ function EnabledHistorySection() {
+             ) : (
+               <div className={styles.historyActions}>
+                 {categories.map(({ category, image }) => (
+-                  <button
++                  <m.button
+                     key={category}
+                     className={styles.historyAction}
+                     type="button"
+                     data-event-type="credit_limit_history_open"
+                     onClick={() => openHistory(category)}
++                    {...pressProps()}
+                   >
+                     <img src={image} alt="" />
+                     <span>{t(`credit.limit.${category}`)}</span>
+-                  </button>
++                  </m.button>
+                 ))}
+               </div>
+             )}

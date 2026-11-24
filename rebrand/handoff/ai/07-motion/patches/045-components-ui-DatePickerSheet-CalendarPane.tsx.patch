@@ -1,0 +1,128 @@
+diff --git a/src/components/ui/DatePickerSheet/CalendarPane.tsx b/src/components/ui/DatePickerSheet/CalendarPane.tsx
+index 73cc06f..bbbcb68 100644
+--- a/src/components/ui/DatePickerSheet/CalendarPane.tsx
++++ b/src/components/ui/DatePickerSheet/CalendarPane.tsx
+@@ -1,4 +1,6 @@
+-import type { CSSProperties, TouchEventHandler } from 'react';
++import type { CSSProperties, PointerEventHandler } from 'react';
++import { Crossfade } from '@/motion/Crossfade';
++import { MT } from '@/motion/tokens';
+ import { MONTHS, WEEKDAYS } from './constants';
+ import { isDateDisabled, isSameDay } from './dateUtils';
+ import styles from './index.module.css';
+@@ -10,24 +12,35 @@ interface CalendarPaneProps {
+     inCurrentMonth: boolean;
+   }>;
+   calendarGridStyle: CSSProperties;
++  /** the month on show (`${year}-${month}`): a new month crossfades in (M-046) */
++  monthKey: string;
+   selectedDate: Date;
+   minDate?: Date;
+   maxDate?: Date;
+   onSelectDate: (date: Date) => void;
+-  onTouchEnd?: TouchEventHandler<HTMLDivElement>;
+-  onTouchStart?: TouchEventHandler<HTMLDivElement>;
++  onPointerCancel?: PointerEventHandler<HTMLDivElement>;
++  onPointerDown?: PointerEventHandler<HTMLDivElement>;
++  onPointerUp?: PointerEventHandler<HTMLDivElement>;
+ }
+ 
++/**
++ * 日历面板：星期行固定不动，月份网格在换月时交叉淡入（Crossfade，y 10）；选中日圆点 0.15s 渐显。
++ * The days of the month on show. The weekday row never moves; the grid
++ * crossfades when the month changes (demo PS.DatePicker, M-046) and the
++ * chosen day's circle fades in 0.15 s (M-050, R-COLOR).
++ */
+ export function CalendarPane({
+   className,
+   calendarCells,
+   calendarGridStyle,
++  monthKey,
+   selectedDate,
+   minDate,
+   maxDate,
+   onSelectDate,
+-  onTouchEnd,
+-  onTouchStart,
++  onPointerCancel,
++  onPointerDown,
++  onPointerUp,
+ }: CalendarPaneProps) {
+   const calendarRows = [];
+   for (let index = 0; index < calendarCells.length; index += 7) {
+@@ -39,8 +52,9 @@ export function CalendarPane({
+   return (
+     <div
+       className={className}
+-      onTouchEnd={onTouchEnd}
+-      onTouchStart={onTouchStart}
++      onPointerCancel={onPointerCancel}
++      onPointerDown={onPointerDown}
++      onPointerUp={onPointerUp}
+     >
+       <div className={styles.weekdays}>
+         {WEEKDAYS.map((weekday) => (
+@@ -49,31 +63,39 @@ export function CalendarPane({
+           </span>
+         ))}
+       </div>
+-      <div className={styles.dateGrid} style={calendarGridStyle}>
+-        {calendarRows.map((row) => (
+-          <div className={styles.dateRow} key={row[0]?.date.toISOString()}>
+-            {row.map(({ date, inCurrentMonth }) => {
+-              const disabled =
+-                !inCurrentMonth || isDateDisabled(date, minDate, maxDate);
+-              const active = inCurrentMonth && isSameDay(date, selectedDate);
++      <div className={styles.gridViewport}>
++        <Crossfade
++          className={styles.dateGrid}
++          k={monthKey}
++          style={calendarGridStyle}
++          y={MT.Y.block}
++        >
++          {calendarRows.map((row) => (
++            <div className={styles.dateRow} key={row[0]?.date.toISOString()}>
++              {row.map(({ date, inCurrentMonth }) => {
++                const disabled =
++                  !inCurrentMonth || isDateDisabled(date, minDate, maxDate);
++                const active = inCurrentMonth && isSameDay(date, selectedDate);
+ 
+-              return (
+-                <button
+-                  aria-label={getDateLabel(date)}
+-                  className={`${styles.dateCell} ${
+-                    active ? styles.dateCellActive : ''
+-                  }`}
+-                  disabled={disabled}
+-                  key={date.toISOString()}
+-                  onClick={() => onSelectDate(date)}
+-                  type="button"
+-                >
+-                  {date.getDate()}
+-                </button>
+-              );
+-            })}
+-          </div>
+-        ))}
++                return (
++                  <button
++                    aria-label={getDateLabel(date)}
++                    aria-pressed={active}
++                    className={`${styles.dateCell} ${
++                      active ? styles.dateCellActive : ''
++                    }`}
++                    disabled={disabled}
++                    key={date.toISOString()}
++                    onClick={() => onSelectDate(date)}
++                    type="button"
++                  >
++                    {date.getDate()}
++                  </button>
++                );
++              })}
++            </div>
++          ))}
++        </Crossfade>
+       </div>
+     </div>
+   );

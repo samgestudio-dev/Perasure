@@ -1,0 +1,76 @@
+diff --git a/src/components/ui/Select/SelectSheet.module.css b/src/components/ui/Select/SelectSheet.module.css
+index ccf449f..77ae763 100644
+--- a/src/components/ui/Select/SelectSheet.module.css
++++ b/src/components/ui/Select/SelectSheet.module.css
+@@ -12,18 +12,11 @@
+   justify-content: flex-end;
+   overflow: hidden;
+   padding-top: 24px;
+-  transition: opacity 0.22s ease;
+ }
+ 
+-.overlayVisible {
+-  opacity: 1;
+-  pointer-events: auto;
+-}
+-
+-.overlayHidden {
+-  opacity: 0;
+-  pointer-events: none;
+-}
++/* Motion (slide, scrim fade, drag-to-close) comes from the shared Sheet
++   (src/motion/Sheet.tsx); this file keeps layout and visuals only.
++   / 动效由共享 Sheet 承担，此处只保留布局与视觉。 */
+ 
+ .mask {
+   position: absolute;
+@@ -53,23 +46,9 @@
+   border-top-right-radius: var(--radius-xxl, 32px);
+   background: var(--bg-inset, #f0f5f4);
+   box-shadow: var(--elevation-2);
+-  transition: transform 0.22s ease;
+   touch-action: pan-y;
+ }
+ 
+-.sheetVisible {
+-  transform: translate3d(0, var(--bottom-sheet-drag-offset, 0), 0);
+-}
+-
+-.sheetHidden {
+-  transform: translate3d(0, 100%, 0);
+-}
+-
+-.sheetDragging {
+-  transition: none;
+-  will-change: transform;
+-}
+-
+ /* This transparent header target reserves the drag gesture before Android
+    WebView starts its native vertical pan. / 透明头部区域优先接收拖拽，避免
+    Android WebView 先接管原生纵向滚动。 */
+@@ -194,10 +173,10 @@
+   cursor: pointer;
+   appearance: none;
+   -webkit-tap-highlight-color: transparent;
+-}
+-
+-.option:active:not(:disabled) {
+-  transform: scale(0.99);
++  /* R-COLOR: a pick changes colour only, in 150 ms (press comes from pressProps) */
++  transition:
++    color 0.15s ease,
++    border-color 0.15s ease;
+ }
+ 
+ .optionLabel {
+@@ -223,6 +202,10 @@
+   font-weight: var(--font-weight-medium, 500);
+ }
+ 
++.optionIndicator {
++  transition: border-color 0.15s ease;
++}
++
+ .optionSelected .optionIndicator {
+   border: 1.5px solid var(--border-accent-strong);
+ }

@@ -1,0 +1,27 @@
+diff --git a/src/components/ui/Loading/methods.ts b/src/components/ui/Loading/methods.ts
+index 3b5f499..0ba269e 100644
+--- a/src/components/ui/Loading/methods.ts
++++ b/src/components/ui/Loading/methods.ts
+@@ -1,5 +1,6 @@
+ import { createRoot } from 'react-dom/client';
+ import { createElement } from 'react';
++import { MotionRoot } from '@/motion/MotionRoot';
+ import { Loading } from './Loading';
+ 
+ let closeCurrent: (() => void) | null = null;
+@@ -20,7 +21,14 @@ export const showLoading = (text = 'Loading...') => {
+   };
+ 
+   closeCurrent = close;
+-  root.render(createElement(Loading, { fullscreen: true, text }));
++  // Own root: give it the app's Motion provider (m.* + reducedMotion "user").
++  root.render(
++    createElement(
++      MotionRoot,
++      null,
++      createElement(Loading, { fullscreen: true, text }),
++    ),
++  );
+ 
+   return { close };
+ };

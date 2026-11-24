@@ -1,0 +1,50 @@
+diff --git a/src/components/ui/NoticeTicker/index.tsx b/src/components/ui/NoticeTicker/index.tsx
+index 7b531f2..9520112 100644
+--- a/src/components/ui/NoticeTicker/index.tsx
++++ b/src/components/ui/NoticeTicker/index.tsx
+@@ -6,6 +6,7 @@ import {
+   useState,
+   type CSSProperties,
+ } from 'react';
++import { useReducedMotion } from 'motion/react';
+ 
+ import infoIcon from './assets/info.svg';
+ import styles from './index.module.css';
+@@ -71,6 +72,10 @@ export function NoticeTicker({
+   const viewportRef = useRef<HTMLSpanElement | null>(null);
+   const textRef = useRef<HTMLSpanElement | null>(null);
+   const keyboardFocusRef = useKeyboardFocusModality();
++  // Reduced motion: long copy stands still (demo M-067 marquee: animation
++  // none) and rotates on the timer like short copy.
++  const reduceMotion = useReducedMotion();
++  const scrolls = scrollDistance > 0 && !reduceMotion;
+   const activeNotice = useMemo(
+     () => getActiveNotice(notices, activeId),
+     [activeId, notices],
+@@ -127,7 +132,7 @@ export function NoticeTicker({
+       isHovered ||
+       isFocused ||
+       isDocumentHidden ||
+-      scrollDistance > 0
++      scrolls
+     ) {
+       return undefined;
+     }
+@@ -143,7 +148,7 @@ export function NoticeTicker({
+     isHovered,
+     notices,
+     paused,
+-    scrollDistance,
++    scrolls,
+     switchIntervalMs,
+   ]);
+ 
+@@ -160,7 +165,7 @@ export function NoticeTicker({
+           ? 'true'
+           : undefined
+       }
+-      data-scrollable={scrollDistance > 0 ? 'true' : 'false'}
++      data-scrollable={scrolls ? 'true' : 'false'}
+       onBlur={() => setIsFocused(false)}
+       onClick={() => onNoticeActivate(activeNotice)}
+       onFocus={() => setIsFocused(keyboardFocusRef.current)}

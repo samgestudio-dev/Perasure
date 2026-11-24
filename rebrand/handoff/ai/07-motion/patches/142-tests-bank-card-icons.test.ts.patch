@@ -1,0 +1,56 @@
+diff --git a/tests/bank-card-icons.test.ts b/tests/bank-card-icons.test.ts
+index ca920ad..6b1a407 100644
+--- a/tests/bank-card-icons.test.ts
++++ b/tests/bank-card-icons.test.ts
+@@ -22,12 +22,46 @@ function loadPicker() {
+         ProgressiveBlur: () =>
+           React.createElement('div', { 'data-test-blur': true }),
+       },
+-      '@/components/ui/useBottomSheetDragDismiss': {
+-        useBottomSheetDragDismiss: () => ({
+-          isDragging: false,
+-          sheetDragProps: {},
+-        }),
++      // Modal chrome: the shared motion Sheet / Crossfade render their content
++      // in place (open only); press props are inert. 弹层动效外壳以直出替代。
++      '@/motion/Sheet': {
++        Sheet: ({
++          open,
++          children,
++          ariaLabelledBy,
++          role,
++        }: {
++          open: boolean;
++          children: React.ReactNode;
++          ariaLabelledBy?: string;
++          role?: string;
++        }) =>
++          open
++            ? React.createElement(
++                'div',
++                { 'aria-labelledby': ariaLabelledBy, role },
++                children,
++              )
++            : null,
++      },
++      '@/motion/SheetDragArea': {
++        SheetDragArea: ({
++          as = 'div',
++          className,
++          children,
++        }: {
++          as?: string;
++          className?: string;
++          children: React.ReactNode;
++        }) => React.createElement(as, { className }, children),
++      },
++      '@/motion/Crossfade': {
++        Crossfade: ({ children }: { children: React.ReactNode }) =>
++          React.createElement(React.Fragment, null, children),
+       },
++      '@/motion/press': { pressProps: () => ({}) },
++      '@/motion/presets': { fade: () => ({}) },
++      '@/motion/tokens': { MT: { Y: { text: 8, block: 10, digit: 6 } } },
+       '@/utils/browser/dom/scrollLock': { lockScroll() {}, unlockScroll() {} },
+       '@/utils/jsbridge': { isApp: () => false },
+     },

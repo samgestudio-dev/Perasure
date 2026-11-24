@@ -1,0 +1,8 @@
+{
+ "motionId": "M-016",
+ "name": "Toast stack (login: Next with an empty number, 3 times)",
+ "ok": true,
+ "settledAt": 625,
+ "endT": 925,
+ "varying": 30
+}

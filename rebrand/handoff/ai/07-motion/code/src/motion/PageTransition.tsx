@@ -1,0 +1,164 @@
+/** @jsxRuntime automatic @jsxImportSource react */
+import type { CSSProperties, ReactNode, Ref } from 'react';
+import { use, useEffect, useMemo, useState } from 'react';
+import {
+  AnimatePresence,
+  m,
+  PresenceContext,
+  useIsPresent,
+} from 'motion/react';
+
+import { PAGE_VARIANTS } from './presets';
+
+/**
+ * Direction of a page change — the demo's `PS.Pages` dir
+ * (Perasure `shared/ps-ui/layout.js:128-155`): 0 / 1 / -1 crossfade (owner:
+ * never a sideways slide, R-PAGES); 2 = the new page rises from the bottom
+ * over the old one (SPRING_PCT); -2 = it goes back down (0.3 s).
+ */
+export type PageDirection = 0 | 1 | -1 | 2 | -2;
+
+/**
+ * Lets everything mounted AFTER the first paint of a page play its `initial`.
+ *
+ * `AnimatePresence initial={false}` (below) hands the first page a presence
+ * context with `initial: false`, and Motion's PresenceChild memoises that
+ * value for the page's whole life. Every `m.*` that mounts later inside the
+ * first page would read it and jump straight to `animate`: on the normal path
+ * (the app opens on Home, then Withdraw) the keypad cascade M-099, the
+ * withdraw layer and later Rise rows did not play. Only the first paint must
+ * skip `initial`; after this box has mounted, its children see
+ * `initial: undefined` (same id / register / isPresent, so exits still work).
+ */
+function LaterMountsAnimate({ children }: { children: ReactNode }) {
+  const presence = use(PresenceContext);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const value = useMemo(
+    () =>
+      mounted && presence?.initial === false
+        ? { ...presence, initial: undefined }
+        : presence,
+    [mounted, presence],
+  );
+  return <PresenceContext value={value}>{children}</PresenceContext>;
+}
+
+function PageBox({
+  dir,
+  children,
+  className,
+  style,
+  ref,
+}: {
+  dir: PageDirection;
+  children: ReactNode;
+  className?: string;
+  style?: CSSProperties;
+  ref?: Ref<HTMLDivElement>;
+}) {
+  /* R-LEAVE-NOTAPS: a page that is leaving takes no taps */
+  const present = useIsPresent();
+  return (
+    <m.div
+      animate="center"
+      className={className}
+      custom={dir}
+      data-page-present={present ? 'true' : 'false'}
+      exit="exit"
+      initial="enter"
+      ref={ref}
+      style={{
+        height: '100%',
+        ...style,
+        pointerEvents: present ? undefined : 'none',
+      }}
+      variants={PAGE_VARIANTS}
+    >
+      <LaterMountsAnimate>{children}</LaterMountsAnimate>
+    </m.div>
+  );
+}
+
+/** Props of {@link PageTransition}. */
+export interface PageTransitionProps {
+  /** what identifies the page; a change plays the transition */
+  pageKey: string;
+  dir?: PageDirection;
+  /**
+   * The page. Pass a FROZEN element (react-router `useOutlet()` captures its
+   * own route context), so the leaving copy keeps showing the old page.
+   */
+  children: ReactNode;
+  className?: string;
+  style?: CSSProperties;
+}
+
+/**
+ * Page change crossfade — M-008 (and M-009 for dir 2 / -2). The new page
+ * fades in on ENTER (0.30 s after 0.07 s) while the old one fades out on
+ * LEAVE (0.15 s) and takes no taps. `AnimatePresence initial={false}`: the
+ * first page shows at once (so a native child WebView's first page does not
+ * fade); what mounts inside it later still animates (`LaterMountsAnimate`).
+ * `mode="popLayout"`: the leaving page is lifted out of the flow so the
+ * two overlap like the demo's absolutely positioned pages; the parent must be
+ * positioned (GlobalLayout's <main> is `position: relative`).
+ */
+export function PageTransition({
+  pageKey,
+  dir = 0,
+  children,
+  className,
+  style,
+}: PageTransitionProps) {
+  return (
+    <AnimatePresence custom={dir} initial={false} mode="popLayout">
+      <PageBox className={className} dir={dir} key={pageKey} style={style}>
+        {children}
+      </PageBox>
+    </AnimatePresence>
+  );
+}
+
+/** A route match as react-router's `useMatches()` returns it (only what we read). */
+export interface PageMatch {
+  pathname: string;
+}
+
+/**
+ * Routes that render the SAME page component under several URLs keep it
+ * mounted (no crossfade between them), as before the transition existed.
+ */
+const SHARED_PAGE_PREFIXES = [
+  '/account/faqs',
+  // Each CreditHistory tab is its own route (/credit-history/adjustments,
+  // /credit-history/borrowing): a tab switch glides the tab pill (M-033) and
+  // must not crossfade the whole page.
+  '/credit-history',
+];
+
+/**
+ * Which page is showing, for the crossfade key. The page is the first route
+ * under GlobalLayout (`matches[1]`), so:
+ * - `/` and its children (`/withdraw…`) are one key — Home stays mounted
+ *   under the withdraw layer (that layer's own motion is the flow's, not this
+ *   crossfade);
+ * - nested layouts (`/account/inbox` → `message/:id`) are one key — their own
+ *   <Outlet/> handles the child;
+ * - `/account/faqs…` (one FaqRoute for every FAQ URL) is one key;
+ * - `/credit-history…` (one tab route per CreditHistory tab) is one key.
+ */
+export function pageTransitionKey(
+  pathname: string,
+  matches: readonly PageMatch[],
+): string {
+  const shared = SHARED_PAGE_PREFIXES.find(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+  if (shared) return shared;
+  return (
+    matches[1]?.pathname ?? matches[matches.length - 1]?.pathname ?? pathname
+  );
+}
+
+export default PageTransition;

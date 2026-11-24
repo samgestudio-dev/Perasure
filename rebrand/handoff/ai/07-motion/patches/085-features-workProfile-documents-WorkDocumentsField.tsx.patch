@@ -1,0 +1,102 @@
+diff --git a/src/features/workProfile/documents/WorkDocumentsField.tsx b/src/features/workProfile/documents/WorkDocumentsField.tsx
+index 8731fa5..c9d2465 100644
+--- a/src/features/workProfile/documents/WorkDocumentsField.tsx
++++ b/src/features/workProfile/documents/WorkDocumentsField.tsx
+@@ -1,6 +1,8 @@
+ import { useState } from 'react';
+ import { MobileModal } from '@/components/ui/MobileModal';
+ import { useI18n } from '@/i18n';
++import { Swap } from '@/motion/Swap';
++import { MT } from '@/motion/tokens';
+ import { WorkDocumentPicker } from '@/features/workProfile/documents/WorkDocumentPicker';
+ import type { DocumentController } from '@/features/workProfile/documents/controller';
+ import type {
+@@ -93,45 +95,49 @@ export function WorkDocumentsField({
+                       index: index + 1,
+                     })}
+                 </span>
+-                <span
+-                  className={
+-                    failed
+-                      ? styles.failure
+-                      : `${styles.status} ${entry.stage === 'uploading' ? styles.uploadStatus : ''}`
+-                  }
+-                >
+-                  {uploaded || saved ? (
+-                    <>
+-                      {size ? (
+-                        <>
+-                          <span>{size}</span>
+-                          <span aria-hidden="true">·</span>
+-                        </>
+-                      ) : null}
+-                      <span className={styles.success}>
+-                        <img src={successIcon} alt="" />
+-                        {t(`workProfile.documents.${entry.stage}`)}
+-                      </span>
+-                    </>
+-                  ) : (
+-                    <>
+-                      <span>{t(`workProfile.documents.${entry.stage}`)}</span>
+-                      {entry.stage === 'uploading' &&
+-                      entry.progress !== undefined &&
+-                      size ? (
+-                        <>
+-                          <span aria-hidden="true">·</span>
+-                          <span>
+-                            {t('workProfile.documents.progress', {
+-                              progress: entry.progress,
+-                              size,
+-                            })}
+-                          </span>
+-                        </>
+-                      ) : null}
+-                    </>
+-                  )}
+-                </span>
++                {/* M-045 (PS.FileRow): the status line crossfades when the
++                    stage changes; the progress number just updates. */}
++                <Swap block k={entry.stage} y={MT.Y.digit}>
++                  <span
++                    className={
++                      failed
++                        ? styles.failure
++                        : `${styles.status} ${entry.stage === 'uploading' ? styles.uploadStatus : ''}`
++                    }
++                  >
++                    {uploaded || saved ? (
++                      <>
++                        {size ? (
++                          <>
++                            <span>{size}</span>
++                            <span aria-hidden="true">·</span>
++                          </>
++                        ) : null}
++                        <span className={styles.success}>
++                          <img src={successIcon} alt="" />
++                          {t(`workProfile.documents.${entry.stage}`)}
++                        </span>
++                      </>
++                    ) : (
++                      <>
++                        <span>{t(`workProfile.documents.${entry.stage}`)}</span>
++                        {entry.stage === 'uploading' &&
++                        entry.progress !== undefined &&
++                        size ? (
++                          <>
++                            <span aria-hidden="true">·</span>
++                            <span>
++                              {t('workProfile.documents.progress', {
++                                progress: entry.progress,
++                                size,
++                              })}
++                            </span>
++                          </>
++                        ) : null}
++                      </>
++                    )}
++                  </span>
++                </Swap>
+                 {entry.stage === 'uploading' ? (
+                   <progress
+                     className={styles.progress}

@@ -1,0 +1,492 @@
+diff --git a/src/pages/HomePage/Payment/components/PaymentMethodDrawer/index.tsx b/src/pages/HomePage/Payment/components/PaymentMethodDrawer/index.tsx
+index e6ed959..8cd069f 100644
+--- a/src/pages/HomePage/Payment/components/PaymentMethodDrawer/index.tsx
++++ b/src/pages/HomePage/Payment/components/PaymentMethodDrawer/index.tsx
+@@ -1,8 +1,12 @@
+-import type { FC, MouseEvent, ReactNode } from 'react';
++import type { FC, ReactNode } from 'react';
+ import { useEffect, useMemo, useRef, useState } from 'react';
+-import { LoaderCircle } from 'lucide-react';
++import { m } from 'motion/react';
+ 
+-import { useBottomSheetDragDismiss } from '@/components/ui/useBottomSheetDragDismiss';
++import { BusyDots } from '@/motion/BusyDots';
++import { pressProps } from '@/motion/press';
++import { Sheet } from '@/motion/Sheet';
++import { SheetDragArea } from '@/motion/SheetDragArea';
++import { useScrimAttributes } from '@/motion/useScrimAttributes';
+ import type { RepayPayMethod, RepayPlan } from '@/services/api/repay';
+ import { amountWipeZero } from '@/utils/math';
+ import { isApp } from '@/utils/jsbridge';
+@@ -145,16 +149,13 @@ const PaymentMethodDrawer: FC<PaymentMethodDrawerProps> = ({
+   const [activeCategoryKey, setActiveCategoryKey] =
+     useState<PaymentCategoryKey>('qr-code');
+   const [selected, setSelected] = useState<PaymentMethodSelection | null>(null);
+-  const drawerRef = useRef<HTMLElement | null>(null);
++  const drawerRef = useRef<HTMLDivElement | null>(null);
+   const methodContentRef = useRef<HTMLDivElement | null>(null);
+-  const { backdropRef, isDragging, sheetDragProps } = useBottomSheetDragDismiss(
+-    {
+-      active: open && Boolean(plan) && !loading,
+-      dragRegionSelector: '[data-drawer-drag-region="true"]',
+-      onDismiss: onClose,
+-      sheetRef: drawerRef,
+-    },
+-  );
++  // Keep the last plan while the exit plays so the drawer doesn't blank during
++  // the slide-down. 退场动画期间保留上一次的期数，避免内容闪空。
++  const [shownPlan, setShownPlan] = useState(plan);
++  if (plan && plan !== shownPlan) setShownPlan(plan);
++  const sheetOpen = open && Boolean(plan);
+ 
+   const normalizedQuery = normalizeSearchText(query);
+   // Build the unfiltered API category set once. It controls which left-rail tabs
+@@ -289,15 +290,31 @@ const PaymentMethodDrawer: FC<PaymentMethodDrawerProps> = ({
+     setActiveCategoryKey(renderedActiveCategoryKey);
+   }, [activeCategoryKey, open, renderedActiveCategoryKey]);
+ 
+-  if (!open || !plan) {
++  // tracking stays on the scrim / panel the Sheet draws
++  useScrimAttributes(
++    drawerRef,
++    sheetOpen,
++    {
++      'data-event-type': 'payment_method_overlay',
++      'data-payment-business-type': businessType,
++      'data-repayment-apply-code': shownPlan?.applyCode,
++      'data-repayment-period': shownPlan ? String(shownPlan.period) : undefined,
++    },
++    {
++      'aria-busy': String(loading),
++      'data-event-type': 'payment_method_drawer',
++      'data-payment-business-type': businessType,
++      'data-payment-method-count': String(methods.length),
++      'data-repayment-amount': String(displayAmount),
++      'data-repayment-apply-code': shownPlan?.applyCode,
++      'data-repayment-period': shownPlan ? String(shownPlan.period) : undefined,
++    },
++  );
++
++  if (!shownPlan) {
+     return null;
+   }
+ 
+-  /** Stops method-panel clicks from closing the overlay. / 阻止面板内点击冒泡关闭抽屉。 */
+-  const handleDrawerClick = (event: MouseEvent<HTMLElement>) => {
+-    event.stopPropagation();
+-  };
+-
+   /** Filters all groups and resets the current category panel scroll position. / 跨全部分组搜索，并重置当前分类面板的滚动位置。 */
+   const handleSearchChange = (value: string) => {
+     setQuery(value);
+@@ -335,219 +352,208 @@ const PaymentMethodDrawer: FC<PaymentMethodDrawerProps> = ({
+     };
+ 
+     setSelected(nextSelection);
+-    void onConfirm(nextSelection, plan);
++    void onConfirm(nextSelection, shownPlan);
+   };
+ 
++  // Motion: shared Sheet — real enter / exit (it used to return null), slide
++  // on SPRING_PCT, scrim 0.2 s in / LEAVE out, drag the handle / search row
++  // down (not while paying), rows rise. 进出场与拖拽关闭由共享 Sheet 承担。
+   return (
+-    <div
+-      className={`${styles.overlay} ${
++    <Sheet
++      ariaLabel={copy.choose}
++      ariaModal
++      className={styles.drawer}
++      dragToClose={!loading}
++      layerClassName={`${styles.overlay} ${
+         isNativeApp ? styles.overlayNativeApp : ''
+       }`}
+-      data-event-type="payment_method_overlay"
+-      data-payment-business-type={businessType}
+-      data-repayment-apply-code={plan.applyCode}
+-      data-repayment-period={plan.period}
+-      onClick={onClose}
++      onClose={onClose}
++      open={sheetOpen}
++      panelRef={drawerRef}
++      positionPanel={false}
++      riseSkip={2}
++      role="dialog"
++      scrimClassName={styles.backdrop}
++      zIndex={1020}
+     >
+-      <div aria-hidden="true" className={styles.backdrop} ref={backdropRef} />
+-      <section
+-        aria-busy={loading}
+-        aria-label={copy.choose}
+-        aria-modal="true"
+-        className={`${styles.drawer} ${isDragging ? styles.drawerDragging : ''}`}
+-        data-event-type="payment_method_drawer"
+-        data-payment-business-type={businessType}
+-        data-payment-method-count={methods.length}
+-        data-repayment-amount={displayAmount}
+-        data-repayment-apply-code={plan.applyCode}
+-        data-repayment-period={plan.period}
+-        role="dialog"
+-        ref={drawerRef}
+-        {...sheetDragProps}
+-        onClick={handleDrawerClick}
+-      >
+-        <span
+-          aria-hidden="true"
+-          className={styles.dragHandle}
+-          data-drawer-drag-region="true"
+-        />
+-
+-        <div className={styles.searchRow} data-drawer-drag-region="true">
+-          <label className={styles.searchField}>
+-            <PaymentSearchIcon aria-hidden="true" />
+-            <input
+-              aria-label={copy.search}
+-              autoComplete="off"
+-              data-event-type="payment_method_search"
+-              disabled={loading}
+-              placeholder={copy.search}
+-              type="text"
+-              value={query}
+-              onChange={(event) => handleSearchChange(event.target.value)}
+-            />
+-          </label>
+-          <button
+-            aria-label={copy.close}
+-            className={styles.closeButton}
+-            data-event-type="payment_method_close"
++      <span
++        aria-hidden="true"
++        className={styles.dragHandle}
++        data-drawer-drag-region="true"
++      />
++
++      <SheetDragArea className={styles.searchRow}>
++        <label className={styles.searchField}>
++          <PaymentSearchIcon aria-hidden="true" />
++          <input
++            aria-label={copy.search}
++            autoComplete="off"
++            data-event-type="payment_method_search"
+             disabled={loading}
+-            type="button"
+-            onClick={onClose}
+-          >
+-            <PaymentCloseIcon aria-hidden="true" />
+-          </button>
+-        </div>
+-
+-        <div className={styles.drawerBody}>
+-          <nav aria-label={copy.categories} className={styles.categoryRail}>
+-            {availableCategories.map((category) => {
+-              const CategoryIcon = category.icon;
+-              const isActive = category.key === renderedActiveCategoryKey;
+-              const disabledBySearch =
+-                Boolean(normalizedQuery) &&
+-                !matchedCategoryKeys.has(category.key);
+-
+-              return (
+-                <button
+-                  aria-pressed={isActive}
+-                  className={`${styles.categoryButton} ${
+-                    isActive ? styles.categoryButtonActive : ''
+-                  }`}
+-                  data-event-type="payment_method_category"
+-                  data-payment-method-category={category.key}
+-                  data-payment-method-category-search-match={!disabledBySearch}
+-                  disabled={loading || disabledBySearch}
+-                  key={category.key}
+-                  type="button"
+-                  onClick={() => handleCategoryClick(category)}
+-                >
+-                  <CategoryIcon aria-hidden="true" />
+-                  <span>{copy.category[category.key]}</span>
+-                </button>
+-              );
+-            })}
+-          </nav>
+-
+-          <div className={styles.methodContent} ref={methodContentRef}>
+-            {errorMessage ? (
+-              <p
+-                className={styles.errorMessage}
+-                data-event-type="payment_method_error"
+-                role="alert"
+-              >
+-                {errorMessage}
+-              </p>
+-            ) : null}
+-
+-            {activeCategory?.groups.length ? (
+-              <section
+-                className={styles.categorySection}
+-                data-payment-method-category-section={activeCategory.key}
+-                key={activeCategory.key}
++            placeholder={copy.search}
++            type="text"
++            value={query}
++            onChange={(event) => handleSearchChange(event.target.value)}
++          />
++        </label>
++        <m.button
++          aria-label={copy.close}
++          className={styles.closeButton}
++          data-event-type="payment_method_close"
++          disabled={loading}
++          type="button"
++          onClick={onClose}
++          {...pressProps(true, loading)}
++        >
++          <PaymentCloseIcon aria-hidden="true" />
++        </m.button>
++      </SheetDragArea>
++
++      <div className={styles.drawerBody}>
++        <nav aria-label={copy.categories} className={styles.categoryRail}>
++          {availableCategories.map((category) => {
++            const CategoryIcon = category.icon;
++            const isActive = category.key === renderedActiveCategoryKey;
++            const disabledBySearch =
++              Boolean(normalizedQuery) &&
++              !matchedCategoryKeys.has(category.key);
++
++            return (
++              <m.button
++                aria-pressed={isActive}
++                className={`${styles.categoryButton} ${
++                  isActive ? styles.categoryButtonActive : ''
++                }`}
++                data-event-type="payment_method_category"
++                data-payment-method-category={category.key}
++                data-payment-method-category-search-match={!disabledBySearch}
++                disabled={loading || disabledBySearch}
++                key={category.key}
++                type="button"
++                onClick={() => handleCategoryClick(category)}
++                {...pressProps(false, loading || disabledBySearch)}
+               >
+-                {activeCategory.groups.map(({ children, parent }) => {
+-                  const groupCopyKey = getMethodGroupCopyKey(parent);
+-                  const groupLabel = groupCopyKey
+-                    ? copy.group[groupCopyKey]
+-                    : parent.label || parent.value || copy.fallback;
+-
+-                  return (
+-                    <section
+-                      className={styles.methodGroup}
+-                      data-payment-method-group={parent.value}
+-                      key={getMethodGroupKey(parent)}
+-                    >
+-                      <div className={styles.groupHeader}>
+-                        <span>
+-                          <HighlightedText
+-                            query={normalizedQuery}
+-                            text={groupLabel}
+-                          />
++                <CategoryIcon aria-hidden="true" />
++                <span>{copy.category[category.key]}</span>
++              </m.button>
++            );
++          })}
++        </nav>
++
++        <div className={styles.methodContent} ref={methodContentRef}>
++          {errorMessage ? (
++            <p
++              className={styles.errorMessage}
++              data-event-type="payment_method_error"
++              role="alert"
++            >
++              {errorMessage}
++            </p>
++          ) : null}
++
++          {activeCategory?.groups.length ? (
++            <section
++              className={styles.categorySection}
++              data-payment-method-category-section={activeCategory.key}
++              key={activeCategory.key}
++            >
++              {activeCategory.groups.map(({ children, parent }) => {
++                const groupCopyKey = getMethodGroupCopyKey(parent);
++                const groupLabel = groupCopyKey
++                  ? copy.group[groupCopyKey]
++                  : parent.label || parent.value || copy.fallback;
++
++                return (
++                  <section
++                    className={styles.methodGroup}
++                    data-payment-method-group={parent.value}
++                    key={getMethodGroupKey(parent)}
++                  >
++                    <div className={styles.groupHeader}>
++                      <span>
++                        <HighlightedText
++                          query={normalizedQuery}
++                          text={groupLabel}
++                        />
++                      </span>
++                      {isRecommendedMethod(parent) ? (
++                        <span className={styles.recommendBadge}>
++                          {copy.recommend}
+                         </span>
+-                        {isRecommendedMethod(parent) ? (
+-                          <span className={styles.recommendBadge}>
+-                            {copy.recommend}
+-                          </span>
+-                        ) : null}
+-                      </div>
+-
+-                      <div className={styles.methodList}>
+-                        {children.map((child) => {
+-                          const methodKey = getMethodKey(parent, child);
+-                          const isSubmittingMethod =
+-                            loading && methodKey === selectedKey;
+-                          const methodLabel =
+-                            child.label ||
+-                            child.value ||
+-                            parent.label ||
+-                            copy.fallback;
+-
+-                          return (
+-                            <button
+-                              aria-label={methodLabel}
+-                              className={`${styles.methodButton} ${
+-                                isSubmittingMethod
+-                                  ? styles.methodButtonSelected
+-                                  : ''
+-                              }`}
+-                              data-event-type="payment_method_select"
+-                              data-payment-business-type={businessType}
+-                              data-payment-method-label={child.label}
+-                              data-payment-method-mode={child.mode}
+-                              data-payment-method-selected={
+-                                methodKey === selectedKey
+-                              }
+-                              data-payment-method-value={child.value}
+-                              data-repayment-apply-code={plan.applyCode}
+-                              data-repayment-period={plan.period}
+-                              disabled={loading}
+-                              key={methodKey}
+-                              type="button"
+-                              onClick={() => handleMethodClick(parent, child)}
+-                            >
+-                              <span className={styles.methodName}>
+-                                <HighlightedText
+-                                  query={normalizedQuery}
+-                                  text={methodLabel}
+-                                />
++                      ) : null}
++                    </div>
++
++                    <div className={styles.methodList}>
++                      {children.map((child) => {
++                        const methodKey = getMethodKey(parent, child);
++                        const isSubmittingMethod =
++                          loading && methodKey === selectedKey;
++                        const methodLabel =
++                          child.label ||
++                          child.value ||
++                          parent.label ||
++                          copy.fallback;
++
++                        return (
++                          <m.button
++                            aria-label={methodLabel}
++                            className={`${styles.methodButton} ${
++                              isSubmittingMethod
++                                ? styles.methodButtonSelected
++                                : ''
++                            }`}
++                            data-event-type="payment_method_select"
++                            data-payment-business-type={businessType}
++                            data-payment-method-label={child.label}
++                            data-payment-method-mode={child.mode}
++                            data-payment-method-selected={
++                              methodKey === selectedKey
++                            }
++                            data-payment-method-value={child.value}
++                            data-repayment-apply-code={shownPlan.applyCode}
++                            data-repayment-period={shownPlan.period}
++                            disabled={loading}
++                            key={methodKey}
++                            type="button"
++                            onClick={() => handleMethodClick(parent, child)}
++                            {...pressProps(false, loading)}
++                          >
++                            <span className={styles.methodName}>
++                              <HighlightedText
++                                query={normalizedQuery}
++                                text={methodLabel}
++                              />
++                            </span>
++                            {isSubmittingMethod ? (
++                              <span className={styles.loadingIcon}>
++                                {/* M-055: busy dots while this method submits */}
++                                <BusyDots />
+                               </span>
+-                              {isSubmittingMethod ? (
+-                                <LoaderCircle
+-                                  aria-hidden="true"
+-                                  className={styles.loadingIcon}
+-                                  size={18}
+-                                  strokeWidth={2}
+-                                />
+-                              ) : (
+-                                <PaymentChevronRightIcon aria-hidden="true" />
+-                              )}
+-                            </button>
+-                          );
+-                        })}
+-                      </div>
+-                    </section>
+-                  );
+-                })}
+-              </section>
+-            ) : (
+-              <div
+-                aria-live="polite"
+-                className={styles.emptyState}
+-                role="status"
+-              >
+-                <img
+-                  alt=""
+-                  aria-hidden="true"
+-                  className={styles.emptyIcon}
+-                  src={emptyPaymentMethodImage}
+-                />
+-                <p>{copy.empty}</p>
+-              </div>
+-            )}
+-          </div>
++                            ) : (
++                              <PaymentChevronRightIcon aria-hidden="true" />
++                            )}
++                          </m.button>
++                        );
++                      })}
++                    </div>
++                  </section>
++                );
++              })}
++            </section>
++          ) : (
++            <div aria-live="polite" className={styles.emptyState} role="status">
++              <img
++                alt=""
++                aria-hidden="true"
++                className={styles.emptyIcon}
++                src={emptyPaymentMethodImage}
++              />
++              <p>{copy.empty}</p>
++            </div>
++          )}
+         </div>
+-      </section>
+-    </div>
++      </div>
++    </Sheet>
+   );
+ };
+ 

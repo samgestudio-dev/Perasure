@@ -1,0 +1,30 @@
+diff --git a/src/components/ui/Checkbox/index.module.css b/src/components/ui/Checkbox/index.module.css
+index 1386789..267c82f 100644
+--- a/src/components/ui/Checkbox/index.module.css
++++ b/src/components/ui/Checkbox/index.module.css
+@@ -17,10 +17,16 @@
+   cursor: pointer;
+   appearance: none;
+   -webkit-tap-highlight-color: transparent;
++  /* A selection moves nothing: colour only, 150 ms (rebrand R-COLOR); the
++     press is the shared 60 ms 0.985 (R-PRESS). 选中只变颜色 150ms；按压 60ms。 */
++  transition:
++    border-color 0.15s ease,
++    color 0.15s ease,
++    transform 0.06s linear;
+ }
+ 
+ .checkbox:active:not(.disabled) {
+-  transform: scale(0.99);
++  transform: scale(0.985);
+ }
+ 
+ .label {
+@@ -37,6 +43,7 @@
+   height: 14px;
+   flex: 0 0 14px;
+   border-radius: var(--radius-full, 999px);
++  transition: border-color 0.15s ease;
+ }
+ 
+ .checked {

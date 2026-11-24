@@ -1,0 +1,852 @@
+diff --git a/src/components/ui/DatePickerSheet/index.tsx b/src/components/ui/DatePickerSheet/index.tsx
+index 133741f..dc63146 100644
+--- a/src/components/ui/DatePickerSheet/index.tsx
++++ b/src/components/ui/DatePickerSheet/index.tsx
+@@ -1,21 +1,29 @@
+ import {
+   type CSSProperties,
+-  type KeyboardEventHandler,
+-  type TouchEventHandler,
++  type PointerEventHandler,
++  type ReactNode,
+   useEffect,
+   useId,
+   useMemo,
+   useRef,
+   useState,
+ } from 'react';
+-import { createPortal } from 'react-dom';
++import { m } from 'motion/react';
+ import { Check, ChevronLeft, ChevronRight } from 'lucide-react';
+ import type { WheelPickerOption } from '@ncdai/react-wheel-picker';
+ import '@ncdai/react-wheel-picker/style.css';
+ import { lockScroll, unlockScroll } from '@/utils/browser/dom/scrollLock';
+-import { useBottomSheetDragDismiss } from '@/components/ui/useBottomSheetDragDismiss';
++import { Crossfade } from '@/motion/Crossfade';
++import { pressProps } from '@/motion/press';
++import { Sheet, useSheetDrag } from '@/motion/Sheet';
++import { Swap } from '@/motion/Swap';
++import { MT } from '@/motion/tokens';
+ import { CalendarPane } from './CalendarPane';
+-import { MONTHS, MOTION_DURATION, PANE_MOTION_DURATION } from './constants';
++import {
++  CALENDAR_SWIPE_DISTANCE,
++  CALENDAR_SWIPE_RATIO,
++  MONTHS,
++} from './constants';
+ import {
+   buildCalendarCells,
+   clampDate,
+@@ -26,20 +34,15 @@ import {
+ import { installWheelPickerCompat } from './compat';
+ import { WheelActions, WheelPane } from './WheelPane';
+ import styles from './index.module.css';
+-import type {
+-  DatePickerSheetProps,
+-  PaneTransitionDirection,
+-  PickerMode,
+-} from './types';
+-
+-const CALENDAR_SWIPE_DISTANCE = 48;
+-const CALENDAR_MONTH_MOTION_DURATION = 260;
++import type { DatePickerSheetProps, PickerMode } from './types';
++
+ const FOCUSABLE_SELECTOR =
+   'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+ 
+-installWheelPickerCompat();
++/** Drag strip = the sheet's 20 px top padding, so it never covers the Glass buttons. */
++const DRAG_STRIP_HEIGHT = '1.25rem';
+ 
+-type CalendarTransitionDirection = 'next' | 'previous';
++installWheelPickerCompat();
+ 
+ const getCalendarGridStyle = (cellCount: number) => {
+   return {
+@@ -47,7 +50,34 @@ const getCalendarGridStyle = (cellCount: number) => {
+   } as CSSProperties;
+ };
+ 
+-/** 日期选择面板；保留日期范围和确认契约，拖动时同步遮罩透明度。 */
++/** Title row: also a drag handle for the sheet (its buttons excluded). */
++function DragHeader({
++  className,
++  children,
++}: {
++  className: string;
++  children: ReactNode;
++}) {
++  const drag = useSheetDrag();
++  return (
++    <header
++      className={className}
++      onPointerDown={drag.enabled ? drag.startDrag : undefined}
++      style={drag.enabled ? { touchAction: 'none' } : undefined}
++    >
++      {children}
++    </header>
++  );
++}
++
++/**
++ * 日期选择面板；保留日期范围和确认契约。弹层动效由共享 Sheet 承担（Smooth spring 滑入滑出、
++ * 遮罩淡入、顶部下拉关闭）；换月网格交叉淡入，日历与滚轮之间交叉淡入，月份/年份标签替换淡入。
++ * Date picker sheet on the shared motion Sheet (M-013/M-014/M-015): month
++ * grid crossfade (M-046), month / year label swap (M-047), days ↔ wheel
++ * crossfade (M-048), chosen-day circle 0.15 s (M-050), arrows switch at once
++ * and clamp (R-DATES).
++ */
+ export function DatePickerSheet({
+   open,
+   value,
+@@ -60,22 +90,11 @@ export function DatePickerSheet({
+ }: DatePickerSheetProps) {
+   const isControlled = value !== undefined;
+   const titleId = useId();
+-  const [rendered, setRendered] = useState(open);
+-  const [visible, setVisible] = useState(open);
+   const [mode, setMode] = useState<PickerMode>('date');
+-  const [outgoingMode, setOutgoingMode] = useState<PickerMode | null>(null);
+-  const [paneTransitionDirection, setPaneTransitionDirection] =
+-    useState<PaneTransitionDirection | null>(null);
+-  const paneTransitionTimers = useRef<number[]>([]);
+-  const calendarTransitionTimers = useRef<number[]>([]);
+-  const calendarTouchStart = useRef<{ x: number; y: number } | null>(null);
++  const calendarSwipeStart = useRef<{ x: number; y: number } | null>(null);
+   const wasOpen = useRef(false);
+-  const sheetRef = useRef<HTMLElement | null>(null);
+-  const [outgoingCalendarDate, setOutgoingCalendarDate] = useState<Date | null>(
+-    null,
+-  );
+-  const [calendarTransitionDirection, setCalendarTransitionDirection] =
+-    useState<CalendarTransitionDirection | null>(null);
++  const sheetRef = useRef<HTMLDivElement | null>(null);
++  const onCancelRef = useRef(onCancel);
+   const [draftDate, setDraftDate] = useState(() =>
+     getDefaultDate(value, defaultValue, minDate, maxDate),
+   );
+@@ -91,28 +110,6 @@ export function DatePickerSheet({
+     setTempYear(date.getFullYear());
+   };
+ 
+-  useEffect(() => {
+-    if (open) {
+-      setOutgoingCalendarDate(null);
+-      setCalendarTransitionDirection(null);
+-      setRendered(true);
+-      const timer = window.setTimeout(() => setVisible(true), 0);
+-      return () => window.clearTimeout(timer);
+-    }
+-
+-    calendarTransitionTimers.current.forEach(window.clearTimeout);
+-    calendarTransitionTimers.current = [];
+-    setOutgoingCalendarDate(null);
+-    setCalendarTransitionDirection(null);
+-    setVisible(false);
+-    const timer = window.setTimeout(() => {
+-      setRendered(false);
+-      setMode('date');
+-    }, MOTION_DURATION);
+-
+-    return () => window.clearTimeout(timer);
+-  }, [open]);
+-
+   useEffect(() => {
+     if (!open) return undefined;
+     lockScroll();
+@@ -123,6 +120,7 @@ export function DatePickerSheet({
+     if (open && !wasOpen.current) {
+       const next = getDefaultDate(value, defaultValue, minDate, maxDate);
+       resetPickerState(next);
++      setMode('date');
+     }
+ 
+     wasOpen.current = open;
+@@ -141,29 +139,11 @@ export function DatePickerSheet({
+     setViewDate((current) => clampDate(current, minDate, maxDate));
+   }, [isControlled, maxDate, minDate, open]);
+ 
+-  useEffect(
+-    () => () => {
+-      paneTransitionTimers.current.forEach(window.clearTimeout);
+-      calendarTransitionTimers.current.forEach(window.clearTimeout);
+-    },
+-    [],
+-  );
+-
+   const calendarCells = useMemo(() => buildCalendarCells(viewDate), [viewDate]);
+   const calendarGridStyle = useMemo(
+     () => getCalendarGridStyle(calendarCells.length),
+     [calendarCells.length],
+   );
+-  const outgoingCalendarCells = useMemo(
+-    () =>
+-      outgoingCalendarDate ? buildCalendarCells(outgoingCalendarDate) : [],
+-    [outgoingCalendarDate],
+-  );
+-  const outgoingCalendarGridStyle = useMemo(
+-    () => getCalendarGridStyle(outgoingCalendarCells.length),
+-    [outgoingCalendarCells.length],
+-  );
+-
+   const minYear = minDate?.getFullYear() ?? 1900;
+   const maxYear = maxDate?.getFullYear() ?? 2100;
+   const yearOptions = useMemo<WheelPickerOption<number>[]>(
+@@ -197,108 +177,118 @@ export function DatePickerSheet({
+     onChange?.(cloneDate(next));
+   };
+ 
+-  const isSameCalendarMonth = (left: Date, right: Date) =>
+-    left.getFullYear() === right.getFullYear() &&
+-    left.getMonth() === right.getMonth();
+-
+-  const getFocusableElements = () => {
+-    if (!sheetRef.current) return [];
+-
+-    return Array.from(
+-      sheetRef.current.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
+-    );
+-  };
+-
+-  const handleDialogKeyDown: KeyboardEventHandler<HTMLElement> = (event) => {
+-    if (event.key === 'Escape') {
+-      event.stopPropagation();
+-      onCancel?.();
+-      return;
+-    }
++  useEffect(() => {
++    onCancelRef.current = onCancel;
++  });
+ 
+-    if (event.key !== 'Tab') return;
++  // Escape cancels and Tab stays inside the dialog while it is open (the
++  // Sheet panel takes no key handler, so this listens on the document).
++  // 打开期间 Escape 取消、Tab 焦点留在弹层内（Sheet 面板不接收键盘回调，故监听 document）。
++  useEffect(() => {
++    if (!open) return undefined;
+ 
+-    const focusableElements = getFocusableElements();
+-    if (focusableElements.length === 0) {
+-      event.preventDefault();
+-      sheetRef.current?.focus();
+-      return;
+-    }
++    const handleKeyDown = (event: KeyboardEvent) => {
++      if (event.key === 'Escape') {
++        event.stopPropagation();
++        onCancelRef.current?.();
++        return;
++      }
++
++      if (event.key !== 'Tab') return;
++
++      const sheet = sheetRef.current;
++      const focusableElements = sheet
++        ? Array.from(sheet.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR))
++        : [];
++      if (focusableElements.length === 0) {
++        event.preventDefault();
++        sheet?.focus();
++        return;
++      }
++
++      const firstElement = focusableElements[0];
++      const lastElement = focusableElements[focusableElements.length - 1];
++      const activeElement = document.activeElement;
++
++      if (event.shiftKey && activeElement === firstElement) {
++        event.preventDefault();
++        lastElement.focus();
++        return;
++      }
++
++      if (!event.shiftKey && activeElement === lastElement) {
++        event.preventDefault();
++        firstElement.focus();
++      }
++    };
+ 
+-    const firstElement = focusableElements[0];
+-    const lastElement = focusableElements[focusableElements.length - 1];
+-    const activeElement = document.activeElement;
++    document.addEventListener('keydown', handleKeyDown);
++    return () => document.removeEventListener('keydown', handleKeyDown);
++  }, [open]);
+ 
+-    if (event.shiftKey && activeElement === firstElement) {
+-      event.preventDefault();
+-      lastElement.focus();
+-      return;
+-    }
++  const monthIndex = (date: Date) => date.getFullYear() * 12 + date.getMonth();
++  const minMonthIndex = minDate ? monthIndex(minDate) : -Infinity;
++  const maxMonthIndex = maxDate ? monthIndex(maxDate) : Infinity;
++  // R-DATES: greyed out (and no press) at the very end of the range.
++  const atStart = monthIndex(viewDate) <= minMonthIndex;
++  const atEnd = monthIndex(viewDate) >= maxMonthIndex;
+ 
+-    if (!event.shiftKey && activeElement === lastElement) {
+-      event.preventDefault();
+-      firstElement.focus();
+-    }
++  // R-DATES: the ‹ › arrows switch at once (no queue); a step past the range
++  // lands on its first / last month (clampDate), the grid crossfades (M-046).
++  const showMonth = (next: Date) => {
++    setViewDate(next);
++    setTempMonth(next.getMonth());
++    setTempYear(next.getFullYear());
+   };
+ 
+-  const shiftMonth = (amount: number, withTransition = true) => {
+-    const next = clampDate(
+-      makeDate(
+-        viewDate.getFullYear(),
+-        viewDate.getMonth() + amount,
+-        selectedDate.getDate(),
++  const shiftMonth = (amount: number) => {
++    showMonth(
++      clampDate(
++        makeDate(
++          viewDate.getFullYear(),
++          viewDate.getMonth() + amount,
++          selectedDate.getDate(),
++        ),
++        minDate,
++        maxDate,
+       ),
+-      minDate,
+-      maxDate,
+     );
+-    if (
+-      withTransition &&
+-      mode === 'date' &&
+-      !outgoingMode &&
+-      !isSameCalendarMonth(next, viewDate)
+-    ) {
+-      calendarTransitionTimers.current.forEach(window.clearTimeout);
+-      calendarTransitionTimers.current = [];
+-      setOutgoingCalendarDate(viewDate);
+-      setCalendarTransitionDirection(amount > 0 ? 'next' : 'previous');
+-
+-      const settleTimer = window.setTimeout(() => {
+-        setOutgoingCalendarDate(null);
+-        setCalendarTransitionDirection(null);
+-        calendarTransitionTimers.current = [];
+-      }, CALENDAR_MONTH_MOTION_DURATION);
+-
+-      calendarTransitionTimers.current.push(settleTimer);
+-    }
++  };
+ 
+-    setViewDate(next);
+-    setTempMonth(next.getMonth());
+-    setTempYear(next.getFullYear());
++  const shiftYear = (amount: number) => {
++    showMonth(
++      clampDate(
++        makeDate(
++          viewDate.getFullYear() + amount,
++          viewDate.getMonth(),
++          viewDate.getDate(),
++        ),
++        minDate,
++        maxDate,
++      ),
++    );
+   };
+ 
+-  const handleCalendarTouchStart: TouchEventHandler<HTMLDivElement> = (
++  // A sideways swipe on the days changes the month (demo form.js:325-328):
++  // |dx| > 40 px and |dx| > 1.5·|dy|; dx < 0 → next month.
++  const handleCalendarPointerDown: PointerEventHandler<HTMLDivElement> = (
+     event,
+   ) => {
+-    const touch = event.touches[0];
+-    if (!touch) return;
+-
+-    calendarTouchStart.current = {
+-      x: touch.clientX,
+-      y: touch.clientY,
+-    };
++    calendarSwipeStart.current = { x: event.clientX, y: event.clientY };
+   };
+ 
+-  const handleCalendarTouchEnd: TouchEventHandler<HTMLDivElement> = (event) => {
+-    const touchStart = calendarTouchStart.current;
+-    calendarTouchStart.current = null;
+-    const touch = event.changedTouches[0];
+-    if (!touchStart || !touch) return;
++  const handleCalendarPointerUp: PointerEventHandler<HTMLDivElement> = (
++    event,
++  ) => {
++    const start = calendarSwipeStart.current;
++    calendarSwipeStart.current = null;
++    if (!start) return;
+ 
+-    const deltaX = touch.clientX - touchStart.x;
+-    const deltaY = touch.clientY - touchStart.y;
++    const deltaX = event.clientX - start.x;
++    const deltaY = event.clientY - start.y;
+     if (
+-      Math.abs(deltaX) < CALENDAR_SWIPE_DISTANCE ||
+-      Math.abs(deltaX) <= Math.abs(deltaY)
++      Math.abs(deltaX) <= CALENDAR_SWIPE_DISTANCE ||
++      Math.abs(deltaX) <= Math.abs(deltaY) * CALENDAR_SWIPE_RATIO
+     ) {
+       return;
+     }
+@@ -306,82 +296,18 @@ export function DatePickerSheet({
+     shiftMonth(deltaX < 0 ? 1 : -1);
+   };
+ 
+-  const shiftYear = (amount: number) => {
+-    const next = clampDate(
+-      makeDate(
+-        viewDate.getFullYear() + amount,
+-        viewDate.getMonth(),
+-        viewDate.getDate(),
+-      ),
+-      minDate,
+-      maxDate,
+-    );
+-    setViewDate(next);
+-    setTempMonth(next.getMonth());
+-    setTempYear(next.getFullYear());
++  const handleCalendarPointerCancel = () => {
++    calendarSwipeStart.current = null;
+   };
+ 
+-  const runPaneTransition = (
+-    nextMode: PickerMode,
+-    direction: PaneTransitionDirection,
+-    onSwitch?: () => void,
+-  ) => {
+-    if (nextMode === mode || outgoingMode) return;
+-
+-    paneTransitionTimers.current.forEach(window.clearTimeout);
+-    paneTransitionTimers.current = [];
+-    setOutgoingMode(mode);
+-    setPaneTransitionDirection(direction);
++  // Days ↔ wheel crossfade (M-048): the mode switches at once; Crossfade
++  // keyed 'date' | 'wheel' plays the old pane out and the new one in.
++  const switchMode = (nextMode: PickerMode, onSwitch?: () => void) => {
++    if (nextMode === mode) return;
+     onSwitch?.();
+     setMode(nextMode);
+-
+-    const settleTimer = window.setTimeout(() => {
+-      setOutgoingMode(null);
+-      setPaneTransitionDirection(null);
+-      paneTransitionTimers.current = [];
+-    }, PANE_MOTION_DURATION);
+-
+-    paneTransitionTimers.current.push(settleTimer);
+   };
+ 
+-  const getPaneClassName = (baseClassName: string, state: 'enter' | 'exit') =>
+-    [
+-      baseClassName,
+-      paneTransitionDirection === 'forward' && state === 'enter'
+-        ? styles.paneEnterForward
+-        : '',
+-      paneTransitionDirection === 'forward' && state === 'exit'
+-        ? styles.paneExitForward
+-        : '',
+-      paneTransitionDirection === 'backward' && state === 'enter'
+-        ? styles.paneEnterBackward
+-        : '',
+-      paneTransitionDirection === 'backward' && state === 'exit'
+-        ? styles.paneExitBackward
+-        : '',
+-    ]
+-      .filter(Boolean)
+-      .join(' ');
+-
+-  const getCalendarPaneClassName = (state: 'enter' | 'exit') =>
+-    [
+-      getPaneClassName(styles.calendarPane, state),
+-      calendarTransitionDirection === 'next' && state === 'enter'
+-        ? styles.calendarEnterNext
+-        : '',
+-      calendarTransitionDirection === 'next' && state === 'exit'
+-        ? styles.calendarExitNext
+-        : '',
+-      calendarTransitionDirection === 'previous' && state === 'enter'
+-        ? styles.calendarEnterPrevious
+-        : '',
+-      calendarTransitionDirection === 'previous' && state === 'exit'
+-        ? styles.calendarExitPrevious
+-        : '',
+-    ]
+-      .filter(Boolean)
+-      .join(' ');
+-
+   const enterMonthMode = () => {
+     if (mode === 'month') {
+       cancelPickerMode();
+@@ -390,7 +316,7 @@ export function DatePickerSheet({
+ 
+     setTempYear(viewDate.getFullYear());
+     setTempMonth(viewDate.getMonth());
+-    runPaneTransition('month', 'forward');
++    switchMode('month');
+   };
+ 
+   const enterYearMode = () => {
+@@ -401,11 +327,11 @@ export function DatePickerSheet({
+ 
+     setTempYear(viewDate.getFullYear());
+     setTempMonth(viewDate.getMonth());
+-    runPaneTransition('year', 'forward');
++    switchMode('year');
+   };
+ 
+   const cancelPickerMode = () => {
+-    runPaneTransition('date', 'backward', () => {
++    switchMode('date', () => {
+       setTempMonth(viewDate.getMonth());
+       setTempYear(viewDate.getFullYear());
+     });
+@@ -417,7 +343,7 @@ export function DatePickerSheet({
+       minDate,
+       maxDate,
+     );
+-    runPaneTransition('date', 'backward', () => {
++    switchMode('date', () => {
+       commitDate(next);
+       setTempMonth(next.getMonth());
+       setTempYear(next.getFullYear());
+@@ -428,190 +354,164 @@ export function DatePickerSheet({
+     onConfirm?.(cloneDate(selectedDate));
+   };
+ 
+-  const { backdropRef, isDragging, sheetDragProps } = useBottomSheetDragDismiss(
+-    {
+-      active: visible,
+-      onDismiss: () => onCancel?.(),
+-      sheetRef,
+-    },
+-  );
+-
+-  if (!rendered || typeof document === 'undefined') return null;
+-
+-  return createPortal(
+-    <div
+-      className={`${styles.root} ${visible ? styles.rootVisible : ''}`}
+-      role="presentation"
++  const monthLabel = MONTHS[viewDate.getMonth()];
++  const yearLabel = String(viewDate.getFullYear());
++
++  if (typeof document === 'undefined') return null;
++
++  return (
++    <Sheet
++      ariaLabelledBy={titleId}
++      ariaModal
++      className={styles.sheet}
++      dragStripHeight={DRAG_STRIP_HEIGHT}
++      layerClassName={styles.root}
++      onClose={onCancel}
++      onClosed={() => setMode('date')}
++      open={open}
++      panelRef={sheetRef}
++      positionPanel={false}
++      riseSkip={1}
++      role="dialog"
++      scrimClassName={styles.backdrop}
++      tabIndex={-1}
++      zIndex={1000}
+     >
+-      <button
+-        aria-label="Cancel date picker"
+-        ref={backdropRef}
+-        className={styles.backdrop}
+-        onClick={onCancel}
+-        type="button"
+-      />
+-      <section
+-        aria-labelledby={titleId}
+-        aria-modal="true"
+-        className={`${styles.sheet} ${isDragging ? styles.sheetDragging : ''}`}
+-        {...sheetDragProps}
+-        onKeyDown={handleDialogKeyDown}
+-        ref={sheetRef}
+-        role="dialog"
+-        tabIndex={-1}
+-      >
+-        <div className={styles.handle} />
+-        <header className={styles.topBar}>
+-          <button
+-            aria-label="Cancel date picker"
+-            className={styles.navButton}
+-            onClick={onCancel}
+-            type="button"
+-          >
+-            <ChevronLeft aria-hidden="true" size={18} strokeWidth={2.5} />
+-          </button>
+-          <h2 className={styles.title} id={titleId}>
+-            Select Date
+-          </h2>
+-          <button
+-            aria-label="Confirm selected date"
+-            className={styles.navButton}
+-            onClick={handleConfirm}
+-            type="button"
+-          >
+-            <Check aria-hidden="true" size={18} strokeWidth={2.5} />
+-          </button>
+-        </header>
+-
+-        <div className={styles.content}>
+-          <div className={styles.selectorBar}>
+-            <div className={styles.selectorGroup}>
+-              <button
+-                aria-label="Previous month"
+-                className={styles.selectorArrow}
+-                onClick={() => shiftMonth(-1)}
+-                type="button"
+-              >
+-                <ChevronLeft aria-hidden="true" size={16} strokeWidth={2} />
+-              </button>
+-              <button
+-                aria-label="Choose month"
+-                className={styles.selectorValue}
+-                onClick={enterMonthMode}
+-                type="button"
+-              >
+-                {MONTHS[viewDate.getMonth()]}
+-              </button>
+-              <button
+-                aria-label="Next month"
+-                className={styles.selectorArrow}
+-                onClick={() => shiftMonth(1)}
+-                type="button"
+-              >
+-                <ChevronRight aria-hidden="true" size={16} strokeWidth={2} />
+-              </button>
+-            </div>
+-            <div className={styles.selectorGroup}>
+-              <button
+-                aria-label="Previous year"
+-                className={styles.selectorArrow}
+-                onClick={() => shiftYear(-1)}
+-                type="button"
+-              >
+-                <ChevronLeft aria-hidden="true" size={16} strokeWidth={2} />
+-              </button>
+-              <button
+-                aria-label="Choose year"
+-                className={styles.selectorValue}
+-                onClick={enterYearMode}
+-                type="button"
+-              >
+-                {viewDate.getFullYear()}
+-              </button>
+-              <button
+-                aria-label="Next year"
+-                className={styles.selectorArrow}
+-                onClick={() => shiftYear(1)}
+-                type="button"
+-              >
+-                <ChevronRight aria-hidden="true" size={16} strokeWidth={2} />
+-              </button>
+-            </div>
++      <div className={styles.handle} />
++      <DragHeader className={styles.topBar}>
++        <m.button
++          aria-label="Cancel date picker"
++          className={styles.navButton}
++          onClick={onCancel}
++          type="button"
++          {...pressProps(true)}
++        >
++          <ChevronLeft aria-hidden="true" size={18} strokeWidth={2.5} />
++        </m.button>
++        <h2 className={styles.title} id={titleId}>
++          Select Date
++        </h2>
++        <m.button
++          aria-label="Confirm selected date"
++          className={styles.navButton}
++          onClick={handleConfirm}
++          type="button"
++          {...pressProps(true)}
++        >
++          <Check aria-hidden="true" size={18} strokeWidth={2.5} />
++        </m.button>
++      </DragHeader>
++
++      <div className={styles.content}>
++        <div className={styles.selectorBar}>
++          <div className={styles.selectorGroup}>
++            <m.button
++              aria-label="Previous month"
++              className={styles.selectorArrow}
++              disabled={atStart}
++              onClick={() => shiftMonth(-1)}
++              type="button"
++              {...pressProps(true, atStart)}
++            >
++              <ChevronLeft aria-hidden="true" size={16} strokeWidth={2} />
++            </m.button>
++            <button
++              aria-label="Choose month"
++              className={styles.selectorValue}
++              onClick={enterMonthMode}
++              type="button"
++            >
++              <Swap block k={monthLabel} y={MT.Y.digit}>
++                <span className={styles.selectorText}>{monthLabel}</span>
++              </Swap>
++            </button>
++            <m.button
++              aria-label="Next month"
++              className={styles.selectorArrow}
++              disabled={atEnd}
++              onClick={() => shiftMonth(1)}
++              type="button"
++              {...pressProps(true, atEnd)}
++            >
++              <ChevronRight aria-hidden="true" size={16} strokeWidth={2} />
++            </m.button>
++          </div>
++          <div className={styles.selectorGroup}>
++            <m.button
++              aria-label="Previous year"
++              className={styles.selectorArrow}
++              disabled={atStart}
++              onClick={() => shiftYear(-1)}
++              type="button"
++              {...pressProps(true, atStart)}
++            >
++              <ChevronLeft aria-hidden="true" size={16} strokeWidth={2} />
++            </m.button>
++            <button
++              aria-label="Choose year"
++              className={styles.selectorValue}
++              onClick={enterYearMode}
++              type="button"
++            >
++              <Swap block k={yearLabel} y={MT.Y.digit}>
++                <span className={styles.selectorText}>{yearLabel}</span>
++              </Swap>
++            </button>
++            <m.button
++              aria-label="Next year"
++              className={styles.selectorArrow}
++              disabled={atEnd}
++              onClick={() => shiftYear(1)}
++              type="button"
++              {...pressProps(true, atEnd)}
++            >
++              <ChevronRight aria-hidden="true" size={16} strokeWidth={2} />
++            </m.button>
+           </div>
++        </div>
+ 
+-          <div className={styles.paneViewport}>
+-            {outgoingMode === 'date' ? (
++        <div className={styles.paneViewport}>
++          <Crossfade
++            className={styles.paneView}
++            k={mode === 'date' ? 'date' : 'wheel'}
++            y={MT.Y.block}
++          >
++            {mode === 'date' ? (
+               <CalendarPane
+                 calendarCells={calendarCells}
+                 calendarGridStyle={calendarGridStyle}
+-                className={getPaneClassName(styles.calendarPane, 'exit')}
++                className={styles.calendarPane}
+                 maxDate={maxDate}
+                 minDate={minDate}
++                monthKey={`${viewDate.getFullYear()}-${viewDate.getMonth()}`}
++                onPointerCancel={handleCalendarPointerCancel}
++                onPointerDown={handleCalendarPointerDown}
++                onPointerUp={handleCalendarPointerUp}
+                 onSelectDate={commitDate}
+-                onTouchEnd={handleCalendarTouchEnd}
+-                onTouchStart={handleCalendarTouchStart}
+                 selectedDate={selectedDate}
+               />
+-            ) : null}
+-            {outgoingMode && outgoingMode !== 'date' ? (
+-              <WheelPane
+-                className={getPaneClassName(styles.wheelPane, 'exit')}
+-                mode={outgoingMode}
+-                monthOptions={monthOptions}
+-                onTempMonthChange={setTempMonth}
+-                onTempYearChange={setTempYear}
+-                tempMonth={tempMonth}
+-                tempYear={tempYear}
+-                yearOptions={yearOptions}
+-              />
+-            ) : null}
+-            {mode === 'date' ? (
++            ) : (
+               <>
+-                {outgoingCalendarDate ? (
+-                  <CalendarPane
+-                    calendarCells={outgoingCalendarCells}
+-                    calendarGridStyle={outgoingCalendarGridStyle}
+-                    className={getCalendarPaneClassName('exit')}
+-                    maxDate={maxDate}
+-                    minDate={minDate}
+-                    onSelectDate={commitDate}
+-                    selectedDate={selectedDate}
+-                  />
+-                ) : null}
+-                <CalendarPane
+-                  calendarCells={calendarCells}
+-                  calendarGridStyle={calendarGridStyle}
+-                  className={getCalendarPaneClassName('enter')}
+-                  maxDate={maxDate}
+-                  minDate={minDate}
+-                  onSelectDate={commitDate}
+-                  onTouchEnd={handleCalendarTouchEnd}
+-                  onTouchStart={handleCalendarTouchStart}
+-                  selectedDate={selectedDate}
++                <WheelPane
++                  className={styles.wheelPane}
++                  key={mode}
++                  mode={mode}
++                  monthOptions={monthOptions}
++                  onTempMonthChange={setTempMonth}
++                  onTempYearChange={setTempYear}
++                  tempMonth={tempMonth}
++                  tempYear={tempYear}
++                  yearOptions={yearOptions}
++                />
++                <WheelActions
++                  onCancel={cancelPickerMode}
++                  onConfirm={confirmPickerMode}
+                 />
+               </>
+-            ) : (
+-              <WheelPane
+-                className={getPaneClassName(styles.wheelPane, 'enter')}
+-                mode={mode}
+-                monthOptions={monthOptions}
+-                onTempMonthChange={setTempMonth}
+-                onTempYearChange={setTempYear}
+-                tempMonth={tempMonth}
+-                tempYear={tempYear}
+-                yearOptions={yearOptions}
+-              />
+             )}
+-            {mode !== 'date' || (outgoingMode && outgoingMode !== 'date') ? (
+-              <WheelActions
+-                onCancel={cancelPickerMode}
+-                onConfirm={confirmPickerMode}
+-              />
+-            ) : null}
+-          </div>
++          </Crossfade>
+         </div>
+-      </section>
+-    </div>,
+-    document.body,
++      </div>
++    </Sheet>
+   );
+ }

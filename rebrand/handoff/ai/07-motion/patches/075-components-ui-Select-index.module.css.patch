@@ -1,0 +1,101 @@
+diff --git a/src/components/ui/Select/index.module.css b/src/components/ui/Select/index.module.css
+index 85869c7..6fa4853 100644
+--- a/src/components/ui/Select/index.module.css
++++ b/src/components/ui/Select/index.module.css
+@@ -45,8 +45,13 @@
+   -webkit-tap-highlight-color: transparent;
+ }
+ 
++/* R-PRESS (PS.press): 0.985 in 60 ms, in and out (CSS form: the trigger spreads native button props) */
++.trigger {
++  transition: transform 0.06s ease;
++}
++
+ .trigger:active:not(:disabled) {
+-  transform: scale(0.99);
++  transform: scale(0.985);
+ }
+ 
+ .triggerText {
+@@ -127,6 +132,24 @@
+   display: none;
+ }
+ 
++/* M-040: bottom white fade over the list (Figma white 0 → 90 %); opacity is
++   set on scroll (0 when < 2 px are left) and changes in 0.15 s. */
++.popoverFade {
++  position: absolute;
++  right: 0;
++  bottom: 0;
++  left: 0;
++  height: 44px;
++  opacity: 0;
++  pointer-events: none;
++  background: linear-gradient(
++    180deg,
++    rgba(255, 255, 255, 0) 0%,
++    rgba(255, 255, 255, 0.9) 100%
++  );
++  transition: opacity 0.15s ease;
++}
++
+ .popoverScrollbar {
+   position: absolute;
+   top: var(--spacing-8);
+@@ -153,6 +176,8 @@
+ 
+ .popoverOption {
+   box-sizing: border-box;
++  /* A picked row lights up in 150 ms, then the menu folds (rebrand R-MENU / R-COLOR). 选中行 150ms 变色后菜单收起。 */
++  transition: background-color 0.15s ease;
+   width: 100%;
+   height: 36px;
+   min-height: 36px;
+@@ -193,44 +218,9 @@
+   white-space: nowrap;
+ }
+ 
+-.popoverShell[data-motion='open'][data-placement='bottom'] .popoverOption {
+-  animation: popover-option-enter-bottom 300ms cubic-bezier(0.22, 1, 0.36, 1)
+-    both;
+-  animation-delay: var(--popover-option-delay-bottom);
+-}
+-
+-.popoverShell[data-motion='open'][data-placement='top'] .popoverOption {
+-  animation: popover-option-enter-top 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+-  animation-delay: var(--popover-option-delay-top);
+-}
+-
+-@keyframes popover-option-enter-bottom {
+-  from {
+-    opacity: 0;
+-    transform: translateY(7px) scale(0.965);
+-  }
+-  to {
+-    opacity: 1;
+-    transform: none;
+-  }
+-}
+-
+-@keyframes popover-option-enter-top {
+-  from {
+-    opacity: 0;
+-    transform: translateY(-7px) scale(0.965);
+-  }
+-  to {
+-    opacity: 1;
+-    transform: none;
+-  }
+-}
+-
+-@media (prefers-reduced-motion: reduce) {
+-  .popoverShell[data-motion='open'] .popoverOption {
+-    animation: none;
+-  }
+-}
++/* Option rows rise in one after another from the anchor's side
++   (MENU_ROW: 20 ms + 14 ms per row, spring y) — SelectPopover.tsx with motion.
++   选项行由 SelectPopover 中的 motion 依次进场。 */
+ 
+ .popoverEmpty {
+   box-sizing: border-box;

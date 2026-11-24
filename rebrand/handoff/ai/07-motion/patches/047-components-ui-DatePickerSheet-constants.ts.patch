@@ -1,0 +1,13 @@
+diff --git a/src/components/ui/DatePickerSheet/constants.ts b/src/components/ui/DatePickerSheet/constants.ts
+index 410532b..bb225fd 100644
+--- a/src/components/ui/DatePickerSheet/constants.ts
++++ b/src/components/ui/DatePickerSheet/constants.ts
+@@ -1,5 +1,6 @@
+-export const MOTION_DURATION = 260;
+-export const PANE_MOTION_DURATION = 240;
++/** Sideways swipe on the days (R-DATES, demo form.js:327): |dx| > 40 px and |dx| > 1.5·|dy|. */
++export const CALENDAR_SWIPE_DISTANCE = 40;
++export const CALENDAR_SWIPE_RATIO = 1.5;
+ 
+ export const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+ 

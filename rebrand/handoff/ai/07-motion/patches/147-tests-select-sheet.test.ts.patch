@@ -1,0 +1,39 @@
+diff --git a/tests/select-sheet.test.ts b/tests/select-sheet.test.ts
+index 45f4faa..44e18ca 100644
+--- a/tests/select-sheet.test.ts
++++ b/tests/select-sheet.test.ts
+@@ -37,23 +37,25 @@ test('Select sheet keeps its current portal, interaction, and tracking DOM contr
+   assert.ok(onChangePosition >= 0);
+   assert.ok(onChangePosition < onSelectPosition);
+   assert.ok(onSelectPosition < closePosition);
+-  assert.match(selectSheetSource, /createPortal\(/);
+-  assert.match(selectSheetSource, /const MOTION_DURATION = 220/);
+-  assert.match(selectSheetSource, /useBottomSheetDragDismiss\(/);
++  // Motion shell: the shared Sheet portals, slides, fades the scrim and drags to close.
++  assert.match(selectSheetSource, /<Sheet\b/);
++  assert.match(selectSheetSource, /from '@\/motion\/Sheet'/);
++  assert.match(selectSheetSource, /<SheetDragArea/);
++  assert.doesNotMatch(selectSheetSource, /useBottomSheetDragDismiss/);
++  // M-041: colour first, close 160 ms later.
++  assert.match(selectSource, /CHOICE_CLOSE_DELAY_MS/);
+   assert.match(selectSheetSource, /lockScroll\(\)/);
+   assert.match(selectSheetSource, /unlockScroll\(\)/);
+   assert.match(selectSheetSource, /event\.key === 'Escape'/);
+-  assert.match(
+-    selectSheetSource,
+-    /closeOnMaskClick \? onRequestClose : undefined/,
+-  );
+-  assert.match(selectSheetSource, /aria-labelledby=\{dialogTitleId\}/);
++  assert.match(selectSheetSource, /closeOnScrimClick=\{closeOnMaskClick\}/);
++  assert.match(selectSheetSource, /onClose=\{onRequestClose\}/);
++  assert.match(selectSheetSource, /ariaLabelledBy=\{dialogTitleId\}/);
+   assert.match(selectSheetSource, /role="dialog"/);
+   assert.match(selectSheetSource, /role="radiogroup"/);
+   assert.match(selectSheetSource, /role="radio"/);
+   assert.match(selectSource, /data-event-type=\{dataEventType\}/);
+   assert.match(selectSheetSource, /data-event-type=\{optionDataEventType\}/);
+   assert.match(selectSheetStyles, /\.sheetHeaderProgressive/);
+-  assert.match(selectSheetStyles, /\.sheetDragging/);
++  assert.doesNotMatch(selectSheetStyles, /\.sheetDragging|\.sheetHidden/);
+   assert.match(selectSheetStyles, /\.optionSelected/);
+ });

@@ -1,0 +1,438 @@
+diff --git a/src/pages/HomePage/Payment/components/FraudWarningSheet/index.tsx b/src/pages/HomePage/Payment/components/FraudWarningSheet/index.tsx
+index e29b9f1..e0ba252 100644
+--- a/src/pages/HomePage/Payment/components/FraudWarningSheet/index.tsx
++++ b/src/pages/HomePage/Payment/components/FraudWarningSheet/index.tsx
+@@ -2,14 +2,25 @@ import {
+   useCallback,
+   useEffect,
+   useId,
+-  useMemo,
++  useLayoutEffect,
+   useRef,
+   useState,
+-  type PointerEvent as ReactPointerEvent,
+ } from 'react';
+ import { X } from 'lucide-react';
++import {
++  animate,
++  m,
++  useMotionValue,
++  useTransform,
++  type MotionValue,
++  type PanInfo,
++} from 'motion/react';
+ 
+ import { MobileModal } from '@/components/ui/MobileModal';
++import { pressProps } from '@/motion/press';
++import { prefersReducedMotion } from '@/motion/reducedMotion';
++import { Swap } from '@/motion/Swap';
++import { CAROUSEL, MT } from '@/motion/tokens';
+ 
+ import type {
+   FraudWarningStep,
+@@ -19,10 +30,7 @@ import customerServiceIllustration from './assets/customer-service.svg';
+ import transactionIllustration from './assets/transaction.svg';
+ import verificationCodeIllustration from './assets/verification-code.svg';
+ import styles from './index.module.css';
+-import {
+-  advanceFraudWarningStep,
+-  getDistinctFraudWarningActionLabels,
+-} from './model';
++import { advanceFraudWarningStep } from './model';
+ 
+ /** Business copy, open state, source, and close contract for the sheet. */
+ export interface FraudWarningSheetProps {
+@@ -45,16 +53,37 @@ const ILLUSTRATIONS = {
+   'verification-code': verificationCodeIllustration,
+ } as const;
+ 
+-const SWIPE_COMMIT_DISTANCE = 48;
+-
+-interface StepSwipeState {
+-  pointerId: number;
+-  startX: number;
+-  startY: number;
+-  axis: 'pending' | 'horizontal' | 'vertical';
++/**
++ * One pager dot that follows the swipe (demo PS.Pager{progress} / PagerDot,
++ * pay.js:124-129): as wide as its page is on screen (6 → 24 px) and as dark.
++ */
++function PagerDot({
++  index,
++  progress,
++}: {
++  index: number;
++  progress: MotionValue<number>;
++}) {
++  const width = useTransform(
++    progress,
++    (p) => 6 + 18 * Math.max(0, 1 - Math.abs(p - index)),
++  );
++  const opacity = useTransform(progress, (p) =>
++    Math.max(0, 1 - Math.abs(p - index)),
++  );
++  return (
++    <m.i className={styles.dot} style={{ width }}>
++      <m.b className={styles.dotFill} style={{ opacity }} />
++    </m.i>
++  );
+ }
+ 
+-/** Renders the configured three-step fraud-warning bottom sheet. */
++/**
++ * Renders the configured three-step fraud-warning bottom sheet.
++ * Steps sit side by side in a carousel (demo PS.Carousel / PS.ScamTips,
++ * pay.js:130-178): swiped or moved with Next on the Smooth spring, as tall as
++ * the tallest step, the dots following the swipe, the button label swapping.
++ */
+ export function FraudWarningSheet({
+   open,
+   notice,
+@@ -65,108 +94,103 @@ export function FraudWarningSheet({
+ }: FraudWarningSheetProps) {
+   const [hasMounted, setHasMounted] = useState(false);
+   const [stepIndex, setStepIndex] = useState(STEP_INDEX[initialStep]);
+-  const [swipeOffset, setSwipeOffset] = useState(0);
+-  const [isSwiping, setIsSwiping] = useState(false);
+   const titleId = useId();
+   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+-  const swipeRef = useRef<StepSwipeState | null>(null);
++  const viewportRef = useRef<HTMLDivElement | null>(null);
++  const widthRef = useRef(0);
++  const stepCount = notice.steps.length;
+   const step = notice.steps[stepIndex] ?? notice.steps[0];
+-  const actionLabelSnapshots = useMemo(
++  const isLast = stepIndex === stepCount - 1;
++
++  /* M-064: the track's x; M-065: the dots read progress = -x / width */
++  const x = useMotionValue(0);
++  const progress = useMotionValue(STEP_INDEX[initialStep]);
++  useEffect(
+     () =>
+-      getDistinctFraudWarningActionLabels(
+-        notice.steps.map((item) => item.actionLabel),
+-      ),
+-    [notice.steps],
++      x.on('change', (value) => {
++        progress.set(-value / (widthRef.current || 1));
++      }),
++    [progress, x],
+   );
+ 
++  /** Width of one step (the viewport), remembered for the drag math. */
++  const measure = useCallback(() => {
++    const width = viewportRef.current?.clientWidth ?? 0;
++    widthRef.current = width;
++    return width;
++  }, []);
++
+   // 首次挂载先向 MobileModal 传入关闭态，再触发已有的进场过渡。
+   useEffect(() => {
+     setHasMounted(true);
+   }, []);
+ 
++  /* Each opening starts on its first step, placed at once (no glide). */
++  const shown = open && hasMounted;
++  useLayoutEffect(() => {
++    if (!shown) return;
++    const index = STEP_INDEX[initialStep];
++    setStepIndex(index);
++    x.jump(-index * measure());
++  }, [initialStep, measure, notice.id, shown, x]);
++
++  /* The step on screen settles on the Smooth spring (jumps with reduced motion). */
+   useEffect(() => {
+-    if (open) {
+-      setStepIndex(STEP_INDEX[initialStep]);
+-      setSwipeOffset(0);
+-      setIsSwiping(false);
++    const target = -stepIndex * measure();
++    if (prefersReducedMotion()) {
++      x.jump(target);
++      return undefined;
+     }
+-  }, [initialStep, notice.id, open]);
++    const controls = animate(x, target, MT.SPRING);
++    return () => controls.stop();
++  }, [measure, stepIndex, x]);
++
++  /* Resize: jump to the current step, no glide. */
++  useEffect(() => {
++    const fit = () => x.jump(-stepIndex * measure());
++    window.addEventListener('resize', fit);
++    return () => window.removeEventListener('resize', fit);
++  }, [measure, stepIndex, x]);
+ 
+   /** Closes an incomplete flow from the close button, Escape, or swipe gesture. */
+   const handleDismiss = useCallback(() => onClose('close-button'), [onClose]);
+ 
+   /** Advances the fixed flow or completes it after the third step. */
+   const handlePrimaryAction = useCallback(() => {
+-    const result = advanceFraudWarningStep(stepIndex, notice.steps.length);
++    const result = advanceFraudWarningStep(stepIndex, stepCount);
+     if (result.completed) {
+       onClose('completed');
+       return;
+     }
+     setStepIndex(result.nextIndex);
+-  }, [notice.steps.length, onClose, stepIndex]);
+-
+-  /** Starts horizontal step navigation while leaving vertical drags to the sheet. */
+-  const handleStepPointerDown = useCallback(
+-    (event: ReactPointerEvent<HTMLDivElement>) => {
+-      if (event.pointerType === 'mouse' && event.button !== 0) return;
+-      swipeRef.current = {
+-        pointerId: event.pointerId,
+-        startX: event.clientX,
+-        startY: event.clientY,
+-        axis: 'pending',
+-      };
+-      event.currentTarget.setPointerCapture(event.pointerId);
+-    },
+-    [],
+-  );
++  }, [onClose, stepCount, stepIndex]);
+ 
+-  /** Moves the current and adjacent steps with the finger after horizontal intent wins. */
+-  const handleStepPointerMove = useCallback(
+-    (event: ReactPointerEvent<HTMLDivElement>) => {
+-      const swipe = swipeRef.current;
+-      if (!swipe || swipe.pointerId !== event.pointerId) return;
+-      const deltaX = event.clientX - swipe.startX;
+-      const deltaY = event.clientY - swipe.startY;
++  /** A fifth of the width or a flick moves one step; otherwise it springs back. */
++  const handleDragEnd = useCallback(
++    (_event: unknown, info: PanInfo) => {
++      const width = widthRef.current || 1;
++      let next = stepIndex;
+       if (
+-        swipe.axis === 'pending' &&
+-        Math.max(Math.abs(deltaX), Math.abs(deltaY)) > 6
++        info.offset.x < -width * CAROUSEL.nextFraction ||
++        info.velocity.x < -CAROUSEL.velocity
+       ) {
+-        swipe.axis =
+-          Math.abs(deltaX) > Math.abs(deltaY) ? 'horizontal' : 'vertical';
+-      }
+-      if (swipe.axis !== 'horizontal') return;
+-
+-      event.preventDefault();
+-      setIsSwiping(true);
+-      // Resist outward dragging at the first and last step instead of exposing blank space.
+-      const isAtBoundary =
+-        (stepIndex === 0 && deltaX > 0) ||
+-        (stepIndex === notice.steps.length - 1 && deltaX < 0);
+-      setSwipeOffset(isAtBoundary ? deltaX * 0.25 : deltaX);
+-    },
+-    [notice.steps.length, stepIndex],
+-  );
+-
+-  /** 正常抬手且横向位移足够时翻页；取消事件只清理手势并复位。 */
+-  const finishStepSwipe = useCallback(
+-    (event: ReactPointerEvent<HTMLDivElement>) => {
+-      const swipe = swipeRef.current;
+-      if (!swipe || swipe.pointerId !== event.pointerId) return;
+-      swipeRef.current = null;
+-      setIsSwiping(false);
+-      if (
+-        event.type === 'pointerup' &&
+-        swipe.axis === 'horizontal' &&
+-        Math.abs(swipeOffset) >= SWIPE_COMMIT_DISTANCE
++        next += 1;
++      } else if (
++        info.offset.x > width * CAROUSEL.nextFraction ||
++        info.velocity.x > CAROUSEL.velocity
+       ) {
+-        const direction = swipeOffset < 0 ? 1 : -1;
+-        setStepIndex((current) =>
+-          Math.min(notice.steps.length - 1, Math.max(0, current + direction)),
+-        );
++        next -= 1;
++      }
++      next = Math.max(0, Math.min(stepCount - 1, next));
++      if (next === stepIndex) {
++        const target = -stepIndex * measure();
++        if (prefersReducedMotion()) x.jump(target);
++        else animate(x, target, MT.SPRING);
++        return;
+       }
+-      setSwipeOffset(0);
++      setStepIndex(next);
+     },
+-    [notice.steps.length, swipeOffset],
++    [measure, stepCount, stepIndex, x],
+   );
+ 
+   return (
+@@ -178,7 +202,7 @@ export function FraudWarningSheet({
+       contentClassName={styles.modalContent}
+       enableSwipeToDismiss
+       initialFocusRef={closeButtonRef}
+-      open={open && hasMounted}
++      open={shown}
+       placement="bottom"
+       trapFocus
+       onClose={handleDismiss}
+@@ -189,7 +213,7 @@ export function FraudWarningSheet({
+           <h2 className={styles.dialogTitle} id={titleId}>
+             {notice.dialogTitle}
+           </h2>
+-          <button
++          <m.button
+             ref={closeButtonRef}
+             aria-label={notice.dialogCloseAriaLabel}
+             className={styles.closeButton}
+@@ -198,68 +222,70 @@ export function FraudWarningSheet({
+             data-source={source}
+             onClick={handleDismiss}
+             type="button"
++            {...pressProps(true)}
+           >
+             <X aria-hidden className={styles.closeIcon} strokeWidth={2} />
+-          </button>
++          </m.button>
+         </div>
+ 
+-        <div
+-          className={styles.stepViewport}
+-          data-swiping={isSwiping ? 'true' : undefined}
+-          onPointerCancel={finishStepSwipe}
+-          onPointerDown={handleStepPointerDown}
+-          onPointerMove={handleStepPointerMove}
+-          onPointerUp={finishStepSwipe}
+-        >
+-          {/* Overlay every step so the grid adopts the tallest configured copy
+-              while inactive steps remain hidden from users and assistive tech. */}
+-          {notice.steps.map((item, index) => {
+-            const isActive = index === stepIndex;
+-            return (
+-              <div
+-                aria-hidden={!isActive}
+-                className={isActive ? styles.step : styles.stepHidden}
+-                key={item.id}
+-                style={{
+-                  transform: `translate3d(calc(${index - stepIndex} * 100% + ${swipeOffset}px), 0, 0)`,
+-                }}
+-              >
+-                <span
+-                  aria-hidden
+-                  className={styles.illustration}
+-                  data-illustration={item.illustration}
++        <div className={styles.stepViewport} ref={viewportRef}>
++          {/* Steps side by side; the track is as tall as the tallest step so
++              nothing jumps when the step changes (owner). */}
++          <m.div
++            className={styles.stepTrack}
++            drag="x"
++            // the track is stepCount viewports wide, so the viewport bounds
++            // give left = -(n - 1) · width, right = 0 (measured at drag start)
++            dragConstraints={viewportRef}
++            dragElastic={CAROUSEL.elastic}
++            dragMomentum={false}
++            onDragEnd={handleDragEnd}
++            onDragStart={measure}
++            style={{ x, width: `${stepCount * 100}%` }}
++          >
++            {notice.steps.map((item, index) => {
++              const isActive = index === stepIndex;
++              return (
++                <div
++                  aria-hidden={!isActive}
++                  className={styles.step}
++                  data-active={isActive ? 'true' : undefined}
++                  key={item.id}
++                  style={{ flexBasis: `${100 / stepCount}%` }}
+                 >
+-                  <img
+-                    alt=""
+-                    className={styles.illustrationBase}
+-                    src={ILLUSTRATIONS[item.illustration]}
+-                  />
+-                </span>
+-                <div className={styles.copy}>
+-                  <h3 className={styles.stepTitle}>{item.title}</h3>
+-                  <p className={styles.body}>{item.body}</p>
++                  <span
++                    aria-hidden
++                    className={styles.illustration}
++                    data-illustration={item.illustration}
++                  >
++                    <img
++                      alt=""
++                      className={styles.illustrationBase}
++                      draggable={false}
++                      src={ILLUSTRATIONS[item.illustration]}
++                    />
++                  </span>
++                  <div className={styles.copy}>
++                    <h3 className={styles.stepTitle}>{item.title}</h3>
++                    <p className={styles.body}>{item.body}</p>
++                  </div>
+                 </div>
+-              </div>
+-            );
+-          })}
++              );
++            })}
++          </m.div>
+         </div>
+ 
+         <div className={styles.footer}>
+           <div aria-hidden className={styles.pagination}>
+-            {/* Keep every indicator in one flex row so width interpolation moves
+-                neighboring dots continuously instead of swapping snapshots. */}
+             {notice.steps.map((item, index) => (
+-              <span
+-                className={index === stepIndex ? styles.activeDot : styles.dot}
+-                key={item.id}
+-              />
++              <PagerDot index={index} key={item.id} progress={progress} />
+             ))}
+           </div>
+-          <button
++          <m.button
+             aria-label={step.actionLabel}
+             className={styles.primaryButton}
+             data-event-type={
+-              stepIndex === notice.steps.length - 1
++              isLast
+                 ? 'payment_fraud_warning_complete'
+                 : 'payment_fraud_warning_next'
+             }
+@@ -268,29 +294,16 @@ export function FraudWarningSheet({
+             data-step={stepIndex + 1}
+             onClick={handlePrimaryAction}
+             type="button"
++            {...pressProps()}
+           >
++            {/* Keyed on the visible label: identical labels on adjacent steps
++                do not replay; Next → I understand crossfades (PS.Swap). */}
+             <span aria-hidden className={styles.primaryButtonLabels}>
+-              {/* Reuse identical labels across adjacent steps so Next does not
+-                  animate until the visible copy actually changes. */}
+-              {actionLabelSnapshots.map((actionLabel) => {
+-                const isActive = actionLabel === step.actionLabel;
+-                return (
+-                  <span
+-                    className={
+-                      isActive
+-                        ? styles.primaryButtonLabel
+-                        : styles.primaryButtonLabelHidden
+-                    }
+-                    key={actionLabel}
+-                  >
+-                    <span className={styles.primaryButtonLabelMotion}>
+-                      {actionLabel}
+-                    </span>
+-                  </span>
+-                );
+-              })}
++              <Swap block k={step.actionLabel}>
++                {step.actionLabel}
++              </Swap>
+             </span>
+-          </button>
++          </m.button>
+         </div>
+       </div>
+     </MobileModal>

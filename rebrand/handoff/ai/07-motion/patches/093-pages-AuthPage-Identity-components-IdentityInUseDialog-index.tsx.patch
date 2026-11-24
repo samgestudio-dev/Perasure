@@ -1,0 +1,245 @@
+diff --git a/src/pages/AuthPage/Identity/components/IdentityInUseDialog/index.tsx b/src/pages/AuthPage/Identity/components/IdentityInUseDialog/index.tsx
+index 31ccedd..36fe0cb 100644
+--- a/src/pages/AuthPage/Identity/components/IdentityInUseDialog/index.tsx
++++ b/src/pages/AuthPage/Identity/components/IdentityInUseDialog/index.tsx
+@@ -1,11 +1,13 @@
+-import { useEffect, useRef, useState } from 'react';
+-import { createPortal } from 'react-dom';
++import { useEffect, useRef } from 'react';
++import { m } from 'motion/react';
+ 
+-import { useBottomSheetDragDismiss } from '@/components/ui/useBottomSheetDragDismiss';
+ import { lockScroll, unlockScroll } from '@/utils/browser/dom/scrollLock';
+ 
+ import identityInUseIllustration from './assets/identity-in-use.png';
+ import styles from './index.module.css';
++import { pressProps } from '@/motion/press';
++import { Sheet } from '@/motion/Sheet';
++import { useScrimAttributes } from '@/motion/useScrimAttributes';
+ 
+ export interface IdentityInUseDialogProps {
+   /** Controls dialog visibility. 外部控制弹窗显隐。 */
+@@ -28,7 +30,8 @@ export interface IdentityInUseDialogProps {
+   zIndex?: number;
+ }
+ 
+-const MOTION_DURATION = 220;
++/** Drag strip = the card's 16 px top padding, so it never covers a control. */
++const DRAG_STRIP_HEIGHT = '1rem';
+ 
+ /** 展示证件已使用提示和既有账号操作；拖动关闭时独立淡出遮罩。 */
+ export function IdentityInUseDialog({
+@@ -41,28 +44,12 @@ export function IdentityInUseDialog({
+   dataEventPrefix = 'identity_in_use',
+   zIndex = 1000,
+ }: IdentityInUseDialogProps) {
+-  const [rendered, setRendered] = useState(open);
+-  const [visible, setVisible] = useState(open);
+-  const sheetRef = useRef<HTMLElement | null>(null);
+-  const { backdropRef, isDragging, sheetDragProps } = useBottomSheetDragDismiss(
+-    {
+-      active: visible,
+-      onDismiss: () => onClose?.(),
+-      sheetRef,
+-    },
+-  );
+-
+-  useEffect(() => {
+-    if (open) {
+-      setRendered(true);
+-      const frame = window.requestAnimationFrame(() => setVisible(true));
+-      return () => window.cancelAnimationFrame(frame);
+-    }
+-
+-    setVisible(false);
+-    const timer = window.setTimeout(() => setRendered(false), MOTION_DURATION);
+-    return () => window.clearTimeout(timer);
+-  }, [open]);
++  const sheetRef = useRef<HTMLDivElement | null>(null);
++  // the scrim keeps the old mask's tap tracking and label
++  useScrimAttributes(sheetRef, open, {
++    'aria-label': 'Close ID in use dialog',
++    'data-event-type': `${dataEventPrefix}_mask`,
++  });
+ 
+   useEffect(() => {
+     if (!open) return undefined;
+@@ -84,97 +71,95 @@ export function IdentityInUseDialog({
+     return () => window.removeEventListener('keydown', handleKeyDown);
+   }, [onClose, open]);
+ 
+-  if (!rendered || typeof document === 'undefined') {
++  if (typeof document === 'undefined') {
+     return null;
+   }
+ 
+-  return createPortal(
+-    <div
+-      className={`${styles.overlay} ${visible ? styles.overlayVisible : styles.overlayHidden}`}
+-      role="presentation"
+-      style={{ zIndex }}
++  // Motion: shared Sheet (M-013 slide on SPRING_PCT both ways, M-014 scrim
++  // 0.2 s in / LEAVE out, M-015 drag the top strip down, M-021 rows rise).
++  // The old 220 ms unmount timer vs 340 ms CSS transition mismatch is gone.
++  // 动效由共享 Sheet 承担；原 220ms 定时器与 340ms CSS 过渡不一致的问题随之消失。
++  return (
++    <Sheet
++      ariaLabelledBy="identity-in-use-title"
++      ariaModal
++      className={styles.sheet}
++      dragStripHeight={DRAG_STRIP_HEIGHT}
++      onClose={() => onClose?.()}
++      open={open}
++      panelRef={sheetRef}
++      positionPanel={false}
++      riseSkip={1}
++      role="dialog"
++      scrimClassName={styles.mask}
++      zIndex={zIndex}
+     >
+-      <button
+-        aria-label="Close ID in use dialog"
+-        ref={backdropRef}
+-        className={styles.mask}
+-        data-event-type={`${dataEventPrefix}_mask`}
+-        onClick={onClose}
+-        type="button"
+-      />
+-      <section
+-        aria-labelledby="identity-in-use-title"
+-        aria-modal="true"
+-        className={`${styles.sheet} ${visible ? styles.sheetVisible : styles.sheetHidden} ${isDragging ? styles.sheetDragging : ''}`}
+-        ref={sheetRef}
+-        role="dialog"
+-        {...sheetDragProps}
+-      >
+-        <span aria-hidden="true" className={styles.handle} />
+-
+-        <div className={styles.hero}>
+-          <img
+-            alt=""
+-            aria-hidden="true"
+-            className={styles.illustration}
+-            src={identityInUseIllustration}
+-          />
+-
+-          <div className={styles.copy}>
+-            <h2 className={styles.title} id="identity-in-use-title">
+-              This ID is already in use
+-            </h2>
+-            <p className={styles.description}>
+-              {message ||
+-                'This ID is linked to another account. Choose what you’d like to do next.'}
+-            </p>
+-          </div>
++      <span aria-hidden="true" className={styles.handle} />
++
++      <div className={styles.hero}>
++        <img
++          alt=""
++          aria-hidden="true"
++          className={styles.illustration}
++          src={identityInUseIllustration}
++        />
++
++        <div className={styles.copy}>
++          <h2 className={styles.title} id="identity-in-use-title">
++            This ID is already in use
++          </h2>
++          <p className={styles.description}>
++            {message ||
++              'This ID is linked to another account. Choose what you’d like to do next.'}
++          </p>
+         </div>
+-
+-        <div className={styles.actions}>
+-          <div className={styles.accountActions}>
+-            <button
+-              className={styles.accountButton}
+-              data-event-type={`${dataEventPrefix}_login_existing`}
+-              onClick={onLoginExisting}
+-              type="button"
+-            >
+-              <span className={styles.accountTitle}>
+-                Log in to your existing account
+-              </span>
+-              <span className={styles.accountDescription}>
+-                Continue with your previous account
+-              </span>
+-            </button>
+-            <button
+-              className={styles.accountButton}
+-              data-event-type={`${dataEventPrefix}_recover_account`}
+-              // Keep this clickable like 011. The page callback decides whether
+-              // to route to recovery or show the "log in with original phone" Toast.
+-              // 对齐 011：按钮不在组件层禁用；是否允许换绑由页面回调决定。
+-              onClick={onRecoverAccount}
+-              type="button"
+-            >
+-              <span className={styles.accountTitle}>
+-                Can’t access that number
+-              </span>
+-              <span className={styles.accountDescription}>
+-                Recover your account with a new phone number
+-              </span>
+-            </button>
+-          </div>
+-          <button
+-            className={styles.useDifferentButton}
+-            data-event-type={`${dataEventPrefix}_use_different_id`}
+-            onClick={onUseDifferentId}
++      </div>
++
++      <div className={styles.actions}>
++        <div className={styles.accountActions}>
++          <m.button
++            className={styles.accountButton}
++            data-event-type={`${dataEventPrefix}_login_existing`}
++            onClick={onLoginExisting}
++            type="button"
++            {...pressProps()}
++          >
++            <span className={styles.accountTitle}>
++              Log in to your existing account
++            </span>
++            <span className={styles.accountDescription}>
++              Continue with your previous account
++            </span>
++          </m.button>
++          <m.button
++            className={styles.accountButton}
++            data-event-type={`${dataEventPrefix}_recover_account`}
++            // Keep this clickable like 011. The page callback decides whether
++            // to route to recovery or show the "log in with original phone" Toast.
++            // 对齐 011：按钮不在组件层禁用；是否允许换绑由页面回调决定。
++            onClick={onRecoverAccount}
+             type="button"
++            {...pressProps()}
+           >
+-            Use a different ID
+-          </button>
++            <span className={styles.accountTitle}>
++              Can’t access that number
++            </span>
++            <span className={styles.accountDescription}>
++              Recover your account with a new phone number
++            </span>
++          </m.button>
+         </div>
+-      </section>
+-    </div>,
+-    document.body,
++        <m.button
++          className={styles.useDifferentButton}
++          data-event-type={`${dataEventPrefix}_use_different_id`}
++          onClick={onUseDifferentId}
++          type="button"
++          {...pressProps()}
++        >
++          Use a different ID
++        </m.button>
++      </div>
++    </Sheet>
+   );
+ }
+ 

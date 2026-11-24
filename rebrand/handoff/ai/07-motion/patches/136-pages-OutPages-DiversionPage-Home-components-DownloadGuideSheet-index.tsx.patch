@@ -1,0 +1,170 @@
+diff --git a/src/pages/OutPages/DiversionPage/Home/components/DownloadGuideSheet/index.tsx b/src/pages/OutPages/DiversionPage/Home/components/DownloadGuideSheet/index.tsx
+index 463f4fa..d2dd477 100644
+--- a/src/pages/OutPages/DiversionPage/Home/components/DownloadGuideSheet/index.tsx
++++ b/src/pages/OutPages/DiversionPage/Home/components/DownloadGuideSheet/index.tsx
+@@ -1,18 +1,12 @@
+-import {
+-  useEffect,
+-  useRef,
+-  type KeyboardEventHandler,
+-  type MouseEventHandler,
+-  type ReactPortal,
+-} from 'react';
+-import { createPortal } from 'react-dom';
++import { useEffect, useRef, type ReactNode } from 'react';
+ 
+ import { BottomActionButton } from '@/components/ui/BottomActionButton';
+-import { useBottomSheetDragDismiss } from '@/components/ui/useBottomSheetDragDismiss';
+ import { useI18n } from '@/i18n';
+ import { lockScroll, unlockScroll } from '@/utils/browser/dom/scrollLock';
+ 
+ import styles from './index.module.css';
++import { Sheet } from '@/motion/Sheet';
++import { useScrimAttributes } from '@/motion/useScrimAttributes';
+ 
+ export interface DownloadGuideSheetProps {
+   onClose: () => void;
+@@ -21,24 +15,22 @@ export interface DownloadGuideSheetProps {
+   open: boolean;
+ }
+ 
++/** Drag strip = the old 44 px drag region above the title. */
++const DRAG_STRIP_HEIGHT = '2.75rem';
++
+ /** F05 占位弹层；组件刻意不接收 URL 或 Native 能力。 */
+ export function DownloadGuideSheet({
+   onClose,
+   onDownload,
+   onVisible,
+   open,
+-}: DownloadGuideSheetProps): ReactPortal | null {
++}: DownloadGuideSheetProps): ReactNode {
+   const { t } = useI18n();
+-  const sheetRef = useRef<HTMLElement | null>(null);
++  const sheetRef = useRef<HTMLDivElement | null>(null);
+   const returnFocusRef = useRef<HTMLElement | null>(null);
+-  const { backdropRef, isDragging, sheetDragProps } = useBottomSheetDragDismiss(
+-    {
+-      active: open,
+-      dragRegionSelector: `.${styles.dragRegion}`,
+-      onDismiss: onClose,
+-      sheetRef,
+-    },
+-  );
++  useScrimAttributes(sheetRef, open, {
++    'aria-label': t('diversion.home.download.close'),
++  });
+ 
+   useEffect(() => {
+     if (!open) return undefined;
+@@ -58,58 +50,60 @@ export function DownloadGuideSheet({
+     };
+   }, [onVisible, open]);
+ 
+-  if (!open || typeof document === 'undefined') return null;
++  useEffect(() => {
++    if (!open) return undefined;
++    // Escape closes (the Sheet panel takes no key handler, so listen on the document).
++    // Escape 关闭（Sheet 面板不接收键盘回调，故监听 document）。
++    const handleKeyDown = (event: KeyboardEvent) => {
++      if (event.key !== 'Escape') return;
++      event.stopPropagation();
++      onClose();
++    };
++    document.addEventListener('keydown', handleKeyDown);
++    return () => document.removeEventListener('keydown', handleKeyDown);
++  }, [onClose, open]);
+ 
+-  const stopPropagation: MouseEventHandler<HTMLElement> = (event) => {
+-    event.stopPropagation();
+-  };
+-  const handleKeyDown: KeyboardEventHandler<HTMLElement> = (event) => {
+-    if (event.key !== 'Escape') return;
+-    event.stopPropagation();
+-    onClose();
+-  };
++  if (typeof document === 'undefined') return null;
+ 
+-  return createPortal(
+-    <div className={styles.overlay} role="presentation">
+-      <button
+-        aria-label={t('diversion.home.download.close')}
+-        ref={backdropRef}
+-        className={styles.backdrop}
+-        onClick={onClose}
+-        type="button"
++  // Motion: shared Sheet — real enter / exit (it used to return null), slide
++  // on SPRING_PCT, scrim 0.2 s in / LEAVE out, drag the top 44 px down, rows
++  // rise. 进出场与拖拽关闭由共享 Sheet 承担。
++  return (
++    <Sheet
++      ariaLabelledBy="diversion-download-guide-title"
++      ariaModal
++      className={styles.sheet}
++      dragStripHeight={DRAG_STRIP_HEIGHT}
++      layerClassName={styles.overlay}
++      onClose={onClose}
++      open={open}
++      panelRef={sheetRef}
++      positionPanel={false}
++      riseSkip={1}
++      role="dialog"
++      scrimClassName={styles.backdrop}
++      tabIndex={-1}
++      zIndex={1000}
++    >
++      <div aria-hidden="true" className={styles.dragRegion}>
++        <span className={styles.handle} />
++      </div>
++      <div className={styles.copy}>
++        <h2 className={styles.title} id="diversion-download-guide-title">
++          {t('diversion.home.download.title')}
++        </h2>
++        <p className={styles.description}>
++          {t('diversion.home.download.description')}
++        </p>
++      </div>
++      <BottomActionButton
++        buttonClassName={styles.downloadButton}
++        className={styles.downloadAction}
++        dataEventType="diversion_download_click"
++        debounceMs={500}
++        onClick={onDownload}
++        text={t('diversion.home.download.action')}
+       />
+-      <section
+-        {...sheetDragProps}
+-        aria-labelledby="diversion-download-guide-title"
+-        aria-modal="true"
+-        className={`${styles.sheet} ${isDragging ? styles.sheetDragging : ''}`}
+-        onClick={stopPropagation}
+-        onKeyDown={handleKeyDown}
+-        ref={sheetRef}
+-        role="dialog"
+-        tabIndex={-1}
+-      >
+-        <div aria-hidden="true" className={styles.dragRegion}>
+-          <span className={styles.handle} />
+-        </div>
+-        <div className={styles.copy}>
+-          <h2 className={styles.title} id="diversion-download-guide-title">
+-            {t('diversion.home.download.title')}
+-          </h2>
+-          <p className={styles.description}>
+-            {t('diversion.home.download.description')}
+-          </p>
+-        </div>
+-        <BottomActionButton
+-          buttonClassName={styles.downloadButton}
+-          className={styles.downloadAction}
+-          dataEventType="diversion_download_click"
+-          debounceMs={500}
+-          onClick={onDownload}
+-          text={t('diversion.home.download.action')}
+-        />
+-      </section>
+-    </div>,
+-    document.body,
++    </Sheet>
+   );
+ }

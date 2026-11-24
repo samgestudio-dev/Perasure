@@ -1,0 +1,176 @@
+diff --git a/src/pages/HomePage/WithdrawMainRoute/SubmissionStatus.tsx b/src/pages/HomePage/WithdrawMainRoute/SubmissionStatus.tsx
+index 0de2031..46516a1 100644
+--- a/src/pages/HomePage/WithdrawMainRoute/SubmissionStatus.tsx
++++ b/src/pages/HomePage/WithdrawMainRoute/SubmissionStatus.tsx
+@@ -3,6 +3,7 @@ import { logStructuredDiagnostic } from '@/utils/logger';
+ import {
+   buildAnimatedCopyTokens,
+   createSubmissionPresentation,
++  ORDER_SUBMIT,
+   type SubmissionVisualState,
+ } from './submissionMotion';
+ import { loadWithdrawCoinMotion } from './motion/coinMotionLoader';
+@@ -20,9 +21,9 @@ interface SubmissionStatusProps {
+   onCompletedPresentationEnd: () => void;
+   submittingText: string;
+ }
+-const COPY_IN_MS = 560;
+-const COPY_OUT_MS = 400;
+-const CHARACTER_STAGGER_MS = 16;
++const COPY_IN_MS = ORDER_SUBMIT.IN_MS;
++const COPY_OUT_MS = ORDER_SUBMIT.OUT_MS;
++const CHARACTER_STAGGER_MS = ORDER_SUBMIT.STAGGER_MS;
+ const stages = ['submitting', 'confirming', 'completed'] as const;
+ 
+ /** Plays the supplied prototype's restrained per-character entrance. */
+@@ -63,22 +64,35 @@ const animateCopyIn = (
+ const animateCopyOut = (
+   characters: HTMLElement[],
+   own: (animation: Animation) => Animation,
+-) =>
+-  characters.map((character, index) =>
++) => {
++  // fx.js:27-28: each letter leaves from the opacity it shows now (a counting
++  // dot may be mid-count); its running animations are cancelled first.
++  const starts = characters.map((character) => {
++    const view = character.ownerDocument?.defaultView;
++    return view ? parseFloat(view.getComputedStyle(character).opacity) || 0 : 1;
++  });
++  characters.forEach((character) =>
++    character.getAnimations?.().forEach((animation) => animation.cancel()),
++  );
++  return characters.map((character, index) =>
+     own(
+       character.animate(
+         [
+-          { filter: 'blur(0)', opacity: 1, transform: 'translateY(0)' },
++          {
++            filter: 'blur(0)',
++            opacity: starts[index],
++            transform: 'translateY(0)',
++          },
+           {
+             filter: 'blur(1.5px)',
+             offset: 0.3,
+-            opacity: 0.5,
++            opacity: starts[index] * 0.5,
+             transform: 'translateY(-2px)',
+           },
+           {
+             filter: 'blur(3.5px)',
+             offset: 0.6,
+-            opacity: 0.1,
++            opacity: starts[index] * 0.1,
+             transform: 'translateY(-5px)',
+           },
+           { filter: 'blur(5px)', opacity: 0, transform: 'translateY(-10px)' },
+@@ -92,6 +106,42 @@ const animateCopyOut = (
+       ),
+     ),
+   );
++};
++
++/**
++ * The counting dots — fx.js:44-50 (M-089): dot i (1–3) is off until 0.25 /
++ * 0.5 / 0.75 of a 2000 ms count, then on; linear, endless.
++ */
++const loopDots = (
++  dots: HTMLElement[],
++  own: (animation: Animation) => Animation,
++) =>
++  dots.map((dot, index) => {
++    const on = (index + 1) * 0.25;
++    return own(
++      dot.animate(
++        [
++          { opacity: 0, offset: 0 },
++          { opacity: 0, offset: on },
++          { opacity: 1, offset: on + 0.0001 },
++          { opacity: 1, offset: 1 },
++        ],
++        {
++          duration: ORDER_SUBMIT.DOTS_PERIOD_MS,
++          iterations: Infinity,
++          easing: 'linear',
++        },
++      ),
++    );
++  });
++
++/** Letters only: spaces take no stagger slot (fx.js:66, data-i counts letters). */
++const lettersOf = (line: HTMLElement | null | undefined) =>
++  Array.from(
++    line?.querySelectorAll<HTMLElement>(
++      '[data-copy-character]:not([data-copy-space])',
++    ) ?? [],
++  );
+ 
+ /** Renders optional coins and three existing copy lines; API state stays in the parent. */
+ export default function SubmissionStatus({
+@@ -138,14 +188,14 @@ export default function SubmissionStatus({
+       showStage: setVisualState,
+       onEnd: () => onEndRef.current(),
+       onFailure: report,
++      entranceMs: (stage) =>
++        COPY_IN_MS +
++        Math.max(0, lettersOf(copyRefs.current[stage]).length - 1) *
++          CHARACTER_STAGGER_MS,
+       /** Uses engine completion with a visible-time deadline for lost browser notifications. */
+       async animateCopy(stage, direction, signal) {
+         const line = copyRefs.current[stage];
+-        const characters = Array.from(
+-          line?.querySelectorAll<HTMLElement>(
+-            '[data-copy-character]',
+-          ) ?? [],
+-        );
++        const characters = lettersOf(line);
+         if (
+           signal.aborted ||
+           !characters.length ||
+@@ -186,6 +236,22 @@ export default function SubmissionStatus({
+             characters.forEach((character) => {
+               character.style.opacity = '0';
+             });
++          // The confirming line's dots start counting 40 ms after it is in.
++          if (direction === 'in' && stage === 'confirming' && !reduced) {
++            const dots = characters.filter(
++              (character) => character.dataset.copyDot !== undefined,
++            );
++            void scope
++              .wait(ORDER_SUBMIT.DOTS_AFTER_MS, scope.signal)
++              .then(() => {
++                if (!signal.aborted && dots.length)
++                  loopDots(dots, (animation) => {
++                    scope.ownAnimation(animation);
++                    return animation;
++                  });
++              })
++              .catch(() => undefined);
++          }
+         } finally {
+           deadline.abort();
+           signal.removeEventListener('abort', abort);
+@@ -313,16 +379,15 @@ export default function SubmissionStatus({
+                     return (
+                       <span
+                         aria-hidden="true"
+-                        className={`${styles.copyCharacter} ${token.kind === 'space' ? styles.copySpace : ''} ${dot ? styles.confirmingDot : ''}`}
++                        className={`${styles.copyCharacter} ${token.kind === 'space' ? styles.copySpace : ''}`}
+                         data-copy-character
+-                        key={id}
+-                        style={
+-                          dot
+-                            ? {
+-                                animationDelay: `${(index - (count - 3)) * 250}ms`,
+-                              }
+-                            : undefined
++                        data-copy-dot={
++                          dot ? index - (count - 3) + 1 : undefined
+                         }
++                        data-copy-space={
++                          token.kind === 'space' ? '' : undefined
++                        }
++                        key={id}
+                       >
+                         {character}
+                       </span>

@@ -1,0 +1,228 @@
+diff --git a/src/pages/ConfirmPage/Order/phoneVerification/PhoneVerificationSheet.tsx b/src/pages/ConfirmPage/Order/phoneVerification/PhoneVerificationSheet.tsx
+index 1e39dfb..8e5d8c6 100644
+--- a/src/pages/ConfirmPage/Order/phoneVerification/PhoneVerificationSheet.tsx
++++ b/src/pages/ConfirmPage/Order/phoneVerification/PhoneVerificationSheet.tsx
+@@ -1,6 +1,10 @@
+ import { useEffect, useRef, useState, type ReactElement } from 'react';
+ import { createPortal } from 'react-dom';
+ import { Smartphone, X } from 'lucide-react';
++import { AnimatePresence, m } from 'motion/react';
++import { fade, reveal } from '@/motion/presets';
++import { Swap } from '@/motion/Swap';
++import { MT, OTP_DIGIT } from '@/motion/tokens';
+ import { MobileModal } from '@/components/ui/MobileModal';
+ import { useI18n } from '@/i18n';
+ import { getUserPhone } from '@/utils/browser/user';
+@@ -74,6 +78,13 @@ export default function PhoneVerificationSheet({
+       ? t(`confirm.phone.error.${controller.error}`)
+       : controller.error.message
+     : '';
++  /**
++   * OTP sheet morph (rebrand PS.OtpSheet, fx.js:113-130, M-091): the middle
++   * changes height on the Smooth spring — 48 (number) / 60 (code), +56 while
++   * an error shows — while its panes crossfade (M-092) and the title,
++   * description and button label swap (M-093).
++   */
++  const middleHeight = (isInput ? 60 : 48) + (errorMessage ? 56 : 0);
+   const blocked =
+     !controller.otp ||
+     controller.busy ||
+@@ -96,13 +107,18 @@ export default function PhoneVerificationSheet({
+       >
+         <section
+           aria-label={t('confirm.phone.title')}
+-          className={`${styles.sheet} ${isInput ? styles.inputSheet : ''} ${errorMessage ? styles.errorSheet : ''}`}
++          className={styles.sheet}
++          data-step={isInput ? 'input' : 'phone'}
+         >
+           <div className={styles.grabber} />
+           <div className={styles.header}>
+             <div className={styles.titleRow}>
+               <h2>
+-                {t(isInput ? 'confirm.phone.codeTitle' : 'confirm.phone.title')}
++                <Swap block k={isInput ? 'code' : 'phone'}>
++                  {t(
++                    isInput ? 'confirm.phone.codeTitle' : 'confirm.phone.title',
++                  )}
++                </Swap>
+               </h2>
+               <button
+                 type="button"
+@@ -120,54 +136,100 @@ export default function PhoneVerificationSheet({
+               </button>
+             </div>
+             <p>
+-              {t(isInput ? 'confirm.phone.codeBody' : 'confirm.phone.body')}
++              <Swap block k={isInput ? 'code' : 'phone'}>
++                {t(isInput ? 'confirm.phone.codeBody' : 'confirm.phone.body')}
++              </Swap>
+             </p>
+           </div>
+-          {isInput ? (
+-            <div className={styles.codeArea}>
+-              <div className={styles.digits} aria-hidden="true">
+-                {Array.from(
+-                  { length: controller.otp?.codeLength || 0 },
+-                  (_, index) => (
+-                    <span
+-                      key={index}
+-                      className={`${styles.digit} ${index === Math.max(0, code.length - 1) ? styles.active : ''} ${errorMessage ? styles.invalid : ''}`}
+-                    >
+-                      {code[index]}
+-                    </span>
+-                  ),
+-                )}
+-              </div>
+-              <input
+-                ref={input}
+-                className={styles.codeInput}
+-                aria-label={t('confirm.phone.codeLabel')}
+-                inputMode="numeric"
+-                autoComplete="one-time-code"
+-                value={code}
+-                maxLength={controller.otp?.codeLength}
+-                disabled={blocked}
+-                onChange={(event) => {
+-                  const next = event.target.value
+-                    .replace(/[^0-9]/g, '')
+-                    .slice(0, controller.otp?.codeLength);
+-                  setCode(next);
+-                  if (next.length === controller.otp?.codeLength)
+-                    void controller.verify(next);
+-                }}
+-              />
+-            </div>
+-          ) : (
+-            <div className={styles.phone}>
+-              <Smartphone size={24} />
+-              <span>{controller.otp?.maskedPhone}</span>
+-            </div>
+-          )}
+-          {errorMessage ? (
+-            <p role="alert" className={styles.error}>
+-              {errorMessage}
+-            </p>
+-          ) : null}
++          <m.div
++            animate={{ height: middleHeight }}
++            className={styles.middle}
++            initial={false}
++            transition={MT.SPRING}
++          >
++            <AnimatePresence initial={false} mode="popLayout">
++              {isInput ? (
++                <m.div className={styles.pane} key="code" {...fade(MT.Y.block)}>
++                  <div className={styles.codeArea}>
++                    <div className={styles.digits} aria-hidden="true">
++                      {Array.from(
++                        { length: controller.otp?.codeLength || 0 },
++                        (_, index) => (
++                          // Boxes cascade in (reveal(i), M-028); a typed digit pops
++                          // (opacity 0, scale 0.6 → 1 in 0.18 s, M-027); state
++                          // colours change in 0.15 s (M-029).
++                          <m.span
++                            key={index}
++                            className={`${styles.digit} ${index === Math.max(0, code.length - 1) ? styles.active : ''} ${errorMessage ? styles.invalid : ''}`}
++                            {...reveal(index)}
++                          >
++                            <AnimatePresence initial={false} mode="popLayout">
++                              {code[index] ? (
++                                <m.span
++                                  animate={{
++                                    opacity: 1,
++                                    scale: 1,
++                                    transition: OTP_DIGIT.enter,
++                                  }}
++                                  exit={{
++                                    opacity: 0,
++                                    transition: OTP_DIGIT.exit,
++                                  }}
++                                  initial={OTP_DIGIT.from}
++                                  key={`${index}-${code[index]}`}
++                                >
++                                  {code[index]}
++                                </m.span>
++                              ) : null}
++                            </AnimatePresence>
++                          </m.span>
++                        ),
++                      )}
++                    </div>
++                    <input
++                      ref={input}
++                      className={styles.codeInput}
++                      aria-label={t('confirm.phone.codeLabel')}
++                      inputMode="numeric"
++                      autoComplete="one-time-code"
++                      value={code}
++                      maxLength={controller.otp?.codeLength}
++                      disabled={blocked}
++                      onChange={(event) => {
++                        const next = event.target.value
++                          .replace(/[^0-9]/g, '')
++                          .slice(0, controller.otp?.codeLength);
++                        setCode(next);
++                        if (next.length === controller.otp?.codeLength)
++                          void controller.verify(next);
++                      }}
++                    />
++                  </div>
++                  {errorMessage ? (
++                    <m.p role="alert" className={styles.error} {...fade(-4)}>
++                      {errorMessage}
++                    </m.p>
++                  ) : null}
++                </m.div>
++              ) : (
++                <m.div
++                  className={styles.pane}
++                  key="phone"
++                  {...fade(MT.Y.block)}
++                >
++                  <div className={styles.phone}>
++                    <Smartphone size={24} />
++                    <span>{controller.otp?.maskedPhone}</span>
++                  </div>
++                  {errorMessage ? (
++                    <m.p role="alert" className={styles.error} {...fade(-4)}>
++                      {errorMessage}
++                    </m.p>
++                  ) : null}
++                </m.div>
++              )}
++            </AnimatePresence>
++          </m.div>
+           <button
+             className={styles.cta}
+             type="button"
+@@ -182,16 +244,22 @@ export default function PhoneVerificationSheet({
+               void controller.confirm(challenge, isInput);
+             }}
+           >
+-            {controller.busy
+-              ? t('confirm.phone.pending')
+-              : t(
+-                  isInput
+-                    ? controller.resendSeconds > 0
+-                      ? 'confirm.phone.countdown'
+-                      : 'confirm.phone.resend'
+-                    : 'confirm.phone.getCode',
++            {controller.busy ? (
++              t('confirm.phone.pending')
++            ) : isInput ? (
++              // "Resend code in 59s" ↔ "Resend": the countdown number stays
++              // inside one key (fx.js:129).
++              <Swap k={controller.resendSeconds > 0 ? 'wait' : 'go'}>
++                {t(
++                  controller.resendSeconds > 0
++                    ? 'confirm.phone.countdown'
++                    : 'confirm.phone.resend',
+                   { seconds: controller.resendSeconds },
+                 )}
++              </Swap>
++            ) : (
++              t('confirm.phone.getCode')
++            )}
+           </button>
+         </section>
+       </MobileModal>

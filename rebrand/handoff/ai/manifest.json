@@ -1,5 +1,5 @@
 {
- "package": "PeraSure rebrand — visual hand-off for phi_h5_025",
+ "package": "PeraSure rebrand — visual + motion hand-off for phi_h5_025",
  "readFirst": "README.md",
  "baseline": {
   "repo": "git.kuainiujinke.com:business_delivery_ph/phi_h5_025",
@@ -13,48 +13,34 @@
   "demoBranch": "tokens/rebrand-v3",
   "tokensVersion": "2026.11.23"
  },
- "written": "2026-11-24",
+ "written": "2026-11-24, revised 2026-11-25",
  "scope": "purely visual: colour, typeface, type sizes/weights/tracking, radius, shadow, blur, spacing/position, icons, illustrations, animation colours. No structure, props, behaviour, flow or logic. Exceptions, owner-approved 2026-11-24 (structural: \"owner-approved\"): E023 + E542 tab icon as masked <span> with currentColor; E543 + E400 data-overdue on the Home payment button.",
  "applyOrder": [
   {
-   "step": 0,
-   "what": "tokens, file-wide: 0.0 delete src/styles/global.css lines 50-54 (local --gradient-modal-backdrop) BEFORE the seds; 0.1 sed -E with 01-tokens/rename.sed, rename-value-changes.sed, removed-literals.sed (that order) on src/**/*.{css,scss,ts,tsx}; 0.2 overwrite src/styles/figma-tokens.css with 01-tokens/figma-tokens.header.css + rebrand-tokens.css from line 5 (px only). Undefined and removed names are NOT step 0: they are edits."
-  },
-  {
    "step": 1,
-   "what": "02-changes/changes-by-file.json files with applyGroup starting '1' (global.css, index.html)"
+   "what": "visual: steps 0-7 of the edit list + the step-5 asset files + prettier (fmt)",
+   "command": "python3 \"$H/tools/apply.py\" \"$REPO\" --step all",
+   "then": "0 anchor-missing; rm \"$REPO/rebrand-apply-report.json\"; commit A (git add -A && git commit -m \"style(rebrand): apply the visual hand-off (tokens, edits, assets)\")"
   },
   {
    "step": 2,
-   "what": "applyGroup '2' (app shell, shared controls)"
+   "what": "motion: install, then the patch",
+   "command": "cd \"$REPO\" && npm install motion@14.4.0 --save-exact && git apply --check \"$H/07-motion/motion.patch\" && git apply \"$H/07-motion/motion.patch\"",
+   "then": "commit B (git add -A && git commit -m \"feat(motion): add the rebrand motion (motion@14.4.0)\")"
   },
   {
    "step": 3,
-   "what": "applyGroup '3' (components, features)"
+   "what": "step 8 (last): drop var() fallbacks of defined tokens, 02-changes/step8-tests.json, prettier, legacy-blue check",
+   "command": "python3 \"$H/tools/apply.py\" \"$REPO\" --step 8",
+   "then": "\"no legacy blue literal left in src/\"; rm \"$REPO/rebrand-apply-report.json\"; commit C (git add -A && git commit -m \"style(rebrand): drop stale var() fallbacks\")"
   },
   {
    "step": 4,
-   "what": "applyGroup '4' (pages)"
+   "what": "verify",
+   "command": "npx tsc --noEmit -p tsconfig.app.json && npm run type-check && npm run build && npm test; 07-motion/verify (rec-prod.mjs + cmp.py)"
   },
   {
-   "step": 5,
-   "what": "applyGroup '5' (animations drawn in code), then 04-assets/ file swaps (not scripted)"
-  },
-  {
-   "step": 6,
-   "what": "applyGroup '6' (visual copy characters)"
-  },
-  {
-   "step": 7,
-   "what": "applyGroup '7' (tests that pin old token names, fonts or values; npm test then passes 927/927)"
-  },
-  {
-   "step": 8,
-   "what": "remove stale var() fallbacks (06-production-audit/hardcoded.json)"
-  },
-  {
-   "step": 9,
-   "what": "verify with the README checklist"
+   "inside step 1": "0 tokens (0.0 delete global.css 50-54, 0.1 seds, 0.2 token file); 1-7 edit groups (global, shell, components, pages, code-drawn animations + 04-assets files, copy characters, tests); fmt = the repo prettier on changed files"
   }
  ],
  "schemas": {
@@ -62,18 +48,27 @@
   "02-changes/changes-by-file.json": "{meta{baseline, step0, precedence, conventions, counts}, files[]}; file: file, component, kind, applyGroup (\"1 …\"..\"7 …\"), edits[] in apply order (bottom-up). edit: id (E001…), action (replace|insert|delete|manual|skip|token-step), selector, property, line, lineEnd?, insertAfterLine? (insert: baseline line the target goes after), lineAfterStep0 (first line of the anchor after step 0), current (exact baseline text), currentAfterStep0 (exact text after step 0 = the anchor; delete: the full lines), anchor? (insert; = currentAfterStep0), target (replace: replacement text; insert: complete line(s) with indentation; delete: \"\"; manual/skip: placeholder), replaceAll? + expectedCount?, doneByStep0, step0? (\"0.0\"|\"0.2\"), targetToken (exists in 01-tokens/rebrand-tokens.css), targetValue, changeId (-> 03-design-intent), reason, instruction? (manual), skipReason? (skip), confidence, needsOwner, visual, decided? (\"2026-11-24 <A-F>\": owner answer applied), structural? (\"owner-approved\")",
   "03-design-intent/visual-changes.json": "rows: id (G-/C-/P-), area, designName, demoComponent, element, property, before, after, figmaNode, sourceEntry, ownerDecision, superseded?, note",
   "05-coverage/coverage.json": "(a) design rows with no production counterpart; (b) production components without explicit design: token map only | needs design",
-  "04-assets/assets-to-replace.json": "production asset -> rebrand asset or in-code recolour; source paths are under 04-assets/files/",
-  "tools/apply.py report": "{package, repo, step, dryRun, ownerItems, counts{status:n}, anchorMissing[], manual[], results[{id, file, group, action, lineAfterStep0, needsOwner, status (applied|already-done|anchor-missing|manual|skipped|skipped-owner), detail}], notDoneByThisScript[]}"
+  "04-assets/assets-to-replace.json": "production asset -> rebrand asset or in-code recolour. Rows: productionPath, action, rebrandSource (relative to the design repo samgestudio-dev/Perasure), rebrandSourceInPackage (04-assets/files/… or null), colourReplacements[{from, to, token}], applyPy (\"recolour\" | \"remove\" | null: what apply.py --step 5 does), removePaths[] (remove rows), glyphCheck (Hanken row), changeId, note, usedBy[]",
+  "tools/apply.py report": "{package, repo, step, dryRun, ownerItems, counts{status:n} (all rows), editCounts{status:n} (E… edits only), anchorMissing[], legacyBlueLeft[] (step 8), results[{id (E… edit | S0.0-S0.2 step 0 | A5 asset file | FMT prettier | S8 / S8T… / S8.check step 8), file, group, action, lineAfterStep0?, needsOwner?, status (applied|already-done|anchor-missing|skipped|skipped-owner), detail}]}",
+  "07-motion/specs.json": "{meta{title, baseline, applyOrder[], codeRefsTree, motionPackage, tokens{}, counts{done, partial, n.a.}, statusValues{}, reference, generated}, rules[], motions[]}; rule: ruleId (R-*), text, status (respected|partial|n.a.), how, demoSource[], codeRefs[]; motion (M-001…M-139, sorted): motionId, name, area (global|component|flow), demoComponent, demoSource[] (demo file:lines), productionTarget{file, component, element}, trigger, timeline[]{property, from?, to?, unit?, transition? (token in words), tokens?{name: resolved values}, delay?, window? (part of a morph progress), note?}, delayStagger?, layout?, interruption, exit, reducedMotion, codeRefs[]{file, lines (\"a-b, c\" in the tree after motion.patch, before step 8), note?}, referenceCurve{curves, strip, video|null, variants[], status, t0, durationMs, notes} (paths under 07-motion/reference/), status (done|partial|n.a.), reason, remaining? (what is left), migrationHowTo? (how to finish), deviations[], decisionNotes[], rules[]",
+  "07-motion/motion-tokens.json": "{meta, groups{<demo group>: [{name, type, params (resolved values), usedBy, source (demo file:lines), notes, production{export, definedAt (file:line in the motion-applied tree)}|null}]}}",
+  "07-motion/patches/INDEX.txt": "tab-separated: patch file, status (new|modified|deleted), repo path; apply in order; together = 07-motion/motion.patch",
+  "07-motion/reference/index.json": "[{motionId, name, area, demoComponent, recorded, status, curves, strip, video|null, videoNote?, durationMs, settled, loop, trigger, t0, url, syntheticTrigger, notes, takeName, variants[]}] — curves/<id>.json: {motionId, recordedWith, trigger, t0, setup, elementSelectors, settledAt, endT, events, constants, samples[{t, \"<el>.<prop>\": value}], notes}; frames/ not shipped",
+  "02-changes/step8-tests.json": "{meta{what, anchor}, edits[{id (S8T…), file, test, current, target, reason}]} — exact-text test updates applied by apply.py --step 8"
  },
- "openQuestions": "OPEN-QUESTIONS.md (owner decisions of 2026-11-24 applied; open: only the 12 production pieces without a design; 56 edits still carry needsOwner: true with the package value; 2 edits are manual: E285, E286)",
+ "openQuestions": "OPEN-QUESTIONS.md (owner decisions of 2026-11-24 applied; open: the rebrand file's duration / easing tokens, decision G pieces waiting for design, the missing U+2011 glyph in Hanken Grotesk); no edit is needsOwner or manual",
  "files": [
   {
    "path": "OPEN-QUESTIONS.md",
-   "bytes": 4275
+   "bytes": 4950
   },
   {
    "path": "README.md",
-   "bytes": 21341
+   "bytes": 33880
+  },
+  {
+   "path": "manifest.json",
+   "bytes": 41637
   },
   {
    "path": "01-tokens/figma-tokens.header.css",
@@ -121,15 +116,19 @@
   },
   {
    "path": "02-changes/changes-by-file.json",
-   "bytes": 400804
+   "bytes": 406478
   },
   {
    "path": "02-changes/changes-by-file.md",
-   "bytes": 185534
+   "bytes": 188692
   },
   {
    "path": "02-changes/conflicts.md",
-   "bytes": 19502
+   "bytes": 19787
+  },
+  {
+   "path": "02-changes/step8-tests.json",
+   "bytes": 2347
   },
   {
    "path": "03-design-intent/excluded.md",
@@ -149,7 +148,7 @@
   },
   {
    "path": "04-assets/assets-to-replace.json",
-   "bytes": 42390
+   "bytes": 45979
   },
   {
    "path": "04-assets/files/assets/fonts/hanken-grotesk-var.woff2",
@@ -158,14 +157,6 @@
   {
    "path": "04-assets/files/prototypes/withdraw-fund-flow/assets/perasure-logo.svg",
    "bytes": 24530
-  },
-  {
-   "path": "04-assets/files/rebrand/animations/coins-loading/gsap/loading-coin.js",
-   "bytes": 15850
-  },
-  {
-   "path": "04-assets/files/rebrand/animations/coins-loading/gsap/success-coin.js",
-   "bytes": 52642
   },
   {
    "path": "04-assets/files/rebrand/animations/coins-loading/loading-coin.json",
@@ -182,6 +173,14 @@
   {
    "path": "04-assets/files/rebrand/animations/coins-loading/success-coin.json",
    "bytes": 54766
+  },
+  {
+   "path": "04-assets/files/rebrand/animations/coins-loading/gsap/loading-coin.js",
+   "bytes": 15850
+  },
+  {
+   "path": "04-assets/files/rebrand/animations/coins-loading/gsap/success-coin.js",
+   "bytes": 52642
   },
   {
    "path": "04-assets/files/shared/ps-ui/assets/art/coupon-amount-sm.svg",
@@ -273,7 +272,7 @@
   },
   {
    "path": "05-coverage/coverage.json",
-   "bytes": 35791
+   "bytes": 37498
   },
   {
    "path": "06-production-audit/SUMMARY.md",
@@ -296,19 +295,1134 @@
    "bytes": 663666
   },
   {
+   "path": "07-motion/OPEN-DECISIONS.md",
+   "bytes": 7943
+  },
+  {
+   "path": "07-motion/README.md",
+   "bytes": 27342
+  },
+  {
+   "path": "07-motion/motion-only.patch",
+   "bytes": 669250
+  },
+  {
+   "path": "07-motion/motion-tokens.json",
+   "bytes": 35735
+  },
+  {
+   "path": "07-motion/motion-tokens.ts",
+   "bytes": 12717
+  },
+  {
+   "path": "07-motion/motion.patch",
+   "bytes": 600694
+  },
+  {
+   "path": "07-motion/specs.json",
+   "bytes": 324440
+  },
+  {
+   "path": "07-motion/specs.md",
+   "bytes": 152126
+  },
+  {
+   "path": "07-motion/code/src/motion/BusyDots.tsx",
+   "bytes": 550
+  },
+  {
+   "path": "07-motion/code/src/motion/Crossfade.tsx",
+   "bytes": 2367
+  },
+  {
+   "path": "07-motion/code/src/motion/MotionRoot.tsx",
+   "bytes": 1011
+  },
+  {
+   "path": "07-motion/code/src/motion/Overlay.tsx",
+   "bytes": 1774
+  },
+  {
+   "path": "07-motion/code/src/motion/PageTransition.tsx",
+   "bytes": 5379
+  },
+  {
+   "path": "07-motion/code/src/motion/Rise.tsx",
+   "bytes": 3764
+  },
+  {
+   "path": "07-motion/code/src/motion/Sheet.tsx",
+   "bytes": 12381
+  },
+  {
+   "path": "07-motion/code/src/motion/SheetDragArea.tsx",
+   "bytes": 1337
+  },
+  {
+   "path": "07-motion/code/src/motion/Swap.tsx",
+   "bytes": 1893
+  },
+  {
+   "path": "07-motion/code/src/motion/Toaster.module.css",
+   "bytes": 1163
+  },
+  {
+   "path": "07-motion/code/src/motion/Toaster.tsx",
+   "bytes": 3734
+  },
+  {
+   "path": "07-motion/code/src/motion/index.ts",
+   "bytes": 1551
+  },
+  {
+   "path": "07-motion/code/src/motion/motion.module.css",
+   "bytes": 1535
+  },
+  {
+   "path": "07-motion/code/src/motion/popover.ts",
+   "bytes": 5133
+  },
+  {
+   "path": "07-motion/code/src/motion/presets.ts",
+   "bytes": 2911
+  },
+  {
+   "path": "07-motion/code/src/motion/press.ts",
+   "bytes": 947
+  },
+  {
+   "path": "07-motion/code/src/motion/reducedMotion.ts",
+   "bytes": 773
+  },
+  {
+   "path": "07-motion/code/src/motion/toastStore.ts",
+   "bytes": 1911
+  },
+  {
+   "path": "07-motion/code/src/motion/tokens.ts",
+   "bytes": 12717
+  },
+  {
+   "path": "07-motion/code/src/motion/tooltip.ts",
+   "bytes": 3509
+  },
+  {
+   "path": "07-motion/code/src/motion/useMarquee.ts",
+   "bytes": 2209
+  },
+  {
+   "path": "07-motion/code/src/motion/useScrimAttributes.ts",
+   "bytes": 1836
+  },
+  {
+   "path": "07-motion/code/src/motion/useScrollVeil.ts",
+   "bytes": 3328
+  },
+  {
+   "path": "07-motion/code/src/motion/flows/CoinLoader.tsx",
+   "bytes": 2695
+  },
+  {
+   "path": "07-motion/code/src/motion/flows/Glyphs.tsx",
+   "bytes": 1466
+  },
+  {
+   "path": "07-motion/code/src/motion/flows/LoadingDots.tsx",
+   "bytes": 3456
+  },
+  {
+   "path": "07-motion/code/src/motion/flows/agreementNudge.ts",
+   "bytes": 2451
+  },
+  {
+   "path": "07-motion/code/src/motion/flows/core.ts",
+   "bytes": 6378
+  },
+  {
+   "path": "07-motion/code/src/motion/flows/useGlide.ts",
+   "bytes": 2159
+  },
+  {
+   "path": "07-motion/code/src/motion/flows/withdrawTokens.ts",
+   "bytes": 4095
+  },
+  {
+   "path": "07-motion/code/src/pages/HomePage/WithdrawMainRoute/motion/withdrawMorph.ts",
+   "bytes": 18860
+  },
+  {
+   "path": "07-motion/patches/001-motion-BusyDots.tsx.patch",
+   "bytes": 737
+  },
+  {
+   "path": "07-motion/patches/002-motion-Crossfade.tsx.patch",
+   "bytes": 2622
+  },
+  {
+   "path": "07-motion/patches/003-motion-MotionRoot.tsx.patch",
+   "bytes": 1211
+  },
+  {
+   "path": "07-motion/patches/004-motion-Overlay.tsx.patch",
+   "bytes": 1999
+  },
+  {
+   "path": "07-motion/patches/005-motion-PageTransition.tsx.patch",
+   "bytes": 5730
+  },
+  {
+   "path": "07-motion/patches/006-motion-Rise.tsx.patch",
+   "bytes": 4045
+  },
+  {
+   "path": "07-motion/patches/007-motion-Sheet.tsx.patch",
+   "bytes": 12928
+  },
+  {
+   "path": "07-motion/patches/008-motion-SheetDragArea.tsx.patch",
+   "bytes": 1566
+  },
+  {
+   "path": "07-motion/patches/009-motion-Swap.tsx.patch",
+   "bytes": 2114
+  },
+  {
+   "path": "07-motion/patches/010-motion-Toaster.module.css.patch",
+   "bytes": 1388
+  },
+  {
+   "path": "07-motion/patches/011-motion-Toaster.tsx.patch",
+   "bytes": 4014
+  },
+  {
+   "path": "07-motion/patches/012-motion-index.ts.patch",
+   "bytes": 1762
+  },
+  {
+   "path": "07-motion/patches/013-motion-motion.module.css.patch",
+   "bytes": 1788
+  },
+  {
+   "path": "07-motion/patches/014-motion-popover.ts.patch",
+   "bytes": 5464
+  },
+  {
+   "path": "07-motion/patches/015-motion-presets.ts.patch",
+   "bytes": 3163
+  },
+  {
+   "path": "07-motion/patches/016-motion-press.ts.patch",
+   "bytes": 1129
+  },
+  {
+   "path": "07-motion/patches/017-motion-reducedMotion.ts.patch",
+   "bytes": 974
+  },
+  {
+   "path": "07-motion/patches/018-motion-toastStore.ts.patch",
+   "bytes": 2147
+  },
+  {
+   "path": "07-motion/patches/019-motion-tokens.ts.patch",
+   "bytes": 13254
+  },
+  {
+   "path": "07-motion/patches/020-motion-tooltip.ts.patch",
+   "bytes": 3766
+  },
+  {
+   "path": "07-motion/patches/021-motion-useMarquee.ts.patch",
+   "bytes": 2443
+  },
+  {
+   "path": "07-motion/patches/022-motion-useScrimAttributes.ts.patch",
+   "bytes": 2080
+  },
+  {
+   "path": "07-motion/patches/023-motion-useScrollVeil.ts.patch",
+   "bytes": 3595
+  },
+  {
+   "path": "07-motion/patches/024-motion-flows-CoinLoader.tsx.patch",
+   "bytes": 2977
+  },
+  {
+   "path": "07-motion/patches/025-motion-flows-Glyphs.tsx.patch",
+   "bytes": 1694
+  },
+  {
+   "path": "07-motion/patches/026-motion-flows-LoadingDots.tsx.patch",
+   "bytes": 3755
+  },
+  {
+   "path": "07-motion/patches/027-motion-flows-agreementNudge.ts.patch",
+   "bytes": 2729
+  },
+  {
+   "path": "07-motion/patches/028-motion-flows-core.ts.patch",
+   "bytes": 6740
+  },
+  {
+   "path": "07-motion/patches/029-motion-flows-useGlide.ts.patch",
+   "bytes": 2410
+  },
+  {
+   "path": "07-motion/patches/030-motion-flows-withdrawTokens.ts.patch",
+   "bytes": 4406
+  },
+  {
+   "path": "07-motion/patches/031-App.tsx.patch",
+   "bytes": 459
+  },
+  {
+   "path": "07-motion/patches/032-components-Layout-GlobalLayout-index.tsx.patch",
+   "bytes": 3605
+  },
+  {
+   "path": "07-motion/patches/033-components-ui-Alert.module.css.patch",
+   "bytes": 1558
+  },
+  {
+   "path": "07-motion/patches/034-components-ui-Alert.tsx.patch",
+   "bytes": 2568
+  },
+  {
+   "path": "07-motion/patches/035-components-ui-BottomActionButton-README.md.patch",
+   "bytes": 2346
+  },
+  {
+   "path": "07-motion/patches/036-components-ui-BottomActionButton-index.module.css.patch",
+   "bytes": 887
+  },
+  {
+   "path": "07-motion/patches/037-components-ui-BottomActionButton-index.tsx.patch",
+   "bytes": 1711
+  },
+  {
+   "path": "07-motion/patches/038-components-ui-Checkbox-index.module.css.patch",
+   "bytes": 872
+  },
+  {
+   "path": "07-motion/patches/039-components-ui-CityCascadeSheet-index.module.css.patch",
+   "bytes": 4100
+  },
+  {
+   "path": "07-motion/patches/040-components-ui-CityCascadeSheet-index.tsx.patch",
+   "bytes": 17414
+  },
+  {
+   "path": "07-motion/patches/041-components-ui-CreditFlowHeader-index.module.css.patch",
+   "bytes": 607
+  },
+  {
+   "path": "07-motion/patches/042-components-ui-CreditFlowHeader-index.tsx.patch",
+   "bytes": 1111
+  },
+  {
+   "path": "07-motion/patches/043-components-ui-CreditValidityTooltip-index.module.scss.patch",
+   "bytes": 1118
+  },
+  {
+   "path": "07-motion/patches/044-components-ui-CreditValidityTooltip-index.tsx.patch",
+   "bytes": 2654
+  },
+  {
+   "path": "07-motion/patches/045-components-ui-DatePickerSheet-CalendarPane.tsx.patch",
+   "bytes": 4652
+  },
+  {
+   "path": "07-motion/patches/046-components-ui-DatePickerSheet-WheelPane.tsx.patch",
+   "bytes": 3301
+  },
+  {
+   "path": "07-motion/patches/047-components-ui-DatePickerSheet-constants.ts.patch",
+   "bytes": 605
+  },
+  {
+   "path": "07-motion/patches/048-components-ui-DatePickerSheet-dateUtils.ts.patch",
+   "bytes": 1005
+  },
+  {
+   "path": "07-motion/patches/049-components-ui-DatePickerSheet-index.module.css.patch",
+   "bytes": 7475
+  },
+  {
+   "path": "07-motion/patches/050-components-ui-DatePickerSheet-index.tsx.patch",
+   "bytes": 29254
+  },
+  {
+   "path": "07-motion/patches/051-components-ui-DatePickerSheet-types.ts.patch",
+   "bytes": 408
+  },
+  {
+   "path": "07-motion/patches/052-components-ui-EmailField-index.module.css.patch",
+   "bytes": 542
+  },
+  {
+   "path": "07-motion/patches/053-components-ui-EmailField-index.tsx.patch",
+   "bytes": 1084
+  },
+  {
+   "path": "07-motion/patches/054-components-ui-FullScreenLayer-FullScreenLayer.tsx.patch",
+   "bytes": 4956
+  },
+  {
+   "path": "07-motion/patches/055-components-ui-FullScreenLayer-index.module.css.patch",
+   "bytes": 1413
+  },
+  {
+   "path": "07-motion/patches/056-components-ui-FullScreenLayer-index.ts.patch",
+   "bytes": 495
+  },
+  {
+   "path": "07-motion/patches/057-components-ui-HeaderActionContainer-index.module.css.patch",
+   "bytes": 693
+  },
+  {
+   "path": "07-motion/patches/058-components-ui-HeaderActionContainer-index.tsx.patch",
+   "bytes": 4187
+  },
+  {
+   "path": "07-motion/patches/059-components-ui-Input-index.module.css.patch",
+   "bytes": 427
+  },
+  {
+   "path": "07-motion/patches/060-components-ui-Loading-Loading.tsx.patch",
+   "bytes": 3019
+  },
+  {
+   "path": "07-motion/patches/061-components-ui-Loading-methods.ts.patch",
+   "bytes": 869
+  },
+  {
+   "path": "07-motion/patches/062-components-ui-LoanQuote-index.module.css.patch",
+   "bytes": 2594
+  },
+  {
+   "path": "07-motion/patches/063-components-ui-LoanQuote-index.tsx.patch",
+   "bytes": 3537
+  },
+  {
+   "path": "07-motion/patches/064-components-ui-MobileModal-MobileModal.module.css.patch",
+   "bytes": 1838
+  },
+  {
+   "path": "07-motion/patches/065-components-ui-MobileModal-MobileModal.tsx.patch",
+   "bytes": 10463
+  },
+  {
+   "path": "07-motion/patches/066-components-ui-NoticeTicker-index.tsx.patch",
+   "bytes": 1733
+  },
+  {
+   "path": "07-motion/patches/067-components-ui-PageLoading-index.module.css.patch",
+   "bytes": 2190
+  },
+  {
+   "path": "07-motion/patches/068-components-ui-PageLoading-index.tsx.patch",
+   "bytes": 1673
+  },
+  {
+   "path": "07-motion/patches/069-components-ui-Popover-index.module.css.patch",
+   "bytes": 4025
+  },
+  {
+   "path": "07-motion/patches/070-components-ui-Popover-index.tsx.patch",
+   "bytes": 7907
+  },
+  {
+   "path": "07-motion/patches/071-components-ui-RouteLoading-index.tsx.patch",
+   "bytes": 976
+  },
+  {
+   "path": "07-motion/patches/072-components-ui-Select-SelectPopover.tsx.patch",
+   "bytes": 5002
+  },
+  {
+   "path": "07-motion/patches/073-components-ui-Select-SelectSheet.module.css.patch",
+   "bytes": 1994
+  },
+  {
+   "path": "07-motion/patches/074-components-ui-Select-SelectSheet.tsx.patch",
+   "bytes": 8154
+  },
+  {
+   "path": "07-motion/patches/075-components-ui-Select-index.module.css.patch",
+   "bytes": 2646
+  },
+  {
+   "path": "07-motion/patches/076-components-ui-Select-index.tsx.patch",
+   "bytes": 2435
+  },
+  {
+   "path": "07-motion/patches/077-components-ui-Toast-README.md.patch",
+   "bytes": 1676
+  },
+  {
+   "path": "07-motion/patches/078-components-ui-Toast-index.module.css.patch",
+   "bytes": 1140
+  },
+  {
+   "path": "07-motion/patches/079-components-ui-Toast-index.tsx.patch",
+   "bytes": 4796
+  },
+  {
+   "path": "07-motion/patches/080-features-reloan-QuoteForm-KeypadCharacters.tsx.patch",
+   "bytes": 2456
+  },
+  {
+   "path": "07-motion/patches/081-features-reloan-QuoteForm-index.module.css.patch",
+   "bytes": 2503
+  },
+  {
+   "path": "07-motion/patches/082-features-reloan-QuoteForm-index.tsx.patch",
+   "bytes": 15105
+  },
+  {
+   "path": "07-motion/patches/083-features-reloan-components-RepaymentPlanDrawer-index.module.css.patch",
+   "bytes": 933
+  },
+  {
+   "path": "07-motion/patches/084-features-reloan-components-RepaymentPlanDrawer-index.tsx.patch",
+   "bytes": 12344
+  },
+  {
+   "path": "07-motion/patches/085-features-workProfile-documents-WorkDocumentsField.tsx.patch",
+   "bytes": 4420
+  },
+  {
+   "path": "07-motion/patches/086-pages-AuthPage-BankCard-components-BankSearchSelect-index.module.css.patch",
+   "bytes": 2382
+  },
+  {
+   "path": "07-motion/patches/087-pages-AuthPage-BankCard-components-BankSearchSelect-index.tsx.patch",
+   "bytes": 16372
+  },
+  {
+   "path": "07-motion/patches/088-pages-AuthPage-BankCard-index.module.css.patch",
+   "bytes": 1433
+  },
+  {
+   "path": "07-motion/patches/089-pages-AuthPage-BankCard-index.tsx.patch",
+   "bytes": 2115
+  },
+  {
+   "path": "07-motion/patches/090-pages-AuthPage-Identity-components-IdentityIdTypeSelect-index.module.css.patch",
+   "bytes": 1798
+  },
+  {
+   "path": "07-motion/patches/091-pages-AuthPage-Identity-components-IdentityIdTypeSelect-index.tsx.patch",
+   "bytes": 10035
+  },
+  {
+   "path": "07-motion/patches/092-pages-AuthPage-Identity-components-IdentityInUseDialog-index.module.css.patch",
+   "bytes": 1535
+  },
+  {
+   "path": "07-motion/patches/093-pages-AuthPage-Identity-components-IdentityInUseDialog-index.tsx.patch",
+   "bytes": 9068
+  },
+  {
+   "path": "07-motion/patches/094-pages-AuthPage-Identity-components-IdentityVerifyFailedDialog-index.module.css.patch",
+   "bytes": 1573
+  },
+  {
+   "path": "07-motion/patches/095-pages-AuthPage-Identity-components-IdentityVerifyFailedDialog-index.tsx.patch",
+   "bytes": 11768
+  },
+  {
+   "path": "07-motion/patches/096-pages-AuthPage-LoginEntry-index.module.css.patch",
+   "bytes": 865
+  },
+  {
+   "path": "07-motion/patches/097-pages-ConfirmPage-Order-components-AgreementConsent-index.module.css.patch",
+   "bytes": 1095
+  },
+  {
+   "path": "07-motion/patches/098-pages-ConfirmPage-Order-components-AgreementConsent-index.tsx.patch",
+   "bytes": 2142
+  },
+  {
+   "path": "07-motion/patches/099-pages-ConfirmPage-Order-phoneVerification-PhoneVerificationSheet.tsx.patch",
+   "bytes": 9823
+  },
+  {
+   "path": "07-motion/patches/100-pages-ConfirmPage-Order-phoneVerification-sheet.module.css.patch",
+   "bytes": 1734
+  },
+  {
+   "path": "07-motion/patches/101-pages-CreditHistoryPage-index.module.css.patch",
+   "bytes": 1023
+  },
+  {
+   "path": "07-motion/patches/102-pages-CreditHistoryPage-index.tsx.patch",
+   "bytes": 2435
+  },
+  {
+   "path": "07-motion/patches/103-pages-CreditLimitPage-HistorySection.tsx.patch",
+   "bytes": 1405
+  },
+  {
+   "path": "07-motion/patches/104-pages-CreditLimitPage-index.module.css.patch",
+   "bytes": 770
+  },
+  {
+   "path": "07-motion/patches/105-pages-CreditLimitPage-index.tsx.patch",
+   "bytes": 1210
+  },
+  {
+   "path": "07-motion/patches/106-pages-HomePage-Account-index.tsx.patch",
+   "bytes": 1402
+  },
+  {
+   "path": "07-motion/patches/107-pages-HomePage-BottomNavigation-index.module.css.patch",
+   "bytes": 1725
+  },
+  {
+   "path": "07-motion/patches/108-pages-HomePage-BottomNavigation-index.tsx.patch",
+   "bytes": 2750
+  },
+  {
+   "path": "07-motion/patches/109-pages-HomePage-CreditIncreaseIntro-landing.ts.patch",
+   "bytes": 30141
+  },
+  {
+   "path": "07-motion/patches/110-pages-HomePage-CreditIncreaseIntro-material-README.md.patch",
+   "bytes": 2792
+  },
+  {
+   "path": "07-motion/patches/111-pages-HomePage-CreditIncreaseIntro-material-baked-heap.css.patch",
+   "bytes": 1051
+  },
+  {
+   "path": "07-motion/patches/112-pages-HomePage-CreditIncreaseIntro-material-baked-heap.d.ts.patch",
+   "bytes": 872
+  },
+  {
+   "path": "07-motion/patches/113-pages-HomePage-CreditIncreaseIntro-material-baked-heap.js.patch",
+   "bytes": 2661
+  },
+  {
+   "path": "07-motion/patches/114-pages-HomePage-Home-components-MadeForFilipinos-index.module.css.patch",
+   "bytes": 1004
+  },
+  {
+   "path": "07-motion/patches/115-pages-HomePage-Home-components-MadeForFilipinos-index.tsx.patch",
+   "bytes": 1549
+  },
+  {
+   "path": "07-motion/patches/116-pages-HomePage-Payment-components-CancelLoanConfirmDialog-index.module.css.patch",
+   "bytes": 1018
+  },
+  {
+   "path": "07-motion/patches/117-pages-HomePage-Payment-components-CancelLoanConfirmDialog-index.tsx.patch",
+   "bytes": 6435
+  },
+  {
+   "path": "07-motion/patches/118-pages-HomePage-Payment-components-FraudWarningSheet-index.module.css.patch",
+   "bytes": 5285
+  },
+  {
+   "path": "07-motion/patches/119-pages-HomePage-Payment-components-FraudWarningSheet-index.tsx.patch",
+   "bytes": 16237
+  },
+  {
+   "path": "07-motion/patches/120-pages-HomePage-Payment-components-PaymentDetailDrawer-index.module.css.patch",
+   "bytes": 911
+  },
+  {
+   "path": "07-motion/patches/121-pages-HomePage-Payment-components-PaymentDetailDrawer-index.tsx.patch",
+   "bytes": 8439
+  },
+  {
+   "path": "07-motion/patches/122-pages-HomePage-Payment-components-PaymentMethodDrawer-index.module.css.patch",
+   "bytes": 2540
+  },
+  {
+   "path": "07-motion/patches/123-pages-HomePage-Payment-components-PaymentMethodDrawer-index.tsx.patch",
+   "bytes": 20237
+  },
+  {
+   "path": "07-motion/patches/124-pages-HomePage-Payment-components-RepaymentList-index.tsx.patch",
+   "bytes": 1248
+  },
+  {
+   "path": "07-motion/patches/125-pages-HomePage-WithdrawFlowLayout-index.tsx.patch",
+   "bytes": 2252
+  },
+  {
+   "path": "07-motion/patches/126-pages-HomePage-WithdrawMainRoute-SubmissionStatus.module.css.patch",
+   "bytes": 1125
+  },
+  {
+   "path": "07-motion/patches/127-pages-HomePage-WithdrawMainRoute-SubmissionStatus.tsx.patch",
+   "bytes": 6653
+  },
+  {
+   "path": "07-motion/patches/128-pages-HomePage-WithdrawMainRoute-index.module.css.patch",
+   "bytes": 1954
+  },
+  {
+   "path": "07-motion/patches/129-pages-HomePage-WithdrawMainRoute-index.tsx.patch",
+   "bytes": 12967
+  },
+  {
+   "path": "07-motion/patches/130-pages-HomePage-WithdrawMainRoute-motion-withdrawMorph.ts.patch",
+   "bytes": 19679
+  },
+  {
+   "path": "07-motion/patches/131-pages-HomePage-WithdrawMainRoute-submissionMotion.ts.patch",
+   "bytes": 4475
+  },
+  {
+   "path": "07-motion/patches/132-pages-HomePage-creditIncrease-materialProtocol.ts.patch",
+   "bytes": 1198
+  },
+  {
+   "path": "07-motion/patches/133-pages-HomePage-index.module.css.patch",
+   "bytes": 605
+  },
+  {
+   "path": "07-motion/patches/134-pages-HomePage-index.tsx.patch",
+   "bytes": 1877
+  },
+  {
+   "path": "07-motion/patches/135-pages-OutPages-DiversionPage-Home-components-DownloadGuideSheet-index.module.css.patch",
+   "bytes": 948
+  },
+  {
+   "path": "07-motion/patches/136-pages-OutPages-DiversionPage-Home-components-DownloadGuideSheet-index.tsx.patch",
+   "bytes": 5985
+  },
+  {
+   "path": "07-motion/patches/137-pages-OutPages-DiversionPage-Home-components-MadeForFilipinos-index.module.css.patch",
+   "bytes": 1060
+  },
+  {
+   "path": "07-motion/patches/138-pages-OutPages-DiversionPage-Home-components-MadeForFilipinos-index.tsx.patch",
+   "bytes": 1727
+  },
+  {
+   "path": "07-motion/patches/139-pages-RepayPage-components-RepayDetailShell.module.css.patch",
+   "bytes": 3380
+  },
+  {
+   "path": "07-motion/patches/140-pages-RepayPage-components-RepayDetailShell.tsx.patch",
+   "bytes": 7495
+  },
+  {
+   "path": "07-motion/patches/141-styles-global.css.patch",
+   "bytes": 521
+  },
+  {
+   "path": "07-motion/patches/142-tests-bank-card-icons.test.ts.patch",
+   "bytes": 1973
+  },
+  {
+   "path": "07-motion/patches/143-tests-fraud-warning.test.ts.patch",
+   "bytes": 6044
+  },
+  {
+   "path": "07-motion/patches/144-tests-helpers-paymentMethods.ts.patch",
+   "bytes": 558
+  },
+  {
+   "path": "07-motion/patches/145-tests-popover.test.ts.patch",
+   "bytes": 3312
+  },
+  {
+   "path": "07-motion/patches/146-tests-select-popover.test.ts.patch",
+   "bytes": 739
+  },
+  {
+   "path": "07-motion/patches/147-tests-select-sheet.test.ts.patch",
+   "bytes": 2149
+  },
+  {
+   "path": "07-motion/patches/148-tests-user-status-display.test.ts.patch",
+   "bytes": 6893
+  },
+  {
+   "path": "07-motion/patches/149-tests-withdraw-flow-render.test.ts.patch",
+   "bytes": 607
+  },
+  {
+   "path": "07-motion/patches/150-tests-withdraw-submission-motion.test.ts.patch",
+   "bytes": 3075
+  },
+  {
+   "path": "07-motion/patches/INDEX.txt",
+   "bytes": 16045
+  },
+  {
+   "path": "07-motion/reference/README.txt",
+   "bytes": 11230
+  },
+  {
+   "path": "07-motion/reference/index.json",
+   "bytes": 118180
+  },
+  {
+   "path": "07-motion/verify/cdp.mjs",
+   "bytes": 2377
+  },
+  {
+   "path": "07-motion/verify/cmp.py",
+   "bytes": 13316
+  },
+  {
+   "path": "07-motion/verify/mock.mjs",
+   "bytes": 2520
+  },
+  {
+   "path": "07-motion/verify/rec-prod.mjs",
+   "bytes": 8465
+  },
+  {
+   "path": "07-motion/verify/render_specs_md.py",
+   "bytes": 4415
+  },
+  {
+   "path": "07-motion/verify/specs-prod.mjs",
+   "bytes": 5876
+  },
+  {
+   "path": "07-motion/verify/takes/cmp.txt",
+   "bytes": 8732
+  },
+  {
+   "path": "07-motion/verify/takes/run1/cmp.txt",
+   "bytes": 8739
+  },
+  {
+   "path": "07-motion/verify/takes/run1/curves/M-008.json",
+   "bytes": 20876
+  },
+  {
+   "path": "07-motion/verify/takes/run1/curves/M-013.json",
+   "bytes": 9865
+  },
+  {
+   "path": "07-motion/verify/takes/run1/curves/M-013_close.json",
+   "bytes": 10846
+  },
+  {
+   "path": "07-motion/verify/takes/run1/curves/M-016.json",
+   "bytes": 37272
+  },
+  {
+   "path": "07-motion/verify/takes/run1/curves/M-037.json",
+   "bytes": 11768
+  },
+  {
+   "path": "07-motion/verify/takes/run1/curves/M-099.json",
+   "bytes": 119234
+  },
+  {
+   "path": "07-motion/verify/takes/run1/curves/M-099_via.json",
+   "bytes": 119288
+  },
+  {
+   "path": "07-motion/verify/takes/run1/curves/M-107.json",
+   "bytes": 33039
+  },
+  {
+   "path": "07-motion/verify/takes/run1/meta/M-008.json",
+   "bytes": 155
+  },
+  {
+   "path": "07-motion/verify/takes/run1/meta/M-013.json",
+   "bytes": 154
+  },
+  {
+   "path": "07-motion/verify/takes/run1/meta/M-013_close.json",
+   "bytes": 146
+  },
+  {
+   "path": "07-motion/verify/takes/run1/meta/M-016.json",
+   "bytes": 168
+  },
+  {
+   "path": "07-motion/verify/takes/run1/meta/M-037.json",
+   "bytes": 152
+  },
+  {
+   "path": "07-motion/verify/takes/run1/meta/M-099.json",
+   "bytes": 166
+  },
+  {
+   "path": "07-motion/verify/takes/run1/meta/M-099_via.json",
+   "bytes": 198
+  },
+  {
+   "path": "07-motion/verify/takes/run1/meta/M-107.json",
+   "bytes": 159
+  },
+  {
+   "path": "07-motion/verify/takes/run2/cmp.txt",
+   "bytes": 8727
+  },
+  {
+   "path": "07-motion/verify/takes/run2/curves/M-008.json",
+   "bytes": 20424
+  },
+  {
+   "path": "07-motion/verify/takes/run2/curves/M-013.json",
+   "bytes": 9882
+  },
+  {
+   "path": "07-motion/verify/takes/run2/curves/M-013_close.json",
+   "bytes": 11018
+  },
+  {
+   "path": "07-motion/verify/takes/run2/curves/M-016.json",
+   "bytes": 35943
+  },
+  {
+   "path": "07-motion/verify/takes/run2/curves/M-037.json",
+   "bytes": 11559
+  },
+  {
+   "path": "07-motion/verify/takes/run2/curves/M-099.json",
+   "bytes": 119231
+  },
+  {
+   "path": "07-motion/verify/takes/run2/curves/M-099_via.json",
+   "bytes": 119263
+  },
+  {
+   "path": "07-motion/verify/takes/run2/curves/M-107.json",
+   "bytes": 33018
+  },
+  {
+   "path": "07-motion/verify/takes/run2/meta/M-008.json",
+   "bytes": 142
+  },
+  {
+   "path": "07-motion/verify/takes/run2/meta/M-013.json",
+   "bytes": 154
+  },
+  {
+   "path": "07-motion/verify/takes/run2/meta/M-013_close.json",
+   "bytes": 135
+  },
+  {
+   "path": "07-motion/verify/takes/run2/meta/M-016.json",
+   "bytes": 154
+  },
+  {
+   "path": "07-motion/verify/takes/run2/meta/M-037.json",
+   "bytes": 152
+  },
+  {
+   "path": "07-motion/verify/takes/run2/meta/M-099.json",
+   "bytes": 166
+  },
+  {
+   "path": "07-motion/verify/takes/run2/meta/M-099_via.json",
+   "bytes": 186
+  },
+  {
+   "path": "07-motion/verify/takes/run2/meta/M-107.json",
+   "bytes": 159
+  },
+  {
+   "path": "07-motion/verify/takes/run3/cmp.txt",
+   "bytes": 8721
+  },
+  {
+   "path": "07-motion/verify/takes/run3/curves/M-008.json",
+   "bytes": 20424
+  },
+  {
+   "path": "07-motion/verify/takes/run3/curves/M-013.json",
+   "bytes": 9848
+  },
+  {
+   "path": "07-motion/verify/takes/run3/curves/M-013_close.json",
+   "bytes": 10838
+  },
+  {
+   "path": "07-motion/verify/takes/run3/curves/M-016.json",
+   "bytes": 35347
+  },
+  {
+   "path": "07-motion/verify/takes/run3/curves/M-037.json",
+   "bytes": 11549
+  },
+  {
+   "path": "07-motion/verify/takes/run3/curves/M-099.json",
+   "bytes": 119274
+  },
+  {
+   "path": "07-motion/verify/takes/run3/curves/M-099_via.json",
+   "bytes": 119315
+  },
+  {
+   "path": "07-motion/verify/takes/run3/curves/M-107.json",
+   "bytes": 33012
+  },
+  {
+   "path": "07-motion/verify/takes/run3/meta/M-008.json",
+   "bytes": 154
+  },
+  {
+   "path": "07-motion/verify/takes/run3/meta/M-013.json",
+   "bytes": 140
+  },
+  {
+   "path": "07-motion/verify/takes/run3/meta/M-013_close.json",
+   "bytes": 146
+  },
+  {
+   "path": "07-motion/verify/takes/run3/meta/M-016.json",
+   "bytes": 156
+  },
+  {
+   "path": "07-motion/verify/takes/run3/meta/M-037.json",
+   "bytes": 139
+  },
+  {
+   "path": "07-motion/verify/takes/run3/meta/M-099.json",
+   "bytes": 166
+  },
+  {
+   "path": "07-motion/verify/takes/run3/meta/M-099_via.json",
+   "bytes": 198
+  },
+  {
+   "path": "07-motion/verify/takes/run3/meta/M-107.json",
+   "bytes": 159
+  },
+  {
    "path": "tools/apply.py",
-   "bytes": 15342
+   "bytes": 30488
+  },
+  {
+   "path": "tools/counts.py",
+   "bytes": 9123
   },
   {
    "path": "tools/render_changes_md.py",
-   "bytes": 5168
+   "bytes": 5132
   }
  ],
  "precedence": "02-changes/changes-by-file.json > 01-tokens/token-map.json > 01-tokens/unresolved.md (the per-file edit wins; the others name the edit id where they overlap)",
  "tool": {
-  "apply": "tools/apply.py <path-to-phi_h5_025> [--step 0|1..7|all] [--dry-run] [--include-owner-items|--skip-owner-items] [--report PATH] [--window N]",
-  "renderMarkdown": "tools/render_changes_md.py (02-changes/changes-by-file.md from the JSON)",
-  "proof": "2026-11-24 (after the owner decisions): --step all on a clean copy of 0d9bdd4: 548 edits + 3 step-0 operations applied, 2 already-done, 2 manual, 2 skipped, 0 anchor-missing; npm run build OK; npm test 927/927"
+  "apply": "python3 \"$H/tools/apply.py\" \"$REPO\" [--step all|0..8|fmt] [--dry-run] [--include-owner-items|--skip-owner-items] [--no-format] [--report PATH] [--window N]",
+  "counts": "python3 \"$H/tools/counts.py\" [--write] (every count from the data; --write refreshes README blocks, changes-by-file meta.counts, manifest counts/files)",
+  "renderMarkdown": "tools/render_changes_md.py (02-changes/changes-by-file.md from the JSON); 07-motion/verify/render_specs_md.py (07-motion/specs.md from specs.json)",
+  "proof": "2026-11-25: fresh copy of 0d9bdd4 with the repo hooks, README \"Apply order\" run literally: --step all = 551 edits applied, 2 already-done, 2 skipped, 0 anchor-missing (+3 step-0, 48 asset operations, prettier); commit A; npm install motion@14.4.0 + git apply clean; commit B; --step 8 (3,943 fallbacks, 4 test updates, no legacy blue); commit C; hooks changed nothing; tsc / type-check clean, npm run build OK, npm test 927/927"
  },
- "ownerDecisions": "2026-11-24: OPEN-QUESTIONS.md \"Decided 2026-11-24\" (A keep, B brand-card gradient, C no focus ring, D Amount tracking, E tab icon currentColor, F overdue button flag); open: only G (12 production pieces without a design)"
+ "ownerDecisions": "2026-11-24: OPEN-QUESTIONS.md \"Decided 2026-11-24\" (A keep, B brand-card gradient, C no focus ring, D Amount tracking, E tab icon currentColor, F overdue button flag); open: only G (12 production pieces without a design)",
+ "motion": {
+  "section": "07-motion/",
+  "readFirst": "07-motion/README.md",
+  "package": "motion@14.4.0 (exact), installed with npm before git apply (the patch has no package.json / package-lock.json)",
+  "appliesOn": "0d9bdd4 + tools/apply.py --step all (formatted) + npm install motion@14.4.0 --save-exact; step 8 runs after it",
+  "proof": "2026-11-25: same run; production takes (07-motion/verify/takes, 3 runs) vs reference: 27/27 properties within tolerance (M-013, M-013_close, M-016, M-008, M-037, M-099 normal path, M-099_via, M-107)",
+  "openDecisions": "07-motion/OPEN-DECISIONS.md",
+  "visualEditsChanged": 0,
+  "countsAt": "counts.motion (generated)",
+  "verifyKit": "07-motion/verify/ (rec-prod.mjs, specs-prod.mjs, mock.mjs, cdp.mjs, cmp.py, takes/)"
+ },
+ "counts": {
+  "visual": {
+   "files": 128,
+   "edits": 555,
+   "byAction": {
+    "replace": 528,
+    "insert": 17,
+    "delete": 7,
+    "skip": 2,
+    "token-step": 1
+   },
+   "visualEdits": 466,
+   "needsOwner": 0,
+   "doneByStep0": 2,
+   "decided20261124": 91,
+   "structuralOwnerApproved": 4,
+   "byGroup": {
+    "1 Global (tokens, global.css, boot splash)": {
+     "files": 3,
+     "edits": 14
+    },
+    "2 App shell and shared controls (header, bars, sheets, toasts, loaders, buttons, inputs)": {
+     "files": 22,
+     "edits": 75
+    },
+    "3 Components and features": {
+     "files": 49,
+     "edits": 235
+    },
+    "4 Pages": {
+     "files": 34,
+     "edits": 175
+    },
+    "5 Animations (code-drawn colours)": {
+     "files": 7,
+     "edits": 21
+    },
+    "6 Copy characters (non-breaking hyphens)": {
+     "files": 11,
+     "edits": 17
+    },
+    "7 Tests (assertions that pin old token names, fonts or values)": {
+     "files": 2,
+     "edits": 18
+    }
+   },
+   "expectedOnCleanBaseline": {
+    "editsApplied": 551,
+    "editsAlreadyDone": 2,
+    "editsSkipped": 2,
+    "step0Operations": 3,
+    "assetOperations": 48
+   },
+   "assets": {
+    "rows": 76,
+    "recolourFiles": 46,
+    "removePaths": 2,
+    "codeEditOrKeepOrNeedsDesign": 28
+   },
+   "step8TestRewrites": 4
+  },
+  "motion": {
+   "motions": 139,
+   "done": 92,
+   "partial": 14,
+   "n.a.": 33,
+   "rules": 23,
+   "openDecisions": 10,
+   "motionPatch": {
+    "new": 31,
+    "modified": 118,
+    "deleted": 1,
+    "total": 150
+   },
+   "motionOnlyPatch": {
+    "new": 31,
+    "modified": 122,
+    "deleted": 1,
+    "total": 154
+   },
+   "perFilePatches": 150,
+   "codeFiles": 31,
+   "referenceEntries": 139,
+   "productionTakes": 24
+  }
+ },
+ "variables": {
+  "H": "this package (the folder of README.md)",
+  "REPO": "the phi_h5_025 git checkout (0d9bdd4 or newer, npm ci done: dependencies + git hooks)"
+ },
+ "commits": {
+  "points": [
+   "A after step 1",
+   "B after step 2",
+   "C after step 3"
+  ],
+  "hooks": "pre-commit: tsc -b + lint-staged (prettier --write, eslint --fix); commit-msg: commitlint config-conventional. Every package output is a fixed point of both, so the hooks change nothing at A / B / C.",
+  "messageExample": "style(rebrand): apply the visual hand-off (tokens, edits, assets)"
+ }
 }

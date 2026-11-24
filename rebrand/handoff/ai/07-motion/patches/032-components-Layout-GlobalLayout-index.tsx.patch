@@ -1,0 +1,90 @@
+diff --git a/src/components/Layout/GlobalLayout/index.tsx b/src/components/Layout/GlobalLayout/index.tsx
+index 9e4e5d5..04da253 100644
+--- a/src/components/Layout/GlobalLayout/index.tsx
++++ b/src/components/Layout/GlobalLayout/index.tsx
+@@ -12,10 +12,10 @@ import React, {
+   useState,
+ } from 'react';
+ import {
+-  Outlet,
+   useLocation,
+   useMatches,
+   useNavigate,
++  useOutlet,
+   useOutletContext,
+ } from 'react-router-dom';
+ 
+@@ -37,6 +37,8 @@ import {
+ } from '@/services/startupLogin';
+ import { trackStartupLoginNavigate } from '@/track/startupLogin';
+ import { useI18n, useI18nStore, type TranslationKey } from '@/i18n';
++import { PageTransition, pageTransitionKey } from '@/motion/PageTransition';
++import { useScrollVeil } from '@/motion/useScrollVeil';
+ import { scheduleRouteResourcePreload } from '@/runtime/preload';
+ import {
+   getAuthSessionRevision,
+@@ -274,6 +276,8 @@ const GlobalLayout: React.FC = () => {
+   const navigate = useNavigate();
+   const location = useLocation();
+   const matches = useMatches();
++  const shellRef = useRef<HTMLDivElement | null>(null);
++  const mainRef = useRef<HTMLElement | null>(null);
+ 
+   useEffect(() => {
+     // Synchronize ownership even when a same-account login leaves the boolean unchanged.
+@@ -563,6 +567,30 @@ const GlobalLayout: React.FC = () => {
+         '--app-shell-header-offset': getHeaderReservedHeight(activeHeader),
+       } as CSSProperties)
+     : undefined;
++  // Toasts sit 8 px under the H5 header (rebrand R-TOAST); 0 when Native owns the bar.
++  // 提示位于 H5 标题栏下方 8px；原生标题栏时为 0。
++  const headerOffset = shouldReserveHeader
++    ? getHeaderReservedHeight(activeHeader)
++    : '0px';
++  useEffect(() => {
++    document.documentElement.style.setProperty(
++      '--motion-header-offset',
++      headerOffset,
++    );
++  }, [headerOffset]);
++
++  // Header / tab bar veils follow the scroll (rebrand R-BARS): written as
++  // --motion-top-fade / --motion-bot-fade on .app-shell, no React state.
++  // 标题栏、底栏的遮罩随滚动渐变，直接写 CSS 变量，不触发渲染。
++  useScrollVeil(mainRef, shellRef, { resetKey: location.pathname });
++
++  // Page changes crossfade (rebrand R-PAGES): the leaving page keeps its own
++  // frozen outlet while the new one fades in; "/" and its withdraw children
++  // share one key so Home stays mounted under the withdraw layer.
++  // 页面切换淡入淡出；"/" 与提现子路由共用同一个 key，首页保持挂载。
++  const outlet = useOutlet(contextValue);
++  const pageKey = pageTransitionKey(location.pathname, matches);
++
+   const pageHeaderContext = useMemo<PageHeaderContextValue>(
+     () => ({
+       clearPageHeader: (ownerId) => {
+@@ -582,6 +610,7 @@ const GlobalLayout: React.FC = () => {
+       <div
+         className="app-shell"
+         data-native-app={isNativeApp ? 'true' : 'false'}
++        ref={shellRef}
+       >
+         <div className="app-shell__inner">
+           {activeHeader !== false ? (
+@@ -597,6 +626,7 @@ const GlobalLayout: React.FC = () => {
+             }`}
+             data-process-type="perasure"
+             data-scene-type={sceneType}
++            ref={mainRef}
+             style={mainStyle}
+           >
+             {routeHandle.trackingEnabled !== false ? (
+@@ -606,7 +636,7 @@ const GlobalLayout: React.FC = () => {
+                 </TrackingBoundary>
+               </Suspense>
+             ) : null}
+-            <Outlet context={contextValue} />
++            <PageTransition pageKey={pageKey}>{outlet}</PageTransition>
+           </main>
+         </div>
+       </div>

@@ -1,0 +1,88 @@
+diff --git a/src/features/reloan/QuoteForm/index.module.css b/src/features/reloan/QuoteForm/index.module.css
+index 4adbe08..95cab5e 100644
+--- a/src/features/reloan/QuoteForm/index.module.css
++++ b/src/features/reloan/QuoteForm/index.module.css
+@@ -394,14 +394,15 @@
+   font-size: var(--font-size-title-md, 20px);
+   font-weight: var(--font-weight-bold, 700);
+   line-height: var(--font-line-height-title-md);
+-  transition:
+-    background-color 150ms ease,
+-    transform 60ms cubic-bezier(0.2, 0, 0, 1);
++  /* Press: Motion whileTap (scale 0.94 + Stroke/Default background, Motion's
++     default transition — withdraw.js:1174, M-101). */
++  flex: 1 1 auto;
+ }
+ 
+-.keypadKey:active:not(:disabled) {
+-  background: var(--bg-muted, #e0e3e5);
+-  transform: scale(0.94);
++/* The cascade wrapper of one key (WD_REVEAL, M-099). */
++.keypadCell {
++  min-width: 0;
++  display: flex;
+ }
+ 
+ .keypadKey:disabled {
+@@ -431,7 +432,8 @@
+   overflow: hidden;
+   border-radius: var(--radius-xl, 24px) var(--radius-xl, 24px) 0 0;
+   background: var(--bg-default, #fff);
+-  animation: withdraw-card-enter 420ms cubic-bezier(0.2, 0, 0, 1) both;
++  /* No card entrance of its own: the whole layer rises on the Smooth spring
++     (withdraw.js loanScreen, M-098 — FullScreenLayer). */
+ }
+ 
+ .page[data-visual-variant='withdraw-flow'] .amountPanel {
+@@ -488,6 +490,12 @@
+   animation: keypad-digit-enter 380ms cubic-bezier(0.34, 0.02, 0.2, 1) both;
+ }
+ 
++/* Digits already there when the entry opens are the value, not typing
++   (withdraw.js DIGIT_STILL, M-103). */
++.page[data-visual-variant='withdraw-flow'] .keypadDigit[data-still] {
++  animation: none;
++}
++
+ .page[data-visual-variant='withdraw-flow'] .keypadSuffix {
+   display: inline-flex;
+   align-items: flex-end;
+@@ -600,27 +608,14 @@
+   display: none;
+ }
+ 
+-@keyframes withdraw-card-enter {
+-  from {
+-    border-radius: var(--radius-xl, 24px);
+-    opacity: 0;
+-    transform: translateY(28px) scale(0.98);
+-  }
+-
+-  to {
+-    border-radius: var(--radius-xl, 24px) var(--radius-xl, 24px) 0 0;
+-    opacity: 1;
+-    transform: translateY(0) scale(1);
+-  }
+-}
+-
++/* psBlink (withdraw ps-ui.css): on 0–49 %, off 50–100 %, 1 s step-end (M-104). */
+ @keyframes keypad-caret-blink {
+   0%,
+-  45% {
++  49% {
+     opacity: 1;
+   }
+ 
+-  46%,
++  50%,
+   100% {
+     opacity: 0;
+   }
+@@ -653,7 +648,6 @@
+ }
+ 
+ @media (prefers-reduced-motion: reduce) {
+-  .page[data-visual-variant='withdraw-flow'] .orderStack,
+   .keypadKey,
+   .keypadCaret,
+   .keypadDigit {

@@ -1,0 +1,15 @@
+diff --git a/src/components/ui/HeaderActionContainer/index.module.css b/src/components/ui/HeaderActionContainer/index.module.css
+index 0e9c941..0e831c8 100644
+--- a/src/components/ui/HeaderActionContainer/index.module.css
++++ b/src/components/ui/HeaderActionContainer/index.module.css
+@@ -54,6 +54,10 @@
+   pointer-events: none;
+   background: var(--header-action-bg, var(--gradient-nav-top));
+   content: '';
++  /* The veil fades in over the first 24 px of scroll (rebrand R-BARS,
++     --motion-top-fade written by useScrollVeil in GlobalLayout; 1 elsewhere).
++     标题栏遮罩在滚动前 24px 内渐显。 */
++  opacity: var(--motion-top-fade, 1);
+ }
+ 
+ .fullscreen.gradient::before {
