@@ -1,5 +1,5 @@
 {
- "version": "2026.11.21",
+ "version": "2026.11.23",
  "labels": {
   "collections": "Collections",
   "s:text": "Text styles",
@@ -16,19 +16,19 @@
    "b": ",,613480,,,,,,,,,,,,,,,,,,,85d0b2,,,,,,,8a8dc5,,,"
   },
   "v:VariableCollectionId:10999:17": {
-   "n": 39,
-   "h": "4af12813",
-   "b": "c42dae,0c2ed3,2e79ea,,31b4f5,347acc,f08937,52cc1d,c55f8b,,e6338b,ca01ee,1aac52,,70d65d,b1d385,,f24295,58783f,7f3fd7,3af922,4d4526,306156,23914b,d828dc,59a74a,6ca9b6,21cab2,0316e4,cc2b97,1b2ff2,758140"
+   "n": 87,
+   "h": "7fcfd8c6",
+   "b": "e6eda7,0c2ed3,3103ef,7edbc9,31b4f5,2d098c,1959fc,acddc8,15b4f6,b951f3,e6338b,e31ead,0ce90c,,70d65d,5de766,c997f8,e75cde,6bc429,6b83b1,521dd6,f9faf1,6afe73,23914b,84414a,07ac29,6ca9b6,5cb58d,e1bc65,cc2b97,2626ec,9c1bbb"
   },
   "v:VariableCollectionId:10999:16": {
-   "n": 257,
-   "h": "a867a7ea",
-   "b": "64e783,0fcb54,88fc93,84afae,9a9394,68fb31,dee14e,6b5825,79ce88,dccb7b,ce1333,09e10c,3f9c45,f23f13,f234ed,58e1f3,154e5f,9e290c,b4b7b9,1b58a5,e46d23,da6b10,c35eb2,9e9c7a,a6670d,4eafec,723c7e,7a870f,dd14c5,e2544a,7b76dc,ea9102"
+   "n": 264,
+   "h": "c907751e",
+   "b": "64e783,0fcb54,88fc93,84afae,9a9394,63987e,dee14e,6b5825,79ce88,dccb7b,0a0000,8b1ac5,0a73b3,f23f13,f234ed,58e1f3,154e5f,9e290c,8697c9,1b58a5,e46d23,da6b10,c35eb2,9e9c7a,382f8e,4eafec,723c7e,7a870f,dd14c5,d4b4a9,7b76dc,ea9102"
   },
   "v:VariableCollectionId:10999:15": {
-   "n": 165,
-   "h": "9a88d758",
-   "b": "b4b00e,555911,37bd8f,c43db4,d0739c,a4f9c0,be0618,c1bef0,264855,0fb150,06caa5,c23540,32b683,28dff7,c74712,39aebe,485400,7b0000,c8603c,701252,25a90c,eb3507,812e8c,77223e,7505ad,11425b,adad38,78d24d,b29317,9a61ae,27e2dc,fdb573"
+   "n": 176,
+   "h": "4e286ac9",
+   "b": "e7bc59,555911,37bd8f,d98784,d0739c,a4f9c0,2171ea,679dca,264855,a23511,06caa5,c23540,32b683,28dff7,c74712,39aebe,e5fd69,7b0000,c8603c,479458,7819e6,eb3507,dbd439,77223e,7505ad,9a7a84,adad38,78d24d,b29317,9a61ae,27e2dc,1147bf"
   },
   "s:text": {
    "n": 35,

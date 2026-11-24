@@ -5,7 +5,7 @@ window.AD = (function () {
   var money = function (n, d) { return window.PS.money(n, d); };
   var CS = window.CS, cur = CS.current, due = cur ? cur.dues : [], d0 = due[0];
   return {
-    user: { initials: 'SG', name: 'Sam Ge', verified: true },
+    user: { initials: 'SG', name: 'Sam Ge' },
     /* what the home page says in each account state (Tune → Account) */
     states: {
       review: { title: 'Application in progress', body: 'We’ve got your application and we’re reviewing it now.' },
@@ -14,7 +14,7 @@ window.AD = (function () {
       expired: { title: 'Credit limit expired', body: 'Your limit expired on September 20, 2026. Reapply to get a new one.' },
       hold: { title: 'Credit unlocking soon', body: 'To keep your account safe, we’ve paused your ' + money(CS.credit.limit, 0) + ' limit for now. You can withdraw again from November 27, 2026.', ask: 'Have a question about the hold? Chat with support!' }
     },
-    hero: { label: 'You may qualify for up to', amount: 50000, tagline: 'Simple, Fast, Made for You.', action: 'Check your limit',
+    hero: { label: 'You may qualify for up to', amount: 50000, tagline: 'Fast, clear,\ncredit when life can’t wait.', action: 'Check your limit',
       stats: [{ value: '<0.3%', label: 'Daily rate' }, { value: '91-180d', label: 'Terms' }, { value: '3 mins', label: 'Approval' }] },
     reviews: [
       { title: 'Borrow Again Anytime', text: '"Super convenient revolving limit! Paid my dues and was able to borrow again in just a few minutes with higher limit. Thanks po!"', name: 'John S.' },
@@ -23,7 +23,7 @@ window.AD = (function () {
     offer: { logo: 'loadcash', name: 'LoadCash', tag: 'Best match', label: 'Max amount', value: '₱50,000', rows: [{ label: 'Max term', value: '180 days' }] },
     banners: [{ id: 'b1', title: 'Invite a friend', body: 'You both get a coupon when they take their first loan.' }, { id: 'b2', title: 'Pay early, save more', body: 'See how early payments lower your interest.' }],
     /* repayments (Tune → Loan: Repaying / Overdue): the current loan's payments (coupons-data.js → current), so they agree with the used credit */
-    payment: d0 ? { amount: d0.amount, was: null, due: d0.dueShort, badge: d0.badge || 'Overdue · ' + d0.late + ' days' } : null,
+    payment: d0 ? { amount: d0.amount, was: null, due: d0.dueShort, badge: d0.badge || 'Overdue · ' + d0.late + ' days', stage: d0.today ? 'today' : 'upcoming' } : null,
     overdue: d0 ? { amount: d0.amount + d0.penalty, was: null, due: d0.dueShort, badge: 'Overdue · ' + d0.late + ' days', penalty: cur.penalty,
       notice: { title: 'Last day to pay without a penalty', body: 'Pay by 11:59 PM today to avoid a ' + money(cur.penalty) + ' penalty on ' + cur.penaltyDate + '.' } } : null,
     penalties: [['Days 1-3', 'No penalty, but your payment is overdue.'], ['Day 4', '5% of the unpaid principal for each installment.'], ['Every 30 days', 'Another 5% on the principal that’s still unpaid.']],

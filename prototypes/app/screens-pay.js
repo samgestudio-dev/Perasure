@@ -16,18 +16,28 @@
     function toggle(id) { s[1](sel.indexOf(id) >= 0 ? sel.filter(function (x) { return x !== id; }) : sel.concat([id])); }
     var total = list.filter(function (d) { return sel.indexOf(d.id) >= 0; }).reduce(function (a, d) { return a + d.amount + (d.penalty || 0); }, 0);
     var late = list.filter(function (d) { return d.late; }), soon = list.filter(function (d) { return !d.late; }), body;
+    /* the card's footer line, by stage (owner, 2026-11-23): before the due date the loan's date; on the due date the last day without a penalty;
+       1–2 days late "pay now"; on the last day without a penalty "pay by 11:59 PM"; after it, the penalty included */
+    function note(d) {
+      var pen = money(CS.current.penalty);
+      if (d.penalty) return 'Includes ' + money(d.penalty) + ' penalty';
+      if (d.late >= CS.loan.grace) return 'Pay by 11:59 PM to avoid a ' + pen + ' penalty';
+      if (d.late) return 'Pay now to avoid a ' + pen + ' penalty';
+      if (d.today) return 'It\'s your due date. No penalty until ' + d.graceEnd;
+      return 'Loan from ' + d.loanShort;
+    }
     function card(d) {
       return h(PS.Installment, { key: d.id, month: d.month, day: d.day, amount: d.amount + (d.penalty || 0), tone: d.late ? 'negative' : d.today ? 'brand' : 'default', on: sel.indexOf(d.id) >= 0, onToggle: function () { toggle(d.id); },
-        sub: d.late ? 'Overdue ' + d.late + ' days' : d.badge, note: d.penalty ? 'Includes ' + money(d.penalty) + ' penalty' : d.late >= CS.loan.grace ? 'No penalty if you pay today' : 'No penalty for 3 days after the due date', noteIcon: d.late ? 'info' : 'order',
+        sub: d.late ? 'Overdue ' + d.late + ' day' + (d.late === 1 ? '' : 's') : d.badge, note: note(d), noteIcon: d.late ? 'info' : 'order',
         onDetail: function () { APP.open('paydetail', { id: d.id }); } });
     }
     if (!APP.signedIn()) body = h(PS.GuestPay, { onLogin: function () { APP.go('login'); } });
     else body = h(APP.Loaded, { k: 'payment', className: list.length ? 'app-stack-20' : null }, list.length ? [
-        h(PS.ScamStrip, { key: 's', onClick: function () { APP.open('scams', {}); } }, 'Beware of scams. Contact in-app customer service to verify transaction requests from outside the app.'),
+        h(PS.ScamStrip, { key: 's', onClick: function () { APP.open('scams', {}); } }, 'Beware of scams. Contact in‑app customer service to verify transaction requests from outside the app.'),
         late.length ? h('div', { key: 'l', className: 'app-stack-8' }, h(PS.SectionLabel, { tone: 'negative' }, 'OVERDUE'), h('div', { className: 'app-stack-12' }, late.map(card))) : null,
         soon.length ? h('div', { key: 'u', className: 'app-stack-8' }, h(PS.SectionLabel, null, 'UPCOMING'), h('div', { className: 'app-stack-12' }, soon.map(card))) : null]
       : h(PS.EmptyState, { title: 'Nothing to repay right now', body: 'Your upcoming repayments will appear here.', page: true }));
-    return h(PS.Screen, { colBottom: list.length ? 196 : 120, top: { left: h(PS.Glass, { round: false }, 'Payment'), right: [APP.tune(), h(PS.Glass, { key: 'h', icon: 'headset', label: 'Contact us', onClick: APP.support })] },
+    return h(PS.Screen, { colBottom: list.length ? 196 : 120, top: { flat: true, left: h(PS.Glass, { round: false }, 'Payment'), right: [APP.tune(), h(PS.Glass, { key: 'h', icon: 'headset', label: 'Contact us', onClick: APP.support })] },
       overlay: list.length && APP.signedIn() ? h(PS.PayDock, null, h(PS.PayBar, { total: total, disabled: !total, onPay: function () { startPay(total); } })) : null }, body);
   };
 
@@ -62,12 +72,11 @@
   /* How to pay (Figma DS 7792:15391): a tall white sheet — search and close over its top, then the rail and every way to pay in one list */
   APP.sheet('paymethods', { kind: 'page', label: 'Choose how to pay', className: 'ps-sheet--white', render: function Methods(p) {
     var s = R.useState(''), q = s[0], c = R.useState('qr'), k = q.trim().toLowerCase(), body = R.useRef(null);
-    var cats = !k ? CATS : CATS.map(function (x) { return Object.assign({}, x, { groups: x.groups.map(function (g) { return Object.assign({}, g, { items: g.items.filter(function (it) { return it.name.toLowerCase().indexOf(k) >= 0; }) }); })
-      .filter(function (g) { return g.items.length; }) }); }).filter(function (x) { return x.groups.length; });
+    var any = !k || CATS.some(function (x) { return x.groups.some(function (g) { return g.items.some(function (it) { return it.name.toLowerCase().indexOf(k) >= 0; }); }); });
     return h(PS.SearchSheet, { tone: 'white', value: q, onChange: s[1], placeholder: 'Search payment method', onClose: APP.close, bodyRef: body },
-      cats.length ? h(PS.MethodPicker, { cats: cats, value: c[0], onCat: c[1], scroller: body,
+      any ? h(PS.MethodPicker, { cats: CATS, q: k, value: c[0], onCat: c[1], scroller: body,
         onPick: function (it) { APP.close(); APP.run(function () { APP.go('pay', { total: p.params.total, method: it }); }); } })
-        : h(PS.EmptyState, { title: 'No repayment method found', body: 'Check the spelling or try another name.', style: { marginTop: '4.5rem' } }));
+        : h(PS.EmptyState, { title: 'No repayment method found', style: { marginTop: '4.5rem' } }));
   } });
 
   /* The pay page: the amount, then the way to pay it (app, reference number, or QR code) */

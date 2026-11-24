@@ -1,0 +1,32 @@
+/* PeraSure app — only where this prototype places shared pieces. Every look is a component in shared/ps-ui (ps-ui.css) and shown in
+   shared/gallery.html (owner: a new piece is made there first, then the page uses it). Nothing here restyles a component. */
+.app-tabs { position: absolute; inset: 0; }
+.app-tabs.is-intro > .ps-nav { visibility: hidden; }   /* while the Credit limit increase plays over home (it is full screen) */
+.app-center { display: flex; align-items: center; justify-content: center; padding: 0 2.125rem var(--spacing-padding-xl); }   /* the sending card */
+.app-stack-8 { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); }
+.app-stack-12 { display: flex; flex-direction: column; gap: var(--spacing-gap-md); }
+.app-stack-16 { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); }
+.app-col, .app-stack-20 { display: flex; flex-direction: column; gap: var(--spacing-gap-xl); }
+.app-form { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); }
+.app-form--12 { gap: var(--spacing-gap-md); }
+.app-docs { position: relative; display: flex; flex-direction: column; gap: var(--spacing-gap-md); }   /* proof of income (DS 9473:27722) */
+.app-ptabs { padding: 0 var(--spacing-page-x-sm) var(--spacing-padding-xl); }   /* tabs under a header (inbox, credit history) */
+.app-chips { display: flex; gap: var(--spacing-gap-lg); }   /* inbox filter: two Chip Medium side by side, 16 apart */
+.app-chips > .ps-chip { flex: 1 1 0; min-width: 0; }
+.app-ctabs { padding: var(--spacing-gap-2xs) var(--spacing-page-x-sm) var(--spacing-padding-lg); }   /* the coupon centre's tabs */
+.app-amount { padding-left: 0; padding-right: 0; }   /* the amount keypad page: PS.AmountEntry runs edge to edge */
+.app-account > .ps-profile { margin-bottom: var(--spacing-gap-md); }
+.app-permfoot { padding: 0 var(--spacing-padding-lg); }
+.app-date { padding-top: var(--spacing-padding-xl) !important; }   /* the date card: 20 at the top (DS 7628:14113), the handle over it */
+/* "Mark all read": a pill in the bottom right corner, 48 px up (Figma 52:10300) */
+.app-fab { position: absolute; right: var(--spacing-page-x-sm); bottom: var(--spacing-padding-5xl); z-index: 4; }
+html.ps-edge .app-fab { bottom: calc(var(--spacing-padding-5xl) + var(--sb)); }
+
+/* ---- the Withdraw demo's loan screen (screens-withdraw.js): laid out as wide as the frame from its top-left corner; over the pages, under the sheets ---- */
+.app-wd { position: absolute; left: 0; top: 0; width: 100%; height: 0; z-index: 10; }
+/* the demo's home card is drawn in here. The card is the Withdraw demo's own, sized in px (it follows the screen fit, not the text size
+   or the rem factor), so the space kept for it is px too: in rem it grew with the text and left a gap under the card at 130 % and above */
+.app-wdhero { min-height: 196px; }
+.app-wd .ps-sb { visibility: hidden; }   /* the demo's drawn status bar: hidden on a phone there too */
+.app-wd__tune { position: absolute; right: 16px; top: 56px; z-index: 11; height: 40px; display: flex; align-items: center; }
+html.ps-edge .app-wd__tune { top: calc(56px + var(--e)); }

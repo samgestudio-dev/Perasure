@@ -29,10 +29,11 @@
       h('i', { className: 'ps-veil' }));
   };
 
-  /* TopBar: left (node) · title (text) · right (node) · extra (node under the 116 px bar, e.g. tabs) + extraHeight · solid (page colour, no blur) · live */
+  /* TopBar: left (node) · title (text) · right (node) · extra (node under the 116 px bar, e.g. tabs) + extraHeight · solid (page colour, no blur) · live
+     · flat (the Home / Payment / Account tabs; since 2026-11-24 it changes nothing: their glass buttons keep the blur, owner) */
   PS.TopBar = function TopBar(p) {
     var hgt = 116 + (p.extraHeight || 0);
-    return h('header', { className: PS.cx('ps-top', p.solid && 'ps-top--solid', p.live && 'is-live'), style: { '--ps-top-h': PS.y(hgt) } },
+    return h('header', { className: PS.cx('ps-top', p.solid && 'ps-top--solid', p.flat && 'ps-top--flat', p.live && 'is-live'), style: { '--ps-top-h': PS.y(hgt) } },
       h(PS.Bands, { pos: 'top' }),
       h('div', { className: 'ps-top__row' },
         h('div', { className: 'ps-top__side' }, p.left),
@@ -57,7 +58,7 @@
         return h(m.button, Object.assign({ key: t.id, type: 'button', className: 'ps-nav__tab', 'aria-current': on ? 'page' : undefined,
           onClick: function () { if (!on && p.onChange) p.onChange(t.id); } }, PS.press()),
           on ? h(m.span, { layoutId: (p.id || 'ps-nav') + '-pill', className: 'ps-nav__pill', transition: PS.MT.SPRING }, h('i')) : null,
-          h(PS.Icon, { name: t.icon, size: 18, color: 'primary' }), h('span', null, t.label));
+          h(PS.Icon, { name: t.icon, size: 18 }), h('span', null, t.label));   // icon takes the tab's colour: Fg/Default, Fg/Accent when active (Figma .NavTab)
       })));
   };
 
@@ -154,13 +155,15 @@
   };
 
   /* Sheet: open · kind page (fills below the header: coupon picker) | card (floating, scrim: decisions) | plain (bottom, white: plans)
-     onClose · label (aria) · scrim (default: card / plain) · children. Slides on the Smooth spring; the scrim fades in 0.2 s and
-     out on LEAVE. Drag the top edge down to close. While it closes it no longer blocks the page. */
+     onClose · label (aria) · scrim (default: on; false = none) · children. Slides on the Smooth spring; the scrim fades in 0.2 s and
+     out on LEAVE. Drag the top edge down to close. While it closes it no longer blocks the page.
+     A page sheet takes the Flat scrim (Overlay/Scrim, navy 40 %): only the header strip above it shows, where the Gradient one is still
+     clear (owner 2026-11-24: the coupon picker had no scrim). */
   function SheetBody(p) {
-    var kind = p.kind || 'plain', controls = M.useDragControls(), scrim = p.scrim != null ? p.scrim : kind !== 'page', present = M.useIsPresent(), box = R.useRef(null);
+    var kind = p.kind || 'plain', controls = M.useDragControls(), scrim = p.scrim != null ? p.scrim : true, present = M.useIsPresent(), box = R.useRef(null);
     R.useLayoutEffect(function () { PS.rise(box.current, { skip: 2, delay: 110, y: PS.MT.Y.text }); }, []);   /* what is in the sheet rises in piece by piece while it slides up */
     return h('div', { className: 'ps-layer', role: 'dialog', 'aria-modal': true, 'aria-label': p.label, style: present ? null : { pointerEvents: 'none' } },
-      scrim ? h(m.div, { className: 'ps-scrim', initial: { opacity: 0 }, animate: { opacity: 1, transition: { duration: 0.2 } }, exit: { opacity: 0, transition: PS.MT.LEAVE }, onClick: p.onClose })
+      scrim ? h(m.div, { className: PS.cx('ps-scrim', kind === 'page' && 'ps-scrim--flat'), initial: { opacity: 0 }, animate: { opacity: 1, transition: { duration: 0.2 } }, exit: { opacity: 0, transition: PS.MT.LEAVE }, onClick: p.onClose })
             : h('div', { className: 'ps-scrim ps-scrim--clear', onClick: p.onClose }),
       h(m.div, { ref: box, className: PS.cx('ps-sheet', 'ps-sheet--' + kind, p.className), initial: { y: '100%' }, animate: { y: '0%' }, exit: { y: '100%' }, transition: PS.MT.SPRING_PCT,
         drag: 'y', dragListener: false, dragControls: controls, dragConstraints: { top: 0, bottom: 0 }, dragElastic: { top: 0, bottom: 0.6 },
@@ -190,11 +193,12 @@
      · onClose (also what Cancel does, unless onCancel) */
   PS.Confirm = function Confirm(p) {
     return h(R.Fragment, null, h('div', { className: 'ps-confirm__text' }, h(PS.SheetHead, { align: 'left', title: p.title, onClose: p.onClose }), h('p', { className: 'ps-t-body-md' }, p.body)),
-      h(PS.ButtonRow, null, p.cancel ? h(PS.Button, { variant: 'inverse', size: 'md', className: 'ps-btn--ghost', onClick: p.onCancel || p.onClose }, p.cancel) : null, h(PS.Button, { size: 'md', onClick: p.onOk }, p.ok)));
+      h(PS.ButtonRow, null, p.cancel ? h(PS.Button, { variant: 'neutral', size: 'md', onClick: p.onCancel || p.onClose }, p.cancel) : null, h(PS.Button, { size: 'md', onClick: p.onOk }, p.ok)));
   };
 
   /* Tooltip: a frosted bubble that places itself · open · text (string or node) · onClose (any tap closes it) · width (250)
-     icon: a 28 px brand tile with that icon before the text, and a × after it (Figma 9137:25806) · big: the roomy one (16 padding, radius 24:
+     icon: that icon bare before the text (20, Fg/Default — 'pending' is Figma's clock) and a grey × after it (Figma Tooltip Simple, Tone=Light on
+     the rebrand screens: Icon / Pending + Icon / Close Palette/Navy/400) · big: the roomy one (16 padding, radius 24:
      the penalty explainer, Figma 10545:38381)
      anchor { left, top, right, bottom } (frame px, PS.frameRect(el)): one corner covers what was tapped and reaches 12 px past it on both
      sides (owner) — the top-right corner for something in the right third of the screen, the top-left in the left third, centred over it in
@@ -217,9 +221,9 @@
       if (p.anchor) el.style.transformOrigin = Math.round((p.anchor.left + p.anchor.right) / 2 - x) + 'px ' + Math.round((p.anchor.top + p.anchor.bottom) / 2 - y) + 'px';   /* grows from what was tapped */
     });
     var body = p.icon ? h(R.Fragment, null,
-        h('span', { className: 'ps-tip__icon' }, h(PS.Icon, { name: p.icon, size: 20, color: 'inverse' })),
+        h(PS.Icon, { name: p.icon, size: 20, color: 'primary', className: 'ps-tip__icon' }),
         h('span', { className: 'ps-tip__text' }, p.text),
-        h('span', { className: 'ps-tip__x', 'aria-hidden': true }, h(PS.Icon, { name: 'close-thin', size: 12, color: 'brand' })))
+        h('span', { className: 'ps-tip__x', 'aria-hidden': true }, h(PS.Icon, { name: 'close-thin', size: 18, color: 'placeholder' })))
       : p.text;
     return h(m.div, Object.assign({ ref: ref, className: PS.cx('ps-tip ps-bubble ps-t-body-md', p.icon && 'ps-tip--icon', p.big && 'ps-tip--big'), role: 'tooltip', style: { left: 0, top: 0, width: p.width ? PS.rem(p.width) : undefined }, onClick: p.onClose },
       { initial: { opacity: 0, scale: 0.96, filter: 'blur(' + PS.MT.BLUR + 'px)' }, animate: { opacity: 1, scale: 1, filter: 'blur(0px)', transition: PS.MT.ENTER }, exit: { opacity: 0, scale: 0.98, transition: PS.MT.LEAVE } }), body);
@@ -235,7 +239,9 @@
     return h(m.button, Object.assign({ type: 'button', className: 'ps-tune-btn', onClick: window.PSTune.open }, PS.press()), 'Tune');
   };
 
-  /* Toast: a short message at the top, under the header's bar, like an iPhone notification (owner) · msg (null hides) · top (px, 104)
+  /* Toast place (owner 2026-11-24): every toast 8 px under the top nav bar (116), on every page. A primary page's bar is in the webview;
+     a secondary page's bar is the app's own, above the webview, so tabs or anything else under the bar stay under the toast too.
+     Toast: a short message at the top, under the header's bar, like an iPhone notification (owner) · msg (null hides) · top (px, 104)
      It drops in from above on the Smooth spring, coming into focus from the 3 px blur; it leaves upwards on LEAVE. */
   /* Toasts: the app's notices, stacked like iPhone notifications (owner) — every call shows a new one (a repeat is not merged or held back):
      the newest sits on top, the ones before it slip a little lower behind it, smaller and fainter (two show behind at most), each goes

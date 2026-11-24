@@ -58,7 +58,7 @@
   };
 
   /* CouponTicket: the coupon in the coupon centre and the picker.
-     value ('25% OFF') · label ('First-payment interest') · rule (condition line) · ruleLong (truncated: ⓘ, tap → onRule(el)) · meta ('Valid until …')
+     value ('25% OFF') · label ('First‑payment interest') · rule (condition line) · ruleLong (truncated: ⓘ, tap → onRule(el)) · meta ('Valid until …')
      expiresAt (ms: live countdown instead of meta) · best · state default | selected | used | expired | unavailable · reason (unavailable)
      action use (Use button → onUse) | pick (whole ticket toggles → onPick) | none · shadow.
      Selecting changes colour only (bar, mark, shadow: 150 ms); nothing moves. */
@@ -85,20 +85,22 @@
           right),
         h('div', { className: 'ps-ticket__meta ps-t-caption-sm' }, h('p', null, rule), second))
     ];
-    var cls = PS.cx('ps-ticket', sel && 'is-on', p.shadow && 'ps-ticket--shadow', muted && 'ps-ticket--muted', off && 'ps-ticket--off', p.className);
+    var cls = PS.cx('ps-ticket', sel && 'is-on', p.shadow && 'ps-ticket--shadow', muted && 'ps-ticket--muted', muted && 'ps-ticket--' + st, off && 'ps-ticket--off', p.className);
     if (pick) return h(m.button, Object.assign({ type: 'button', className: cls, 'aria-pressed': sel, 'aria-disabled': off || undefined, onClick: p.onPick }, PS.press()), kids);
     return h('div', { className: cls }, kids);
   };
 
-  /* Tabs: segmented control · items [{ id, label, count }] (count shown when set) · value · onChange(id) · glass (frosted, in sheets)
-     split (separate pills) · spaced (with split: 16 between them) · id (pill layout id). The pill glides on the Smooth spring; label colours change in 150 ms. */
+  /* Tabs: segmented control · items [{ id, label, count }] (count shown when set, in brackets after the label: 'To use (6)', like the inbox) · value · onChange(id) · glass (frosted, in sheets)
+     split (separate pills, Figma Tab Style=Filter: green labels) · chip (with split: Figma Chip — grey labels, the credit history) · spaced (with split: 16 between them) · id (pill layout id). The pill glides on the Smooth spring; label colours change in 150 ms.
+     fade: the pill does not glide — the old tab's pill fades out and the new one's fades in, with the labels, in 150 ms (the inbox, owner 2026-11-23). */
   PS.Tabs = function Tabs(p) {
-    return h('div', { className: PS.cx('ps-tabs', p.glass && 'ps-tabs--glass', p.split && 'ps-tabs--split', p.spaced && 'ps-tabs--spaced', p.className), role: 'tablist' }, p.items.map(function (it) {
+    return h('div', { className: PS.cx('ps-tabs', p.fade && 'ps-tabs--fade', p.glass && 'ps-tabs--glass', p.split && 'ps-tabs--split', p.split && p.chip && 'ps-tabs--chip', p.spaced && 'ps-tabs--spaced', p.className), role: 'tablist' }, p.items.map(function (it) {
       var on = it.id === p.value;
       return h(m.button, Object.assign({ key: it.id, type: 'button', role: 'tab', 'aria-selected': on, className: PS.cx('ps-tabs__tab', on && 'is-on'),
         onClick: function () { if (!on && p.onChange) p.onChange(it.id); } }, PS.press()),
-        on ? h(m.span, { layoutId: (p.id || 'ps-tabs') + '-pill', className: 'ps-tabs__pill', transition: MT.SPRING }) : null,
-        h('span', null, it.label), it.count != null ? h(PS.Count, { n: it.count, on: on }) : null);
+        p.fade ? h(AP, { initial: false }, on ? h(m.span, { key: 'pill', className: 'ps-tabs__pill', initial: { opacity: 0 }, animate: { opacity: 1, transition: { duration: 0.15, ease: 'easeOut' } }, exit: { opacity: 0, transition: { duration: 0.15, ease: 'easeOut' } } }) : null)
+          : on ? h(m.span, { layoutId: (p.id || 'ps-tabs') + '-pill', className: 'ps-tabs__pill', transition: MT.SPRING }) : null,
+        h('span', null, it.label + (it.count != null ? ' (' + it.count + ')' : '')));   // the count is part of the label, no badge (owner, 2026-11-23)
     }));
   };
   /* Crossfade: content that is replaced (a tab's list) — the old leaves on LEAVE, the new comes in on ENTER, rising MT.Y.block
@@ -121,7 +123,7 @@
   };
 
   /* CouponOption: a coupon in the picker sheet (DS 10840:29499 "Installment", screen 10836:28988) — a white card, value + what it is on the left,
-     Best + the round mark on the right. value ('25% OFF') · label ('First-payment interest') · best · expiresAt (ms) · rule (the coupon's condition,
+     Best + the round mark on the right. value ('25% OFF') · label ('First‑payment interest') · best · expiresAt (ms) · rule (the coupon's condition,
      shown under a line when it can't be used) · state default | selected | unavailable · onPick.
      Picking gives the card a 1 px brand line inside (DS 10842:29606, drawn over the strip too), the default shadow and the mark (150 ms). A coupon with less than a day left shows the countdown strip under the card (owner: only
      then, and only this way). */

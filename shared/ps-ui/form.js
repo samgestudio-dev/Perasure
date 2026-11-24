@@ -79,13 +79,30 @@
         on ? h(m.span, { layoutId: (p.id || 'ps-seg') + '-pill', className: 'ps-seg__pill', transition: MT.SPRING }) : null, h('span', null, it.label));
     }));
   };
-  /* SelectBar: one option with a radio (withdrawal method, reasons) · on · label · logo (file in assets/logos, png) · icon · note (right, brand) · onClick · plain (no border: reason lists) */
+  /* SelectBar: one option with a radio (withdrawal method, reasons) · on · label · logo (file in assets/logos, png) · icon · note (right, brand) · onClick · plain (no border: reason lists)
+     trailing: the radio at the end (Figma SelectBar Style=Card-trailing: the choice sheets) */
   PS.SelectBar = function SelectBar(p) {
+    var radio = h('span', { key: 'r', className: PS.cx('ps-radio', p.on && 'is-on') });
     return h(m.button, Object.assign({ type: 'button', role: 'radio', 'aria-checked': !!p.on, className: PS.cx('ps-selbar', p.on && 'is-on', p.plain && 'ps-selbar--plain'), onClick: p.onClick }, PS.press()),
-      h('span', { className: PS.cx('ps-radio', p.on && 'is-on') }),
+      p.trailing ? null : radio,
       p.logo ? h('img', { className: 'ps-selbar__logo', src: PS.asset('logos/' + p.logo + '.png'), alt: '' }) : p.icon ? h(PS.Icon, { name: p.icon, size: 20, color: 'tertiary' }) : null,
       h('span', { className: 'ps-selbar__label ps-t-body-md' }, p.label),
-      p.note ? h('span', { className: 'ps-selbar__note ps-t-caption-xs' }, p.note) : null);
+      p.note ? h('span', { className: 'ps-selbar__note ps-t-caption-xs' }, p.note) : null,
+      p.trailing ? radio : null);
+  };
+  /* ChoiceSheet: what a choice field opens (Figma Application details / Marital status popover: Marital status, Payroll period, Gender, ID type) —
+     a bottom sheet's content: a centred title (Hanken SemiBold 16 / 22) and the options. Default: SelectBar cards with the radio at the end, 12
+     apart, on the mist sheet. list: white ListItem rows (48, a divider under each, 16 in) with an Accent tag at the end where tags has one
+     (ID type: "Higher credit"). title · options [strings] · value · onPick(option) · list · tags { option: label } */
+  PS.ChoiceSheet = function ChoiceSheet(p) {
+    return h('div', { className: PS.cx('ps-choice', p.list && 'ps-choice--list') },
+      h('p', { className: 'ps-choice__title' }, p.title),
+      h('div', { className: 'ps-choice__opts', role: 'radiogroup', 'aria-label': p.title }, p.options.map(function (o) {
+        var on = o === p.value, tag = p.tags && p.tags[o];
+        if (!p.list) return h(PS.SelectBar, { key: o, label: o, on: on, trailing: true, onClick: function () { p.onPick(o); } });
+        return h(m.button, Object.assign({ key: o, type: 'button', role: 'radio', 'aria-checked': on, className: PS.cx('ps-choice__row', on && 'is-on'), onClick: function () { p.onPick(o); } }, PS.press()),
+          h('span', { className: 'ps-t-body-md' }, o), tag ? h(PS.Tag, { tone: 'accent' }, tag) : null);
+      })));
   };
   /* Search: the search pill · value · onChange · placeholder · autoFocus */
   PS.Search = function Search(p) {
@@ -96,7 +113,7 @@
   /* Consent: small check + legal line (login, application) · on · onToggle · children */
   PS.Consent = function Consent(p) {
     return h('button', { type: 'button', role: 'checkbox', 'aria-checked': !!p.on, className: 'ps-consent', onClick: p.onToggle },
-      h('span', { className: PS.cx('ps-consent__check', p.on && 'is-on') }, p.on ? h(PS.Icon, { name: 'check', size: 8, color: 'inverse' }) : null),
+      h('span', { className: PS.cx('ps-consent__check', p.on && 'is-on') }, p.on ? h(PS.Icon, { name: 'check', size: 8, color: 'on-accent' }) : null),
       h('span', { className: 'ps-t-caption-xs ps-c-tertiary' }, p.children));
   };
   /* UploadTile: a picture slot (ID sides, documents) · art (png in assets/art) · label · state empty | loading | done | error · onClick */
@@ -106,24 +123,29 @@
       h('span', { className: 'ps-upload__pic' }, p.art ? h('img', { src: PS.asset('art/' + p.art + '.png'), alt: '' }) : h(PS.Icon, { name: 'add', size: 24, color: 'tertiary' }),
         st === 'loading' ? h('span', { className: 'ps-upload__veil' }, h(PS.Busy)) : null,
         st === 'done' ? h('span', { className: 'ps-upload__mark' }, h(PS.Icon, { name: 'check-circle-filled', size: 20, color: 'positive' })) : null,
-        st === 'error' ? h('span', { className: 'ps-upload__mark' }, h(PS.Icon, { name: 'close-circle-filled', size: 20, color: 'var(--color-icon-negative-default)' })) : null),
+        st === 'error' ? h('span', { className: 'ps-upload__mark' }, h(PS.Icon, { name: 'close-circle-filled', size: 20, color: 'var(--fg-danger)' })) : null),
       p.label ? h('span', { className: 'ps-t-caption-sm ps-c-tertiary' }, p.label) : null);
   };
 
-  /* FormField: the application forms' field (Figma 52:5689) — a label above (12 / 16, tertiary, upper case) and a white 44 px box
-     (radius 20, 12 / 16 padding) with the value in Body/md · label · value · placeholder · onChange(text) (a typing box) or onClick (a field
-     that opens a picker: chevron) · icon (instead of the chevron, e.g. 'calendar') · clear (✕ when filled) · error (red line under it) ·
+  /* FormField: the application forms' field (Figma 52:5689) — a label above (12 / 16, tertiary, as written: mixed case) and a white 44 px box
+     (radius 20, 12 / 16 padding) with the value in Body/md-emphasis (Fg/Muted; placeholder Navy/200) · label · value · placeholder · onChange(text) (a typing box) or onClick (a field
+     that opens a picker: chevron) · icon (instead of the chevron, e.g. 'calendar') · clear (✕ while focused and filled, as Figma's Focus state) · error (red line under it) ·
      inputMode · type · maxLength · autoFocus · onBlur · suggest [strings] + onSuggest(s) (a list under the box while typing: email domains,
-     DS 5985:12263) · menu { options, onPick } (a popover under the box, DS 7201:12032 — the bottom-sheet lists are retired) */
+     DS 5985:12263) · menu { options, onPick, tags } (a popover under the box, DS 7201:12032 — every choice of the application form, owner 2026-11-24) · sheet { title, options, onPick, list, tags } (a bottom
+     sheet with PS.ChoiceSheet: the short choices of the rebrand Figma — marital status, payroll period, gender, ID type; it opens over the
+     whole page, PS.pageOf) */
   PS.FormField = function FormField(p) {
     var f = R.useState(false), focus = f[0], setFocus = f[1], wrap = R.useRef(null), boxRef = R.useRef(null), filled = p.value != null && p.value !== '';
-    var pick = !!(p.onClick || p.menu), ms = R.useState(false), menuOpen = ms[0], setMenu = ms[1];
-    function tap() { if (p.menu) setMenu(true); else if (p.onClick) p.onClick(wrap.current); }
+    var pick = !!(p.onClick || p.menu || p.sheet), ms = R.useState(false), menuOpen = ms[0], setMenu = ms[1], ss = R.useState(false), sheetOpen = ss[0], setSheet = ss[1];
+    function tap() { if (p.sheet) setSheet(true); else if (p.menu) setMenu(true); else if (p.onClick) p.onClick(wrap.current); }
+    /* sheet: the choice lights up, then the sheet goes down */
+    function choose(o) { p.sheet.onPick(o); setTimeout(function () { setSheet(false); }, 160); }
+    var sheetHost = p.sheet && wrap.current ? PS.pageOf(wrap.current) : null;
     var value = pick ? h('span', { className: PS.cx('ps-ff__value', !filled && 'is-empty') }, filled ? p.value : p.placeholder || '')
       : h('input', { value: p.value || '', placeholder: p.placeholder, type: p.type || 'text', inputMode: p.inputMode, maxLength: p.maxLength, autoFocus: p.autoFocus,
           autoComplete: 'off', 'aria-label': p.label, className: 'ps-ff__value', onChange: function (e) { p.onChange(e.target.value); },
           onFocus: function () { setFocus(true); }, onBlur: function () { setTimeout(function () { setFocus(false); }, 120); if (p.onBlur) p.onBlur(); } });
-    var end = p.clear && filled && !pick ? h('button', { type: 'button', className: 'ps-ff__clear', 'aria-label': 'Clear', onMouseDown: function (e) { e.preventDefault(); }, onClick: function () { p.onChange(''); } }, h(PS.Icon, { name: 'clear-small', size: 16, color: 'var(--color-neutral-950)', style: { opacity: 0.6 } }))   /* DS "Cancel small": Neutral/950 at 60 % */
+    var end = p.clear && filled && focus && !pick ? h('button', { type: 'button', className: 'ps-ff__clear', 'aria-label': 'Clear', onMouseDown: function (e) { e.preventDefault(); }, onClick: function () { p.onChange(''); } }, h(PS.Icon, { name: 'clear-small', size: 16, color: 'var(--palette-navy-950)', style: { opacity: 0.6 } }))   /* DS "Cancel small": Neutral/950 at 60 % */
       : p.icon ? h(PS.Icon, { name: p.icon, size: 16, color: 'tertiary' }) : pick || p.chevron ? h(PS.Icon, { name: 'chevron-right', size: 16, color: 'tertiary' }) : null;   /* the calendar and the chevron: Icon/Tertiary 16 */
     var sugg = focus && p.suggest && p.suggest.length ? p.suggest : null;
     return h('div', { className: PS.cx('ps-ff', p.error && 'is-error', focus && 'is-focus', (menuOpen || sugg) && 'is-open'), ref: wrap },
@@ -133,8 +155,11 @@
       p.suggest ? h(PS.Popover, { open: !!sugg, anchor: boxRef, block: true, noCatch: true, options: sugg || [], label: p.label,
         render: function (x) { var at = x.indexOf('@'); return at > 0 ? [h('span', { key: 'a', className: 'ps-c-brand' }, x.slice(0, at)), x.slice(at)] : x; },
         onPick: function (x) { p.onSuggest(x); setFocus(false); }, onClose: function () {} }) : null,
-      p.menu ? h(PS.Popover, { open: menuOpen, anchor: boxRef, options: p.menu.options, value: p.value, label: p.label,
-        onPick: function (o) { setMenu(false); p.menu.onPick(o); }, onClose: function () { setMenu(false); } }) : null);
+      p.menu ? h(PS.Popover, { open: menuOpen, anchor: boxRef, options: p.menu.options, tags: p.menu.tags, value: p.value, label: p.label,
+        onPick: function (o) { setMenu(false); p.menu.onPick(o); }, onClose: function () { setMenu(false); } }) : null,
+      sheetHost ? window.ReactDOM.createPortal(h(PS.Sheet, { open: sheetOpen, kind: 'plain', className: PS.cx('ps-sheet--choice', p.sheet.list && 'ps-sheet--choice-list'),
+        label: p.sheet.title || p.label, onClose: function () { setSheet(false); } },
+        h(PS.ChoiceSheet, { title: p.sheet.title || p.label, options: p.sheet.options, value: p.value, list: p.sheet.list, tags: p.sheet.tags, onPick: choose })), sheetHost) : null);
   };
 
   /* Popover: a short list that opens under what was tapped (DS 7201:12032 · 7201:11836): the glass card (Surface/Elevated/Glass, 1 px light rim,
@@ -143,7 +168,7 @@
      no room below) and, like an iPhone menu, centred on where the finger tapped, kept 8 from the page's sides; it grows from that point on the
      Smooth spring. Opened without a tap (keyboard): its right edge on the anchor's. block: as wide as the anchor (suggestions under a field).
      open · options [strings] · value · onPick(option) · onClose · anchor (ref; default: the parent) · at ({ x, y } client point; default the last tap) ·
-     block · render(option) · noCatch (no tap-outside layer) */
+     block · render(option) · tags { option: label } (an Accent tag at the row's end: ID type's "Higher credit") · noCatch (no tap-outside layer) */
   PS.Popover = function Popover(p) {
     return h(AP, null, p.open ? h(PopCard, Object.assign({ key: 'pop' }, p)) : null);
   };
@@ -154,7 +179,7 @@
     var card = R.useRef(null), list = R.useRef(null), thumb = R.useRef(null), fade = R.useRef(null), pl = R.useState(null), place = pl[0];
     var ch = R.useState(null), chosen = ch[0], shown = R.useRef(false);
     R.useEffect(function () { if (place) shown.current = true; }, [place]);   /* rows that arrive later (suggestions while typing) just appear */
-    function pick(o) { if (chosen != null) return; ch[1](o); setTimeout(function () { p.onPick(o); }, 120); }   /* the row lights up, then the menu folds away */
+    function pick(o) { if (chosen != null) return; ch[1](o); setTimeout(function () { p.onPick(o); }, 90); }   /* the row lights up, then the menu folds away */
     R.useLayoutEffect(function () {
       var a = p.anchor && p.anchor.current, c = card.current; if (!c) return;
       var par = c.offsetParent || c.parentNode, ar = a ? a.getBoundingClientRect() : par.getBoundingClientRect(), pr = par.getBoundingClientRect();
@@ -187,13 +212,13 @@
          the rows sliding in from the finger's side one after another; it folds back into the tap on the way out */
       h(m.div, { ref: card, className: PS.cx('ps-pop ps-bubble', p.block && 'ps-pop--block'), role: 'listbox', 'aria-label': p.label, style: st,
         initial: calm ? { opacity: 0 } : { opacity: 0, scaleX: 0.5, scaleY: 0.22, filter: 'blur(6px)' },
-        animate: calm ? { opacity: 1 } : { opacity: 1, scaleX: 1, scaleY: 1, filter: 'blur(0px)', transition: { scaleX: MT.MENU, scaleY: MT.MENU_Y, opacity: { duration: 0.16, ease: MT.EASE_IN }, filter: { duration: 0.24, ease: MT.EASE_IN } } },
+        animate: calm ? { opacity: 1 } : { opacity: 1, scaleX: 1, scaleY: 1, filter: 'blur(0px)', transition: { scaleX: MT.MENU, scaleY: MT.MENU_Y, opacity: { duration: 0.1, ease: MT.EASE_IN }, filter: { duration: 0.16, ease: MT.EASE_IN } } },
         exit: calm ? { opacity: 0, transition: MT.MENU_OUT } : { opacity: 0, scaleX: 0.7, scaleY: 0.5, filter: 'blur(4px)', transition: MT.MENU_OUT } },
         h('div', { ref: list, className: 'ps-pop__list', onScroll: onScroll, style: place ? { maxHeight: place.max - PS.px(16) } : null }, p.options.map(function (o, i) {
-          var on = chosen != null ? o === chosen : o === p.value;
-          return h(m.button, { key: o, type: 'button', role: 'option', 'aria-selected': on, className: PS.cx('ps-pop__opt', on && 'is-on'),
+          var on = chosen != null ? o === chosen : o === p.value, tag = p.tags && p.tags[o];
+          return h(m.button, { key: o, type: 'button', role: 'option', 'aria-selected': on, className: PS.cx('ps-pop__opt', on && 'is-on', tag && 'ps-pop__opt--tag'),
             initial: calm || shown.current ? false : { opacity: 0, y: PS.px(10) * dir, filter: 'blur(2px)' }, animate: { opacity: 1, y: 0, filter: 'blur(0px)', transition: MT.MENU_ROW(i) },
-            onMouseDown: function (e) { e.preventDefault(); }, onClick: function () { pick(o); } }, p.render ? p.render(o) : o);
+            onMouseDown: function (e) { e.preventDefault(); }, onClick: function () { pick(o); } }, p.render ? p.render(o) : tag ? [h('span', { key: 't', className: 'ps-pop__txt' }, o), h(PS.Tag, { key: 'g', tone: 'accent' }, tag)] : o);
         })),
         h('i', { ref: fade, className: 'ps-pop__fade' }), h('i', { ref: thumb, className: 'ps-pop__thumb' })));
   }
@@ -207,9 +232,9 @@
     if (st === 'failed') meta = h('span', { className: 'ps-t-caption-xs ps-c-negative' }, 'Upload failed, check your connection.');
     else if (st === 'compressing') meta = h('span', { className: 'ps-file__meta ps-t-caption-xs' }, 'Compressing…');
     else if (st === 'uploading') meta = h('span', { className: 'ps-file__meta ps-t-caption-xs' }, 'Uploading', h('i', null, '·'), Math.round((p.progress || 0) * 100) + '% of ' + mb(p.size));
-    else meta = h('span', { className: 'ps-file__meta ps-t-caption-xs' }, mb(p.size), h('i', null, '·'), h('b', null, h(PS.Icon, { name: 'check', size: 8, color: 'var(--color-icon-positive-heavy)' }), 'Uploaded'));   /* DS: Icon / Check 8, 4 to the word */
-    var btn = st === 'failed' ? { icon: 'reload', color: 'var(--color-icon-brand-light)', label: 'Try again', on: p.onRetry }
-      : st === 'done' ? { icon: 'delete', color: 'var(--color-icon-placeholder)', label: 'Remove', on: p.onRemove } : { icon: 'close-thin', color: 'var(--color-icon-placeholder)', label: 'Stop', on: p.onRemove };
+    else meta = h('span', { className: 'ps-file__meta ps-t-caption-xs' }, mb(p.size), h('i', null, '·'), h('b', null, h(PS.Icon, { name: 'check', size: 8, color: 'var(--fg-success-strong)' }), 'Uploaded'));   /* DS: Icon / Check 8, 4 to the word */
+    var btn = st === 'failed' ? { icon: 'reload', color: 'var(--fg-accent)', label: 'Try again', on: p.onRetry }
+      : st === 'done' ? { icon: 'delete', color: 'var(--fg-placeholder)', label: 'Remove', on: p.onRemove } : { icon: 'close-thin', color: 'var(--fg-placeholder)', label: 'Stop', on: p.onRemove };
     return h('div', { className: PS.cx('ps-file', 'is-' + st) },
       p.pic ? h('img', { className: 'ps-file__type', src: p.pic, alt: '' }) : h('span', { className: 'ps-file__type' }, ext),
       h('span', { className: 'ps-file__main' }, h('span', { className: 'ps-file__name ps-t-label-sm-light' }, p.name),
@@ -244,7 +269,7 @@
       h('div', { className: 'ps-stips__row' }, (p.items || TIPS).map(function (t) {
         return h('div', { key: t.label, className: 'ps-stips__item' },
           h('span', { className: 'ps-stips__pic' }, h('img', { src: PS.asset('art/' + t.art + '.png'), alt: '' }),
-            h('i', { className: t.ok ? 'is-ok' : 'is-no' }, h(PS.Icon, { name: t.ok ? 'check' : 'close', size: 8, color: 'inverse' }))),
+            h('i', { className: t.ok ? 'is-ok' : 'is-no' }, h(PS.Icon, { name: t.ok ? 'check' : 'close', size: 8, color: t.ok ? 'on-accent' : 'inverse' }))),
           h('span', { className: 'ps-t-caption-xs ps-c-placeholder' }, t.label));
       })));
   };
@@ -312,10 +337,10 @@
     function back() { if (mode !== 'date') { closeWheel(false); return; } if (p.onCancel) p.onCancel(); }
     function stepper(label, which, dm) {
       return h('span', { className: 'ps-date__step' },
-        h(m.button, Object.assign({ type: 'button', 'aria-label': 'Previous ' + which, disabled: atStart, onClick: function () { shift(-dm); } }, atStart ? null : PS.press(true)), h(PS.Icon, { name: 'chevron-right', size: 16, color: 'var(--color-stroke-brand-strong)', style: { transform: 'scaleX(-1)' } })),   /* DS: the same Chevron Right, turned */
+        h(m.button, Object.assign({ type: 'button', 'aria-label': 'Previous ' + which, disabled: atStart, onClick: function () { shift(-dm); } }, atStart ? null : PS.press(true)), h(PS.Icon, { name: 'chevron-right', size: 16, color: 'var(--border-accent-emphasis)', style: { transform: 'scaleX(-1)' } })),   /* DS: the same Chevron Right, turned */
         h('button', { type: 'button', className: PS.cx('ps-date__label ps-t-section-md-light', mode === which && 'is-on'), 'aria-label': 'Choose the ' + which, onClick: function () { if (mode === which) closeWheel(false); else openWheel(which); } },
           h(PS.Swap, { k: label, y: MT.Y.digit, block: true }, h('span', null, label))),
-        h(m.button, Object.assign({ type: 'button', 'aria-label': 'Next ' + which, disabled: atEnd, onClick: function () { shift(dm); } }, atEnd ? null : PS.press(true)), h(PS.Icon, { name: 'chevron-right', size: 16, color: 'var(--color-stroke-brand-strong)' })));
+        h(m.button, Object.assign({ type: 'button', 'aria-label': 'Next ' + which, disabled: atEnd, onClick: function () { shift(dm); } }, atEnd ? null : PS.press(true)), h(PS.Icon, { name: 'chevron-right', size: 16, color: 'var(--border-accent-emphasis)' })));
     }
     var atStart = view.y * 12 + view.m <= t0, atEnd = view.y * 12 + view.m >= t1;
     var body;

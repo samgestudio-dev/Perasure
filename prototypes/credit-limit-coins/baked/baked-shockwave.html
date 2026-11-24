@@ -9,11 +9,11 @@
 <!-- first paint: the dark background straight away (before the stylesheets arrive), and nothing of the scene until the
      animation has set its first frame (boot() adds .cl-on) -->
 <style>html,body{background:#0D1620}html:not(.cl-on) #hero,html:not(.cl-on) #art{visibility:hidden}</style>
-<link rel="preload" href="baked.json?v=202611172125" as="fetch" crossorigin>
+<link rel="preload" href="baked.json?v=202611240916" as="fetch" crossorigin>
 <link rel="preload" href="../../../assets/fonts/reddit-sans-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../../../assets/fonts/hanken-grotesk-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../../../assets/fonts/fonts-2026.11.17.css">
-<link rel="stylesheet" href="baked-heap.css?v=202611172125">
+<link rel="stylesheet" href="baked-heap.css?v=202611240916">
 <!-- the shockwave filter bends <main> as one opaque picture -->
 <style>main{background:var(--bg)}
 /* ==== SHOCKWAVE TUNE PANEL (prototype only: delete these styles, the #tune markup and the panel script for production) ==== */
@@ -58,7 +58,7 @@
     <svg id="artStars" viewBox="0 236 726 485" aria-hidden="true">
       <g class="tw" data-o="600 330" data-d="1.1"><path id="starW" d="M600 286 C603.96 318.12 611.88 326.04 644 330 611.88 333.96 603.96 341.88 600 374 596.04 341.88 588.12 333.96 556 330 588.12 326.04 596.04 318.12 600 286 Z" fill="#EEF5EF"/></g>
       <g class="tw" data-o="430 300" data-d=".8"><path id="starS1" d="M430 285 C431.35 295.95 434.05 298.65 445 300 434.05 301.35 431.35 304.05 430 315 428.65 304.05 425.95 301.35 415 300 425.95 298.65 428.65 295.95 430 285 Z" fill="#EEF5EF"/></g>
-      <g class="tw" data-o="268 352" data-d=".95"><path id="starS2" d="M268 341 C268.99 349.03 270.97 351.01 279 352 270.97 352.99 268.99 354.97 268 363 267.01 354.97 265.03 352.99 257 352 265.03 351.01 267.01 349.03 268 341 Z" fill="#3FA0F0"/></g>
+      <g class="tw" data-o="268 352" data-d=".95"><path id="starS2" d="M268 341 C268.99 349.03 270.97 351.01 279 352 270.97 352.99 268.99 354.97 268 363 267.01 354.97 265.03 352.99 257 352 265.03 351.01 267.01 349.03 268 341 Z" fill="#5CD680"/></g>
       <g class="tw" data-o="118 420" data-d=".9"><path id="starC" d="M118 396 C120.16 413.52 124.48 417.84 142 420 124.48 422.16 120.16 426.48 118 444 115.84 426.48 111.52 422.16 94 420 111.52 417.84 115.84 413.52 118 396 Z" fill="#FF6B3D"/></g>
     </svg>
     <canvas id="cvBack"></canvas>
@@ -78,6 +78,6 @@
 <!-- ==== END SHOCKWAVE TUNE PANEL ==== -->
 
 <script src="../../../vendor/gsap@3.15.0/gsap.min.js"></script>
-<script src="baked-shockwave.js?v=202611172125" data-recording="baked.json?v=202611172125"></script>
+<script src="baked-shockwave.js?v=202611240916" data-recording="baked.json?v=202611240916"></script>
 </body>
 </html>

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PeraSure rebrand</title>
+<link rel="stylesheet" href="../assets/fonts/fonts-2026.11.17.css">
+<link rel="stylesheet" href="tokens/v2/tokens.css">
+<link rel="stylesheet" href="tokens/v2/legacy-aliases.css">
+<style>
+  /* rebrand demo picker: tokens only (rebrand/tokens/v2) */
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { min-height: 100vh; background: var(--surface-page); color: var(--content-primary);
+    font-family: var(--font-family-body); -webkit-font-smoothing: antialiased; }
+  main { max-width: 40rem; margin: 0 auto; padding: 2.5rem 1rem 3rem; }
+  .head { background: var(--surface-brand); color: var(--content-inverse); border-radius: 1.5rem; padding: 1.5rem; }
+  .head h1 { margin: 0 0 0.5rem; font: 700 1.75rem/2.25rem 'Hanken Grotesk', sans-serif; }
+  .head h1 b { color: var(--content-accent); font-weight: inherit; }
+  .head p { margin: 0; font-size: 0.875rem; line-height: 1.25rem; opacity: 0.8; }
+  h2 { margin: 2rem 0 0.75rem; font: 600 1rem/1.5rem 'Hanken Grotesk', sans-serif; }
+  .card { display: flex; align-items: center; gap: 1rem; min-height: 4.5rem; padding: 1rem; margin-bottom: 0.75rem; border-radius: 1.25rem;
+    background: var(--surface-default); color: inherit; text-decoration: none; box-shadow: var(--elevation-raised);
+    touch-action: manipulation; transition: transform 0.1s ease; }
+  .card:active { transform: scale(0.985); }
+  .card:focus-visible { outline: 2px solid var(--border-selected); outline-offset: 2px; }
+  .card div { flex: 1 1 auto; min-width: 0; }
+  .card b { display: block; font: 600 1rem/1.375rem 'Hanken Grotesk', sans-serif; }
+  .card span { display: block; margin-top: 0.125rem; font-size: 0.8125rem; line-height: 1.125rem; color: var(--content-secondary); }
+  .go { flex: none; display: inline-flex; align-items: center; height: 2.25rem; padding: 0 1rem; border-radius: 999px; font-weight: 600; font-size: 0.875rem;
+    background: var(--bg-action); color: var(--content-on-action); }
+  .go--quiet { background: var(--surface-sunken); color: var(--content-primary); }
+  .note { margin-top: 2rem; font-size: 0.8125rem; line-height: 1.25rem; color: var(--content-secondary); }
+  @media (prefers-reduced-motion: reduce) { .card { transition: none; } }
+</style>
+</head>
+<body>
+<main>
+  <header class="head">
+    <h1>PeraSure, <b>rebranded</b></h1>
+    <p>The Brand Bible colours on the app demo: navy is the ground, green is the action, no light blue. Open the rebranded app and the original side by side to compare.</p>
+  </header>
+
+  <h2>Rebranded</h2>
+  <a class="card" href="prototypes/app/index.html">
+    <div><b>PeraSure app</b><span>Every screen, built on the rebranded components (rebrand/shared/ps-ui)</span></div>
+    <span class="go">Open</span>
+  </a>
+  <a class="card" href="prototypes/withdraw-fund-flow/index.html">
+    <div><b>Withdraw fund flow</b><span>The Withdraw demo the app hosts: home card → amount → order details</span></div>
+    <span class="go go--quiet">Open</span>
+  </a>
+  <a class="card" href="prototypes/withdraw-fund-flow/with-credit-limit.html">
+    <div><b>Withdraw · credit limit increase</b><span>Opens with the credit limit animation</span></div>
+    <span class="go go--quiet">Open</span>
+  </a>
+
+  <h2>Original, for comparison</h2>
+  <a class="card" href="../prototypes/app/index.html">
+    <div><b>PeraSure app (original)</b><span>The demo as on GitHub, unchanged</span></div>
+    <span class="go go--quiet">Open</span>
+  </a>
+  <a class="card" href="../prototypes/withdraw-fund-flow/index.html">
+    <div><b>Withdraw fund flow (original)</b><span>The demo as on GitHub, unchanged</span></div>
+    <span class="go go--quiet">Open</span>
+  </a>
+
+  <p class="note">Change log: rebrand/log/demo.md · Brief: rebrand/BRIEF.md</p>
+</main>
+</body>
+</html>

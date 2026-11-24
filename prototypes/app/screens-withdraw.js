@@ -71,9 +71,15 @@
       }
       if (next.phase === 'confirm' && prev.phase !== 'confirm') {                      /* a term was picked: this is the loan now */
         var amount = Math.min(pesos(next), CREDIT.available), l = APP.freshLoan(amount, next.term, null), c = H.withId && find(APP.S.coupons, H.withId);
-        if (c) {                                                                        /* the coupon that was tapped, when it fits what was chosen */
-          var why = CS.why(c, amount, next.term);
-          if (why) setTimeout(function () { APP.say(why + '. See all to pick another.', 3200); }, 620); else if (c.kind === 'limit') l.lim = c.id; else l.disc = c.id;
+        if (c && APP.neverFits(c)) { var gone = c; c = null; setTimeout(function () { APP.noCoupon(gone); }, 620); }   /* out of reach whatever the loan: say why, once the order page is up */
+        if (c) {                                                                        /* the coupon that was tapped ("Use"): on, and the loan moved to its threshold when it needs more (owner 2026-11-24) */
+          if (!CS.fits(c, amount, next.term)) {
+            var curLim = l.lim && APP.S.coupons.filter(function (x) { return x.id === l.lim; })[0];
+            var pl = c.kind === 'limit' ? APP.planLoan(l, null, c) : APP.planLoan(l, c, curLim || null);
+            var keepD = l.disc && APP.S.coupons.filter(function (x) { return x.id === l.disc; })[0];
+            l.amount = pl.amount; l.term = pl.term; l.lim = pl.lim; l.disc = c.kind === 'limit' ? (keepD && CS.fits(keepD, pl.amount, pl.term) ? keepD.id : null) : pl.disc;
+            setTimeout(function () { APP.sayLoan(l); }, 620);
+          } else if (c.kind === 'limit') l.lim = c.id; else l.disc = c.id;
         }
         H.withId = null; APP.S.L = l; APP.S.lastRow = {}; s._lastMax = null; tellLater();
       } else if (next.phase === 'confirm' && APP.S.L && !s.gliding() && (next.amt !== prev.amt || next.term !== prev.term)) {   /* (a glide is the app's own change) */
@@ -88,7 +94,7 @@
     function parts() { return APP.loanParts(APP.S); }
     H.blocks = function (s, blocks) { var c = parts().coupons; return c ? [h('div', { key: 'cpn', className: 'ps-wd-app' }, c)].concat(blocks) : blocks; };
     H.order = function () { var C = parts().C; return { daily: C.daily, per: C.per, total: C.total, save: C.save }; };
-    H.extraRows = function (s, o) { return o.save ? [s.drow('Discount', '-' + s.money(o.save), 'var(--color-text-positive-heavy)', 'dsc'), s.hr('dsc1')] : []; };
+    H.extraRows = function (s, o) { return o.save ? [s.drow('Discount', '-' + s.money(o.save), 'var(--fg-success-strong)', 'dsc'), s.hr('dsc1')] : []; };
     H.firstDate = function () { return CS.date(1); };
     H.methodName = function () { return APP.S.method.name; };
     H.methodSub = function () { return 'Ending in ' + APP.S.method.last4; };
@@ -102,7 +108,7 @@
     H.maxLabel = function (s, text, style, extra) {
       var lim = APP.S.L && find(APP.S.coupons, APP.S.L.lim), boost = !!lim && s.state.phase === 'confirm';
       return h(PS.Swap, Object.assign({ k: text + (boost ? '+' : ''), y: PS.MT.Y.digit }, extra),
-        h('span', { style: Object.assign({}, style, { display: 'inline-flex', alignItems: 'center', gap: 2 }, boost ? { color: 'var(--color-text-positive-heavy)' } : null) },
+        h('span', { style: Object.assign({}, style, { display: 'inline-flex', alignItems: 'center', gap: 2 }, boost ? { color: 'var(--fg-success-strong)' } : null) },
           boost ? h(PS.Icon, { name: 'coupon-tag', size: 14, color: 'positive' }) : null, text));
     };
     /* the app's loan → the sheet (a coupon was kept or taken off, which moved the amount or the term), and its blocks drawn again */

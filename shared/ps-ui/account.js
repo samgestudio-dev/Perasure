@@ -3,12 +3,11 @@
   'use strict';
   var R = window.React, PS = window.PS, h = R.createElement, m = PS.m;
 
-  /* Profile: initials circle + name + verified mark · initials · name · verified · icon (36 px, instead of initials: not signed in) */
+  /* Profile: initials circle + name · initials · name · icon (36 px, instead of initials: not signed in). No verified mark (owner, 2026-11-23). */
   PS.Profile = function Profile(p) {
     return h('div', { className: 'ps-profile' },
       h('div', { className: 'ps-profile__avatar ps-t-headline-sm' }, p.icon ? h(PS.Icon, { name: p.icon, size: 36, color: 'secondary' }) : p.initials),
-      h('div', { className: 'ps-profile__name' }, h('p', { className: 'ps-t-display-sm' }, p.name),
-        p.verified ? h('img', { src: PS.asset('art/verified.svg'), alt: 'Verified' }) : null));
+      h('div', { className: 'ps-profile__name' }, h('p', { className: 'ps-t-display-sm' }, p.name)));
   };
 
   /* CreditLimitCard: total and available credit · total · available · onClick · title ('Credit limit') · masked (₱*****: not signed in) */
@@ -23,7 +22,7 @@
         h('div', null, h('p', { className: 'ps-num' }, p.masked ? '₱*****' : PS.money(p.available)), h('p', { className: 'ps-t-section-xs ps-c-tertiary' }, 'Available credit'))));
   };
 
-  /* Menu: list of rows in a card · items [{ id, icon, label, badge, onClick }] (badge: a solid brand tag, e.g. 'New', '6 coupons') */
+  /* Menu: list of rows in a card · items [{ id, icon, label, badge, onClick }] (badge: a solid green tag, Tag accent emphasis, e.g. 'New', '6 coupons') */
   PS.Menu = function Menu(p) {
     return h(PS.Card, { className: 'ps-menu' }, p.items.map(function (it) {
       return h(m.button, { key: it.id || it.label, type: 'button', className: 'ps-menu__item', onClick: it.onClick, whileTap: PS.TAP, transition: PS.MT.PRESS },

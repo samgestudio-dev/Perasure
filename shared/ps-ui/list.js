@@ -24,12 +24,12 @@
     });
     return h(PS.Card, { className: 'ps-facts' }, out);
   };
-  /* ActivityItem: one line of credit history (328 × 112) · icon (28, on a 36 px tile; none for adjustments) · tone positive | brand · title · sub
+  /* ActivityItem: one line of credit history (328 × 112) · icon (28, on a 36 px tile; none for adjustments) · tone positive (repayment: Bg/Brand-muted tile) | brand (loan: Bg/Success-emphasis tile), white icon on both (Figma ActivityItem) · title · sub
      amount ('+ ₱5,000') · up (green amount) · date · note ('Available:') · noteValue ('₱5,000') */
   PS.ActivityItem = function ActivityItem(p) {
     return h(PS.Card, { className: 'ps-activity' },
       h('div', { className: 'ps-activity__top' },
-        p.icon ? h('span', { className: PS.cx('ps-tile ps-tile--36', p.tone === 'positive' && 'is-positive') }, h(PS.Icon, { name: p.icon, size: 28, color: 'inverse' })) : null,
+        p.icon ? h('span', { className: PS.cx('ps-tile ps-tile--36', p.tone === 'positive' ? 'ps-activity__tile--repay' : 'ps-activity__tile--loan') }, h(PS.Icon, { name: p.icon, size: 28, color: 'inverse' })) : null,
         h('div', null, h('div', { className: 'ps-activity__title' }, h('p', { className: 'ps-t-section-sm' }, p.title), h('p', { className: PS.cx('ps-activity__amt', p.up && 'is-up') }, p.amount)),
           h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, p.sub))),
       h(PS.Divider),
@@ -55,15 +55,15 @@
   };
   /* HubCard: total credit limit with used / available · total · used · available · onWithdraw · onInfo */
   PS.HubCard = function HubCard(p) {
-    var pct = Math.max(0, Math.min(1, p.used / (p.total || 1))), C = 2 * Math.PI * 8;
+    var pct = Math.max(0, Math.min(1, p.used / (p.total || 1))), C = 2 * Math.PI * 10.5;
     return h('div', { className: 'ps-credit ps-hub' }, h('img', { className: 'ps-credit__glow', src: PS.asset('art/card-glow.svg'), alt: '' }),
       h('div', { className: 'ps-credit__top' }, h('div', { style: { flex: 1, minWidth: 0 } }, h('p', { className: 'ps-credit__label' }, 'Total credit limit'), h(PS.Amount, { value: p.total, className: 'ps-hub__amount' })),
         h(m.button, Object.assign({ type: 'button', 'aria-label': 'About your credit limit', onClick: p.onInfo, style: { height: '1.25rem' } }, PS.press(true)), h(PS.Icon, { name: 'info', size: 20, color: 'inverse', style: { opacity: 0.6 } }))),
       h('div', { className: 'ps-hub__row' },
-        h('svg', { style: { width: '1.25rem', height: '1.25rem' }, viewBox: '0 0 20 20', 'aria-hidden': true }, h('circle', { cx: 10, cy: 10, r: 8, fill: 'none', stroke: 'currentColor', strokeOpacity: 0.3, strokeWidth: 3 }),
-          h('circle', { cx: 10, cy: 10, r: 8, fill: 'none', stroke: 'currentColor', strokeWidth: 3, strokeLinecap: 'round', strokeDasharray: C * pct + ' ' + C, transform: 'rotate(-90 10 10)' })),
+        h('svg', { viewBox: '0 0 24 24', 'aria-hidden': true }, h('circle', { className: 'ps-hub__track', cx: 12, cy: 12, r: 10.5, fill: 'none', strokeWidth: 3 }),   // Figma HubCard ring: 24, 3 thick, track Bg/On-brand, used Fg/On-emphasis
+          h('circle', { cx: 12, cy: 12, r: 10.5, fill: 'none', stroke: 'currentColor', strokeWidth: 3, strokeLinecap: 'round', strokeDasharray: C * pct + ' ' + C, transform: 'rotate(-90 12 12)' })),
         h('div', { className: 'ps-t-caption-sm' }, h('p', null, h('span', null, 'Used:'), PS.money(p.used)), h('p', null, h('span', null, 'Available:'), PS.money(p.available))),
-        h(PS.Button, { variant: 'shade', className: 'ps-hub__btn', onClick: p.onWithdraw }, 'Withdraw')));
+        h(PS.Button, { variant: 'navy', size: 'sm', className: 'ps-hub__btn', onClick: p.onWithdraw }, 'Withdraw')));
   };
   /* Tiles: picture tiles in a card (credit history) · title · items [{ id, art, label, onClick }] */
   PS.Tiles = function Tiles(p) {

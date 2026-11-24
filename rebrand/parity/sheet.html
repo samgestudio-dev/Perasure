@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Parity sheet</title>
+<!-- Parity export (demo-rebrand): every stage state of one spec component, in spec order, one under another, for rebrand/parity/demo/<Name>.png.
+     ?entry=<Name>&w=<px>&h=<h0,h1,…> (heights measured from the stage) — photographed at 2x by headless Chrome. -->
+<link rel="stylesheet" href="../tokens/v2/tokens.css">
+<style>
+  html, body { margin: 0; background: var(--surface-page); }
+  .sheet { display: flex; flex-direction: column; gap: 8px; padding: 8px; }
+  .cell { background: var(--surface-page); }
+  .cell p { margin: 0 0 2px; font: 500 10px/14px 'Hanken Grotesk', sans-serif; color: var(--content-tertiary); }
+  .cell iframe { display: block; border: 0; }
+</style>
+</head>
+<body>
+<div class="sheet" id="sheet"></div>
+<script>
+  var q = new URLSearchParams(location.search), name = q.get('entry'), w = +q.get('w') || 375, hs = (q.get('h') || '').split(',').map(Number), sheet = document.getElementById('sheet');
+  hs.forEach(function (hh, i) {
+    var c = document.createElement('div'); c.className = 'cell';
+    var p = document.createElement('p'); p.textContent = name + ' · state ' + i; c.appendChild(p);
+    var f = document.createElement('iframe'); f.src = '../shared/stage.html?entry=' + encodeURIComponent(name) + '&state=' + i; f.width = w; f.height = hh; f.style.width = w + 'px'; f.style.height = hh + 'px';
+    c.appendChild(f); sheet.appendChild(c);
+  });
+  /* steady the Lottie art (EmptyState …): after load, park every animation on its last frame — headless time is not real time */
+  function still() {
+    Array.prototype.forEach.call(document.querySelectorAll('iframe'), function (f) {
+      try { var L = f.contentWindow.lottie || f.contentWindow.bodymovin;
+        if (L && L.getRegisteredAnimations) L.getRegisteredAnimations().forEach(function (a) { try { a.goToAndStop(Math.max(0, Math.floor(a.totalFrames) - 1), true); } catch (e) {} }); } catch (e) {}
+    });
+  }
+  window.addEventListener('load', function () { [1500, 3000, 6000].forEach(function (ms) { setTimeout(still, ms); }); });
+</script>
+</body>
+</html>

@@ -11,7 +11,7 @@
   /* ---- the Account tab ---- */
   APP.tabs.account = function Account() {
     var S = APP.use(), n = S.coupons.length, inUse = APP.signedIn(), unread = (S.inbox || INBOX()).filter(function (x) { return x.unread; }).length;
-    var head = { left: h(PS.Brand), right: [APP.tune(), inUse ? h(PS.Glass, { key: 'h', icon: 'headset', iconSize: 18, label: 'Contact us', onClick: APP.support })
+    var head = { flat: true, left: h(PS.Brand), right: [APP.tune(), inUse ? h(PS.Glass, { key: 'h', icon: 'headset', iconSize: 18, label: 'Contact us', onClick: APP.support })
       : h(PS.HomeActions, { key: 'a', actions: [{ icon: 'gift', label: 'Rewards', onClick: soon('Rewards') }, { icon: 'headset', label: 'Contact us', onClick: APP.support }] })] };
     var login = go('login');
     var menu = [
@@ -30,7 +30,7 @@
       h(PS.CreditLimitCard, { total: CS.credit.total, available: CS.credit.available, onClick: go('hub') }),
       h(PS.Menu, { items: menu }),
       h(PS.Social, {}),
-      h(PS.Button, { variant: 'inverse', block: true, onClick: function () { APP.open('logout'); } }, 'Log out'));
+      h(PS.Button, { variant: 'plain', block: true, onClick: function () { APP.open('logout'); } }, 'Log out'));
   };
   /* a confirm sheet: title + close, text, two buttons (log out, delete) — PS.Confirm */
   function Confirm(p) { return h(PS.Confirm, Object.assign({ onClose: APP.close }, p)); }
@@ -42,7 +42,7 @@
   APP.screen('hub', function Hub() {
     var c = CS.credit, used = c.total - c.available;
     return h(APP.Page, { title: 'Credit limit', load: 'hub' },
-      h(PS.HubCard, { total: c.total, used: used, available: c.available, onWithdraw: function () { APP.borrow(); }, onInfo: function (e) { APP.tipAt(e.currentTarget, 'Your total credit limit is the most you can borrow at one time.'); } }),
+      h(PS.HubCard, { total: c.total, used: used, available: c.available, onWithdraw: function () { APP.borrow(); }, onInfo: function (e) { APP.tipAt(e.currentTarget, 'Your total credit limit is the most you can borrow at one time.', null, { icon: 'pending' }); } }),
       h(PS.Tiles, { title: 'Credit history', items: [{ id: 'adj', art: 'credit-adjustments', label: 'Credit adjustments', onClick: go('credit', { tab: 'adj' }) }, { id: 'act', art: 'borrowing-activity', label: 'Borrowing activity', onClick: go('credit', { tab: 'act' }) }] }),
       h(PS.Tips, { title: 'How to improve your credit limit', items: [
         { title: 'Repay on time', body: 'Pay on or before your due date to qualify for limit increases from ₱5,000 to ₱15,000.' },
@@ -68,10 +68,10 @@
   APP.screen('credit', function Credit(p) {
     var s = R.useState(p.params.tab || 'adj'), tab = s[0], S = APP.S, none = S.loan === 'none' && S.user !== 'approved';
     var rows = tab === 'act' ? acts(S) : ADJ;
-    return h(PS.Screen, { secondary: true, colTop: 172, colBottom: 48, top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), title: 'Credit history', right: APP.tune(), solid: true, extraHeight: 56,
-      extra: h('div', { className: 'app-ptabs' }, h(PS.Tabs, { id: 'app-credit', split: true, value: tab, onChange: s[1], items: [{ id: 'adj', label: 'Credit adjustments' }, { id: 'act', label: 'Borrowing activity' }] })) } },
+    return h(PS.Screen, { secondary: true, colTop: 160, colBottom: 48, top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), title: 'Credit history', right: APP.tune(), solid: true, extraHeight: 44,
+      extra: h('div', { className: 'app-ptabs' }, h(PS.Tabs, { id: 'app-credit', split: true, chip: true, fade: true, value: tab, onChange: s[1], items: [{ id: 'adj', label: 'Credit adjustments' }, { id: 'act', label: 'Borrowing activity' }] })) } },
       h(APP.Loaded, { k: 'credit', rise: false }, h(PS.Crossfade, { k: tab, rise: true, className: none ? null : 'app-stack-12' },
-        none ? h(PS.EmptyState, { title: 'No limit history yet', body: 'Complete your profile check and link your e-wallet to activate your revolving credit limit.', page: true })
+        none ? h(PS.EmptyState, { title: 'No limit history yet', body: 'Complete your profile check and link your e‑wallet to activate your revolving credit limit.', page: true })
         : rows.map(function (r, i) { return h(PS.ActivityItem, Object.assign({ key: i, note: tab === 'act' ? 'Available:' : 'Total credit:', noteValue: r.nv }, r)); }))));
   });
 
@@ -102,7 +102,7 @@
     return h(APP.Page, { title: 'SEC Registration' },
       h(PS.RegCard, { title: 'Sulit Lending Corporation', body: 'Authorized and registered in compliance with Republic Act No.9474 (Lending Company Regulation Act of 2007) of the Republic of the Philippines.' }),
       h(PS.Facts, { rows: [{ label: 'SEC registered number', value: '2020100002616-03' }, { label: 'Certificate of authority (CA)', value: 'No. 3410' },
-        { label: 'Corporate headquarters', value: 'Brgy. Wack-Wack, Mandaluyong City, Metro Manila' }, { label: 'In-App product brand', value: 'PeraSure Secure MicroCredits' }] }),
+        { label: 'Corporate headquarters', value: 'Brgy. Wack‑Wack, Mandaluyong City, Metro Manila' }, { label: 'In‑App product brand', value: 'PeraSure Secure MicroCredits' }] }),
       h('p', { className: 'ps-t-caption-xs ps-c-tertiary', style: { textAlign: 'center' } }, 'SULIT LENDING is audited regularly by the Securities and Exchange Commission (SEC) to guarantee transparent collection policies under Fair Debt Collection Practices guidelines.'));
   });
   APP.screen('bir', function Bir() {
@@ -151,7 +151,7 @@
     if (T.inbox === 'empty') return [];
     /* newest first; the amounts and dates are the app's (CS.credit, CS.current): the coupon, the loan once it has been sent (repaying / overdue),
        and the limit from when the documents were verified (Sep 24) */
-    var cur = CS.current, mt = APP.S.method, list = [{ id: 'm3', kind: 'Reminder', time: '5d ago', title: 'You have a new coupon', body: '25% off first-payment interest on your next loan. Use it before Nov 13, 2026.' }];
+    var cur = CS.current, mt = APP.S.method, list = [{ id: 'm3', kind: 'Reminder', time: '5d ago', title: 'You have a new coupon', body: '25% off first‑payment interest on your next loan. Use it before Nov 13, 2026.' }];
     if (cur && APP.S.repay) list.push({ id: 'm2', kind: 'Reminder', time: cur.ago + 'd ago', title: 'Your ' + money(cur.amount) + ' loan has been sent',
       body: 'We’ve sent ' + money(cur.amount) + ' to your ' + mt.name + ' ending in ' + mt.last4 + '. Your first payment is due on ' + cur.dues[0].dueShort + '.' });
     list.push({ id: 'm1', kind: 'System notification', time: '49d ago', title: 'Your credit limit is ready', body: 'You’ve been approved for a revolving credit limit of ' + money(CS.credit.limit, 0) + '. You can choose how much to borrow based on your available credit. As you repay on time, your available credit goes up.', cta: 'Go to borrow' });
@@ -164,9 +164,9 @@
     var empty = !list.length ? ['No messages yet', 'When we have news about your loan or account, you’ll see it here.'] : tab === 'unread' ? ['You’re all caught up', 'You’ve read every message.'] : ['No read messages yet', 'Messages you open show up here.'];
     var markAll = h(PS.AP, null, un.length && tab === 'unread' ? h(m.div, Object.assign({ key: 'fab', className: 'app-fab' }, PS.fade(MT_Y)),
       h(PS.Glass, { round: false, size: 'lg', onClick: function () { APP.set({ inbox: list.map(function (x) { return Object.assign({}, x, { unread: false }); }) }); } }, 'Mark all read')) : null);
-    return h(PS.Screen, { secondary: true, colTop: 172, colBottom: un.length && tab === 'unread' ? 124 : 48, overlay: markAll, top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), title: 'Inbox', solid: true, extraHeight: 56,
+    return h(PS.Screen, { secondary: true, colTop: 160, colBottom: un.length && tab === 'unread' ? 124 : 48, overlay: markAll, top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), title: 'Inbox', solid: true, extraHeight: 44,
       right: APP.tune(),
-      extra: h('div', { className: 'app-ptabs' }, h(PS.Tabs, { id: 'app-inbox', split: true, spaced: true, value: tab, onChange: s[1], items: [{ id: 'unread', label: 'Unread' + (un.length ? ' (' + un.length + ')' : '') }, { id: 'read', label: 'Read' }] })) } },
+      extra: h('div', { className: 'app-ptabs' }, h(PS.Tabs, { id: 'app-inbox', split: true, spaced: true, fade: true, value: tab, onChange: s[1], items: [{ id: 'unread', label: 'Unread' + (un.length ? ' (' + un.length + ')' : '') }, { id: 'read', label: 'Read' }] })) } },
       h(APP.Loaded, { k: 'inbox', rise: false }, h(PS.Crossfade, { k: tab + shown.length, rise: true, className: shown.length ? 'app-stack-12' : null }, shown.length ? shown.map(function (x) {
           return h(PS.InboxItem, { key: x.id, kind: x.kind, time: x.time, unread: x.unread, title: x.title, body: x.body, onOpen: function () { open(x); } }); }).concat(
           h('p', { key: 'end', className: 'ps-t-caption-xs ps-c-placeholder', style: { textAlign: 'center' } }, 'You have reached the end.'))

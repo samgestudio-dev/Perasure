@@ -133,7 +133,8 @@
         this._padQuick = false;
         this._born = {}; this._freshSheet = true;
         this._mp = 0; if (this._mpMV) this._mpMV.jump(0);
-        this.setState({ screen: 'loan', phase: 'enter', term: null, pillOpen: false, morph: false, agree: false });
+        var cap = this.maxH(), cur = parseInt(this.state.amt || '0', 10);   /* never start above what can be borrowed (₱12,500 was the demo's own start) */
+        this.setState({ screen: 'loan', phase: 'enter', term: null, pillOpen: false, morph: false, agree: false, amt: cur > cap ? String(cap) : this.state.amt });
       }
       close() { this.setState({ screen: 'home' }); }
       ready() { return !!(this.state.fm && this.state.MT); }
@@ -149,7 +150,7 @@
         if (!this.state.agree) return super.confirmTap();
         var on = this.opt('onConfirm'); if (on) on(this);
       }
-      /* the demo's order page has a fixed length, made for its own blocks (its last block ends 24 px above the Confirm bar, 108);
+      /* the demo's order page has a fixed length, made for its own blocks (its last block ends 24 px above the Confirm bar, 96);
          with the host's blocks added it is as long as they need, with the same 24 px */
       blocksRef() { var self = this; return this._blocksRef || (this._blocksRef = function (n) { self.watchBlocks(n); }); }
       watchBlocks(n) {
@@ -162,7 +163,7 @@
       }
       fitBlocks() {
         var b = this._hostBlocks; if (!b || !b.parentNode) return;
-        var need = 382 + b.offsetHeight + 24 + 108 + this.sb(), min = 740 + this.ex() - this.df() + this.sb(), hgt = Math.max(need, min) + 'px';
+        var need = 382 + b.offsetHeight + 24 + 96 + this.sb(), min = 740 + this.ex() - this.df() + this.sb(), hgt = Math.max(need, min) + 'px';
         if (b.parentNode.style.height !== hgt) b.parentNode.style.height = hgt;
         if (this.updEnd) this.updEnd();
       }

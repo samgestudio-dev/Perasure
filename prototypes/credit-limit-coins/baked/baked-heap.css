@@ -1,7 +1,7 @@
 /* Credit limit increase, Baked heap: page styles. Fonts come from ../../../assets/fonts/fonts-2026.11.17.css (the app's fonts). */
 /* Responsive phone page in normal flow. --u = screen width / 360 (capped at 480px wide), set from JS,
    so type and pills scale with the phone; the coin artwork is an SVG that scales with its width. */
-:root{ --bg:#0D1620; --text:#EEF5EF; --muted:#9AA7B0; --accent:#3FA0F0; --chip:#1B2834; --ink:#0D1620; --u:1; color-scheme:dark }
+:root{ --bg:#0D1620; --text:#EEF5EF; --muted:#9AA7B0; --accent:#5CD680; --chip:#1B2834; --ink:#0D1620; --u:1; color-scheme:dark }
 html,body{margin:0;background:var(--bg);-webkit-tap-highlight-color:transparent}
 body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;
   font-family:var(--ps-font-text);touch-action:manipulation}
@@ -31,7 +31,7 @@ main{box-sizing:border-box;width:100%;max-width:480px;flex:1;display:flex;flex-d
 #up{position:relative;z-index:1}
 #exp{display:flex;align-items:center;margin-left:calc(-17px * var(--u));padding:calc(7px * var(--u)) calc(12px * var(--u)) calc(7px * var(--u)) calc(29px * var(--u));border-radius:0 999px 999px 0;background:#1A232C;
   color:#B4BCC1;font-family:var(--ps-font-body);font-weight:500;font-size:calc(13px * var(--u));line-height:calc(20px * var(--u))}
-#was{margin-top:calc(10px * var(--u));font-family:var(--ps-font-body);font-weight:400;font-size:calc(13px * var(--u));line-height:calc(18px * var(--u));color:#7D878E}
+#was{margin-top:calc(10px * var(--u));font-family:var(--ps-font-body);font-weight:400;font-size:calc(13px * var(--u));line-height:calc(18px * var(--u));color:#8A8A9C}
 #was .num{font-family:var(--ps-font-body);font-weight:500;color:#B4BCC1;font-variant-numeric:tabular-nums}
 /* the coins: full width, but never taller than about 40% of the screen on short phones */
 #art{display:grid;width:100%}

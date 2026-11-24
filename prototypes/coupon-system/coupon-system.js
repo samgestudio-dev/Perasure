@@ -181,7 +181,7 @@
           { id: 'history', icon: 'history', label: 'Loan history' }, { id: 'faq', icon: 'info', label: 'FAQs' },
           { id: 'contact', icon: 'chat', label: 'Contact us' }, { id: 'manage', icon: 'user', label: 'Manage account' }, { id: 'about', icon: 'help', label: 'About PeraSure' }] }),
         h(PS.Social, {}),
-        h(PS.Button, { variant: 'inverse', block: true }, 'Log out'));
+        h(PS.Button, { variant: 'plain', block: true }, 'Log out'));
     }
     function tabsPage() {
       return h('div', { className: 'cs-tabs' },

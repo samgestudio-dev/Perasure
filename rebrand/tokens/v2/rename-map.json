@@ -1,0 +1,4073 @@
+{
+ "version": "2.0.0-draft",
+ "date": "2026-11-19",
+ "tokens": {
+  "color-green-50": {
+   "new": "palette-green-50",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-green-100": {
+   "new": "palette-green-100",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-green-200": {
+   "new": "palette-green-200",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-green-300": {
+   "new": "palette-green-300",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-green-400": {
+   "new": "palette-green-400",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-green-500": {
+   "new": "palette-green-500",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 2
+  },
+  "color-green-600": {
+   "new": "palette-green-600",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-green-700": {
+   "new": "palette-green-700",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-green-800": {
+   "new": "palette-green-800",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-green-900": {
+   "new": "palette-green-900",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-green-950": {
+   "new": "palette-green-950",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-neutral-0": {
+   "new": "palette-neutral-0",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 5
+  },
+  "color-neutral-50": {
+   "new": "palette-neutral-50",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 6
+  },
+  "color-neutral-100": {
+   "new": "palette-neutral-100",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 2
+  },
+  "color-neutral-150": {
+   "new": "palette-neutral-150",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 16
+  },
+  "color-neutral-200": {
+   "new": "palette-neutral-200",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 1
+  },
+  "color-neutral-300": {
+   "new": "palette-neutral-300",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 1
+  },
+  "color-neutral-400": {
+   "new": "palette-neutral-400",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-neutral-500": {
+   "new": "palette-neutral-500",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 2
+  },
+  "color-neutral-600": {
+   "new": "palette-neutral-600",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 1
+  },
+  "color-neutral-700": {
+   "new": "palette-neutral-700",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 1
+  },
+  "color-neutral-800": {
+   "new": "palette-neutral-800",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-neutral-900": {
+   "new": "palette-neutral-900",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-neutral-950": {
+   "new": "palette-neutral-950",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 25
+  },
+  "color-ambient-50": {
+   "new": "palette-ambient-50",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-ambient-100": {
+   "new": "palette-ambient-100",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-ambient-200": {
+   "new": "palette-ambient-200",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-ambient-300": {
+   "new": "palette-ambient-300",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-ambient-400": {
+   "new": "palette-ambient-400",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-ambient-500": {
+   "new": "palette-ambient-500",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-ambient-600": {
+   "new": "palette-ambient-600",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-ambient-700": {
+   "new": "palette-ambient-700",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-ambient-800": {
+   "new": "palette-ambient-800",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-ambient-900": {
+   "new": "palette-ambient-900",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-ambient-950": {
+   "new": "palette-ambient-950",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-red-50": {
+   "new": "palette-red-50",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-red-100": {
+   "new": "palette-red-100",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-red-200": {
+   "new": "palette-red-200",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-red-300": {
+   "new": "palette-red-300",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-red-400": {
+   "new": "palette-red-400",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-red-500": {
+   "new": "palette-red-500",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-red-600": {
+   "new": "palette-red-600",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-red-700": {
+   "new": "palette-red-700",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-red-800": {
+   "new": "palette-red-800",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-red-900": {
+   "new": "palette-red-900",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-red-950": {
+   "new": "palette-red-950",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-navy-50": {
+   "new": "palette-navy-50",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-navy-100": {
+   "new": "palette-navy-100",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-navy-200": {
+   "new": "palette-navy-200",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-navy-300": {
+   "new": "palette-navy-300",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-navy-400": {
+   "new": "palette-navy-400",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-navy-500": {
+   "new": "palette-navy-500",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-navy-600": {
+   "new": "palette-navy-600",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-navy-700": {
+   "new": "palette-navy-700",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-navy-800": {
+   "new": "palette-navy-800",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-navy-900": {
+   "new": "palette-navy-900",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-navy-950": {
+   "new": "palette-navy-950",
+   "kind": "rename",
+   "note": "primitive; screens should use a semantic token",
+   "uses": 0
+  },
+  "color-alpha-black-6": {
+   "new": "palette-alpha-black-6",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 0
+  },
+  "color-alpha-black-8": {
+   "new": "palette-alpha-black-8",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 0
+  },
+  "color-alpha-black-12": {
+   "new": "palette-alpha-black-12",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 0
+  },
+  "color-alpha-black-16": {
+   "new": "palette-alpha-black-16",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 0
+  },
+  "color-alpha-black-20": {
+   "new": "palette-alpha-black-20",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 0
+  },
+  "color-alpha-blue-0": {
+   "new": "palette-alpha-white-0",
+   "kind": "removed",
+   "note": "blue removed; alias keeps glass glows as white",
+   "uses": 0
+  },
+  "color-alpha-blue-20": {
+   "new": "palette-alpha-white-20",
+   "kind": "removed",
+   "note": "blue removed; alias keeps glass glows as white",
+   "uses": 1
+  },
+  "color-alpha-blue-40": {
+   "new": "palette-alpha-white-40",
+   "kind": "removed",
+   "note": "blue removed; alias keeps glass glows as white",
+   "uses": 1
+  },
+  "color-alpha-blue-50": {
+   "new": "palette-alpha-white-50",
+   "kind": "removed",
+   "note": "blue removed; alias keeps glass glows as white",
+   "uses": 1
+  },
+  "color-alpha-blue-60": {
+   "new": "palette-alpha-white-60",
+   "kind": "removed",
+   "note": "blue removed; alias keeps glass glows as white",
+   "uses": 0
+  },
+  "color-alpha-blue-80": {
+   "new": "palette-alpha-white-80",
+   "kind": "removed",
+   "note": "blue removed; alias keeps glass glows as white",
+   "uses": 0
+  },
+  "color-alpha-cold-black-6": {
+   "new": "palette-alpha-navy-6",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 0
+  },
+  "color-alpha-cold-black-8": {
+   "new": "palette-alpha-navy-8",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 1
+  },
+  "color-alpha-cold-black-12": {
+   "new": "palette-alpha-navy-12",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 0
+  },
+  "color-alpha-cold-black-16": {
+   "new": "palette-alpha-navy-16",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 1
+  },
+  "color-alpha-cold-black-20": {
+   "new": "palette-alpha-navy-20",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 0
+  },
+  "color-alpha-green-6": {
+   "new": "palette-alpha-deep-green-6",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 0
+  },
+  "color-alpha-green-8": {
+   "new": "palette-alpha-deep-green-8",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 0
+  },
+  "color-alpha-green-12": {
+   "new": "palette-alpha-deep-green-12",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 0
+  },
+  "color-alpha-green-16": {
+   "new": "palette-alpha-deep-green-16",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 0
+  },
+  "color-alpha-green-20": {
+   "new": "palette-alpha-deep-green-20",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 0
+  },
+  "color-alpha-green-40": {
+   "new": "palette-alpha-deep-green-40",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 0
+  },
+  "color-alpha-green-60": {
+   "new": "palette-alpha-deep-green-60",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 0
+  },
+  "color-alpha-grey-0": {
+   "new": "palette-alpha-grey-0",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 0
+  },
+  "color-alpha-grey-20": {
+   "new": "palette-alpha-grey-20",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 0
+  },
+  "color-alpha-grey-40": {
+   "new": "palette-alpha-grey-40",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 0
+  },
+  "color-alpha-grey-60": {
+   "new": "palette-alpha-grey-60",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 0
+  },
+  "color-alpha-grey-80": {
+   "new": "palette-alpha-grey-80",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 0
+  },
+  "color-alpha-white-0": {
+   "new": "palette-alpha-white-0",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 0
+  },
+  "color-alpha-white-20": {
+   "new": "palette-alpha-white-20",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 0
+  },
+  "color-alpha-white-40": {
+   "new": "palette-alpha-white-40",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 0
+  },
+  "color-alpha-white-50": {
+   "new": "palette-alpha-white-50",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 0
+  },
+  "color-alpha-white-60": {
+   "new": "palette-alpha-white-60",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 2
+  },
+  "color-alpha-white-80": {
+   "new": "palette-alpha-white-80",
+   "kind": "rename",
+   "note": "primitive",
+   "uses": 2
+  },
+  "color-blue-50": {
+   "new": "palette-green-50",
+   "kind": "removed",
+   "note": "blue removed; alias points at the rebrand equivalent",
+   "uses": 0
+  },
+  "color-brand-50": {
+   "new": "palette-green-50",
+   "kind": "removed",
+   "note": "scale re-export removed; use a role (content-brand, surface-brand…)",
+   "uses": 0
+  },
+  "color-blue-100": {
+   "new": "palette-green-100",
+   "kind": "removed",
+   "note": "blue removed; alias points at the rebrand equivalent",
+   "uses": 0
+  },
+  "color-brand-100": {
+   "new": "palette-green-100",
+   "kind": "removed",
+   "note": "scale re-export removed; use a role (content-brand, surface-brand…)",
+   "uses": 0
+  },
+  "color-blue-200": {
+   "new": "palette-green-200",
+   "kind": "removed",
+   "note": "blue removed; alias points at the rebrand equivalent",
+   "uses": 0
+  },
+  "color-brand-200": {
+   "new": "palette-green-200",
+   "kind": "removed",
+   "note": "scale re-export removed; use a role (content-brand, surface-brand…)",
+   "uses": 3
+  },
+  "color-blue-300": {
+   "new": "palette-green-300",
+   "kind": "removed",
+   "note": "blue removed; alias points at the rebrand equivalent",
+   "uses": 0
+  },
+  "color-brand-300": {
+   "new": "palette-green-300",
+   "kind": "removed",
+   "note": "scale re-export removed; use a role (content-brand, surface-brand…)",
+   "uses": 0
+  },
+  "color-blue-400": {
+   "new": "palette-green-400",
+   "kind": "removed",
+   "note": "blue removed; alias points at the rebrand equivalent",
+   "uses": 0
+  },
+  "color-brand-400": {
+   "new": "palette-green-400",
+   "kind": "removed",
+   "note": "scale re-export removed; use a role (content-brand, surface-brand…)",
+   "uses": 2
+  },
+  "color-blue-500": {
+   "new": "palette-green-500",
+   "kind": "removed",
+   "note": "blue removed; alias points at the rebrand equivalent",
+   "uses": 0
+  },
+  "color-brand-500": {
+   "new": "palette-green-500",
+   "kind": "removed",
+   "note": "scale re-export removed; use a role (content-brand, surface-brand…)",
+   "uses": 5
+  },
+  "color-blue-600": {
+   "new": "palette-green-600",
+   "kind": "removed",
+   "note": "blue removed; alias points at the rebrand equivalent",
+   "uses": 0
+  },
+  "color-brand-600": {
+   "new": "palette-green-600",
+   "kind": "removed",
+   "note": "scale re-export removed; use a role (content-brand, surface-brand…)",
+   "uses": 29
+  },
+  "color-blue-700": {
+   "new": "palette-green-700",
+   "kind": "removed",
+   "note": "blue removed; alias points at the rebrand equivalent",
+   "uses": 0
+  },
+  "color-brand-700": {
+   "new": "palette-green-700",
+   "kind": "removed",
+   "note": "scale re-export removed; use a role (content-brand, surface-brand…)",
+   "uses": 2
+  },
+  "color-blue-800": {
+   "new": "palette-green-800",
+   "kind": "removed",
+   "note": "blue removed; alias points at the rebrand equivalent",
+   "uses": 0
+  },
+  "color-brand-800": {
+   "new": "palette-green-800",
+   "kind": "removed",
+   "note": "scale re-export removed; use a role (content-brand, surface-brand…)",
+   "uses": 1
+  },
+  "color-blue-900": {
+   "new": "palette-green-900",
+   "kind": "removed",
+   "note": "blue removed; alias points at the rebrand equivalent",
+   "uses": 1
+  },
+  "color-brand-900": {
+   "new": "palette-green-900",
+   "kind": "removed",
+   "note": "scale re-export removed; use a role (content-brand, surface-brand…)",
+   "uses": 0
+  },
+  "color-blue-950": {
+   "new": "palette-navy-900",
+   "kind": "removed",
+   "note": "blue removed; alias points at the rebrand equivalent",
+   "uses": 0
+  },
+  "color-brand-950": {
+   "new": "palette-navy-900",
+   "kind": "removed",
+   "note": "scale re-export removed; use a role (content-brand, surface-brand…)",
+   "uses": 2
+  },
+  "color-positive-50": {
+   "new": "palette-green-50",
+   "kind": "removed",
+   "note": "scale re-export removed; use bg/content/border-positive",
+   "uses": 0
+  },
+  "color-positive-100": {
+   "new": "palette-green-100",
+   "kind": "removed",
+   "note": "scale re-export removed; use bg/content/border-positive",
+   "uses": 1
+  },
+  "color-positive-200": {
+   "new": "palette-green-200",
+   "kind": "removed",
+   "note": "scale re-export removed; use bg/content/border-positive",
+   "uses": 0
+  },
+  "color-positive-300": {
+   "new": "palette-green-300",
+   "kind": "removed",
+   "note": "scale re-export removed; use bg/content/border-positive",
+   "uses": 0
+  },
+  "color-positive-400": {
+   "new": "palette-green-400",
+   "kind": "removed",
+   "note": "scale re-export removed; use bg/content/border-positive",
+   "uses": 0
+  },
+  "color-positive-500": {
+   "new": "palette-green-500",
+   "kind": "removed",
+   "note": "scale re-export removed; use bg/content/border-positive",
+   "uses": 0
+  },
+  "color-positive-600": {
+   "new": "palette-green-600",
+   "kind": "removed",
+   "note": "scale re-export removed; use bg/content/border-positive",
+   "uses": 1
+  },
+  "color-positive-700": {
+   "new": "palette-green-700",
+   "kind": "removed",
+   "note": "scale re-export removed; use bg/content/border-positive",
+   "uses": 0
+  },
+  "color-positive-800": {
+   "new": "palette-green-800",
+   "kind": "removed",
+   "note": "scale re-export removed; use bg/content/border-positive",
+   "uses": 0
+  },
+  "color-positive-900": {
+   "new": "palette-green-900",
+   "kind": "removed",
+   "note": "scale re-export removed; use bg/content/border-positive",
+   "uses": 0
+  },
+  "color-positive-950": {
+   "new": "palette-green-950",
+   "kind": "removed",
+   "note": "scale re-export removed; use bg/content/border-positive",
+   "uses": 0
+  },
+  "color-negative-50": {
+   "new": "palette-red-50",
+   "kind": "removed",
+   "note": "scale re-export removed; use bg/content/border-negative",
+   "uses": 0
+  },
+  "color-negative-100": {
+   "new": "palette-red-100",
+   "kind": "removed",
+   "note": "scale re-export removed; use bg/content/border-negative",
+   "uses": 1
+  },
+  "color-negative-200": {
+   "new": "palette-red-200",
+   "kind": "removed",
+   "note": "scale re-export removed; use bg/content/border-negative",
+   "uses": 2
+  },
+  "color-negative-300": {
+   "new": "palette-red-300",
+   "kind": "removed",
+   "note": "scale re-export removed; use bg/content/border-negative",
+   "uses": 0
+  },
+  "color-negative-400": {
+   "new": "palette-red-400",
+   "kind": "removed",
+   "note": "scale re-export removed; use bg/content/border-negative",
+   "uses": 0
+  },
+  "color-negative-500": {
+   "new": "palette-red-500",
+   "kind": "removed",
+   "note": "scale re-export removed; use bg/content/border-negative",
+   "uses": 1
+  },
+  "color-negative-600": {
+   "new": "palette-red-600",
+   "kind": "removed",
+   "note": "scale re-export removed; use bg/content/border-negative",
+   "uses": 3
+  },
+  "color-negative-700": {
+   "new": "palette-red-700",
+   "kind": "removed",
+   "note": "scale re-export removed; use bg/content/border-negative",
+   "uses": 0
+  },
+  "color-negative-800": {
+   "new": "palette-red-800",
+   "kind": "removed",
+   "note": "scale re-export removed; use bg/content/border-negative",
+   "uses": 0
+  },
+  "color-negative-900": {
+   "new": "palette-red-900",
+   "kind": "removed",
+   "note": "scale re-export removed; use bg/content/border-negative",
+   "uses": 0
+  },
+  "color-negative-950": {
+   "new": "palette-red-950",
+   "kind": "removed",
+   "note": "scale re-export removed; use bg/content/border-negative",
+   "uses": 0
+  },
+  "color-warning-50": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-warning-100": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-warning-200": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-warning-300": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 1
+  },
+  "color-warning-400": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-warning-500": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-warning-600": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-warning-700": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-marketing-50": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-marketing-100": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-marketing-200": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-marketing-300": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-marketing-400": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-marketing-500": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-marketing-600": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-marketing-700": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-yellow-50": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-yellow-100": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-yellow-200": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-yellow-300": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-yellow-400": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-yellow-500": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-yellow-600": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-yellow-700": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-pink-50": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-pink-100": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-pink-200": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-pink-300": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-pink-400": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-pink-500": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-pink-600": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-pink-700": {
+   "new": null,
+   "kind": "removed",
+   "note": "owner: pink/yellow removed (legacy); no replacement",
+   "uses": 0
+  },
+  "color-text-primary": {
+   "new": "content-primary",
+   "kind": "merge",
+   "note": "",
+   "uses": 208
+  },
+  "color-icon-primary": {
+   "new": "content-primary",
+   "kind": "merge",
+   "note": "",
+   "uses": 10
+  },
+  "color-text-secondary": {
+   "new": "content-secondary",
+   "kind": "merge",
+   "note": "",
+   "uses": 93
+  },
+  "color-icon-secondary": {
+   "new": "content-secondary",
+   "kind": "merge",
+   "note": "",
+   "uses": 8
+  },
+  "color-text-tertiary": {
+   "new": "content-tertiary",
+   "kind": "merge",
+   "note": "",
+   "uses": 96
+  },
+  "color-icon-tertiary": {
+   "new": "content-tertiary",
+   "kind": "merge",
+   "note": "",
+   "uses": 10
+  },
+  "color-text-placeholder": {
+   "new": "content-placeholder",
+   "kind": "merge",
+   "note": "",
+   "uses": 39
+  },
+  "color-icon-placeholder": {
+   "new": "content-placeholder",
+   "kind": "merge",
+   "note": "",
+   "uses": 1
+  },
+  "color-text-disabled": {
+   "new": "content-disabled",
+   "kind": "merge",
+   "note": "",
+   "uses": 22
+  },
+  "color-icon-disabled": {
+   "new": "content-disabled",
+   "kind": "merge",
+   "note": "",
+   "uses": 2
+  },
+  "color-action-text-disabled": {
+   "new": "content-disabled",
+   "kind": "merge",
+   "note": "",
+   "uses": 7
+  },
+  "color-text-inverse": {
+   "new": "content-inverse",
+   "kind": "merge",
+   "note": "",
+   "uses": 59
+  },
+  "color-icon-inverse": {
+   "new": "content-inverse",
+   "kind": "merge",
+   "note": "",
+   "uses": 19
+  },
+  "color-text-link-default": {
+   "new": "content-link",
+   "kind": "rename",
+   "note": "",
+   "uses": 7
+  },
+  "color-text-link-heavy": {
+   "new": "content-link-pressed",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-text-positive-light": {
+   "new": "content-accent",
+   "kind": "merge",
+   "note": "",
+   "uses": 0
+  },
+  "color-icon-positive-light": {
+   "new": "content-accent",
+   "kind": "merge",
+   "note": "",
+   "uses": 0
+  },
+  "color-text-brand-inverse": {
+   "new": "content-accent",
+   "kind": "merge",
+   "note": "",
+   "uses": 0
+  },
+  "color-text-link-inverse": {
+   "new": "content-accent",
+   "kind": "merge",
+   "note": "",
+   "uses": 0
+  },
+  "color-text-brand-heavy": {
+   "new": "content-accent-heavy",
+   "kind": "merge",
+   "note": "",
+   "uses": 2
+  },
+  "color-icon-brand-heavy": {
+   "new": "content-accent-heavy",
+   "kind": "merge",
+   "note": "",
+   "uses": 0
+  },
+  "color-text-brand-default": {
+   "new": "content-accent-strong",
+   "kind": "merge",
+   "note": "",
+   "uses": 37
+  },
+  "color-icon-brand-default": {
+   "new": "content-accent-strong",
+   "kind": "merge",
+   "note": "",
+   "uses": 22
+  },
+  "color-action-text-brand": {
+   "new": "content-accent-strong",
+   "kind": "merge",
+   "note": "",
+   "uses": 7
+  },
+  "color-text-brand-light": {
+   "new": "content-accent-strong",
+   "kind": "merge",
+   "note": "",
+   "uses": 12
+  },
+  "color-icon-brand-light": {
+   "new": "content-accent-strong",
+   "kind": "merge",
+   "note": "",
+   "uses": 2
+  },
+  "color-text-link-light": {
+   "new": "content-accent-strong",
+   "kind": "merge",
+   "note": "",
+   "uses": 0
+  },
+  "color-action-text-link": {
+   "new": "content-accent-strong",
+   "kind": "merge",
+   "note": "",
+   "uses": 3
+  },
+  "color-text-positive-default": {
+   "new": "content-positive",
+   "kind": "merge",
+   "note": "",
+   "uses": 2
+  },
+  "color-icon-positive-default": {
+   "new": "content-positive",
+   "kind": "merge",
+   "note": "",
+   "uses": 1
+  },
+  "color-action-text-positive": {
+   "new": "content-positive",
+   "kind": "merge",
+   "note": "",
+   "uses": 1
+  },
+  "color-text-positive-heavy": {
+   "new": "content-positive-strong",
+   "kind": "merge",
+   "note": "",
+   "uses": 1
+  },
+  "color-icon-positive-heavy": {
+   "new": "content-positive-strong",
+   "kind": "merge",
+   "note": "",
+   "uses": 0
+  },
+  "color-text-negative-default": {
+   "new": "content-negative",
+   "kind": "merge",
+   "note": "",
+   "uses": 6
+  },
+  "color-icon-negative-default": {
+   "new": "content-negative",
+   "kind": "merge",
+   "note": "",
+   "uses": 1
+  },
+  "color-text-negative-heavy": {
+   "new": "content-negative-strong",
+   "kind": "merge",
+   "note": "",
+   "uses": 3
+  },
+  "color-icon-negative-heavy": {
+   "new": "content-negative-strong",
+   "kind": "merge",
+   "note": "",
+   "uses": 0
+  },
+  "color-text-negative-light": {
+   "new": "content-negative-subtle",
+   "kind": "merge",
+   "note": "",
+   "uses": 15
+  },
+  "color-icon-negative-light": {
+   "new": "content-negative-subtle",
+   "kind": "merge",
+   "note": "",
+   "uses": 0
+  },
+  "color-action-text-default": {
+   "new": "content-on-action",
+   "kind": "rename",
+   "note": "",
+   "uses": 8
+  },
+  "color-surface-page-default": {
+   "new": "surface-page",
+   "kind": "rename",
+   "note": "",
+   "uses": 73
+  },
+  "color-surface-page-light": {
+   "new": "surface-page-subtle",
+   "kind": "rename",
+   "note": "",
+   "uses": 2
+  },
+  "color-surface-page-heavy": {
+   "new": "surface-page-strong",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-surface-card-default": {
+   "new": "surface-default",
+   "kind": "rename",
+   "note": "",
+   "uses": 134
+  },
+  "color-surface-elevated-default": {
+   "new": "surface-raised",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-surface-inset-default": {
+   "new": "surface-sunken",
+   "kind": "rename",
+   "note": "",
+   "uses": 28
+  },
+  "color-surface-card-muted": {
+   "new": "surface-muted",
+   "kind": "rename",
+   "note": "",
+   "uses": 3
+  },
+  "color-surface-elevated-glass": {
+   "new": "surface-glass",
+   "kind": "rename",
+   "note": "",
+   "uses": 24
+  },
+  "color-surface-elevated-glass-blue": {
+   "new": "surface-glass-subtle",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-surface-card-brand": {
+   "new": "surface-brand",
+   "kind": "rename",
+   "note": "",
+   "uses": 4
+  },
+  "color-surface-card-brand-subtle": {
+   "new": "surface-brand-subtle",
+   "kind": "rename",
+   "note": "",
+   "uses": 5
+  },
+  "color-surface-device-navy": {
+   "new": "surface-device-navy",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-surface-device-mist": {
+   "new": "surface-device-mist",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-action-bg-primary-default": {
+   "new": "bg-action",
+   "kind": "rename",
+   "note": "",
+   "uses": 64
+  },
+  "color-action-bg-primary-pressed": {
+   "new": "bg-action-pressed",
+   "kind": "rename",
+   "note": "",
+   "uses": 8
+  },
+  "color-action-bg-primary-subtle": {
+   "new": "bg-action-subtle",
+   "kind": "rename",
+   "note": "",
+   "uses": 7
+  },
+  "color-action-bg-primary-subtle-pressed": {
+   "new": "bg-action-subtle-pressed",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-action-bg-primary-disabled": {
+   "new": "bg-disabled",
+   "kind": "merge",
+   "note": "",
+   "uses": 10
+  },
+  "color-surface-icon-inverse-disabled": {
+   "new": "bg-disabled",
+   "kind": "merge",
+   "note": "",
+   "uses": 0
+  },
+  "color-surface-icon-brand-default": {
+   "new": "bg-brand",
+   "kind": "rename",
+   "note": "",
+   "uses": 4
+  },
+  "color-action-bg-positive-pressed": {
+   "new": "bg-positive-strong-pressed",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-action-bg-positive-subtle": {
+   "new": "bg-positive-subtle",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-surface-card-positive-subtle": {
+   "new": "surface-positive-subtle",
+   "kind": "rename",
+   "note": "",
+   "uses": 1
+  },
+  "color-action-bg-positive-subtle-pressed": {
+   "new": "bg-positive-subtle-pressed",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-action-bg-positive-default": {
+   "new": "bg-positive-strong",
+   "kind": "merge",
+   "note": "",
+   "uses": 3
+  },
+  "color-surface-card-positive": {
+   "new": "bg-positive-strong",
+   "kind": "merge",
+   "note": "",
+   "uses": 2
+  },
+  "color-surface-icon-positive-default": {
+   "new": "bg-positive-strong",
+   "kind": "merge",
+   "note": "",
+   "uses": 2
+  },
+  "color-action-bg-positive-disabled": {
+   "new": "bg-positive-disabled",
+   "kind": "merge",
+   "note": "",
+   "uses": 0
+  },
+  "color-surface-icon-positive-disabled": {
+   "new": "bg-positive-disabled",
+   "kind": "merge",
+   "note": "",
+   "uses": 0
+  },
+  "color-surface-icon-brand-disabled": {
+   "new": "bg-positive-disabled",
+   "kind": "merge",
+   "note": "",
+   "uses": 0
+  },
+  "color-surface-card-negative": {
+   "new": "bg-negative",
+   "kind": "merge",
+   "note": "",
+   "uses": 2
+  },
+  "color-surface-icon-negative-default": {
+   "new": "bg-negative",
+   "kind": "merge",
+   "note": "",
+   "uses": 0
+  },
+  "color-surface-card-negative-subtle": {
+   "new": "bg-negative-subtle",
+   "kind": "rename",
+   "note": "",
+   "uses": 2
+  },
+  "color-surface-icon-negative-disabled": {
+   "new": "bg-negative-disabled",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-surface-icon-neutral-default": {
+   "new": "bg-neutral-subtle",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-surface-icon-neutral-disabled": {
+   "new": "bg-neutral-strong",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-action-bg-inverse": {
+   "new": "bg-inverse",
+   "kind": "merge",
+   "note": "",
+   "uses": 13
+  },
+  "color-surface-icon-inverse-default": {
+   "new": "bg-inverse",
+   "kind": "merge",
+   "note": "",
+   "uses": 1
+  },
+  "color-alpha-bg-minimum": {
+   "new": "bg-tint-minimum",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-alpha-bg-subtle": {
+   "new": "bg-tint-subtle",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-alpha-bg-default": {
+   "new": "bg-tint-default",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-alpha-bg-emphasis": {
+   "new": "bg-tint-strong",
+   "kind": "rename",
+   "note": "",
+   "uses": 2
+  },
+  "color-alpha-cold-bg-subtle": {
+   "new": "bg-tint-navy-subtle",
+   "kind": "rename",
+   "note": "",
+   "uses": 2
+  },
+  "color-alpha-cold-bg-default": {
+   "new": "bg-tint-navy-default",
+   "kind": "rename",
+   "note": "",
+   "uses": 1
+  },
+  "color-stroke-default": {
+   "new": "border-default",
+   "kind": "rename",
+   "note": "",
+   "uses": 11
+  },
+  "color-stroke-subtle": {
+   "new": "border-subtle",
+   "kind": "merge",
+   "note": "",
+   "uses": 37
+  },
+  "color-stroke-divider": {
+   "new": "border-subtle",
+   "kind": "merge",
+   "note": "",
+   "uses": 6
+  },
+  "color-action-stroke-default": {
+   "new": "border-subtle",
+   "kind": "merge",
+   "note": "",
+   "uses": 7
+  },
+  "color-stroke-strong": {
+   "new": "border-strong",
+   "kind": "rename",
+   "note": "",
+   "uses": 1
+  },
+  "color-action-stroke-filled": {
+   "new": "border-accent-faint",
+   "kind": "rename",
+   "note": "",
+   "uses": 1
+  },
+  "color-stroke-brand-subtle": {
+   "new": "border-accent-subtle",
+   "kind": "rename",
+   "note": "",
+   "uses": 5
+  },
+  "color-action-stroke-active": {
+   "new": "border-selected",
+   "kind": "merge",
+   "note": "",
+   "uses": 13
+  },
+  "color-stroke-brand-default": {
+   "new": "border-selected",
+   "kind": "merge",
+   "note": "",
+   "uses": 13
+  },
+  "color-action-stroke-active-subtle": {
+   "new": "border-selected-subtle",
+   "kind": "rename",
+   "note": "",
+   "uses": 1
+  },
+  "color-stroke-brand-strong": {
+   "new": "border-brand-strong",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-stroke-positive-default": {
+   "new": "border-positive",
+   "kind": "rename",
+   "note": "",
+   "uses": 1
+  },
+  "color-stroke-positive-subtle": {
+   "new": "border-positive-subtle",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-stroke-positive-strong": {
+   "new": "border-positive-strong",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-stroke-negative-default": {
+   "new": "border-negative",
+   "kind": "rename",
+   "note": "",
+   "uses": 2
+  },
+  "color-stroke-negative-subtle": {
+   "new": "border-negative-subtle",
+   "kind": "rename",
+   "note": "",
+   "uses": 1
+  },
+  "color-stroke-negative-strong": {
+   "new": "border-negative-strong",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-overlay-scrim-default": {
+   "new": "overlay-scrim",
+   "kind": "rename",
+   "note": "",
+   "uses": 2
+  },
+  "color-overlay-shade": {
+   "new": "overlay-shade",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-shadow-default-1": {
+   "new": "shadow-color-default-1",
+   "kind": "rename",
+   "note": "",
+   "uses": 12
+  },
+  "color-shadow-default-2": {
+   "new": "shadow-color-default-2",
+   "kind": "rename",
+   "note": "",
+   "uses": 12
+  },
+  "color-shadow-subtle-1": {
+   "new": "shadow-color-subtle-1",
+   "kind": "rename",
+   "note": "",
+   "uses": 3
+  },
+  "color-shadow-subtle-2": {
+   "new": "shadow-color-subtle-2",
+   "kind": "rename",
+   "note": "",
+   "uses": 3
+  },
+  "color-shadow-focus-1": {
+   "new": "shadow-color-focus-1",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-shadow-focus-2": {
+   "new": "shadow-color-focus-2",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-shadow-backdrop": {
+   "new": "shadow-color-backdrop",
+   "kind": "rename",
+   "note": "",
+   "uses": 20
+  },
+  "color-gradient-default-0": {
+   "new": "gradient-grey-0",
+   "kind": "rename",
+   "note": "",
+   "uses": 1
+  },
+  "color-gradient-default-20": {
+   "new": "gradient-grey-20",
+   "kind": "rename",
+   "note": "",
+   "uses": 1
+  },
+  "color-gradient-default-40": {
+   "new": "gradient-grey-40",
+   "kind": "rename",
+   "note": "",
+   "uses": 2
+  },
+  "color-gradient-default-60": {
+   "new": "gradient-grey-60",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-gradient-default-80": {
+   "new": "gradient-grey-80",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-gradient-subtle-0": {
+   "new": "gradient-white-0",
+   "kind": "rename",
+   "note": "",
+   "uses": 4
+  },
+  "color-gradient-subtle-20": {
+   "new": "gradient-white-20",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-gradient-subtle-40": {
+   "new": "gradient-white-40",
+   "kind": "rename",
+   "note": "",
+   "uses": 4
+  },
+  "color-gradient-subtle-50": {
+   "new": "gradient-white-50",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-gradient-subtle-60": {
+   "new": "gradient-white-60",
+   "kind": "rename",
+   "note": "",
+   "uses": 5
+  },
+  "color-gradient-subtle-80": {
+   "new": "gradient-white-80",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-gradient-ambient-0": {
+   "new": "gradient-ambient-0",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-gradient-ambient-20": {
+   "new": "gradient-ambient-20",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-gradient-ambient-40": {
+   "new": "gradient-ambient-40",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-gradient-ambient-60": {
+   "new": "gradient-ambient-60",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "color-gradient-ambient-80": {
+   "new": "gradient-ambient-80",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "tag-color-neutral-bg-default": {
+   "new": "tag-neutral-bg",
+   "kind": "rename",
+   "note": "",
+   "uses": 6
+  },
+  "tag-color-neutral-bg-subtle": {
+   "new": "tag-neutral-bg-subtle",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "tag-color-neutral-bg-inverse": {
+   "new": "tag-neutral-bg-inverse",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "tag-color-neutral-bg-alpha": {
+   "new": "tag-neutral-bg-alpha",
+   "kind": "rename",
+   "note": "",
+   "uses": 28
+  },
+  "tag-color-neutral-text-default": {
+   "new": "tag-neutral-content",
+   "kind": "rename",
+   "note": "",
+   "uses": 11
+  },
+  "tag-color-neutral-stroke-default": {
+   "new": "tag-neutral-border",
+   "kind": "rename",
+   "note": "",
+   "uses": 2
+  },
+  "tag-color-brand-bg-default": {
+   "new": "tag-accent-bg",
+   "kind": "rename",
+   "note": "brand tone is now 'accent' (green)",
+   "uses": 0
+  },
+  "tag-color-brand-bg-subtle": {
+   "new": "tag-accent-bg-subtle",
+   "kind": "rename",
+   "note": "brand tone is now 'accent' (green)",
+   "uses": 0
+  },
+  "tag-color-brand-text-default": {
+   "new": "tag-accent-content",
+   "kind": "rename",
+   "note": "brand tone is now 'accent' (green)",
+   "uses": 2
+  },
+  "tag-color-brand-stroke-default": {
+   "new": "tag-accent-border",
+   "kind": "rename",
+   "note": "brand tone is now 'accent' (green)",
+   "uses": 1
+  },
+  "tag-color-positive-bg-default": {
+   "new": "tag-positive-bg",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "tag-color-positive-bg-subtle": {
+   "new": "tag-positive-bg-subtle",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "tag-color-positive-text-default": {
+   "new": "tag-positive-content",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "tag-color-positive-stroke-default": {
+   "new": "tag-positive-border",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "tag-color-negative-bg-default": {
+   "new": "tag-negative-bg",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "tag-color-negative-bg-subtle": {
+   "new": "tag-negative-bg-subtle",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "tag-color-negative-text-default": {
+   "new": "tag-negative-content",
+   "kind": "rename",
+   "note": "",
+   "uses": 3
+  },
+  "tag-color-negative-stroke-default": {
+   "new": "tag-negative-border",
+   "kind": "rename",
+   "note": "",
+   "uses": 0
+  },
+  "font-family-inter": {
+   "new": "font-family-hanken-grotesk",
+   "kind": "removed",
+   "note": "owner: one typeface (Hanken Grotesk)",
+   "uses": 19
+  },
+  "font-family-reddit-sans": {
+   "new": "font-family-hanken-grotesk",
+   "kind": "removed",
+   "note": "owner: one typeface (Hanken Grotesk)",
+   "uses": 0
+  },
+  "shadow-default": {
+   "new": "elevation-raised",
+   "kind": "rename",
+   "note": "",
+   "uses": 4
+  },
+  "shadow-over": {
+   "new": "elevation-overlay",
+   "kind": "rename",
+   "note": "",
+   "uses": 22
+  },
+  "shadow-focus": {
+   "new": "elevation-focus",
+   "kind": "rename",
+   "note": "",
+   "uses": 7
+  },
+  "display-xl-font-family": {
+   "new": "display-md-font-family",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "display-xl-font-size": {
+   "new": "display-md-font-size",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "display-xl-font-weight": {
+   "new": "display-md-font-weight",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "display-xl-line-height": {
+   "new": "display-md-line-height",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "display-xl-letter-spacing": {
+   "new": "display-md-letter-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "display-xl-paragraph-spacing": {
+   "new": "display-md-paragraph-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "display-xl-text-decoration": {
+   "new": "display-md-text-decoration",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "display-xl-text-transform": {
+   "new": "display-md-text-transform",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "display-lg-font-family": {
+   "new": "display-md-font-family",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "display-lg-font-size": {
+   "new": "display-md-font-size",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "display-lg-font-weight": {
+   "new": "display-md-font-weight",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "display-lg-line-height": {
+   "new": "display-md-line-height",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "display-lg-letter-spacing": {
+   "new": "display-md-letter-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "display-lg-paragraph-spacing": {
+   "new": "display-md-paragraph-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "display-lg-text-decoration": {
+   "new": "display-md-text-decoration",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "display-lg-text-transform": {
+   "new": "display-md-text-transform",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "body-lg-emphasis-font-family": {
+   "new": "body-lg-strong-font-family",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 3
+  },
+  "body-lg-emphasis-font-size": {
+   "new": "body-lg-strong-font-size",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 3
+  },
+  "body-lg-emphasis-font-weight": {
+   "new": "body-lg-strong-font-weight",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 3
+  },
+  "body-lg-emphasis-line-height": {
+   "new": "body-lg-strong-line-height",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 3
+  },
+  "body-lg-emphasis-letter-spacing": {
+   "new": "body-lg-strong-letter-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 1
+  },
+  "body-lg-emphasis-paragraph-spacing": {
+   "new": "body-lg-strong-paragraph-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "body-lg-emphasis-text-decoration": {
+   "new": "body-lg-strong-text-decoration",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "body-lg-emphasis-text-transform": {
+   "new": "body-lg-strong-text-transform",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "body-md-emphasis-font-family": {
+   "new": "body-md-strong-font-family",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 13
+  },
+  "body-md-emphasis-font-size": {
+   "new": "body-md-strong-font-size",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 9
+  },
+  "body-md-emphasis-font-weight": {
+   "new": "body-md-strong-font-weight",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 28
+  },
+  "body-md-emphasis-line-height": {
+   "new": "body-md-strong-line-height",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 14
+  },
+  "body-md-emphasis-letter-spacing": {
+   "new": "body-md-strong-letter-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 11
+  },
+  "body-md-emphasis-paragraph-spacing": {
+   "new": "body-md-strong-paragraph-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "body-md-emphasis-text-decoration": {
+   "new": "body-md-strong-text-decoration",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "body-md-emphasis-text-transform": {
+   "new": "body-md-strong-text-transform",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "section-title-md-font-family": {
+   "new": "title-xs-font-family",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 11
+  },
+  "section-title-md-font-size": {
+   "new": "title-xs-font-size",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 14
+  },
+  "section-title-md-font-weight": {
+   "new": "title-xs-font-weight",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 9
+  },
+  "section-title-md-line-height": {
+   "new": "title-xs-line-height",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 11
+  },
+  "section-title-md-letter-spacing": {
+   "new": "title-xs-letter-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "section-title-md-paragraph-spacing": {
+   "new": "title-xs-paragraph-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "section-title-md-text-decoration": {
+   "new": "title-xs-text-decoration",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "section-title-md-text-transform": {
+   "new": "title-xs-text-transform",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "section-title-md-light-font-family": {
+   "new": "body-lg-strong-font-family",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 2
+  },
+  "section-title-md-light-font-size": {
+   "new": "body-lg-strong-font-size",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 2
+  },
+  "section-title-md-light-font-weight": {
+   "new": "body-lg-strong-font-weight",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 3
+  },
+  "section-title-md-light-line-height": {
+   "new": "body-lg-strong-line-height",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 2
+  },
+  "section-title-md-light-letter-spacing": {
+   "new": "body-lg-strong-letter-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "section-title-md-light-paragraph-spacing": {
+   "new": "body-lg-strong-paragraph-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "section-title-md-light-text-decoration": {
+   "new": "body-lg-strong-text-decoration",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "section-title-md-light-text-transform": {
+   "new": "body-lg-strong-text-transform",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "section-title-sm-font-family": {
+   "new": "label-md-font-family",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 19
+  },
+  "section-title-sm-font-size": {
+   "new": "label-md-font-size",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 19
+  },
+  "section-title-sm-font-weight": {
+   "new": "label-md-font-weight",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 19
+  },
+  "section-title-sm-line-height": {
+   "new": "label-md-line-height",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 18
+  },
+  "section-title-sm-letter-spacing": {
+   "new": "label-md-letter-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 1
+  },
+  "section-title-sm-paragraph-spacing": {
+   "new": "label-md-paragraph-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "section-title-sm-text-decoration": {
+   "new": "label-md-text-decoration",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "section-title-sm-text-transform": {
+   "new": "label-md-text-transform",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "section-title-sm-light-font-family": {
+   "new": "body-md-strong-font-family",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 4
+  },
+  "section-title-sm-light-font-size": {
+   "new": "body-md-strong-font-size",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 4
+  },
+  "section-title-sm-light-font-weight": {
+   "new": "body-md-strong-font-weight",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 4
+  },
+  "section-title-sm-light-line-height": {
+   "new": "body-md-strong-line-height",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 4
+  },
+  "section-title-sm-light-letter-spacing": {
+   "new": "body-md-strong-letter-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 1
+  },
+  "section-title-sm-light-paragraph-spacing": {
+   "new": "body-md-strong-paragraph-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "section-title-sm-light-text-decoration": {
+   "new": "body-md-strong-text-decoration",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "section-title-sm-light-text-transform": {
+   "new": "body-md-strong-text-transform",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "section-title-xs-font-family": {
+   "new": "caption-xs-font-family",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 1
+  },
+  "section-title-xs-font-size": {
+   "new": "caption-xs-font-size",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 2
+  },
+  "section-title-xs-font-weight": {
+   "new": "caption-xs-font-weight",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 2
+  },
+  "section-title-xs-line-height": {
+   "new": "caption-xs-line-height",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 2
+  },
+  "section-title-xs-letter-spacing": {
+   "new": "caption-xs-letter-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "section-title-xs-paragraph-spacing": {
+   "new": "caption-xs-paragraph-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "section-title-xs-text-decoration": {
+   "new": "caption-xs-text-decoration",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "section-title-xs-text-transform": {
+   "new": "caption-xs-text-transform",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "section-title-xs-light-font-family": {
+   "new": "caption-xs-font-family",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 1
+  },
+  "section-title-xs-light-font-size": {
+   "new": "caption-xs-font-size",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "section-title-xs-light-font-weight": {
+   "new": "caption-xs-font-weight",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 1
+  },
+  "section-title-xs-light-line-height": {
+   "new": "caption-xs-line-height",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 1
+  },
+  "section-title-xs-light-letter-spacing": {
+   "new": "caption-xs-letter-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "section-title-xs-light-paragraph-spacing": {
+   "new": "caption-xs-paragraph-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "section-title-xs-light-text-decoration": {
+   "new": "caption-xs-text-decoration",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "section-title-xs-light-text-transform": {
+   "new": "caption-xs-text-transform",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "label-md-light-font-family": {
+   "new": "body-md-strong-font-family",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 4
+  },
+  "label-md-light-font-size": {
+   "new": "body-md-strong-font-size",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 5
+  },
+  "label-md-light-font-weight": {
+   "new": "body-md-strong-font-weight",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 4
+  },
+  "label-md-light-line-height": {
+   "new": "body-md-strong-line-height",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 5
+  },
+  "label-md-light-letter-spacing": {
+   "new": "body-md-strong-letter-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "label-md-light-paragraph-spacing": {
+   "new": "body-md-strong-paragraph-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "label-md-light-text-decoration": {
+   "new": "body-md-strong-text-decoration",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "label-md-light-text-transform": {
+   "new": "body-md-strong-text-transform",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "label-sm-light-font-family": {
+   "new": "caption-sm-font-family",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "label-sm-light-font-size": {
+   "new": "caption-sm-font-size",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "label-sm-light-font-weight": {
+   "new": "caption-sm-font-weight",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "label-sm-light-line-height": {
+   "new": "caption-sm-line-height",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "label-sm-light-letter-spacing": {
+   "new": "caption-sm-letter-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "label-sm-light-paragraph-spacing": {
+   "new": "caption-sm-paragraph-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "label-sm-light-text-decoration": {
+   "new": "caption-sm-text-decoration",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "label-sm-light-text-transform": {
+   "new": "caption-sm-text-transform",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "link-font-family": {
+   "new": "label-md-font-family",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "link-font-size": {
+   "new": "label-md-font-size",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "link-font-weight": {
+   "new": "label-md-font-weight",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "link-line-height": {
+   "new": "label-md-line-height",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "link-letter-spacing": {
+   "new": "label-md-letter-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "link-paragraph-spacing": {
+   "new": "label-md-paragraph-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "link-text-decoration": {
+   "new": "label-md-text-decoration",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "link-text-transform": {
+   "new": "label-md-text-transform",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-xxl-font-family": {
+   "new": "amount-xxl-font-family",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-xxl-font-size": {
+   "new": "amount-xxl-font-size",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-xxl-font-weight": {
+   "new": "amount-xxl-font-weight",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-xxl-line-height": {
+   "new": "amount-xxl-line-height",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-xxl-letter-spacing": {
+   "new": "amount-xxl-letter-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-xxl-paragraph-spacing": {
+   "new": "amount-xxl-paragraph-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-xxl-text-decoration": {
+   "new": "amount-xxl-text-decoration",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-xxl-text-transform": {
+   "new": "amount-xxl-text-transform",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-xl-font-family": {
+   "new": "amount-lg-font-family",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-xl-font-size": {
+   "new": "amount-lg-font-size",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-xl-font-weight": {
+   "new": "amount-lg-font-weight",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-xl-line-height": {
+   "new": "amount-lg-line-height",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-xl-letter-spacing": {
+   "new": "amount-lg-letter-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-xl-paragraph-spacing": {
+   "new": "amount-lg-paragraph-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-xl-text-decoration": {
+   "new": "amount-lg-text-decoration",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-xl-text-transform": {
+   "new": "amount-lg-text-transform",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-lg-font-family": {
+   "new": "amount-lg-font-family",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-lg-font-size": {
+   "new": "amount-lg-font-size",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-lg-font-weight": {
+   "new": "amount-lg-font-weight",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-lg-line-height": {
+   "new": "amount-lg-line-height",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-lg-letter-spacing": {
+   "new": "amount-lg-letter-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-lg-paragraph-spacing": {
+   "new": "amount-lg-paragraph-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-lg-text-decoration": {
+   "new": "amount-lg-text-decoration",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-lg-text-transform": {
+   "new": "amount-lg-text-transform",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-md-font-family": {
+   "new": "amount-md-font-family",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-md-font-size": {
+   "new": "amount-md-font-size",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-md-font-weight": {
+   "new": "amount-md-font-weight",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-md-line-height": {
+   "new": "amount-md-line-height",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-md-letter-spacing": {
+   "new": "amount-md-letter-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-md-paragraph-spacing": {
+   "new": "amount-md-paragraph-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-md-text-decoration": {
+   "new": "amount-md-text-decoration",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-md-text-transform": {
+   "new": "amount-md-text-transform",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-sm-font-family": {
+   "new": "amount-xs-font-family",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-sm-font-size": {
+   "new": "amount-xs-font-size",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-sm-font-weight": {
+   "new": "amount-xs-font-weight",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-sm-line-height": {
+   "new": "amount-xs-line-height",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-sm-letter-spacing": {
+   "new": "amount-xs-letter-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-sm-paragraph-spacing": {
+   "new": "amount-xs-paragraph-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-sm-text-decoration": {
+   "new": "amount-xs-text-decoration",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-sm-text-transform": {
+   "new": "amount-xs-text-transform",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-xs-font-family": {
+   "new": "amount-xs-font-family",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-xs-font-size": {
+   "new": "amount-xs-font-size",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-xs-font-weight": {
+   "new": "amount-xs-font-weight",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-xs-line-height": {
+   "new": "amount-xs-line-height",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-xs-letter-spacing": {
+   "new": "amount-xs-letter-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-xs-paragraph-spacing": {
+   "new": "amount-xs-paragraph-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-xs-text-decoration": {
+   "new": "amount-xs-text-decoration",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "number-xs-text-transform": {
+   "new": "amount-xs-text-transform",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "amount-xl-font-family": {
+   "new": "amount-lg-font-family",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "amount-xl-font-size": {
+   "new": "amount-lg-font-size",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "amount-xl-font-weight": {
+   "new": "amount-lg-font-weight",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "amount-xl-line-height": {
+   "new": "amount-lg-line-height",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "amount-xl-letter-spacing": {
+   "new": "amount-lg-letter-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "amount-xl-paragraph-spacing": {
+   "new": "amount-lg-paragraph-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "amount-xl-text-decoration": {
+   "new": "amount-lg-text-decoration",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "amount-xl-text-transform": {
+   "new": "amount-lg-text-transform",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "amount-sm-font-family": {
+   "new": "amount-xs-font-family",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "amount-sm-font-size": {
+   "new": "amount-xs-font-size",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "amount-sm-font-weight": {
+   "new": "amount-xs-font-weight",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "amount-sm-line-height": {
+   "new": "amount-xs-line-height",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "amount-sm-letter-spacing": {
+   "new": "amount-xs-letter-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "amount-sm-paragraph-spacing": {
+   "new": "amount-xs-paragraph-spacing",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "amount-sm-text-decoration": {
+   "new": "amount-xs-text-decoration",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "amount-sm-text-transform": {
+   "new": "amount-xs-text-transform",
+   "kind": "merge",
+   "note": "text style merged (TYPE-AND-STYLES.md)",
+   "uses": 0
+  },
+  "blur-0": {
+   "new": "blur-0",
+   "kind": "kept",
+   "note": "",
+   "uses": 2
+  },
+  "blur-2": {
+   "new": "blur-2",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "blur-4": {
+   "new": "blur-4",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "blur-10": {
+   "new": "blur-10",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "blur-12": {
+   "new": "blur-12",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "blur-24": {
+   "new": "blur-24",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "blur-32": {
+   "new": "blur-32",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-family-hanken-grotesk": {
+   "new": "font-family-hanken-grotesk",
+   "kind": "kept",
+   "note": "",
+   "uses": 5
+  },
+  "font-line-height-14": {
+   "new": "font-line-height-14",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-line-height-16": {
+   "new": "font-line-height-16",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-line-height-20": {
+   "new": "font-line-height-20",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-line-height-22": {
+   "new": "font-line-height-22",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-line-height-24": {
+   "new": "font-line-height-24",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-line-height-28": {
+   "new": "font-line-height-28",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-line-height-32": {
+   "new": "font-line-height-32",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-line-height-36": {
+   "new": "font-line-height-36",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-line-height-40": {
+   "new": "font-line-height-40",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-line-height-44": {
+   "new": "font-line-height-44",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-line-height-48": {
+   "new": "font-line-height-48",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-line-height-56": {
+   "new": "font-line-height-56",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-size-11": {
+   "new": "font-size-11",
+   "kind": "kept",
+   "note": "",
+   "uses": 9
+  },
+  "font-size-12": {
+   "new": "font-size-12",
+   "kind": "kept",
+   "note": "",
+   "uses": 10
+  },
+  "font-size-14": {
+   "new": "font-size-14",
+   "kind": "kept",
+   "note": "",
+   "uses": 32
+  },
+  "font-size-16": {
+   "new": "font-size-16",
+   "kind": "kept",
+   "note": "",
+   "uses": 10
+  },
+  "font-size-18": {
+   "new": "font-size-18",
+   "kind": "kept",
+   "note": "",
+   "uses": 1
+  },
+  "font-size-20": {
+   "new": "font-size-20",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-size-24": {
+   "new": "font-size-24",
+   "kind": "kept",
+   "note": "",
+   "uses": 4
+  },
+  "font-size-28": {
+   "new": "font-size-28",
+   "kind": "kept",
+   "note": "",
+   "uses": 2
+  },
+  "font-size-32": {
+   "new": "font-size-32",
+   "kind": "kept",
+   "note": "",
+   "uses": 2
+  },
+  "font-size-36": {
+   "new": "font-size-36",
+   "kind": "kept",
+   "note": "",
+   "uses": 1
+  },
+  "font-size-40": {
+   "new": "font-size-40",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-size-48": {
+   "new": "font-size-48",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-weight-400": {
+   "new": "font-weight-400",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-weight-500": {
+   "new": "font-weight-500",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-weight-600": {
+   "new": "font-weight-600",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-weight-700": {
+   "new": "font-weight-700",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-weight-800": {
+   "new": "font-weight-800",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "layer-opacity-0": {
+   "new": "layer-opacity-0",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "layer-opacity-8": {
+   "new": "layer-opacity-8",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "layer-opacity-20": {
+   "new": "layer-opacity-20",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "layer-opacity-40": {
+   "new": "layer-opacity-40",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "layer-opacity-60": {
+   "new": "layer-opacity-60",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "layer-opacity-80": {
+   "new": "layer-opacity-80",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "layer-opacity-100": {
+   "new": "layer-opacity-100",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "radius-0": {
+   "new": "radius-0",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "radius-8": {
+   "new": "radius-8",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "radius-12": {
+   "new": "radius-12",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "radius-16": {
+   "new": "radius-16",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "radius-20": {
+   "new": "radius-20",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "radius-24": {
+   "new": "radius-24",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "radius-32": {
+   "new": "radius-32",
+   "kind": "kept",
+   "note": "",
+   "uses": 1
+  },
+  "radius-999": {
+   "new": "radius-999",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "spacing-0": {
+   "new": "spacing-0",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "spacing-2": {
+   "new": "spacing-2",
+   "kind": "kept",
+   "note": "",
+   "uses": 13
+  },
+  "spacing-4": {
+   "new": "spacing-4",
+   "kind": "kept",
+   "note": "",
+   "uses": 26
+  },
+  "spacing-8": {
+   "new": "spacing-8",
+   "kind": "kept",
+   "note": "",
+   "uses": 44
+  },
+  "spacing-12": {
+   "new": "spacing-12",
+   "kind": "kept",
+   "note": "",
+   "uses": 33
+  },
+  "spacing-16": {
+   "new": "spacing-16",
+   "kind": "kept",
+   "note": "",
+   "uses": 30
+  },
+  "spacing-20": {
+   "new": "spacing-20",
+   "kind": "kept",
+   "note": "",
+   "uses": 13
+  },
+  "spacing-24": {
+   "new": "spacing-24",
+   "kind": "kept",
+   "note": "",
+   "uses": 4
+  },
+  "spacing-28": {
+   "new": "spacing-28",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "spacing-32": {
+   "new": "spacing-32",
+   "kind": "kept",
+   "note": "",
+   "uses": 7
+  },
+  "spacing-36": {
+   "new": "spacing-36",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "spacing-40": {
+   "new": "spacing-40",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "spacing-44": {
+   "new": "spacing-44",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "spacing-48": {
+   "new": "spacing-48",
+   "kind": "kept",
+   "note": "",
+   "uses": 1
+  },
+  "spacing-56": {
+   "new": "spacing-56",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "spacing-64": {
+   "new": "spacing-64",
+   "kind": "kept",
+   "note": "",
+   "uses": 1
+  },
+  "stroke-width-10": {
+   "new": "stroke-width-10",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "stroke-width-15": {
+   "new": "stroke-width-15",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "stroke-width-20": {
+   "new": "stroke-width-20",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "stroke-width-25": {
+   "new": "stroke-width-25",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "blur-backdrop-bg": {
+   "new": "blur-backdrop-bg",
+   "kind": "kept",
+   "note": "",
+   "uses": 34
+  },
+  "blur-backdrop-shadow": {
+   "new": "blur-backdrop-shadow",
+   "kind": "kept",
+   "note": "",
+   "uses": 19
+  },
+  "blur-none": {
+   "new": "blur-none",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "blur-overlay-scrim-default": {
+   "new": "blur-overlay-scrim-default",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "blur-shadow-default-1": {
+   "new": "blur-shadow-default-1",
+   "kind": "kept",
+   "note": "",
+   "uses": 14
+  },
+  "blur-shadow-default-2": {
+   "new": "blur-shadow-default-2",
+   "kind": "kept",
+   "note": "",
+   "uses": 13
+  },
+  "blur-shadow-focus-1": {
+   "new": "blur-shadow-focus-1",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "blur-shadow-focus-2": {
+   "new": "blur-shadow-focus-2",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-family-body": {
+   "new": "font-family-body",
+   "kind": "kept",
+   "note": "",
+   "uses": 172
+  },
+  "font-family-display": {
+   "new": "font-family-display",
+   "kind": "kept",
+   "note": "",
+   "uses": 1
+  },
+  "font-family-label": {
+   "new": "font-family-label",
+   "kind": "kept",
+   "note": "",
+   "uses": 19
+  },
+  "font-family-number": {
+   "new": "font-family-number",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-family-title": {
+   "new": "font-family-title",
+   "kind": "kept",
+   "note": "",
+   "uses": 111
+  },
+  "font-line-height-body-lg": {
+   "new": "font-line-height-body-lg",
+   "kind": "kept",
+   "note": "",
+   "uses": 1
+  },
+  "font-line-height-body-md": {
+   "new": "font-line-height-body-md",
+   "kind": "kept",
+   "note": "",
+   "uses": 19
+  },
+  "font-line-height-caption-sm": {
+   "new": "font-line-height-caption-sm",
+   "kind": "kept",
+   "note": "",
+   "uses": 11
+  },
+  "font-line-height-caption-xs": {
+   "new": "font-line-height-caption-xs",
+   "kind": "kept",
+   "note": "",
+   "uses": 7
+  },
+  "font-line-height-display-lg": {
+   "new": "font-line-height-display-lg",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-line-height-display-md": {
+   "new": "font-line-height-display-md",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-line-height-display-sm": {
+   "new": "font-line-height-display-sm",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-line-height-display-xl": {
+   "new": "font-line-height-display-xl",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-line-height-headline-sm": {
+   "new": "font-line-height-headline-sm",
+   "kind": "kept",
+   "note": "",
+   "uses": 1
+  },
+  "font-line-height-label-md": {
+   "new": "font-line-height-label-md",
+   "kind": "kept",
+   "note": "",
+   "uses": 15
+  },
+  "font-line-height-label-sm": {
+   "new": "font-line-height-label-sm",
+   "kind": "kept",
+   "note": "",
+   "uses": 2
+  },
+  "font-line-height-section-title-md": {
+   "new": "font-line-height-section-title-md",
+   "kind": "kept",
+   "note": "",
+   "uses": 4
+  },
+  "font-line-height-section-title-sm": {
+   "new": "font-line-height-section-title-sm",
+   "kind": "kept",
+   "note": "",
+   "uses": 11
+  },
+  "font-line-height-title-lg": {
+   "new": "font-line-height-title-lg",
+   "kind": "kept",
+   "note": "",
+   "uses": 1
+  },
+  "font-line-height-title-md": {
+   "new": "font-line-height-title-md",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-line-height-title-sm": {
+   "new": "font-line-height-title-sm",
+   "kind": "kept",
+   "note": "",
+   "uses": 16
+  },
+  "font-size-body-lg": {
+   "new": "font-size-body-lg",
+   "kind": "kept",
+   "note": "",
+   "uses": 7
+  },
+  "font-size-body-md": {
+   "new": "font-size-body-md",
+   "kind": "kept",
+   "note": "",
+   "uses": 41
+  },
+  "font-size-caption-sm": {
+   "new": "font-size-caption-sm",
+   "kind": "kept",
+   "note": "",
+   "uses": 18
+  },
+  "font-size-caption-xs": {
+   "new": "font-size-caption-xs",
+   "kind": "kept",
+   "note": "",
+   "uses": 11
+  },
+  "font-size-display-lg": {
+   "new": "font-size-display-lg",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-size-display-md": {
+   "new": "font-size-display-md",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-size-display-sm": {
+   "new": "font-size-display-sm",
+   "kind": "kept",
+   "note": "",
+   "uses": 1
+  },
+  "font-size-display-xl": {
+   "new": "font-size-display-xl",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-size-headline-sm": {
+   "new": "font-size-headline-sm",
+   "kind": "kept",
+   "note": "",
+   "uses": 1
+  },
+  "font-size-label-md": {
+   "new": "font-size-label-md",
+   "kind": "kept",
+   "note": "",
+   "uses": 15
+  },
+  "font-size-label-sm": {
+   "new": "font-size-label-sm",
+   "kind": "kept",
+   "note": "",
+   "uses": 2
+  },
+  "font-size-section-title-md": {
+   "new": "font-size-section-title-md",
+   "kind": "kept",
+   "note": "",
+   "uses": 4
+  },
+  "font-size-section-title-sm": {
+   "new": "font-size-section-title-sm",
+   "kind": "kept",
+   "note": "",
+   "uses": 11
+  },
+  "font-size-title-lg": {
+   "new": "font-size-title-lg",
+   "kind": "kept",
+   "note": "",
+   "uses": 4
+  },
+  "font-size-title-md": {
+   "new": "font-size-title-md",
+   "kind": "kept",
+   "note": "",
+   "uses": 3
+  },
+  "font-size-title-sm": {
+   "new": "font-size-title-sm",
+   "kind": "kept",
+   "note": "",
+   "uses": 17
+  },
+  "font-weight-black": {
+   "new": "font-weight-black",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "font-weight-bold": {
+   "new": "font-weight-bold",
+   "kind": "kept",
+   "note": "",
+   "uses": 14
+  },
+  "font-weight-medium": {
+   "new": "font-weight-medium",
+   "kind": "kept",
+   "note": "",
+   "uses": 13
+  },
+  "font-weight-regular": {
+   "new": "font-weight-regular",
+   "kind": "kept",
+   "note": "",
+   "uses": 26
+  },
+  "font-weight-semi-bold": {
+   "new": "font-weight-semi-bold",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "layer-opacity-emphasis": {
+   "new": "layer-opacity-emphasis",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "layer-opacity-full": {
+   "new": "layer-opacity-full",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "layer-opacity-hide": {
+   "new": "layer-opacity-hide",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "layer-opacity-minimum": {
+   "new": "layer-opacity-minimum",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "layer-opacity-muted": {
+   "new": "layer-opacity-muted",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "layer-opacity-secondary": {
+   "new": "layer-opacity-secondary",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "layer-opacity-subtle": {
+   "new": "layer-opacity-subtle",
+   "kind": "kept",
+   "note": "",
+   "uses": 2
+  },
+  "radius-full": {
+   "new": "radius-full",
+   "kind": "kept",
+   "note": "",
+   "uses": 155
+  },
+  "radius-lg": {
+   "new": "radius-lg",
+   "kind": "kept",
+   "note": "",
+   "uses": 24
+  },
+  "radius-md": {
+   "new": "radius-md",
+   "kind": "kept",
+   "note": "",
+   "uses": 21
+  },
+  "radius-none": {
+   "new": "radius-none",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "radius-sm": {
+   "new": "radius-sm",
+   "kind": "kept",
+   "note": "",
+   "uses": 30
+  },
+  "radius-xl": {
+   "new": "radius-xl",
+   "kind": "kept",
+   "note": "",
+   "uses": 86
+  },
+  "radius-xs": {
+   "new": "radius-xs",
+   "kind": "kept",
+   "note": "",
+   "uses": 23
+  },
+  "radius-xxl": {
+   "new": "radius-xxl",
+   "kind": "kept",
+   "note": "",
+   "uses": 40
+  },
+  "spacing-gap-2xl": {
+   "new": "spacing-gap-2xl",
+   "kind": "kept",
+   "note": "",
+   "uses": 9
+  },
+  "spacing-gap-2xs": {
+   "new": "spacing-gap-2xs",
+   "kind": "kept",
+   "note": "",
+   "uses": 9
+  },
+  "spacing-gap-3xl": {
+   "new": "spacing-gap-3xl",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "spacing-gap-lg": {
+   "new": "spacing-gap-lg",
+   "kind": "kept",
+   "note": "",
+   "uses": 87
+  },
+  "spacing-gap-md": {
+   "new": "spacing-gap-md",
+   "kind": "kept",
+   "note": "",
+   "uses": 106
+  },
+  "spacing-gap-none": {
+   "new": "spacing-gap-none",
+   "kind": "kept",
+   "note": "",
+   "uses": 3
+  },
+  "spacing-gap-sm": {
+   "new": "spacing-gap-sm",
+   "kind": "kept",
+   "note": "",
+   "uses": 167
+  },
+  "spacing-gap-xl": {
+   "new": "spacing-gap-xl",
+   "kind": "kept",
+   "note": "",
+   "uses": 51
+  },
+  "spacing-gap-xs": {
+   "new": "spacing-gap-xs",
+   "kind": "kept",
+   "note": "",
+   "uses": 64
+  },
+  "spacing-padding-2xl": {
+   "new": "spacing-padding-2xl",
+   "kind": "kept",
+   "note": "",
+   "uses": 13
+  },
+  "spacing-padding-2xs": {
+   "new": "spacing-padding-2xs",
+   "kind": "kept",
+   "note": "",
+   "uses": 6
+  },
+  "spacing-padding-3xl": {
+   "new": "spacing-padding-3xl",
+   "kind": "kept",
+   "note": "",
+   "uses": 15
+  },
+  "spacing-padding-4xl": {
+   "new": "spacing-padding-4xl",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "spacing-padding-5xl": {
+   "new": "spacing-padding-5xl",
+   "kind": "kept",
+   "note": "",
+   "uses": 8
+  },
+  "spacing-padding-lg": {
+   "new": "spacing-padding-lg",
+   "kind": "kept",
+   "note": "",
+   "uses": 140
+  },
+  "spacing-padding-md": {
+   "new": "spacing-padding-md",
+   "kind": "kept",
+   "note": "",
+   "uses": 73
+  },
+  "spacing-padding-none": {
+   "new": "spacing-padding-none",
+   "kind": "kept",
+   "note": "",
+   "uses": 1
+  },
+  "spacing-padding-sm": {
+   "new": "spacing-padding-sm",
+   "kind": "kept",
+   "note": "",
+   "uses": 57
+  },
+  "spacing-padding-xl": {
+   "new": "spacing-padding-xl",
+   "kind": "kept",
+   "note": "",
+   "uses": 46
+  },
+  "spacing-padding-xs": {
+   "new": "spacing-padding-xs",
+   "kind": "kept",
+   "note": "",
+   "uses": 13
+  },
+  "spacing-page-bottom-lg": {
+   "new": "spacing-page-bottom-lg",
+   "kind": "kept",
+   "note": "",
+   "uses": 3
+  },
+  "spacing-page-bottom-md": {
+   "new": "spacing-page-bottom-md",
+   "kind": "kept",
+   "note": "",
+   "uses": 7
+  },
+  "spacing-page-bottom-sm": {
+   "new": "spacing-page-bottom-sm",
+   "kind": "kept",
+   "note": "",
+   "uses": 2
+  },
+  "spacing-page-bottom-xl": {
+   "new": "spacing-page-bottom-xl",
+   "kind": "kept",
+   "note": "",
+   "uses": 1
+  },
+  "spacing-page-top-lg": {
+   "new": "spacing-page-top-lg",
+   "kind": "kept",
+   "note": "",
+   "uses": 1
+  },
+  "spacing-page-top-md": {
+   "new": "spacing-page-top-md",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "spacing-page-top-sm": {
+   "new": "spacing-page-top-sm",
+   "kind": "kept",
+   "note": "",
+   "uses": 2
+  },
+  "spacing-page-x-lg": {
+   "new": "spacing-page-x-lg",
+   "kind": "kept",
+   "note": "",
+   "uses": 6
+  },
+  "spacing-page-x-md": {
+   "new": "spacing-page-x-md",
+   "kind": "kept",
+   "note": "",
+   "uses": 2
+  },
+  "spacing-page-x-sm": {
+   "new": "spacing-page-x-sm",
+   "kind": "kept",
+   "note": "",
+   "uses": 37
+  },
+  "spacing-section-2xl": {
+   "new": "spacing-section-2xl",
+   "kind": "kept",
+   "note": "",
+   "uses": 1
+  },
+  "spacing-section-2xs": {
+   "new": "spacing-section-2xs",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "spacing-section-3xl": {
+   "new": "spacing-section-3xl",
+   "kind": "kept",
+   "note": "",
+   "uses": 4
+  },
+  "spacing-section-4xl": {
+   "new": "spacing-section-4xl",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "spacing-section-lg": {
+   "new": "spacing-section-lg",
+   "kind": "kept",
+   "note": "",
+   "uses": 4
+  },
+  "spacing-section-md": {
+   "new": "spacing-section-md",
+   "kind": "kept",
+   "note": "",
+   "uses": 15
+  },
+  "spacing-section-none": {
+   "new": "spacing-section-none",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "spacing-section-sm": {
+   "new": "spacing-section-sm",
+   "kind": "kept",
+   "note": "",
+   "uses": 12
+  },
+  "spacing-section-xl": {
+   "new": "spacing-section-xl",
+   "kind": "kept",
+   "note": "",
+   "uses": 3
+  },
+  "spacing-section-xs": {
+   "new": "spacing-section-xs",
+   "kind": "kept",
+   "note": "",
+   "uses": 2
+  },
+  "stroke-width-default": {
+   "new": "stroke-width-default",
+   "kind": "kept",
+   "note": "",
+   "uses": 39
+  },
+  "stroke-width-heavy": {
+   "new": "stroke-width-heavy",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "stroke-width-medium": {
+   "new": "stroke-width-medium",
+   "kind": "kept",
+   "note": "",
+   "uses": 10
+  },
+  "stroke-width-strong": {
+   "new": "stroke-width-strong",
+   "kind": "kept",
+   "note": "",
+   "uses": 14
+  },
+  "blur-glass-nav-effect-shadow": {
+   "new": "blur-glass-nav-effect-shadow",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "blur-glass-nav-effect": {
+   "new": "blur-glass-nav-effect",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "blur-glass-nav-effect-focus-shadow": {
+   "new": "blur-glass-nav-effect-focus-shadow",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "blur-glass-nav-effect-focus": {
+   "new": "blur-glass-nav-effect-focus",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "blur-scrim-default-effect": {
+   "new": "blur-scrim-default-effect",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "gradient-bottom-primary-nav-filled": {
+   "new": "gradient-bottom-primary-nav-filled",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "gradient-bottom-secondary-nav-filled": {
+   "new": "gradient-bottom-secondary-nav-filled",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "gradient-glass-nav-stroke": {
+   "new": "gradient-glass-nav-stroke",
+   "kind": "kept",
+   "note": "",
+   "uses": 0
+  },
+  "gradient-top-nav-filled": {
+   "new": "gradient-top-nav-filled",
+   "kind": "kept",
+   "note": "",
+   "uses": 4
+  }
+ },
+ "classes": {
+  "ps-text-display-xl": "ps-text-display-md",
+  "ps-text-display-lg": "ps-text-display-md",
+  "ps-text-body-lg-emphasis": "ps-text-body-lg-strong",
+  "ps-text-body-md-emphasis": "ps-text-body-md-strong",
+  "ps-text-section-title-md": "ps-text-title-xs",
+  "ps-text-section-title-md-light": "ps-text-body-lg-strong",
+  "ps-text-section-title-sm": "ps-text-label-md",
+  "ps-text-section-title-sm-light": "ps-text-body-md-strong",
+  "ps-text-section-title-xs": "ps-text-caption-xs",
+  "ps-text-section-title-xs-light": "ps-text-caption-xs",
+  "ps-text-label-md-light": "ps-text-body-md-strong",
+  "ps-text-label-sm-light": "ps-text-caption-sm",
+  "ps-text-link": "ps-text-label-md",
+  "ps-text-number-xxl": "ps-text-amount-xxl",
+  "ps-text-number-xl": "ps-text-amount-lg",
+  "ps-text-number-lg": "ps-text-amount-lg",
+  "ps-text-number-md": "ps-text-amount-md",
+  "ps-text-number-sm": "ps-text-amount-xs",
+  "ps-text-number-xs": "ps-text-amount-xs",
+  "ps-text-amount-xl": "ps-text-amount-lg",
+  "ps-text-amount-sm": "ps-text-amount-xs"
+ }
+}

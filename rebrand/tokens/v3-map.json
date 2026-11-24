@@ -1,0 +1,39 @@
+{
+  "_doc": "v3 colour migration map (decision 42). Owner 2026-11-21: overwrite Primitive / Semantic / Component in kYyNV2MgxvH1w9bJ46A3yx. Keys are variable names before the migration.",
+  "primitive_values": {
+    "Palette/Green": {"50": "#EFFBF2", "100": "#DAF6E2", "200": "#BAEEC9", "300": "#8DE2A6", "400": "#76DC93", "500": "#5CD680", "600": "#36A65B", "700": "#298648", "800": "#1D6334", "900": "#144322", "950": "#0B2C15"},
+    "Palette/Navy": {"50": "#F5F5F6", "100": "#EBEBEE", "200": "#D6D6DD", "300": "#B2B3BE", "400": "#8A8A9C", "500": "#61627A", "600": "#3D3E5C", "700": "#1F1F42", "800": "#0B0F35", "900": "#000128", "950": "#00011A"},
+    "Palette/Mist (renamed from Palette/Ambient)": {"50": "#F7FAF9", "100": "#F0F5F4", "200": "#E4ECE9", "300": "#D3E0DC", "400": "#BCCDC8", "500": "#A1B7B0", "600": "#7C928B", "700": "#5A6E68", "800": "#3C4C47", "900": "#222E2B", "950": "#121A18"},
+    "Palette/Base": {"White": "#FFFFFF", "Black": "#000000"},
+    "Palette/Alpha/Navy-100 (renamed from Palette/Alpha/Grey, base #EBEBEE)": {"0": 0, "20": 0.2, "40": 0.4, "60": 0.6, "80": 0.8},
+    "added": {"Palette/Alpha/Navy/60": "#000128@60", "Palette/Alpha/White/24": "#FFFFFF@24"},
+    "deleted": ["Palette/Neutral/*", "Palette/Alpha/Deep Green/*", "Alpha/Periwinkle/24", "Palette/Alpha/Black/* (only if unused after the sweep)"]
+  },
+  "neutral_to": {"0": "Palette/Base/White", "50": "Palette/Navy/50", "100": "Palette/Navy/100", "150": "Palette/Navy/200", "200": "Palette/Navy/300", "300": "Palette/Navy/400", "400": "Palette/Navy/400", "500": "Palette/Navy/500", "600": "Palette/Navy/500", "700": "Palette/Navy/600", "800": "Palette/Navy/700", "900": "Palette/Navy/900", "950": "Palette/Navy/950"},
+  "green_direct_binding_to": {"50": "50", "100": "100", "200": "200", "300": "200", "400": "300", "500": "400", "600": "500", "700": "700", "800": "800", "900": "900", "950": "950"},
+  "alpha_to": {"Palette/Alpha/Deep Green/6": "Palette/Alpha/Navy/6", "Palette/Alpha/Deep Green/8": "Palette/Alpha/Navy/8", "Palette/Alpha/Deep Green/12": "Palette/Alpha/Navy/12", "Palette/Alpha/Deep Green/16": "Palette/Alpha/Navy/16", "Palette/Alpha/Deep Green/20": "Palette/Alpha/Navy/20", "Palette/Alpha/Deep Green/40": "Palette/Alpha/Navy/40", "Palette/Alpha/Deep Green/60": "Palette/Alpha/Navy/60", "Alpha/Periwinkle/24": "Palette/Alpha/White/24"},
+  "semantic_overrides": {
+    "Border/Subtle": "Palette/Navy/200",
+    "Content/Accent": "Palette/Green/500", "Content/Accent-pressed": "Palette/Green/400", "Content/Selected": "Palette/Green/500",
+    "Content/Accent-strong": "Palette/Green/700", "Content/Link/Default": "Palette/Green/700", "Content/Positive/Default": "Palette/Green/700",
+    "Content/Accent-heavy": "Palette/Green/800", "Content/Link/Pressed": "Palette/Green/800", "Content/Positive/Strong": "Palette/Green/800",
+    "Bg/Action/Default": "Palette/Green/500", "Bg/Action/Pressed": "Palette/Green/600", "Bg/Action/Subtle": "Palette/Green/100", "Bg/Action/Subtle-pressed": "Palette/Green/200",
+    "Bg/Selected": "Palette/Green/500",
+    "Bg/Positive/Default": "Palette/Green/400", "Bg/Positive/Pressed": "Palette/Green/500", "Bg/Positive/Subtle": "Palette/Green/100", "Bg/Positive/Subtle-pressed": "Palette/Green/200", "Bg/Positive/Disabled": "Palette/Green/200",
+    "Bg/Positive/Strong": "Palette/Green/500", "Bg/Positive/Strong-pressed": "Palette/Green/600",
+    "Border/Selected/Default": "Palette/Green/400", "Border/Selected/Subtle": "Palette/Green/200", "Border/Brand-strong": "Palette/Green/500", "Border/Focused": "Palette/Green/400",
+    "Border/Positive/Default": "Palette/Green/400", "Border/Positive/Subtle": "Palette/Green/200", "Border/Positive/Strong": "Palette/Green/500",
+    "Border/Accent/Faint": "Palette/Green/100", "Border/Accent/Subtle": "Palette/Green/200",
+    "Surface/Brand/Subtle": "Palette/Green/50", "Surface/Positive/Subtle": "Palette/Green/50",
+    "Tag/Accent/Content/Default": "Palette/Green/800", "Tag/Positive/Content/Default": "Palette/Green/800",
+    "Tag/Accent/Border": "Palette/Green/400", "Tag/Positive/Border": "Palette/Green/400",
+    "Tag/Accent/Bg/Strong": "Palette/Green/500", "Tag/Positive/Bg/Strong": "Palette/Green/500",
+    "Coupon/Gradient/Top": "Palette/Green/600", "Coupon/Gradient/Upper": "Palette/Green/500", "Coupon/Gradient/Mid": "Palette/Green/300", "Coupon/Gradient/Bottom": "Palette/Green/100"
+  },
+  "component_rules": [
+    "Nodes bound directly to a primitive are re-pointed with neutral_to / green_direct_binding_to / alpha_to (Ambient → Mist same step; Navy same step).",
+    "Raw paints on the Rebranding pages that equal an old palette value are bound to the new primitive for that step.",
+    "Green text on a green tint (50–200) or directly on Mist uses the 800 token (PDF: 700 is 4.0:1 on green-100 and 4.2:1 on Mist).",
+    "Navy label on brand green (500), as before."
+  ]
+}

@@ -19,17 +19,17 @@ if (matchMedia('(pointer: coarse)').matches)
 <script src="engine.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html, body { background: var(--color-surface-page-default); -webkit-font-smoothing: antialiased; }
+  html, body { background: var(--bg-page); -webkit-font-smoothing: antialiased; }
   button, label, select, input { font: inherit; color: inherit; border: 0; background: none; touch-action: manipulation; }
   .page { width: 360px; margin: 0 auto; padding: 24px var(--spacing-page-x-sm); display: flex; flex-direction: column; gap: var(--spacing-gap-xl); }
   .slot { position: relative; width: 100%; height: 182px; flex: none; }                 /* the page's layout, committed at rest */
   .card { position: absolute; left: 0; top: 0; width: 328px; height: 182px; overflow: hidden;   /* rounded overflow = the clip */
-          background: var(--color-surface-card-default); border-radius: var(--radius-xl); }
+          background: var(--bg-default); border-radius: var(--radius-xl); }
   .abs { position: absolute; }
   .nowrap { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .t1 { color: var(--color-text-primary); } .t2 { color: var(--color-text-secondary); } .t3 { color: var(--color-text-tertiary); }
-  .tp { color: var(--color-text-placeholder); } .tb { color: var(--color-text-brand-default); } .ti { color: var(--color-text-inverse); }
-  .tile { left: 16px; top: 41px; width: 40px; height: 40px; border-radius: var(--radius-sm); background: var(--color-surface-card-brand);
+  .t1 { color: var(--fg-default); } .t2 { color: var(--fg-muted); } .t3 { color: var(--fg-subtle); }
+  .tp { color: var(--fg-placeholder); } .tb { color: var(--fg-accent); } .ti { color: var(--fg-on-emphasis); }
+  .tile { left: 16px; top: 41px; width: 40px; height: 40px; border-radius: var(--radius-sm); background: var(--bg-brand);
           display: flex; align-items: center; justify-content: center; }
   .tile svg { width: 32px; height: 32px; flex: none; transform: scale(.75); }
   /* header lines: one block in both states, words swap on the way */
@@ -37,22 +37,22 @@ if (matchMedia('(pointer: coarse)').matches)
   .hdr-1 { top: 40px; height: 22px; } .hdr-2 { top: 66px; height: 16px; } .hdr-a { max-width: 156px; } .hdr-b { width: 232px; }
   .a-cap { left: 16px; top: 16px; }
   .a-box { left: 16px; top: 98px; width: 296px; height: 46px; display: flex; align-items: center; padding: 0 var(--spacing-gap-md);
-           border-radius: var(--radius-sm); background: var(--color-surface-inset-default); }
+           border-radius: var(--radius-sm); background: var(--bg-inset); }
   .a-note { left: 16px; top: 152px; width: 296px; text-align: center; }
   .row { left: 16px; width: 296px; height: 20px; display: flex; align-items: center; } .row .k { width: 100px; flex: none; }
   .row-1 { top: 88px; } .row-2 { top: 140px; } .row-3 { top: 192px; }
-  .rule { left: 16px; width: 296px; height: 1px; background: var(--color-stroke-subtle); } .rule-1 { top: 123px; } .rule-2 { top: 175px; }
-  .field { flex: 1 1 0; min-width: 0; height: 20px; outline: 0; color: var(--color-text-primary); }
-  .field::placeholder { color: var(--color-text-placeholder); opacity: 1; }
+  .rule { left: 16px; width: 296px; height: 1px; background: var(--border-muted); } .rule-1 { top: 123px; } .rule-2 { top: 175px; }
+  .field { flex: 1 1 0; min-width: 0; height: 20px; outline: 0; color: var(--fg-default); }
+  .field::placeholder { color: var(--fg-placeholder); opacity: 1; }
   .pill { left: 0; top: 0; width: 88px; height: 40px; z-index: 2; }
   .pill-btn { position: relative; display: block; width: 100%; height: 100%; border-radius: var(--radius-full); overflow: hidden; }
   .pill-btn > span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
-  .pill-light { background: var(--color-brand-100); } .pill-strong { background: var(--color-action-bg-primary-default); opacity: 0; }
+  .pill-light { background: var(--palette-green-100); } .pill-strong { background: var(--bg-accent-emphasis); opacity: 0; }
   .pill-save { opacity: 0; visibility: hidden; }
   .cancel { left: 16px; top: 0; width: 142px; height: 44px; }
-  .cancel-btn { width: 100%; height: 100%; border-radius: var(--radius-full); background: var(--color-action-bg-primary-disabled); }
+  .cancel-btn { width: 100%; height: 100%; border-radius: var(--radius-full); background: var(--bg-disabled); }
   .b { opacity: 0; visibility: hidden; }
-  .below { padding: var(--spacing-gap-lg); border-radius: var(--radius-xl); background: var(--color-surface-card-default);
+  .below { padding: var(--spacing-gap-lg); border-radius: var(--radius-xl); background: var(--bg-default);
            display: flex; flex-direction: column; gap: var(--spacing-gap-sm); }
 </style>
 </head>
@@ -64,8 +64,8 @@ if (matchMedia('(pointer: coarse)').matches)
       <!-- state A -->
       <p class="abs a-cap ps-text-caption-sm t3" id="aCap">Repayment account</p>
       <div class="abs hdr hdr-1" id="hdr1">
-        <p class="hdr-a ps-text-section-title-md t1 nowrap" id="aName">BPI Savings</p>
-        <p class="hdr-b ps-text-section-title-md t1 nowrap b" id="bHead">Change repayment account</p>
+        <p class="hdr-a ps-text-title-xs t1 nowrap" id="aName">BPI Savings</p>
+        <p class="hdr-b ps-text-title-xs t1 nowrap b" id="bHead">Change repayment account</p>
       </div>
       <div class="abs hdr hdr-2" id="hdr2">
         <p class="hdr-a ps-text-caption-sm tp nowrap" id="aSub">Account ending in 4567</p>
@@ -74,11 +74,11 @@ if (matchMedia('(pointer: coarse)').matches)
       <div class="abs a-box ps-text-body-md t2" id="aBox">Next repayment: ₱1,250 on Nov 15</div>
       <p class="abs a-note ps-text-caption-xs tp" id="aNote">You can change this any time before your due date.</p>
       <!-- state B -->
-      <label class="abs row row-1 b" id="bRow1"><span class="k ps-text-body-md t3">Bank</span><input class="field ps-text-body-md-emphasis" placeholder="Enter bank name"></label>
+      <label class="abs row row-1 b" id="bRow1"><span class="k ps-text-body-md t3">Bank</span><input class="field ps-text-body-md-strong" placeholder="Enter bank name"></label>
       <div class="abs rule rule-1 b" id="rule1"></div>
-      <label class="abs row row-2 b" id="bRow2"><span class="k ps-text-body-md t3">Name</span><input class="field ps-text-body-md-emphasis" placeholder="Name on the account"></label>
+      <label class="abs row row-2 b" id="bRow2"><span class="k ps-text-body-md t3">Name</span><input class="field ps-text-body-md-strong" placeholder="Name on the account"></label>
       <div class="abs rule rule-2 b" id="rule2"></div>
-      <label class="abs row row-3 b" id="bRow3"><span class="k ps-text-body-md t3">Account</span><input class="field ps-text-body-md-emphasis" inputmode="numeric" placeholder="Account number"></label>
+      <label class="abs row row-3 b" id="bRow3"><span class="k ps-text-body-md t3">Account</span><input class="field ps-text-body-md-strong" inputmode="numeric" placeholder="Account number"></label>
       <div class="abs cancel b" id="cancelWrap"><button class="cancel-btn ps-text-label-md t3" id="cancel" type="button">Cancel</button></div>
       <!-- shared: the Change pill becomes Save -->
       <div class="abs pill" id="pill">
@@ -91,7 +91,7 @@ if (matchMedia('(pointer: coarse)').matches)
     </div>
   </div>
   <div class="below" id="below">
-    <p class="ps-text-section-title-sm t1">How repayments work</p>
+    <p class="ps-text-label-md t1">How repayments work</p>
     <p class="ps-text-body-md t2">We take the amount due on your due date. You'll get a reminder 3 days before.</p>
   </div>
 </div>

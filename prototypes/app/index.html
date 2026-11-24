@@ -10,39 +10,51 @@
      rest of the app from Figma (file barda5NcnFzxG7CHtISKsW, page 38:1137), built on the shared components (shared/ps-ui).
      States you can't reach by tapping are switched in Tune. New work in the repo is added here too (CLAUDE.md).
      This folder holds only the flows (app.js, screens-*.js) and the sample data (data.js, coupons-data.js). -->
-<script src="../../shared/ps-ui/tune.js?v=202611172125"></script>
-<link rel="stylesheet" href="../../shared/ps-ui/tune.css?v=202611172125">
+<script src="../../shared/ps-ui/tune.js?v=202611240916"></script>
+<link rel="stylesheet" href="../../shared/ps-ui/tune.css?v=202611240916">
 <script>
 PSTune.setup({ key: 'perasure.app.tune',
-  note: 'This is a test environment: pick the account and loan state to see, then use the app as usual. Loading times are made up and vary, as on a real network. A change reloads the app from its opening screen.',
+  note: 'A test environment: loading times are made up and vary, as on a real network. A change reloads the app from its opening screen.',
   settings: [
+    { heading: 'Special cases', kind: 'scenario', note: 'Each is a test of its own: while one is on, it sets the account, loan and coupons itself and the groups below don’t apply (Display still does).' },
+    { key: 'credit', label: 'Coupon you can’t use', desc: '₱5,000 available (Credit ready, repaying). Coupons: 25% off (works), and three you can’t use on any loan — 20% off (needs ₱6,000), ₱300 off (needs ₱10,000), +₱2,000 (needs ₱20,000). No other limit increase can lift the loan. Opens on Coupons: tap Use on one of the three, then pick a term.', options: [['full', 'Off'], ['low', 'On']], def: 'full' },
+
+    { heading: 'Account and loan', lock: true },
     { key: 'user', label: 'Account', options: [['approved', 'Credit ready'], ['guest', 'Logged out'], ['new', 'New, no application'], ['review', 'Application in review'],
         ['docs', 'Documents needed'], ['declined', 'Not approved'], ['expired', 'Limit expired'], ['hold', 'Credit on hold']], def: 'approved' },
-    { key: 'loan', label: 'Loan (credit ready)', options: [['none', 'No loan'], ['reviewing', 'In review'], ['active', 'Repaying'], ['overdue', 'Overdue'], ['failed', 'Transfer failed']], def: 'active' },
+    { key: 'loan', label: 'Loan', desc: 'With Credit ready.', options: [['none', 'No loan'], ['reviewing', 'In review'], ['active', 'Repaying'], ['today', 'Due today'], ['overdue', 'Overdue'], ['failed', 'Transfer failed']], def: 'active' },
+    { key: 'temp', label: 'Temporary credit', desc: '₱10,000 until Nov 20.', options: [[1, 'On'], [0, 'Off']], def: 1 },
+    { key: 'intro', label: 'Credit limit increase when the app opens', desc: 'Needs temporary credit.', options: [[0, 'Off'], [1, 'On']], def: 0 },
     { key: 'coupons', label: 'Coupons you have', options: [['6', 'Six'], ['1', 'One'], ['0', 'None']], def: '6' },
-    { key: 'temp', label: 'Temporary credit (₱10,000 until Nov 20)', options: [[1, 'On'], [0, 'Off']], def: 1 },
-    { key: 'intro', label: 'Credit limit increase when the app opens (needs temporary credit)', options: [[0, 'Off'], [1, 'On']], def: 0 },
-    { key: 'net', label: 'Network', options: [['normal', 'Normal'], ['slow', 'Slow'], ['error', 'Fails once']], def: 'normal' },
+
+    { heading: 'Checks and messages', lock: true },
     { key: 'otp', label: 'Verification code', options: [['ok', 'Correct'], ['wrong', 'Wrong first'], ['fail', 'SMS fails first']], def: 'ok' },
     { key: 'kyc', label: 'ID check', options: [['pass', 'Passes'], ['inuse', 'ID already in use'], ['failed', 'Fails']], def: 'pass' },
     { key: 'selfie', label: 'Selfie check', options: [['pass', 'Passes'], ['fail', 'Fails first']], def: 'pass' },
     { key: 'inbox', label: 'Inbox', options: [['unread', 'Unread messages'], ['read', 'All read'], ['empty', 'Empty']], def: 'unread' },
     { key: 'rating', label: 'Ask for a rating after a loan', options: [[0, 'Off'], [1, 'On']], def: 0 },
-    { key: 'fit', label: 'Screen fit (the layout always fills the width)', options: [['cap', 'Capped zoom (the browser enlarges the whole page, Withdraw demo included, up to 1.15×)'], ['rem', 'Capped zoom · rem (the same factor through rem; the Withdraw demo’s screens stay 1:1)'], ['fit', '1:1 (true size)'], ['scale', 'Full zoom (scaled to the screen)']], def: 'cap' },
-    { key: 'text', label: 'Text size (System: the phone’s setting; up to 130 % the whole layout follows, above it only text)', options: [[0, 'System'], [85, '85%'], [100, '100%'], [115, '115%'], [130, '130%'], [150, '150%'], [200, '200%']], def: 0 }
+
+    { heading: 'Network', lock: true },
+    { key: 'net', label: 'Network', options: [['normal', 'Normal'], ['slow', 'Slow'], ['error', 'Fails once']], def: 'normal' },
+
+    { heading: 'Display' },
+    { key: 'fit', label: 'Screen fit', desc: 'The layout always fills the width.', options: [['cap', 'Capped zoom (the browser enlarges the whole page, Withdraw demo included, up to 1.15×)'], ['rem', 'Capped zoom · rem (the same factor through rem; the Withdraw demo’s screens stay 1:1)'], ['fit', '1:1 (true size)'], ['scale', 'Full zoom (scaled to the screen)']], def: 'cap' },
+    { key: 'text', label: 'Text size', desc: 'System: the phone’s setting. Up to 130 % the whole layout follows; above it, only text.', options: [[0, 'System'], [85, '85%'], [100, '100%'], [115, '115%'], [130, '130%'], [150, '150%'], [200, '200%']], def: 0 }
   ] });
+/* the special case stands alone: it sets what it needs, whatever the other settings say (owner 2026-11-24) */
+if (window.PS_TUNE && String(PS_TUNE.credit) === 'low') Object.assign(PS_TUNE, { user: 'approved', loan: 'active', coupons: 'case', temp: 1, intro: 0, net: 'normal', otp: 'ok', kyc: 'pass', selfie: 'pass', inbox: 'unread', rating: 0 });
 window.PS_FIT = { max: 1.15, text: true };   /* Tune → Screen fit picks the mode (default capped zoom, at most 1.15× — owner); text: follow the phone's text size (Tune → Text size) */
 </script>
-<script src="../../shared/ps-ui/phone-fit.js?v=202611172125"></script>
+<script src="../../shared/ps-ui/phone-fit.js?v=202611240916"></script>
 <link rel="stylesheet" href="../../tokens/tokens.css">
-<link rel="stylesheet" href="../../tokens-rem/tokens-rem.css?v=202611172125"><!-- the same tokens in rem (generated by tools/rem-tokens.py) -->
+<link rel="stylesheet" href="../../tokens-rem/tokens-rem.css?v=202611240916"><!-- the same tokens in rem (generated by tools/rem-tokens.py) -->
 <link rel="stylesheet" href="../../assets/fonts/fonts-2026.11.17.css">
 <link rel="stylesheet" href="../../vendor/react-wheel-picker@1.2.3/style.css">
 <link rel="preload" href="../../assets/fonts/hanken-grotesk-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../../assets/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../../assets/fonts/reddit-sans-var.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../../shared/ps-ui/ps-ui.css?v=202611172125">
-<link rel="stylesheet" href="app.css?v=202611172125">
+<link rel="stylesheet" href="../../shared/ps-ui/ps-ui.css?v=202611240916">
+<link rel="stylesheet" href="app.css?v=202611240916">
 </head>
 <body>
 <div id="root"></div>
@@ -50,32 +62,32 @@ window.PS_FIT = { max: 1.15, text: true };   /* Tune → Screen fit picks the mo
 <script src="../../vendor/react-dom@18.3.1/react-dom.production.min.js"></script>
 <script src="../../vendor/react-wheel-picker@1.2.3/react-wheel-picker.js"></script>
 <script src="../../vendor/motion@14.4.0/motion-react.js"></script>
-<script src="../../shared/ps-ui/core.js?v=202611172125"></script>
-<script src="../../shared/ps-ui/layout.js?v=202611172125"></script>
-<script src="../../shared/ps-ui/feedback.js?v=202611172125"></script>
-<script src="../../shared/ps-ui/form.js?v=202611172125"></script>
-<script src="../../shared/ps-ui/coupon.js?v=202611172125"></script>
-<script src="../../shared/ps-ui/home.js?v=202611172125"></script>
-<script src="../../shared/ps-ui/loan.js?v=202611172125"></script>
-<script src="../../shared/ps-ui/account.js?v=202611172125"></script>
-<script src="../../shared/ps-ui/status.js?v=202611172125"></script>
-<script src="../../shared/ps-ui/pay.js?v=202611172125"></script>
-<script src="../../shared/ps-ui/list.js?v=202611172125"></script>
-<script src="../../shared/ps-ui/fx.js?v=202611172125"></script>
-<script src="../../shared/ps-ui/apply.js?v=202611172125"></script>
-<script src="../../shared/ps-ui/withdraw-host.js?v=202611172125"></script>
-<script src="coupons-data.js?v=202611172125"></script>
-<script src="data.js?v=202611172125"></script>
-<script src="app.js?v=202611172125"></script>
-<script src="screens-auth.js?v=202611172125"></script>
-<script src="screens-home.js?v=202611172125"></script>
-<script src="screens-loan.js?v=202611172125"></script>
-<script src="screens-withdraw.js?v=202611172125"></script>
-<script src="screens-pay.js?v=202611172125"></script>
-<script src="screens-account.js?v=202611172125"></script>
-<script src="ph-places.js?v=202611172125"></script>
-<script src="screens-kyc.js?v=202611172125"></script>
-<script src="screens-help.js?v=202611172125"></script>
+<script src="../../shared/ps-ui/core.js?v=202611240916"></script>
+<script src="../../shared/ps-ui/layout.js?v=202611240916"></script>
+<script src="../../shared/ps-ui/feedback.js?v=202611240916"></script>
+<script src="../../shared/ps-ui/form.js?v=202611240916"></script>
+<script src="../../shared/ps-ui/coupon.js?v=202611240916"></script>
+<script src="../../shared/ps-ui/home.js?v=202611240916"></script>
+<script src="../../shared/ps-ui/loan.js?v=202611240916"></script>
+<script src="../../shared/ps-ui/account.js?v=202611240916"></script>
+<script src="../../shared/ps-ui/status.js?v=202611240916"></script>
+<script src="../../shared/ps-ui/pay.js?v=202611240916"></script>
+<script src="../../shared/ps-ui/list.js?v=202611240916"></script>
+<script src="../../shared/ps-ui/fx.js?v=202611240916"></script>
+<script src="../../shared/ps-ui/apply.js?v=202611240916"></script>
+<script src="../../shared/ps-ui/withdraw-host.js?v=202611240916"></script>
+<script src="coupons-data.js?v=202611240916"></script>
+<script src="data.js?v=202611240916"></script>
+<script src="app.js?v=202611240916"></script>
+<script src="screens-auth.js?v=202611240916"></script>
+<script src="screens-home.js?v=202611240916"></script>
+<script src="screens-loan.js?v=202611240916"></script>
+<script src="screens-withdraw.js?v=202611240916"></script>
+<script src="screens-pay.js?v=202611240916"></script>
+<script src="screens-account.js?v=202611240916"></script>
+<script src="ph-places.js?v=202611240916"></script>
+<script src="screens-kyc.js?v=202611240916"></script>
+<script src="screens-help.js?v=202611240916"></script>
 <script>APP.start();</script>
 </body>
 </html>

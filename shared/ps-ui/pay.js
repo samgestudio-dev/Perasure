@@ -4,7 +4,7 @@
   'use strict';
   var R = window.React, PS = window.PS, h = R.createElement, m = PS.m, AP = PS.AP, MT = PS.MT;
 
-  /* ScamStrip: the blue line under the header; the text runs sideways when it doesn't fit · children · onClick */
+  /* ScamStrip: the info line under the header (blue scale: Bg/Info-muted, Fg/Info-strong); the text runs sideways when it doesn't fit · children · onClick */
   PS.ScamStrip = function ScamStrip(p) {
     return h(m.button, Object.assign({ type: 'button', className: 'ps-scamstrip', onClick: p.onClick }, PS.press()),
       h(PS.Icon, { name: 'info', size: 16 }), h('span', { className: 'ps-scamstrip__clip' }, h('span', { className: 'ps-scamstrip__run ps-t-caption-sm' }, p.children)));
@@ -51,7 +51,7 @@
   PS.QrPanel = function QrPanel(p) {
     return h('div', { className: 'ps-qr' }, h('div', { className: 'ps-qr__head ps-t-body-md-em' }, h('span', null, p.title || 'Pay to Merchant'), h('b', null, p.merchant)),
       h('div', { className: 'ps-qr__code' }, h('img', { src: PS.asset('art/qr.png'), alt: 'QR code' })),
-      h(PS.Button, { variant: 'inverse', size: 'md', className: 'ps-qr__save', onClick: p.onSave }, h(PS.Icon, { name: 'upload', size: 20 }), 'Save QR code'));
+      h(PS.Button, { variant: 'plain', size: 'md', className: 'ps-qr__save', onClick: p.onSave }, 'Save QR code'));
   };
   /* Accordion: a card that opens · title · open (first state) · small (the 14 px quiet one, DS 9224:37691) · icon (a 28 px brand tile before the title) · children */
   /* (small: the application's reminder, DS 9224:37691 — 12 / 16 padding, the title in Label/md-light Neutral/600, the text in Caption/sm, 12 apart) */
@@ -68,7 +68,8 @@
      follows the list (the category on screen is the one marked) and a tap on the rail glides the list to it on the Smooth spring. The white
      mark moves between rail items (layoutId); colours change in 150 ms.
      cats [{ id, icon, label, groups: [{ title, tag, items: [{ id, name }] }] }] · value (cat) · onCat · onPick(item) · scroller (the element
-     that scrolls the list: the sheet's body; default the picker's own list) */
+     that scrolls the list: the sheet's body; default the picker's own list) · q (search text: the rail keeps every category, the list keeps
+     its groups with only the matching rows — groups with none drop out — and the typed part in Fg/Accent, Figma Payment / Methods / Popover search active) */
   PS.MethodPicker = function MethodPicker(p) {
     var list = R.useRef(null), anchors = R.useRef({}), gliding = R.useRef(null), cat = p.cats.filter(function (c) { return c.id === p.value; })[0] || p.cats[0];
     function scroller() { return (p.scroller && p.scroller.current) || list.current; }
@@ -101,11 +102,14 @@
           h(PS.Icon, { name: c.icon, size: 24 }), h('span', null, c.label));
       })),
       h('div', { ref: list, className: 'ps-mpick__list' }, p.cats.map(function (c) {
-        return h('div', { key: c.id, className: 'ps-mpick__cat-groups', ref: function (n) { anchors.current[c.id] = n; } }, c.groups.map(function (g, i) {
+        var k = (p.q || '').trim().toLowerCase();
+        var groups = !k ? c.groups : c.groups.map(function (g) { return Object.assign({}, g, { items: g.items.filter(function (it) { return it.name.toLowerCase().indexOf(k) >= 0; }) }); })
+          .filter(function (g) { return g.items.length; });
+        return h('div', { key: c.id, className: 'ps-mpick__cat-groups', ref: function (n) { anchors.current[c.id] = n; } }, groups.map(function (g, i) {
           return h('div', { key: i, className: 'ps-mpick__group' },
             h('div', { className: 'ps-mpick__title' }, h('span', { className: 'ps-t-section-sm-light' }, g.title), g.tag ? h(PS.Tag, { tone: 'positive' }, g.tag) : null),
             h('div', { className: 'ps-mpick__rows' }, g.items.map(function (it) {
-              return h(m.button, Object.assign({ key: it.id, type: 'button', className: 'ps-mpick__row ps-t-body-md-em', onClick: function () { p.onPick(it, c); } }, PS.press()), h('span', null, it.name),
+              return h(m.button, Object.assign({ key: it.id, type: 'button', className: 'ps-mpick__row ps-t-body-md-em', onClick: function () { p.onPick(it, c); } }, PS.press()), h('span', null, PS.mark(it.name, k)),
                 h(PS.Icon, { name: 'chevron-right', size: 16, color: 'tertiary' }));
             })));
         }));
@@ -172,10 +176,11 @@
       }) }),
       h(PS.Button, { block: true, onClick: p.onNext }, h(PS.Swap, { k: last ? 'u' : 'n' }, h('span', null, last ? 'I understand' : 'Next'))));
   };
-  /* GuestPay: Payment when not signed in (Figma 52:7683) — a text block, then a 264 px button, at the height of a loading page's coin · onLogin */
+  /* GuestPay: Payment when not signed in (Figma 52:7683; rebrand: the EmptyState Action=On placed there) — the Empty box animation (as
+     PS.EmptyState), a title (Fg/Default) and a line (Fg/Subtle), then a 264 px button; the picture sits where a full-page empty state's does · onLogin */
   PS.GuestPay = function GuestPay(p) {
-    return h('div', { className: 'ps-guestpay' },
-      h('div', null, h('p', { className: 'ps-t-title-sm ps-c-tertiary' }, 'Keep track of your repayments'), h('p', { className: 'ps-t-body-md ps-c-placeholder' }, 'Sign up or log in to view your repayment schedule and due dates.')),
+    return h('div', { className: 'ps-guestpay' }, h(PS.Anim, { name: 'empty-box', size: 80 }),
+      h('div', null, h('p', { className: 'ps-t-title-sm ps-c-primary' }, 'Keep track of your repayments'), h('p', { className: 'ps-t-body-md ps-c-tertiary' }, 'Sign up or log in to view your repayment schedule and due dates.')),
       h(PS.Button, { size: 'md', onClick: p.onLogin }, 'Sign up or log in'));
   };
   /* PayDock: the frosted panel at the bottom of Payment (Figma 52:7925 "payment nav", 162 tall) — rounded top, it holds the PayBar and sits

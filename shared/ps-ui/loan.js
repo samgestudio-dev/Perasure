@@ -84,8 +84,8 @@
           h('div', { className: 'ps-amountcard__amt', 'aria-live': 'off' },
             h('span', { className: 'ps-amount' }, h('span', { className: 'ps-amount__cur' }, '₱'),
               h('span', { className: 'ps-amount__int', ref: intEl }, init.current[0]), h('span', { className: 'ps-amount__dec', ref: decEl }, '.' + init.current[1])),
-            p.onEdit ? h(m.button, Object.assign({ type: 'button', className: 'ps-amountcard__edit', 'aria-label': 'Type the amount', onClick: p.onEdit }, PS.press(true)), h(PS.Icon, { name: 'edit', size: 20, color: 'brand' }))
-              : h('span', { className: 'ps-amountcard__edit' }, h(PS.Icon, { name: 'edit', size: 20, color: 'brand' })))),
+            p.onEdit ? h(m.button, Object.assign({ type: 'button', className: 'ps-amountcard__edit', 'aria-label': 'Type the amount', onClick: p.onEdit }, PS.press(true)), h(PS.Icon, { name: 'edit', size: 20 }))
+              : h('span', { className: 'ps-amountcard__edit' }, h(PS.Icon, { name: 'edit', size: 20 })))),
         h(PS.Slider, { value: p.amount, min: p.min, max: p.max, step: step, boost: p.boost, onChange: p.onAmount, onCommit: p.onCommit, label: p.label || 'Disbursement amount',
           amt: amt, maxMv: mx, held: held })),
       h(PS.Divider),
@@ -172,11 +172,12 @@
   PS.OrderHead = function OrderHead(p) {
     return h('div', { className: 'ps-ohead' }, h('p', { className: 'ps-ohead__label' }, p.label), h(PS.Amount, { value: p.amount, className: 'ps-ohead__amount' }));
   };
-  /* OrderStatus: where a loan application stands, on the outlined card (Figma: 328 × 80) — a brand tile (red when it failed) and two lines
+  /* OrderStatus: where a loan application stands, on the outlined card (Figma: 328 × 80) — a bare history icon (Figma: 20, Fg/Default; a red
+     tile with the alert when it failed) and two lines
      state review | failed · title · body */
   PS.OrderStatus = function OrderStatus(p) {
     var failed = p.state === 'failed';
-    return h(PS.Card, { variant: 'outline', className: 'ps-ostatus' }, h('span', { className: PS.cx('ps-tile', failed && 'is-negative') }, h(PS.Icon, { name: failed ? 'alert-circle' : 'history', size: 20, color: 'inverse' })),
+    return h(PS.Card, { variant: 'outline', className: 'ps-ostatus' }, failed ? h('span', { className: 'ps-tile is-negative' }, h(PS.Icon, { name: 'alert-circle', size: 20, color: 'inverse' })) : h(PS.Icon, { name: 'history', size: 20, color: 'primary', className: 'ps-ostatus__icon' }),
       h('div', null, h('p', { className: 'ps-t-title-16' }, p.title), h('p', { className: 'ps-t-caption-sm ps-c-secondary' }, p.body)));
   };
   /* PlanRows: a payment plan as separate white rows 2 px apart, the first and last rounded (Figma 52:9668) · rows [{ label, value }] */

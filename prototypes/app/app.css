@@ -10,7 +10,7 @@
 .app-form { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); }
 .app-form--12 { gap: var(--spacing-gap-md); }
 .app-docs { position: relative; display: flex; flex-direction: column; gap: var(--spacing-gap-md); }   /* proof of income (DS 9473:27722) */
-.app-ptabs { padding: 0 var(--spacing-page-x-sm) var(--spacing-padding-xl); }   /* tabs under a header (inbox, credit history) */
+.app-ptabs { padding: 0 var(--spacing-page-x-sm) var(--spacing-padding-sm); }   /* tabs under a header (inbox, credit history): 8 under the tabs (owner, 2026-11-23) */
 .app-ctabs { padding: var(--spacing-gap-2xs) var(--spacing-page-x-sm) var(--spacing-padding-lg); }   /* the coupon centre's tabs */
 .app-amount { padding-left: 0; padding-right: 0; }   /* the amount keypad page: PS.AmountEntry runs edge to edge */
 .app-account > .ps-profile { margin-bottom: var(--spacing-gap-md); }

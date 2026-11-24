@@ -1,0 +1,271 @@
+/* PeraSure Design System stylesheet (tokens + type roles), as exported with the Claude Design page.
+   The font files come from the shared ../../assets/fonts/fonts-2026.11.17.css. */
+/* PeraSure Design System — global entry point.
+   Consumers link this one file. Import order: primitives → semantic → typography. */
+/* rebrand: every --color-* declaration was removed from this copy (257 lines) so the colours come from rebrand/tokens/tokens.css,
+   linked before this file. Sizes, type and shadows below are unchanged. */
+/* PeraSure — Primitive tokens (raw palette + scales).
+   Source of truth: Figma Variables "Primitive" collection.
+   Never reference these directly in product UI — use semantic.css aliases. */
+:root {
+  /* ---- Color · Blue (brand ramp) ---- */
+
+  /* ---- Color · Red (negative) ---- */
+
+  /* ---- Color · Green (positive / marketing) ---- */
+
+  /* ---- Color · Yellow (warning) ---- */
+
+  /* ---- Color · Neutral ---- */
+
+  /* ---- Color · Pink (marketing accent) ---- */
+
+  /* ---- Color · Ambient (page washes) ---- */
+
+  /* ---- Color · Alpha · White ---- */
+
+  /* ---- Color · Alpha · Cold Black (shadows) ---- */
+
+  /* ---- Color · Alpha · Grey ---- */
+
+  /* ---- Color · Alpha · Green ---- */
+
+  /* ---- Color · Alpha · Black ---- */
+
+  /* ---- Color · Alpha · Blue ---- */
+
+  /* ---- Brand gradient (app icon / marketing) ---- */
+  --color-brand-gradient-from: #6ee317;
+  --color-brand-gradient-to: #53c575;
+  --gradient-brand: linear-gradient(157deg, #6ee317 0%, #53c575 100%); /* @kind color */
+
+  /* ---- Font family ---- */
+  --font-family-hanken-grotesk: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-family-hanken-grotesk: "Hanken Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* ---- Font size (px) ---- */
+  --font-size-11: 11px;
+  --font-size-12: 12px;
+  --font-size-14: 14px;
+  --font-size-16: 16px;
+  --font-size-18: 18px;
+  --font-size-20: 20px;
+  --font-size-24: 24px;
+  --font-size-28: 28px;
+  --font-size-32: 32px;
+  --font-size-36: 36px;
+  --font-size-40: 40px;
+  --font-size-48: 48px;
+
+  /* ---- Font weight ---- */
+  --font-weight-400: 400;
+  --font-weight-500: 500;
+  --font-weight-600: 600;
+  --font-weight-700: 700;
+  --font-weight-800: 800;
+
+  /* ---- Line height (px) ---- */
+  --line-height-14: 14px;
+  --line-height-16: 16px;
+  --line-height-20: 20px;
+  --line-height-22: 22px;
+  --line-height-24: 24px;
+  --line-height-28: 28px;
+  --line-height-32: 32px;
+  --line-height-36: 36px;
+  --line-height-40: 40px;
+  --line-height-44: 44px;
+  --line-height-48: 48px;
+  --line-height-56: 56px;
+
+  /* ---- Spacing (px) ---- */
+  --spacing-0: 0px;
+  --spacing-2: 2px;
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-28: 28px;
+  --spacing-32: 32px;
+  --spacing-36: 36px;
+  --spacing-40: 40px;
+  --spacing-44: 44px;
+  --spacing-48: 48px;
+  --spacing-56: 56px;
+  --spacing-64: 64px;
+
+  /* ---- Blur (px) ---- */
+  --blur-0: 0px;
+  --blur-2: 2px;
+  --blur-4: 4px;
+  --blur-10: 10px;
+  --blur-12: 12px;
+  --blur-24: 24px;
+  --blur-32: 32px;
+
+  /* ---- Radius (px) ---- */
+  --radius-0: 0px;
+  --radius-8: 8px;
+  --radius-12: 12px;
+  --radius-16: 16px;
+  --radius-20: 20px;
+  --radius-24: 24px;
+  --radius-32: 32px;
+  --radius-999: 999px;
+
+  /* ---- Stroke width (px) ---- */
+  --stroke-width-10: 1px;
+  --stroke-width-15: 1.5px;
+  --stroke-width-20: 2px;
+  --stroke-width-25: 2.5px;
+
+  /* ---- Layer opacity (%) ---- */
+  --layer-opacity-0: 0; /* @kind other */
+  --layer-opacity-8: 0.08; /* @kind other */
+  --layer-opacity-20: 0.2; /* @kind other */
+  --layer-opacity-40: 0.4; /* @kind other */
+  --layer-opacity-60: 0.6; /* @kind other */
+  --layer-opacity-80: 0.8; /* @kind other */
+  --layer-opacity-100: 1; /* @kind other */
+}
+
+/* PeraSure — Semantic tokens. Product UI should reference THESE, not primitives.
+   Source of truth: Figma Variables "Semantic" collection. */
+:root {
+  /* ================= COLOR · role ramps ================= */
+
+
+
+
+
+  /* ================= SURFACE ================= */
+
+  /* ================= TEXT ================= */
+
+  /* ================= ICON ================= */
+
+  /* ================= STROKE ================= */
+
+  /* ================= ACTION (buttons) ================= */
+
+  /* ================= SHADOW / GRADIENT / OVERLAY / ALPHA-BG ================= */
+
+  /* ================= ELEVATION (composed shadows) ================= */
+  --shadow-subtle: 0 1px 2px var(--shadow-color-subtle-2), 0 2px 12px var(--shadow-color-subtle-1);
+  --elevation-raised: 0 2px 4px var(--shadow-color-default-2), 0 12px 24px var(--shadow-color-default-1);
+  --elevation-focus: 0 4px 8px var(--shadow-color-focus-2), 0 32px 40px var(--shadow-color-focus-1);
+
+  /* ================= TYPOGRAPHY roles ================= */
+  --font-family-body: var(--font-family-hanken-grotesk);    /* rebrand: one font (Brand Bible) */
+  --font-family-label: var(--font-family-hanken-grotesk);
+  --font-family-title: var(--font-family-hanken-grotesk);
+  --font-family-display: var(--font-family-hanken-grotesk);
+
+  --font-size-caption-xs: var(--font-size-11);
+  --font-size-caption-sm: var(--font-size-12);
+  --font-size-label-sm: var(--font-size-12);
+  --font-size-label-md: var(--font-size-14);
+  --font-size-body-md: var(--font-size-14);
+  --font-size-body-lg: var(--font-size-16);
+  --font-size-section-title-sm: var(--font-size-14);
+  --font-size-section-title-md: var(--font-size-16);
+  --font-size-title-sm: var(--font-size-18);
+  --font-size-title-md: var(--font-size-20);
+  --font-size-title-lg: var(--font-size-24);
+  --font-size-headline-sm: var(--font-size-28);
+  --font-size-display-sm: var(--font-size-32);
+  --font-size-display-md: var(--font-size-36);
+  --font-size-display-lg: var(--font-size-40);
+  --font-size-display-xl: var(--font-size-48);
+
+  --line-height-caption-xs: var(--line-height-14);
+  --line-height-caption-sm: var(--line-height-16);
+  --line-height-label-sm: var(--line-height-16);
+  --line-height-label-md: var(--line-height-20);
+  --line-height-body-md: var(--line-height-20);
+  --line-height-body-lg: var(--line-height-24);
+  --line-height-section-title-sm: var(--line-height-20);
+  --line-height-section-title-md: var(--line-height-22);
+  --line-height-title-sm: var(--line-height-24);
+  --line-height-title-md: var(--line-height-28);
+  --line-height-title-lg: var(--line-height-32);
+  --line-height-headline-sm: var(--line-height-36);
+  --line-height-display-sm: var(--line-height-40);
+  --line-height-display-md: var(--line-height-44);
+  --line-height-display-lg: var(--line-height-48);
+  --line-height-display-xl: var(--line-height-56);
+
+  --font-weight-regular: var(--font-weight-400);
+  --font-weight-medium: var(--font-weight-500);
+  --font-weight-semibold: var(--font-weight-600);
+  --font-weight-bold: var(--font-weight-700);
+  --font-weight-black: var(--font-weight-800);
+
+  /* ================= RADIUS / SPACING / STROKE aliases ================= */
+  --radius-none: var(--radius-0);
+  --radius-xs: var(--radius-8);
+  --radius-sm: var(--radius-12);
+  --radius-md: var(--radius-16);
+  --radius-lg: var(--radius-20);
+  --radius-xl: var(--radius-24);
+  --radius-xxl: var(--radius-32);
+  --radius-full: var(--radius-999);
+
+  --spacing-gap-none: var(--spacing-0);
+  --spacing-gap-2xs: var(--spacing-2);
+  --spacing-gap-xs: var(--spacing-4);
+  --spacing-gap-sm: var(--spacing-8);
+  --spacing-gap-md: var(--spacing-12);
+  --spacing-gap-lg: var(--spacing-16);
+  --spacing-gap-xl: var(--spacing-20);
+  --spacing-gap-2xl: var(--spacing-24);
+  --spacing-gap-3xl: var(--spacing-32);
+  --spacing-padding-2xs: var(--spacing-2);
+  --spacing-padding-xs: var(--spacing-4);
+  --spacing-padding-sm: var(--spacing-8);
+  --spacing-padding-md: var(--spacing-12);
+  --spacing-padding-lg: var(--spacing-16);
+  --spacing-padding-xl: var(--spacing-20);
+  --spacing-padding-2xl: var(--spacing-24);
+  --spacing-padding-3xl: var(--spacing-32);
+  --spacing-padding-5xl: var(--spacing-48);
+  --spacing-page-x: var(--spacing-16);
+  --spacing-page-top: var(--spacing-16);
+  --spacing-page-bottom-md: var(--spacing-32);
+  --spacing-page-bottom-lg: var(--spacing-40);
+  --spacing-page-bottom-xl: var(--spacing-48);
+
+  --stroke-width-default: var(--stroke-width-10);
+  --stroke-width-medium: var(--stroke-width-15);
+  --stroke-width-strong: var(--stroke-width-20);
+  --stroke-width-heavy: var(--stroke-width-25);
+}
+
+/* PeraSure — Fonts (from ../../assets/fonts/fonts-2026.11.17.css, the app's files) + typographic specimens.
+   Hanken Grotesk = titles & display. Inter = body, labels, UI, numerals. */
+
+/* ---- Type role classes: apply family/size/line-height/weight in one hit ---- */
+.ps-display-xl{font-family:var(--font-family-display);font-size:var(--font-size-display-xl);line-height:var(--line-height-display-xl);font-weight:var(--font-weight-bold);letter-spacing:-0.02em}
+.ps-display-lg{font-family:var(--font-family-display);font-size:var(--font-size-display-lg);line-height:var(--line-height-display-lg);font-weight:var(--font-weight-bold);letter-spacing:-0.02em}
+.ps-display-md{font-family:var(--font-family-display);font-size:var(--font-size-display-md);line-height:var(--line-height-display-md);font-weight:var(--font-weight-bold);letter-spacing:-0.01em}
+.ps-display-sm{font-family:var(--font-family-display);font-size:var(--font-size-display-sm);line-height:var(--line-height-display-sm);font-weight:var(--font-weight-bold);letter-spacing:-0.01em}
+.ps-headline-sm{font-family:var(--font-family-display);font-size:var(--font-size-headline-sm);line-height:var(--line-height-headline-sm);font-weight:var(--font-weight-bold)}
+.ps-title-lg{font-family:var(--font-family-title);font-size:var(--font-size-title-lg);line-height:var(--line-height-title-lg);font-weight:var(--font-weight-bold)}
+.ps-title-md{font-family:var(--font-family-title);font-size:var(--font-size-title-md);line-height:var(--line-height-title-md);font-weight:var(--font-weight-bold)}
+.ps-title-sm{font-family:var(--font-family-title);font-size:var(--font-size-title-sm);line-height:var(--line-height-title-sm);font-weight:var(--font-weight-bold)}
+.ps-section-title-md{font-family:var(--font-family-title);font-size:var(--font-size-section-title-md);line-height:var(--line-height-section-title-md);font-weight:var(--font-weight-semibold)}
+.ps-section-title-sm{font-family:var(--font-family-title);font-size:var(--font-size-section-title-sm);line-height:var(--line-height-section-title-sm);font-weight:var(--font-weight-semibold)}
+.ps-body-lg{font-family:var(--font-family-body);font-size:var(--font-size-body-lg);line-height:var(--line-height-body-lg);font-weight:var(--font-weight-regular)}
+.ps-body-md{font-family:var(--font-family-body);font-size:var(--font-size-body-md);line-height:var(--line-height-body-md);font-weight:var(--font-weight-regular)}
+.ps-label-md{font-family:var(--font-family-label);font-size:var(--font-size-label-md);line-height:var(--line-height-label-md);font-weight:var(--font-weight-medium)}
+.ps-label-sm{font-family:var(--font-family-label);font-size:var(--font-size-label-sm);line-height:var(--line-height-label-sm);font-weight:var(--font-weight-medium)}
+.ps-caption-sm{font-family:var(--font-family-body);font-size:var(--font-size-caption-sm);line-height:var(--line-height-caption-sm);font-weight:var(--font-weight-regular)}
+.ps-caption-xs{font-family:var(--font-family-body);font-size:var(--font-size-caption-xs);line-height:var(--line-height-caption-xs);font-weight:var(--font-weight-regular)}
+
+
+/* Sensible defaults + link colors so editor-added links aren't browser-blue. */
+:root { color-scheme: light; }
+a { color: var(--content-link); text-decoration: none; }
+a:hover { color: var(--content-link-pressed); text-decoration: underline; }

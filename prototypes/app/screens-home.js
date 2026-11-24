@@ -32,9 +32,9 @@
     return [APP.tune(), h(PS.HomeActions, { key: 'a', actions: list })];
   }
   function paymentCard(S) {
-    if (S.repay === 'overdue') { var o = AD.overdue; return h(PS.PaymentCard, { key: 'pay', amount: o.amount, was: o.was, due: o.due, badge: o.badge, overdue: true, onPay: pay,
+    if (S.repay === 'overdue') { var o = AD.overdue; return h(PS.PaymentCard, { key: 'pay', amount: o.amount, was: o.was, due: o.due, badge: o.badge, stage: 'overdue', onPay: pay,
       notice: { title: o.notice.title, body: o.notice.body, onHelp: showPenalty } }); }
-    if (AD.payment && (S.repay === 'active' || S.user === 'hold')) { var p = AD.payment; return h(PS.PaymentCard, { key: 'pay', amount: p.amount, was: p.was, due: p.due, badge: p.badge, onPay: pay }); }
+    if (AD.payment && (S.repay === 'active' || S.user === 'hold')) { var p = AD.payment; return h(PS.PaymentCard, { key: 'pay', amount: p.amount, was: p.was, due: p.due, badge: p.badge, stage: p.stage, onPay: pay }); }
     return null;
   }
   function notice() { return h(PS.Notice, { key: 'notice', onClick: function () { APP.open('scams', { then: null }); } }, 'All PeraSure transactions happen in the app. Never send money through third parties.'); }
@@ -56,7 +56,7 @@
       body = [h(PS.StateCard, { key: 's', title: st.title, body: st.body, support: { text: st.ask, onClick: APP.support } }),
         h('div', { key: 'offer', className: 'app-stack-8' }, h(PS.DotTitle, null, 'More for you'), h(PS.OfferCard, Object.assign({}, AD.offer, { onClick: function () { APP.say('LoadCash opens outside the test app.'); } })))].concat(trust());
     } else if (S.user === 'expired') {
-      body = [h(PS.StateCard, { key: 's', title: st.title, body: st.body, button: { label: 'Reapply now', icon: 'money-out', onClick: function () { APP.apply(); } } }), paymentCard(S)].concat(trust());
+      body = [h(PS.StateCard, { key: 's', title: st.title, body: st.body, button: { label: 'Reapply now', onClick: function () { APP.apply(); } } }), paymentCard(S)].concat(trust());
     } else if (S.user === 'hold') {
       body = [h(PS.StateCard, { key: 's', title: st.title, body: st.body, support: { text: st.ask, onClick: APP.support } }), paymentCard(S)].concat(trust());
     } else {
@@ -73,9 +73,9 @@
       /* the Withdraw demo's own card (the one its motion works on) while there is temporary credit; without it, the shared card in its
          one-line layout (Figma 10789:29220) — and before the demo's code has loaded, or with ?card=ps */
       body = [APP.wd && APP.wd.heroReady() && credit.temporaryLeft > 0 && !APP.q.get('card')
-          ? h(APP.WdHero, { key: 'credit', onInfo: function (el) { APP.tipAt(el, tip, null, { icon: 'clock' }); } })
+          ? h(APP.WdHero, { key: 'credit', onInfo: function (el) { APP.tipAt(el, tip, null, { icon: 'pending' }); } })
           : h(PS.CreditCard, { key: 'credit', available: credit.available, total: credit.total, temporary: credit.temporaryLeft, temporaryUntil: credit.temporaryUntil,
-              onWithdraw: function () { APP.borrow(); }, onInfo: function (e) { APP.tipAt(e.currentTarget, tip, null, { icon: 'clock' }); } }),
+              onWithdraw: function () { APP.borrow(); }, onInfo: function (e) { APP.tipAt(e.currentTarget, tip, null, { icon: 'pending' }); } }),
         update ? h(PS.Strip, { key: 'upd', raised: true, icon: 'info', title: 'You have updates on your loan', sub: 'Tap to view the latest status', count: 1, onClick: function () { APP.go('order'); } }) : null,
         paymentCard(S),
         h(PS.HomeCoupons, { key: 'coupons', coupons: cards, onOpen: function () { APP.go('coupons'); } }), more()].concat(trust());
@@ -96,6 +96,6 @@
         return ran;
       },
       onDone: function () { APP.set({ intro: false }); } }) : null;
-    return h(PS.Screen, { colBottom: 120, className: 'ps-home-in', rise: first.current && !S.intro, overlay: intro, top: { left: h(PS.Brand), right: actions(S) } }, body);
+    return h(PS.Screen, { colBottom: 120, className: 'ps-home-in', rise: first.current && !S.intro, overlay: intro, top: { left: h(PS.Brand), right: actions(S), flat: true } }, body);
   };
 })();

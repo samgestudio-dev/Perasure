@@ -24,7 +24,7 @@ class PerfSlot extends React.Component {
 }
 
 class Component extends DCLogic {
-  C = { blue:'#2c74be', blue700:'#20558d', blue500:'#3fa0f0', blue50:'#f3f8ff', blue100:'#e4f0ff', ink:'#141e24', sub:'#6a757d', mute:'#7d878e', line:'#e0e3e5', page:'#f0f5f4', white:'#ffffff', green:'#3bcb84' };
+  C = { blue:'#298648', blue700:'#1d6334', blue500:'#76dc93', blue50:'#effbf2', blue100:'#daf6e2', brand:'#000128', ink:'#000128', sub:'#61627a', mute:'#8a8a9c', line:'#d6d6dd', page:'#f0f5f4', white:'#ffffff', green:'#5cd680' };   // rebrand v3 (tokens 2026.11.21): blue = accent text (green 700), brand = navy card
   SH = {
     card:'0px 0px 2px 0px rgba(0,1,40,0.16), 0px 4px 12px 0px rgba(0,1,40,0.08)',
     cardOff:'0px 0px 0px 0px rgba(0,1,40,0), 0px 0px 0px 0px rgba(0,1,40,0)',
@@ -198,7 +198,7 @@ class Component extends DCLogic {
     gcash: { vb:'0 0 16 16', body:'<path d="M4.6375 1.58205C5.44935 1.31682 6.31294 1.20685 7.16684 1.26184C8.41856 1.32976 9.64118 1.77288 10.66 2.50063C10.77 2.58149 10.8897 2.65588 10.9835 2.75938C11.1452 2.94375 11.2099 3.20574 11.1517 3.44509C11.0934 3.70384 10.8897 3.92378 10.6374 4.00141C10.3916 4.07904 10.1102 4.02728 9.91287 3.86233C9.15278 3.27689 8.22773 2.90817 7.27357 2.8176C6.92425 2.77879 6.56846 2.77879 6.21914 2.8176C5.21323 2.91787 4.23967 3.32218 3.45693 3.96583C2.57393 4.68711 1.93028 5.70272 1.67799 6.81537C1.44511 7.82452 1.51627 8.90482 1.89147 9.87192C2.28607 10.9005 3.02028 11.7899 3.94533 12.3851C4.6375 12.8282 5.43641 13.1031 6.25149 13.1807C6.56846 13.2196 6.89191 13.2196 7.20565 13.184C8.19215 13.0999 9.14631 12.7215 9.92905 12.1166C10.1263 11.9614 10.4077 11.9161 10.6471 11.9969C10.977 12.1101 11.2131 12.4627 11.1711 12.812C11.1517 13.0158 11.0449 13.2099 10.8832 13.3328C10.2622 13.8179 9.55709 14.1899 8.8067 14.4292C7.8396 14.7397 6.79811 14.8206 5.7922 14.6815C4.67632 14.5263 3.60248 14.0799 2.70331 13.4007C1.83001 12.7473 1.11843 11.8773 0.649441 10.8908C0.190151 9.92367 -0.0330253 8.84336 0.005788 7.77276C0.0413668 6.45635 0.478016 5.1561 1.24781 4.0855C2.07583 2.92111 3.27581 2.02517 4.6375 1.58205Z" fill="currentColor"/><path d="M14.1013 3.41859C14.4377 3.31832 14.8323 3.47681 14.994 3.79378C15.7703 5.31073 16.1099 7.04439 15.9708 8.74247C15.8738 9.95215 15.5407 11.1457 14.9811 12.2227C14.7773 12.6076 14.2307 12.7305 13.8782 12.4783C13.5515 12.268 13.4447 11.799 13.6388 11.4594C14.7191 9.33761 14.7288 6.70801 13.6614 4.57975C13.5644 4.40509 13.5127 4.19809 13.5612 4.00078C13.6162 3.72586 13.8329 3.49298 14.1013 3.41859Z" fill="currentColor"/><path d="M4.53351 4.32968C5.90491 3.50167 7.75824 3.52431 9.09083 4.42672C9.42074 4.6693 9.48867 5.18681 9.23315 5.50702C9.0035 5.82076 8.52804 5.91456 8.20136 5.70432C7.68385 5.37441 7.05637 5.23209 6.44829 5.30325C5.84022 5.36794 5.25802 5.64934 4.83107 6.08598C4.40413 6.5097 4.12597 7.07896 4.05804 7.67733C3.99659 8.16249 4.07745 8.66383 4.27799 9.11018C4.54321 9.69885 5.02514 10.1873 5.61381 10.4589C6.21541 10.7436 6.92052 10.7889 7.55447 10.5916C8.4019 10.3328 9.10377 9.63093 9.34635 8.78027C8.73828 8.78351 8.1302 8.78027 7.52213 8.78027C7.23103 8.78027 6.94963 8.59914 6.82996 8.33715C6.68117 8.03635 6.7588 7.64498 7.01109 7.42504C7.14046 7.3086 7.31189 7.23098 7.48655 7.22451C8.40513 7.21804 9.32048 7.22127 10.2391 7.22127C10.5399 7.21157 10.831 7.39917 10.9506 7.67409C11.0541 7.88757 11.0218 8.13015 11.0089 8.35979C10.928 9.356 10.4784 10.3166 9.76683 11.0217C9.08436 11.7074 8.16255 12.1506 7.19868 12.2476C6.25099 12.3511 5.27096 12.1214 4.46558 11.6072C3.65374 11.0929 3.01979 10.294 2.70928 9.38188C2.39231 8.46006 2.40848 7.42828 2.73839 6.51293C3.06184 5.60729 3.70872 4.82455 4.53351 4.32968Z" fill="currentColor"/><path d="M11.9989 4.75125C12.3321 4.66392 12.7105 4.83535 12.8657 5.14262C13.7067 6.92156 13.7067 9.0757 12.8657 10.8546C12.759 11.0649 12.5455 11.2201 12.3094 11.2589C12.0345 11.3075 11.7402 11.191 11.5687 10.9711C11.3908 10.7414 11.3585 10.4115 11.4879 10.1528C12.1154 8.79107 12.1057 7.15767 11.4717 5.79921C11.2809 5.38197 11.5526 4.84828 11.9989 4.75125Z" fill="currentColor"/>' },
     infoFill: { vb:'0 0 12 12', body:'<path d="M6.08333 4.7015C6.27092 4.70156 6.42863 4.82822 6.47624 5.00065C6.50095 5.05506 6.51497 5.11538 6.51497 5.17904V7.92904H6.84017C7.0655 7.92904 7.24837 8.11158 7.24837 8.33691C7.24837 8.56225 7.0655 8.74479 6.84017 8.74479H5.29199C5.06666 8.74479 4.88411 8.56225 4.88411 8.33691C4.88411 8.11158 5.06666 7.92904 5.29199 7.92904H5.65104V5.51725H5.20768C4.98235 5.51725 4.7998 5.33471 4.7998 5.10938C4.7998 4.88404 4.98235 4.7015 5.20768 4.7015H6.08333Z" fill="currentColor"/><path d="M5.99967 3C6.33102 3 6.59957 3.26859 6.59961 3.59993C6.59961 3.93131 6.33105 4.19987 5.99967 4.19987C5.66833 4.19983 5.39974 3.93128 5.39974 3.59993C5.39977 3.26862 5.66836 3.00004 5.99967 3Z" fill="currentColor"/><path d="M6.00049 0.333984C9.12995 0.33416 11.6665 2.87147 11.6665 6.00098C11.6663 9.13033 9.12984 11.6668 6.00049 11.667C2.87098 11.667 0.333672 9.13044 0.333496 6.00098C0.333496 2.87136 2.87087 0.333984 6.00049 0.333984ZM6.00049 1.33398C3.42316 1.33398 1.3335 3.42365 1.3335 6.00098C1.33367 8.57816 3.42327 10.667 6.00049 10.667C8.57756 10.6668 10.6663 8.57805 10.6665 6.00098C10.6665 3.42376 8.57767 1.33416 6.00049 1.33398Z" fill="currentColor"/>' },
     coupon: { vb:'0 0 20 20', body:'<path d="M13.4299 2.46373C14.8373 2.61076 15.9088 3.7929 15.9186 5.20791L15.9427 8.56184C15.9482 9.35208 15.6165 10.108 15.0312 10.639L9.1617 15.963C8.02558 16.9936 6.26891 16.9083 5.23808 15.7724L1.87864 12.0691C0.848153 10.9329 0.933244 9.17619 2.06922 8.14544L7.93807 2.82074C8.52337 2.28972 9.30791 2.03291 10.0939 2.11501L13.4299 2.46373ZM14.2461 5.24106C14.2511 4.66185 13.8107 4.17639 13.2338 4.12516L9.84602 3.82408C9.53714 3.79667 9.22977 3.89953 9.00011 4.10789L3.18927 9.38012C2.735 9.79237 2.70063 10.4953 3.11262 10.9497L6.47207 14.653C6.88441 15.1071 7.58729 15.1404 8.04165 14.7283L13.8532 9.45677C14.0828 9.24846 14.215 8.95331 14.2178 8.64332L14.2461 5.24106ZM18.0551 4.44418C18.5153 4.44418 18.8886 4.81745 18.8886 5.27766V9.73022C18.8886 10.6143 18.5373 11.4626 17.9121 12.0877L11.9418 18.0581C11.6268 18.3727 11.1252 18.3997 10.7775 18.1216C10.3655 17.7918 10.337 17.1747 10.7175 16.8089L16.1989 11.5387C16.8524 10.9104 17.2215 10.0429 17.2216 9.13636L17.2223 5.27697C17.2226 4.81721 17.5953 4.44445 18.0551 4.44418ZM12.4638 5.55525C13.1147 6.20613 13.1147 7.26186 12.4638 7.91273C11.8129 8.56328 10.7578 8.56281 10.107 7.91204C9.45641 7.26127 9.45654 6.2068 10.107 5.55594C10.7579 4.90511 11.8129 4.90452 12.4638 5.55525Z" fill="currentColor"/>' },
-    edit: { vb:'0 0 20 20', body:'<path d="M15.4601 16.2416H4.53966C4.33278 16.2416 4.13438 16.3238 3.98809 16.4701C3.84181 16.6163 3.75963 16.8147 3.75963 17.0216C3.75963 17.2285 3.84181 17.4269 3.98809 17.5732C4.13438 17.7195 4.33278 17.8016 4.53966 17.8016H15.4601C15.667 17.8016 15.8654 17.7195 16.0116 17.5732C16.1579 17.4269 16.2401 17.2285 16.2401 17.0216C16.2401 16.8147 16.1579 16.6163 16.0116 16.4701C15.8654 16.3238 15.667 16.2416 15.4601 16.2416ZM4.53966 14.6815H4.60986L7.86259 14.3851C8.2189 14.3496 8.55216 14.1926 8.80642 13.9405L15.8267 6.92022C16.0992 6.63237 16.2464 6.24823 16.2362 5.852C16.226 5.45577 16.0591 5.07975 15.7721 4.80634L13.6348 2.66906C13.3559 2.40704 12.9903 2.2567 12.6078 2.24663C12.2252 2.23657 11.8523 2.36747 11.5599 2.61446L4.53966 9.63473C4.28752 9.88899 4.13053 10.2223 4.09504 10.5786L3.75963 13.8313C3.74912 13.9455 3.76394 14.0607 3.80304 14.1686C3.84214 14.2764 3.90456 14.3743 3.98583 14.4553C4.05872 14.5276 4.14516 14.5848 4.2402 14.6236C4.33523 14.6624 4.437 14.6821 4.53966 14.6815ZM12.5506 3.7611L14.6801 5.89058L13.12 7.41164L11.0295 5.32116L12.5506 3.7611ZM5.6083 10.7112L9.99987 6.3508L12.106 8.45688L7.73778 12.8251L5.39769 13.0435L5.6083 10.7112Z" fill="#2C74BE"/>' }
+    edit: { vb:'0 0 20 20', body:'<path d="M15.4601 16.2416H4.53966C4.33278 16.2416 4.13438 16.3238 3.98809 16.4701C3.84181 16.6163 3.75963 16.8147 3.75963 17.0216C3.75963 17.2285 3.84181 17.4269 3.98809 17.5732C4.13438 17.7195 4.33278 17.8016 4.53966 17.8016H15.4601C15.667 17.8016 15.8654 17.7195 16.0116 17.5732C16.1579 17.4269 16.2401 17.2285 16.2401 17.0216C16.2401 16.8147 16.1579 16.6163 16.0116 16.4701C15.8654 16.3238 15.667 16.2416 15.4601 16.2416ZM4.53966 14.6815H4.60986L7.86259 14.3851C8.2189 14.3496 8.55216 14.1926 8.80642 13.9405L15.8267 6.92022C16.0992 6.63237 16.2464 6.24823 16.2362 5.852C16.226 5.45577 16.0591 5.07975 15.7721 4.80634L13.6348 2.66906C13.3559 2.40704 12.9903 2.2567 12.6078 2.24663C12.2252 2.23657 11.8523 2.36747 11.5599 2.61446L4.53966 9.63473C4.28752 9.88899 4.13053 10.2223 4.09504 10.5786L3.75963 13.8313C3.74912 13.9455 3.76394 14.0607 3.80304 14.1686C3.84214 14.2764 3.90456 14.3743 3.98583 14.4553C4.05872 14.5276 4.14516 14.5848 4.2402 14.6236C4.33523 14.6624 4.437 14.6821 4.53966 14.6815ZM12.5506 3.7611L14.6801 5.89058L13.12 7.41164L11.0295 5.32116L12.5506 3.7611ZM5.6083 10.7112L9.99987 6.3508L12.106 8.45688L7.73778 12.8251L5.39769 13.0435L5.6083 10.7112Z" fill="#298648"/>' }
   };
   gs(name, px){
     var g = this.GS[name];
@@ -352,7 +352,7 @@ class Component extends DCLogic {
   /* residual translate for layout-moved content inside the card */
   resT(){ var c = this.cardSnap(), r3 = (v) => Math.round(v * 1000) / 1000; return 'translate(' + r3(c.rx) + 'px,' + r3(c.ry) + 'px)'; }
   ty(from, to){ var c = this.cardSnap(), r3 = (v) => Math.round(v * 1000) / 1000; return 'translate(' + r3(c.rx) + 'px,' + r3(this.lerp(from, to) - from + c.ry) + 'px)'; }
-  mpLabel(){ return { transform: this.ty(32, 0), color: this.mix('#3c4850', this.C.sub) }; }   /* text-secondary → the card's label grey */
+  mpLabel(){ return { transform: this.ty(32, 0), color: this.mix('#3d3e5c', this.C.sub) }; }   /* text-secondary → the card's label grey */
   mpRow(){ return { transform: this.ty(68, 24), height: this.ll(44, 40) }; }
   /* Number font since tokens v2026.11.17: Reddit Sans (it has its own ₱), Bold in both states — Figma: entry ₱ Number/lg,
      digits Number/xxl, ".00" Number/xs; card ₱45,000.00 Number/lg (one run). Before: Satoshi, with ₱ from Inter riding 500 → 700. */
@@ -362,7 +362,8 @@ class Component extends DCLogic {
      exactly where the unsplit text would (Figma). Satoshi kerned only "." → "0"; Reddit Sans kerns most digit pairs (7. is −0.125 em).
      Same table as PS.KERN in shared/ps-ui/core.js. */
   static KERN = {"01":-43,"02":-3,"03":-3,"04":-7,"05":-9,"07":-40,"0.":-43,"0,":-43,"10":7,"11":10,"12":-5,"14":17,"15":7,"16":7,"17":24,"18":7,"21":-19,"23":-25,"24":-33,"26":-24,"27":-3,"28":-24,"31":-54,"32":-41,"33":-29,"34":9,"35":-21,"36":-7,"37":-40,"38":-9,"39":-14,"3.":-21,"3,":-21,"40":24,"41":-22,"42":-14,"44":17,"45":-14,"46":13,"48":24,"51":-71,"52":-14,"54":17,"57":-3,"59":-9,"5.":-24,"5,":-24,"61":-61,"62":-41,"63":-9,"64":25,"65":-26,"67":-26,"69":-13,"6.":-3,"6,":-3,"70":-43,"71":-16,"72":-37,"73":-38,"74":-156,"75":-3,"76":-124,"77":13,"78":-57,"79":-9,"7.":-257,"7,":-257,"81":-54,"82":-41,"83":-29,"84":9,"85":-21,"86":-7,"87":-40,"88":-9,"89":-14,"8.":-21,"8,":-21,"91":-10,"93":-33,"94":-55,"96":-32,"97":-15,"9.":-196,"9,":-196,".0":-43,".1":-121,".4":17,".6":-3,".7":-47,".8":-21,".9":-80,"..":-14,".,":-14,",0":-43,",1":-121,",4":17,",6":-3,",7":-47,",8":-21,",9":-80,",.":-14,",,":-14};
-  static kern(a, b){ return a && b ? (Component.KERN[a + b] || 0) / 2048 : 0; }
+  /* Hanken Grotesk everywhere (owner, 2026-11-24): the table above is Reddit Sans's, so it no longer applies — no pair kerning */
+  static kern(a, b){ return 0; }
   kStyle(a, b){ var k = Component.kern(a, b); return k ? { display:'inline-block', marginRight: k + 'em' } : null; }
   /* ---- amount row: layout frozen, glyphs FLIPped ----------------------------
      Animating font-size / line-height made Blink re-lay the row every frame,
@@ -379,7 +380,7 @@ class Component extends DCLogic {
   _lk = 0;
   ll(a, b){ return a + (b - a) * this._lk; }
   pxl(a, b){ return this.ll(a, b) + 'px'; }
-  mpPeso(){ return { fontWeight: this.pesoWeight(), fontSize: this.pxl(32, 32), lineHeight: this.pxl(40, 40), letterSpacing: this.pxl(0.64, 0.64), marginRight: this.ll(8, 0), color: this.mix('#97a0a6', this.C.blue) }; }
+  mpPeso(){ return { fontWeight: this.pesoWeight(), fontSize: this.pxl(32, 32), lineHeight: this.pxl(40, 40), letterSpacing: this.pxl(0.64, 0.64), marginRight: this.ll(8, 0), color: this.mix('#8a8a9c', this.C.blue) }; }
   mpNum(){ return { fontSize: this.pxl(48, 32), lineHeight: this.pxl(44, 40), height: this.ll(44, 40), letterSpacing: this.pxl(1.44, 0.64), color: this.mix(this.C.ink, this.C.blue) }; }
   mpCaret(){ return { width: this.ll(1, 0), height: this.ll(44, 40), marginLeft: this.ll(2, 0) }; }
   /* The caret's fade lives on a plain wrapper, not on the layout node: a node with
@@ -387,9 +388,9 @@ class Component extends DCLogic {
      swallow this fade. */
   mpCaretFade(){ return { opacity: 1 - this.k01() }; }
   /* the last typed digit kerns into the tail's "0" only once they are one run (the card); in the entry the caret sits between */
-  mpTail(){ var cs = this.chars(), last = cs.length ? cs[cs.length - 1].ch : ''; return { marginLeft: this.ll(2, Component.kern(last, '0') * 32), color: this.mix('#97a0a6', this.C.blue) }; }
+  mpTail(){ var cs = this.chars(), last = cs.length ? cs[cs.length - 1].ch : ''; return { marginLeft: this.ll(2, Component.kern(last, '0') * 32), color: this.mix('#8a8a9c', this.C.blue) }; }
   /* ".00": Number/xs 16 in the entry, the card's Number/lg 32; in the card the tail's "0" kerns into "." (0. = −43/2048 em) */
-  mpDec(){ return { fontSize: this.pxl(16, 32), lineHeight: this.pxl(20, 40), letterSpacing: this.pxl(0.32, 0.64), marginLeft: this.ll(4, Component.kern('0', '.') * 32), color: this.mix('#97a0a6', this.C.blue) }; }
+  mpDec(){ return { fontSize: this.pxl(16, 32), lineHeight: this.pxl(20, 40), letterSpacing: this.pxl(0.32, 0.64), marginLeft: this.ll(4, Component.kern('0', '.') * 32), color: this.mix('#8a8a9c', this.C.blue) }; }
   /* glyph wrapper: inline-block box + an empty inline-block whose top sits
      exactly on the text baseline — what FLIP measures and scales around */
   static GLYPH = { display:'inline-block' };
@@ -835,7 +836,7 @@ class Component extends DCLogic {
     set(box, 'background', 'transparent'); set(box, 'transformOrigin', '0 0'); set(box, 'willChange', 'transform');
     var flat = { position:'absolute', left:'0', top:'0', width:W + 'px', height:H + 'px', pointerEvents:'none' };
     var bgDark = div(box, box.firstChild, Object.assign({ background:'#0d1620', willChange:'transform' }, flat));
-    var bgBlue = div(box, bgDark.nextSibling, Object.assign({ background:self.C.blue, opacity:'0', willChange:'opacity' }, flat));
+    var bgBlue = div(box, bgDark.nextSibling, Object.assign({ background:self.C.brand, opacity:'0', willChange:'opacity' }, flat));
     var inner = [];                                                     /* children shown unscaled: [el, extra y] */
     if (f) { f.style.background = 'transparent'; set(f, 'transformOrigin', '0 0'); set(f, 'willChange', 'transform'); inner.push([f, false]); }
     /* the glow: a copy at the real one's place, inside the box (under the card, so under the pill; clipped by the box) */
@@ -1023,8 +1024,10 @@ class Component extends DCLogic {
     var img = (src, w, h, style) => React.createElement('img', { src:src, alt:'', width:w, height:h, draggable:false,
       style:Object.assign({ display:'block', maxWidth:'none', width:w, height:h }, style || {}) });
     var legend = (key, dot, text, ref) => React.createElement('div', { key:key, ref:this.ref(ref), style:{ display:'flex', flexDirection:'row', gap:4, alignItems:'center', flex:'none' } }, [
-      React.createElement('span', { key:'d', style:{ width:6, height:6, flex:'none', display:'block' } }, img(dot, 6, 6)),
-      this.sp(text, Object.assign({ flex:'1 1 auto', minWidth:0, fontFamily:'Inter, sans-serif', fontWeight:400, fontSize:12, lineHeight:'16px' }, dim), { key:'t' })
+      /* the Total credit dot takes the bar track's colour (owner 2026-11-24: the navy dot vanished on the navy card) */
+      key === 'total' ? React.createElement('span', { key:'d', style:{ width:6, height:6, flex:'none', display:'block', borderRadius:'50%', backgroundColor:this.tok('--bg-glass-on-dark', 'rgba(255,255,255,0.2)') } })
+        : React.createElement('span', { key:'d', style:{ width:6, height:6, flex:'none', display:'block' } }, img(dot, 6, 6)),
+      this.sp(text, Object.assign({ flex:'1 1 auto', minWidth:0, fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:400, fontSize:12, lineHeight:'16px' }, dim), { key:'t' })
     ]);
 
     /* the bar (Figma node 9867:36993): white then green side by side, each as long as its share of the total credit.
@@ -1042,8 +1045,11 @@ class Component extends DCLogic {
       transition: MT.PRESS
     }, this.mo({
       position:'relative', alignSelf:'stretch', flex:'none', boxSizing:'border-box',
-      overflow:'hidden', cursor:'pointer', backgroundColor:'rgba(0,1,40,0.3)'
+      overflow:'hidden', cursor:'pointer'
     }, {
+      /* the Figma CreditCard's primary button (rebrand v3): green --bg-accent-emphasis with a navy --fg-on-accent label; the
+         "unavailable" message it opens into keeps the glass fill, as its text is white */
+      backgroundColor: open ? 'rgba(0,1,40,0.3)' : this.tok('--bg-accent-emphasis', '#5cd680'),
       height: open ? 58 : 46,
       borderRadius: open ? 16 : 999,
       boxShadow: open ? this.SH.glowOff : this.SH.glow
@@ -1055,17 +1061,17 @@ class Component extends DCLogic {
             }, [
               React.createElement('span', { key:'i', style:{ display:'inline-flex', flex:'none', marginTop:1 } }, this.ic('alert', 16, '#ffffff', 1.6)),
               this.sp(this.props.unavailableMessage || 'Withdrawals are temporarily unavailable. You can try again after Sep 28.',
-                { flex:'1 1 auto', fontFamily:'Inter, sans-serif', fontWeight:400, fontSize:12, lineHeight:'16px', color:'#ffffff' }, { key:'t' })
+                { flex:'1 1 auto', fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:400, fontSize:12, lineHeight:'16px', color:'#ffffff' }, { key:'t' })
             ])
           : this.fade('cta', MT.Y.text, {
               position:'absolute', left:0, right:0, top:0, bottom:0, display:'flex', flexDirection:'row', gap:4, alignItems:'center', justifyContent:'center'
-            }, this.sp('Withdraw', { fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:600, fontSize:16, lineHeight:'22px', color:'#ffffff' }))
+            }, this.sp('Withdraw', { fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:600, fontSize:16, lineHeight:'22px', color:this.tok('--fg-on-accent', '#000128') }))
       ])
     ]);
 
     return this.el('div', Object.assign({ key:'hero', ref:this.ref('hc') }, this.mo({
       position:'relative', boxSizing:'border-box', overflow:'hidden', borderRadius:24,
-      backgroundColor:C.blue, boxShadow:this.SH.card, padding:12, display:'flex',
+      backgroundColor:C.brand, boxShadow:this.SH.card, padding:12, display:'flex',
       flexDirection:'column', gap:16, justifyContent:'flex-end', flex:'none'
     }, { height: open ? 208 : 196 })), [
       /* the glow under the Withdraw pill (Figma asset), anchored to the card's bottom so it follows the pill (under it by
@@ -1078,9 +1084,9 @@ class Component extends DCLogic {
       React.createElement('div', { key:'body', style:{ position:'relative', display:'flex', flexDirection:'column', gap:8, flex:'none' } }, [
         React.createElement('div', { key:'top', style:{ display:'flex', flexDirection:'row', gap:12, alignItems:'flex-start', padding:'0 4px' } }, [
           React.createElement('div', { key:'amt', style:{ flex:'1 1 auto', minWidth:0, display:'flex', flexDirection:'column', gap:2, whiteSpace:'nowrap' } }, [
-            this.sp('Available amount', Object.assign({ fontFamily:'Inter, sans-serif', fontWeight:600, fontSize:11, lineHeight:'14px' }, dim), { key:'a', ref:this.ref('hcLabel') }),
+            this.sp('Available amount', Object.assign({ fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:600, fontSize:11, lineHeight:'14px' }, dim), { key:'a', ref:this.ref('hcLabel') }),
             /* Number/xl (Reddit Sans Bold 36, +4 %) with ".00" Number/xs (16, +2 %) — tokens v2026.11.17; ₱ is Reddit Sans's own */
-            React.createElement('div', { key:'b', 'data-wd-amount':'1', ref:this.ref('hcAmt'), style:{ display:'flex', flexDirection:'row', alignItems:'baseline', color:'#ffffff', fontFamily:"'Reddit Sans', Inter, sans-serif", fontWeight:700, lineHeight:1 } }, [
+            React.createElement('div', { key:'b', 'data-wd-amount':'1', ref:this.ref('hcAmt'), style:{ display:'flex', flexDirection:'row', alignItems:'baseline', color:'#ffffff', fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:700, lineHeight:1 } }, [
               this.sp(availStr[0].charAt(0), { fontSize:36, lineHeight:1, letterSpacing:'0.72px' }, { key:'p' }),
               this.sp(availStr[0].slice(1), { fontSize:36, lineHeight:1, letterSpacing:'1.08px' }, { key:'x' }),
               this.sp('.' + availStr[1], { fontSize:16, lineHeight:1, letterSpacing:'0.48px' }, { key:'y', ref:this.ref('hcDec') })
@@ -1094,11 +1100,11 @@ class Component extends DCLogic {
             legend('temp', 'assets/dot-temporary.svg', 'Temporary: ' + this.money(B.temp, 0) + ' (Incl. valid till ' + B.till + ')', 'hcLeg1')
           ]),
           React.createElement('div', { key:'bar', ref:this.ref('hcBar'), style:{ position:'relative', isolation:'isolate', height:8,
-            borderRadius:999, overflow:'hidden', backgroundColor:'rgba(0,1,40,0.3)' } },
+            borderRadius:999, overflow:'hidden', backgroundColor:this.tok('--bg-glass-on-dark', 'rgba(255,255,255,0.2)') } },   /* track: white 20 % on the navy card (Figma CreditCard, owner 2026-11-21) */
             /* the two fills in their own row (the Credit limit intro reveals it left to right) */
             React.createElement('div', { ref:this.ref('hcFill'), style:{ position:'absolute', left:0, top:0, right:0, bottom:0, display:'flex', alignItems:'center' } }, [
               wW > 0 ? seg('long', wW, 2, -OV, '#ffffff', '0px 0px 4px 0px rgba(0,1,40,0.16), 0px 8px 32px 0px rgba(0,1,40,0.12)') : null,
-              gW > 0 ? seg('temp', gW + OV, 1, 0, '#58e09a', '0px 0px 2px 0px rgba(0,1,40,0.16), 0px 4px 12px 0px rgba(0,1,40,0.08)') : null
+              gW > 0 ? seg('temp', gW + OV, 1, 0, this.tok('--fg-accent-on-brand', '#5cd680'), '0px 0px 2px 0px rgba(0,1,40,0.16), 0px 4px 12px 0px rgba(0,1,40,0.08)') : null
             ]))
         ])
       ]),
@@ -1124,14 +1130,14 @@ class Component extends DCLogic {
           display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer',
           fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:600, fontSize:16, lineHeight:'22px'
         }, this.mpChip()), {
-          borderColor: on ? '#c8deff' : C.line,
+          borderColor: on ? '#baeec9' : C.line,
           backgroundColor: on ? C.blue50 : 'rgba(255,255,255,0)',
           color: on ? C.blue : C.sub
         }, { duration:0.15 })), t + ' Term');
       })
     );
   }
-  /* the line between the term pills and the keypad (1px #E0E3E5, 16px from the pills and 16px above the keys); it comes
+  /* the line between the term pills and the keypad (1px #d6d6dd, 16px from the pills and 16px above the keys); it comes
      and goes with the keypad */
   padLine(){
     var MT = this.mt();
@@ -1178,7 +1184,7 @@ class Component extends DCLogic {
     var label = this.el('div', Object.assign({ key:'label', ref:this.ref('label') }, this.an(Object.assign({
       position:'absolute', left:0, right:0, height:20, top:32
     }, this.mpLabel(), {
-      fontFamily:'Inter, sans-serif', fontWeight:500, fontSize:14, lineHeight:'20px', letterSpacing:'0.02em'
+      fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:500, fontSize:14, lineHeight:'20px', letterSpacing:'0.02em'
     }), {})), 'Disbursement amount');
 
     var row = React.createElement('div', {
@@ -1186,10 +1192,10 @@ class Component extends DCLogic {
       style:Object.assign({ position:'absolute', left:0, top:68 }, this.mpRow(), { display:'flex', flexDirection:'row', alignItems:'flex-end' })
     }, [
       this.el('span', Object.assign({ key:'peso', ref:this.ref('peso') }, this.an(Object.assign({
-        fontFamily:"'Reddit Sans', Inter, sans-serif", whiteSpace:'nowrap'
+        fontFamily:"'Hanken Grotesk', sans-serif", whiteSpace:'nowrap'
       }, this.mpPeso()), {})), this.glyph('p', '₱')),
       this.el('span', Object.assign({ key:'num', ref:this.ref('num') }, this.an((() => { var s = this.mpNum(); return {
-        fontFamily:"'Reddit Sans', Inter, sans-serif", whiteSpace:'nowrap',
+        fontFamily:"'Hanken Grotesk', sans-serif", whiteSpace:'nowrap',
         position:'relative', display:'inline-flex', flexDirection:'row', alignItems:'center', fontWeight:700,
         fontSize: s.fontSize, lineHeight: s.lineHeight, height: s.height, letterSpacing: s.letterSpacing,
         color: s.color
@@ -1231,7 +1237,7 @@ class Component extends DCLogic {
         }, this.mpTail()), {})), [this.glyph('t:0', '0'), this.glyph('t:1', '0')].map((g, i) => React.cloneElement(g, { key: 't' + i })))
       ]),
       this.el('span', Object.assign({ key:'dec', ref:this.ref('dec'), layout: (this.state.morph || cf) ? false : 'position', layoutDependency: this.state.amt }, this.an(Object.assign({
-        fontFamily:"'Reddit Sans', Inter, sans-serif", whiteSpace:'nowrap', flex:'none', fontWeight:700, alignSelf:'flex-end'
+        fontFamily:"'Hanken Grotesk', sans-serif", whiteSpace:'nowrap', flex:'none', fontWeight:700, alignSelf:'flex-end'
       }, this.mpDec()), {})), [this.glyph('x:0', '.', Component.GLYPH_DOT), this.glyph('x:1', '0'), this.glyph('x:2', '0')].map((g, i) => React.cloneElement(g, { key: 'x' + i }))),
       (() => { var s = this.mpEdit(); return React.createElement('div', {
           key:'editBox', ref:this.ref('editBox'),
@@ -1253,13 +1259,12 @@ class Component extends DCLogic {
                 style:{ position:'relative', height:25, cursor:'pointer', touchAction:'none' }
               }, [
                 React.createElement('div', { key:'bg', style:{ position:'absolute', left:0, right:0, top:6, height:8, borderRadius:999, backgroundColor:C.page } }, null),
-                React.createElement('div', { key:'fg', style:{ position:'absolute', left:0, top:6, height:8, width:(pct*100)+'%', borderRadius:999, backgroundColor:C.blue500 } }, null),
-                React.createElement('div', { key:'knob', style:{ position:'absolute', left:'calc('+(pct*100)+'% - 9px)', top:1, width:18, height:18, borderRadius:'50%', backgroundColor:'#ffffff', boxShadow:'0px 8px 32px 0px rgba(7,20,60,0.12), 0px 0px 4px 0px rgba(7,20,60,0.16)', display:'flex', alignItems:'center', justifyContent:'center' } },
-                  React.createElement('div', { style:{ width:12, height:12, borderRadius:'50%', backgroundColor:C.blue500 } }, null))
+                React.createElement('div', { key:'fg', style:{ position:'absolute', left:0, top:6, height:8, width:(pct*100)+'%', borderRadius:999, backgroundColor:C.blue500 } }, null),   /* Figma Slider (rebrand screens): fill Bg/Success #76DC93, white knob */
+                React.createElement('div', { key:'knob', style:{ position:'absolute', left:'calc('+(pct*100)+'% - 9px)', top:1, width:18, height:18, borderRadius:'50%', backgroundColor:'#ffffff', boxShadow:'0px 8px 32px 0px rgba(7,20,60,0.12), 0px 0px 4px 0px rgba(7,20,60,0.16)', display:'flex', alignItems:'center', justifyContent:'center' } }, null)
               ]),
               React.createElement('div', { key:'lab', style:{ marginTop:2, height:15, display:'flex', flexDirection:'row', justifyContent:'space-between', alignItems:'center' } }, [
-                this.sp('₱500', { fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:12, lineHeight:'15px', color:C.mute }, { key:'a' }),
-                this.sp('₱50,000', { fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:12, lineHeight:'15px', color:C.mute }, { key:'b' })
+                this.sp('₱500', { fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:700, fontSize:12, lineHeight:'15px', color:C.mute }, { key:'a' }),
+                this.sp('₱50,000', { fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:700, fontSize:12, lineHeight:'15px', color:C.mute }, { key:'b' })
               ])
             ])
       ]
@@ -1270,14 +1275,14 @@ class Component extends DCLogic {
   drow(label, value, color, key){
     var C = this.C;
     return React.createElement('div', { key:key, style:{ height:20, display:'flex', flexDirection:'row', justifyContent:'space-between', alignItems:'center' } }, [
-      this.sp(label, { fontFamily:'Inter, sans-serif', fontWeight:500, fontSize:14, lineHeight:'20px', letterSpacing:'0.02em', color:C.sub }, { key:'l' }),
-      this.sp(value, { fontFamily:'Inter, sans-serif', fontWeight:500, fontSize:14, lineHeight:'20px', letterSpacing:'0.02em', color: color || C.ink }, { key:'v' })
+      this.sp(label, { fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:500, fontSize:14, lineHeight:'20px', letterSpacing:'0.02em', color:C.sub }, { key:'l' }),
+      this.sp(value, { fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:500, fontSize:14, lineHeight:'20px', letterSpacing:'0.02em', color: color || C.ink }, { key:'v' })
     ]);
   }
   hr(key){ return React.createElement('div', { key:key, style:{ height:1, backgroundColor:this.C.line } }, null); }
   sectionLabel(text, key){
     return React.createElement('div', { key:key, style:{ height:16, padding:'0 12px', display:'flex', alignItems:'center' } },
-      this.sp(text, { fontFamily:'Inter, sans-serif', fontWeight:400, fontSize:12, lineHeight:'16px', color:this.C.sub }));
+      this.sp(text, { fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:400, fontSize:12, lineHeight:'16px', color:this.C.sub }));
   }
   confirmBlocks(){
     var C = this.C, MT = this.mt(), o = this.order();
@@ -1300,7 +1305,7 @@ class Component extends DCLogic {
           React.createElement('div', { key:'i', 'aria-hidden':'true', style:{ width:36, height:36, flex:'none' }, dangerouslySetInnerHTML:{ __html: "\u003csvg style=\"display:block\" width=\"36\" height=\"36\" viewBox=\"0 0 36 36\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\u003cpath d=\"M14.11 5.955C14.512 5.668 14.887 5.567 15.275 5.567C15.663 5.567 16.023 5.658 16.439 5.955C19.156 7.896 21.097 7.896 24.201 8.672C25.754 9.06 26.031 9.836 26.142 10.612C26.53 13.329 26.53 15.658 26.142 17.987C25.754 20.315 24.978 22.644 23.037 24.973C21.097 27.302 17.991 29.63 15.663 30.018C15.274 30.083 15.281 30.084 14.887 30.018C12.558 29.63 9.453 27.302 7.512 24.973C5.572 22.644 4.795 20.316 4.407 17.987C4.019 15.658 4.019 13.329 4.407 10.612C4.514 9.862 4.751 9.071 6.348 8.672C9.453 7.896 11.393 7.896 14.11 5.955Z\" fill=\"#91E8D2\"/>\u003cpath d=\"M13.81 19.504L19.582 13.618Q19.924 13.269 20.41 13.269Q20.895 13.269 21.237 13.618Q22.053 14.45 21.236 15.283L21.122 15.399L21.122 15.399L14.637 22.012Q14.295 22.361 13.81 22.361Q13.325 22.361 12.983 22.012L9.408 18.367Q8.591 17.535 9.408 16.702Q9.75 16.353 10.235 16.353Q10.72 16.353 11.062 16.702L13.81 19.504Z\" fill=\"#0DA58E\"/>\u003cpath d=\"M25.45 20.753C24.956 22.16 24.209 23.566 23.037 24.973C21.869 26.374 20.279 27.776 18.691 28.754C18.526 28.129 18.22 27.501 17.917 26.882C17.615 26.263 17.318 25.654 17.17 25.065C16.788 23.533 17.219 22.092 17.845 21.19C17.904 21.106 17.96 21.024 18.014 20.946C18.809 19.792 19.096 19.375 20.551 19.375C22.103 19.375 23.696 21.668 23.696 21.668C23.696 21.668 24.459 21.096 25.45 20.753Z\" fill=\"#193F46\"/>\u003cpath d=\"M28.082 18.763C26.53 18.763 24.977 19.928 24.977 19.928C24.977 19.928 23.425 18.763 21.872 18.763C20.32 18.763 19.543 19.151 18.767 19.928C17.991 20.704 17.608 21.889 17.991 23.421C18.379 24.973 19.161 26.143 20.32 27.302C21.484 28.466 23.037 29.631 24.201 30.407C24.57 30.653 24.715 30.795 24.977 30.795C25.239 30.795 25.4 30.642 25.754 30.407C26.918 29.631 28.471 28.466 29.635 27.302C30.799 26.137 31.575 24.973 31.964 23.421C32.352 21.868 31.963 20.704 31.187 19.928C30.411 19.151 29.635 18.763 28.082 18.763Z\" fill=\"#FF72A3\"/>\u003c/svg>" } }),
           React.createElement('div', { key:'b', style:{ flex:'1 1 auto', minWidth:0, display:'flex', flexDirection:'column', gap:8 } }, [
             React.createElement('div', { key:'h', style:{ height:24, display:'flex', flexDirection:'row', justifyContent:'space-between', alignItems:'center', gap:8 } }, [
-              this.sp('Borrower protection', { fontFamily:'Inter, sans-serif', fontWeight:500, fontSize:14, lineHeight:'20px', letterSpacing:'0.02em', color:'rgb(20,30,36)' }, { key:'t' }),
+              this.sp('Borrower protection', { fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:500, fontSize:14, lineHeight:'20px', letterSpacing:'0.02em', color:'var(--fg-default)' }, { key:'t' }),
               (function(self){ var on = self.state.prot !== false, pr = !!self.state.protPress, E = 'cubic-bezier(0.2, 0, 0, 1)';
   var lbl = function(k, txt, show, col){ return React.createElement('span', { key:k, 'aria-hidden': !show, style:{ position:'absolute', left:0, right:0, top:4, textAlign:'center', whiteSpace:'nowrap', color:col, opacity: show ? 1 : 0, transform: show ? 'translateY(0)' : (k === 'on' ? 'translateY(4px)' : 'translateY(-4px)'), transition:'opacity 150ms ' + E + ', transform 150ms ' + E } }, txt); };
   return React.createElement('button', { key:'p', type:'button', 'aria-pressed':on, 'aria-label': on ? 'Protected' : 'Add protection',
@@ -1308,13 +1313,13 @@ class Component extends DCLogic {
     onPointerDown:function(){ self.setState({ protPress:true }); },
     onPointerUp:function(){ self.setState({ protPress:false }); },
     onPointerLeave:function(){ if (self.state.protPress) self.setState({ protPress:false }); },
-    style:{ position:'relative', overflow:'hidden', width: on ? 74 : 40, height:24, boxSizing:'border-box', padding:0, borderRadius:8, border:'none', backgroundColor: on ? 'rgb(243,248,255)' : '#ffffff', boxShadow: on ? 'inset 0 0 0 1px rgb(200,222,255)' : 'inset 0 0 0 1px rgb(224,227,229)', fontFamily:'Inter, sans-serif', fontWeight:600, fontSize:12, lineHeight:'16px', cursor:'pointer', flex:'none', transform: pr ? 'scale(0.96)' : 'scale(1)', transition:'width 150ms ' + E + ', background-color 150ms ' + E + ', box-shadow 150ms ' + E + ', transform 60ms ' + E, WebkitTapHighlightColor:'transparent' } },
-    [ lbl('on', 'Protected', on, 'rgb(44,116,190)'), lbl('off', 'Add', !on, 'rgb(106,117,125)') ]); })(this)
+    style:{ position:'relative', overflow:'hidden', width: on ? 74 : 40, height:24, boxSizing:'border-box', padding:0, borderRadius:8, border:'none', backgroundColor: on ? 'var(--bg-accent-subtle)' : '#ffffff', boxShadow: on ? 'inset 0 0 0 1px var(--border-accent-muted)' : 'inset 0 0 0 1px var(--border-muted)', fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:600, fontSize:12, lineHeight:'16px', cursor:'pointer', flex:'none', transform: pr ? 'scale(0.96)' : 'scale(1)', transition:'width 150ms ' + E + ', background-color 150ms ' + E + ', box-shadow 150ms ' + E + ', transform 60ms ' + E, WebkitTapHighlightColor:'transparent' } },
+    [ lbl('on', 'Protected', on, 'rgb(41,134,72)'), lbl('off', 'Add', !on, 'rgb(97,98,122)') ]); })(this)
             ]),
-            this.sp('Get full coverage up to \u20b130,000. Protect your family from loan burdens in case of medical emergencies or unexpected accidents.', { fontFamily:'Inter, sans-serif', fontWeight:400, fontSize:12, lineHeight:'16px', color:'rgb(106,117,125)', textWrap:'pretty' }, { key:'d' })
+            this.sp('Get full coverage up to \u20b130,000. Protect your family from loan burdens in case of medical emergencies or unexpected accidents.', { fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:400, fontSize:12, lineHeight:'16px', color:'rgb(97,98,122)', textWrap:'pretty' }, { key:'d' })
           ])
         ]),
-        React.createElement('div', { key:'hr', style:{ height:0, borderTop:'1px solid rgb(224,227,229)' } }),
+        React.createElement('div', { key:'hr', style:{ height:0, borderTop:'1px solid var(--border-muted)' } }),
         this.sp('See benefits', { fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:600, fontSize:14, lineHeight:'20px', color:C.blue, cursor:'pointer' }, { key:'s' })
       ]),
       React.createElement('div', { key:'method', style:{ display:'flex', flexDirection:'column', gap:8 } }, [
@@ -1323,8 +1328,8 @@ class Component extends DCLogic {
           React.createElement('div', { key:'logo', style:{ width:36, height:36, flex:'none', display:'flex', alignItems:'center', justifyContent:'center' } },
             React.createElement('img', { src: window.__resources.mayaLogo, alt:'Maya', style:{ width:26, height:26, display:'block' } }, null)),
           React.createElement('div', { key:'t', style:{ flex:'1 1 auto', display:'flex', flexDirection:'column' } }, [
-            this.sp('Bank of the Philippins Islands', { fontFamily:'Inter, sans-serif', fontWeight:500, fontSize:14, lineHeight:'20px', letterSpacing:'0.02em', color:C.ink, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }, { key:'a' }),
-            this.sp('Ending in 4567', { fontFamily:'Inter, sans-serif', fontWeight:400, fontSize:14, lineHeight:'20px', letterSpacing:'0.02em', color:C.sub }, { key:'b' })
+            this.sp('Bank of the Philippins Islands', { fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:500, fontSize:14, lineHeight:'20px', letterSpacing:'0.02em', color:C.ink, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }, { key:'a' }),
+            this.sp('Ending in 4567', { fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:400, fontSize:14, lineHeight:'20px', letterSpacing:'0.02em', color:C.sub }, { key:'b' })
           ]),
           React.createElement('span', { key:'c2', style:{ color:C.mute, display:'flex' } }, this.ic('chevR', 16, C.mute, 2))
         ])
@@ -1333,10 +1338,11 @@ class Component extends DCLogic {
          empty circle ripples (nudgeAgree) — no error state */
       React.createElement('div', { key:'agree', onClick:() => this.setState({ agree: !this.state.agree }), style:{ height:28, display:'flex', flexDirection:'row', alignItems:'center', gap:8, cursor:'pointer' } }, [
         React.createElement('div', { key:'bw', style:{ position:'relative', width:16, height:16, flex:'none' } }, [
-          React.createElement('span', { key:'halo', ref:this.ref('agreeHalo'), style:{ position:'absolute', left:0, top:0, width:16, height:16, boxSizing:'border-box', borderRadius:'50%', border:'2px solid ' + C.blue, opacity:0, pointerEvents:'none' } }, null),
-          React.createElement('div', { key:'b', style:{ position:'relative', width:16, height:16, boxSizing:'border-box', borderRadius:'50%', border:'1.5px solid ' + (this.state.agree ? C.blue : '#bac0c4'), backgroundColor: this.state.agree ? C.blue : 'transparent', transition:'background-color .15s ease, border-color .15s ease', display:'flex', alignItems:'center', justifyContent:'center', color:'#ffffff' } }, this.state.agree ? this.ic('check', 10, '#ffffff', 3) : null)
+          React.createElement('span', { key:'halo', ref:this.ref('agreeHalo'), style:{ position:'absolute', left:0, top:0, width:16, height:16, boxSizing:'border-box', borderRadius:'50%', border:'2px solid ' + this.tok('--bg-accent-emphasis', '#5cd680'), opacity:0, pointerEvents:'none' } }, null),
+          React.createElement('div', { key:'b', style:{ position:'relative', width:16, height:16, boxSizing:'border-box', borderRadius:'50%', border:'1.5px solid ' + (this.state.agree ? this.tok('--bg-accent-emphasis', '#5cd680') : this.tok('--border-default', '#b2b3be')), backgroundColor: this.state.agree ? this.tok('--bg-accent-emphasis', '#5cd680') : 'transparent', transition:'background-color .15s ease, border-color .15s ease', display:'flex', alignItems:'center', justifyContent:'center', color:this.tok('--fg-on-accent', '#000128') } }, this.state.agree ? this.ic('check', 10, this.tok('--fg-on-accent', '#000128'), 3) : null)
         ]),
-        this.sp('By typing confirm indicates you accept Loan Agreement and Loan Disclosure Statement', { flex:'1 1 auto', fontFamily:'Inter, sans-serif', fontWeight:500, fontSize:11, lineHeight:'14px', color:C.mute }, { key:'t' })
+        /* the two documents are links (Figma rebrand order page: Fg/Accent); the rest stays grey */
+        this.sp(['By typing confirm indicates you accept ', this.sp('Loan Agreement', { color:this.tok('--fg-accent', C.blue) }, { key:'a' }), ' and ', this.sp('Loan Disclosure Statement', { color:this.tok('--fg-accent', C.blue) }, { key:'d' })], { flex:'1 1 auto', fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:500, fontSize:11, lineHeight:'14px', color:C.mute }, { key:'t' })
       ])
     ];
     return this.el('div', {
@@ -1366,15 +1372,15 @@ class Component extends DCLogic {
       React.createElement('div', {
         key:'bar', ref:this.ref('bar'),
         style:Object.assign({
-          position:'absolute', left:0, bottom:0, width:360, height:108 + (this.sb() ? this.sb() + 4 : 0), zIndex:6, boxSizing:'border-box',
-          padding:'32px 48px ' + (this.sb() ? this.sb() + 24 : 20) + 'px', display:'flex', flexDirection:'column', alignItems:'center', gap:4
+          position:'absolute', left:0, bottom:0, width:360, height:96 + (this.sb() ? this.sb() + 4 : 0), zIndex:6, boxSizing:'border-box',   /* Android bottom: the button 16 from the bottom (owner 2026-11-24) */
+          padding:'32px 48px ' + (this.sb() ? this.sb() + 20 : 16) + 'px', display:'flex', flexDirection:'column', alignItems:'center', gap:4
         })
       }, [
         BLUR ? this.pblur('pb', { left:0, top:0, right:0, bottom:0, zIndex:-1 }, 10 * bk, 'bottom', 'pbc') : null,
         /* the bar's colour veil — PeraSure standard (CLAUDE.md "Header and bottom bars", tokens v2026.11.17): the amount entry and
            the order details take the secondary bottom, Gradient/Bottom-secondary-nav-filled (owner) */
         React.createElement('div', { key:'veil', ref:this.ref('barVeil'), style:Object.assign({ position:'absolute', left:0, top:0, right:0, bottom:0, zIndex:-1, pointerEvents:'none',
-          background: 'var(--gradient-bottom-secondary-nav-filled)' }, this.mpBar(bk)) }, null),
+          background: 'var(--gradient-nav-bottom-mist)' }, this.mpBar(bk)) }, null),
         /* slide + fade on a plain wrapper; the press scale stays on the m.div inside.
            On one node, whileTap's scale value took over `transform` and the slide
            was dropped for good after the first press. */
@@ -1386,10 +1392,10 @@ class Component extends DCLogic {
                disabled with text-disabled, enabled = action-bg-primary-default with text-inverse (tokens, resolved so they animate) */
             position:'relative', height:48, borderRadius:999, boxSizing:'border-box',
             padding:'12px 20px', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center',
-            cursor:'pointer', fontFamily:'Inter, sans-serif', fontWeight:600, fontSize:14, lineHeight:'20px'
+            cursor:'pointer', fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:600, fontSize:14, lineHeight:'20px'
           }, {
-            backgroundColor: this.state.agree ? this.tok('--color-action-bg-primary-default', C.blue) : this.tok('--color-action-bg-primary-disabled', '#e0e3e5'),
-            color: this.state.agree ? this.tok('--color-text-inverse', '#ffffff') : this.tok('--color-text-disabled', '#97a0a6')
+            backgroundColor: this.state.agree ? this.tok('--bg-accent-emphasis', '#5cd680') : this.tok('--bg-disabled', '#ebebee'),
+            color: this.state.agree ? this.tok('--fg-on-accent', '#000128') : this.tok('--fg-disabled', '#8a8a9c')
           }, { duration:0.2 })), 'Confirm'))
       ])
     ] : null);
@@ -1410,8 +1416,8 @@ class Component extends DCLogic {
       React.createElement('div', { key:'term', ref:this.ref('term'), style:Object.assign({
         alignSelf:'stretch', flex:'none', display:'flex', flexDirection:'row', justifyContent:'space-between', alignItems:'center'
       }, this.mpTerm()) }, [
-        this.sp('Loan term', { fontFamily:'Inter, sans-serif', fontWeight:500, fontSize:14, lineHeight:'20px', letterSpacing:'0.02em', color:C.sub }, { key:'a' }),
-        this.sp('15 days / Term', { fontFamily:'Inter, sans-serif', fontWeight:500, fontSize:14, lineHeight:'20px', letterSpacing:'0.02em', color:C.ink }, { key:'b' })
+        this.sp('Loan term', { fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:500, fontSize:14, lineHeight:'20px', letterSpacing:'0.02em', color:C.sub }, { key:'a' }),
+        this.sp('15 days / Term', { fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:500, fontSize:14, lineHeight:'20px', letterSpacing:'0.02em', color:C.ink }, { key:'b' })
       ]),
       React.createElement('div', { key:'bottom', ref:this.ref('bottom'), style:Object.assign({ position:'relative', alignSelf:'stretch', flex:'none' }, this.mpBottom()) }, [
         this.chipRow()
@@ -1429,7 +1435,7 @@ class Component extends DCLogic {
         var mv = this.mvs();
         return this.el('div', {
           key:'cap', ref:this.ref('cap'), 'aria-hidden': cf,
-          style: Object.assign({ position:'absolute', top:128, left:24, height:20, whiteSpace:'nowrap', pointerEvents:'none', fontFamily:'Inter, sans-serif', fontWeight:400, fontSize:14, lineHeight:'20px', letterSpacing:'0.02em', color:C.mute },
+          style: Object.assign({ position:'absolute', top:128, left:24, height:20, whiteSpace:'nowrap', pointerEvents:'none', fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:400, fontSize:14, lineHeight:'20px', letterSpacing:'0.02em', color:C.mute },
             mv ? { x: this._capX, y: this._capY, opacity: this._capO, visibility: this._capV } : { transform: 'translate(' + this.capX() + 'px,' + this.capY() + 'px)', opacity: this.capO(), visibility: this.capO() > 0 ? 'visible' : 'hidden' })
         }, 'Flexible amounts from ₱500–₱50,000');
       })(),
@@ -1444,9 +1450,9 @@ class Component extends DCLogic {
       BLUR ? React.createElement('div', { key:'pbw', ref:this.ref('hdrBlur'), style:{ position:'absolute', left:0, top:0, width:360, height:116 + EE, display:'none' } },
         this.pblur('pb', { left:0, top:0, width:360, height:116 + EE }, 10, 'top')) : null,
       /* header veil — PeraSure standard (CLAUDE.md "Header and bottom bars"): Gradient/Top-nav-filled (not a secondary page) */
-      React.createElement('div', { key:'veil', style:{ position:'absolute', left:0, top:0, width:360, height:116 + EE, background: 'var(--gradient-top-nav-filled)' } }, null),
+      React.createElement('div', { key:'veil', style:{ position:'absolute', left:0, top:0, width:360, height:116 + EE, background: 'var(--gradient-nav-top)' } }, null),
       React.createElement('div', { key:'sb', className:'ps-sb', style:{ position:'absolute', left:0, top:0, width:360, height:40, boxSizing:'border-box', padding:'0 20px', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between' } }, [
-        this.el('span', Object.assign({ key:'t' }, this.mo({ fontFamily:'Inter, sans-serif', fontWeight:600, fontSize:13, lineHeight:'1', letterSpacing:'0.01em' }, { color: C.ink }, { duration:0.2 })), '9:30'),
+        this.el('span', Object.assign({ key:'t' }, this.mo({ fontFamily:"'Hanken Grotesk', sans-serif", fontWeight:600, fontSize:13, lineHeight:'1', letterSpacing:'0.01em' }, { color: C.ink }, { duration:0.2 })), '9:30'),
         React.createElement('div', { key:'punch', style:{ position:'absolute', left:174, top:14, width:12, height:12, borderRadius:'50%', backgroundColor:'#0a1219' } }, null),
         this.el('div', Object.assign({ key:'r' }, this.mo({ display:'flex', flexDirection:'row', alignItems:'flex-end', gap:5 }, { color: C.ink }, { duration:0.2 })), [
           React.createElement('svg', { key:'a', width:16, height:11, viewBox:'0 0 16 11', fill:'currentColor', dangerouslySetInnerHTML:{ __html:'<rect x="0" y="7.5" width="2.6" height="3.5" rx="1"/><rect x="4.4" y="5" width="2.6" height="6" rx="1"/><rect x="8.8" y="2.5" width="2.6" height="8.5" rx="1"/><rect x="13.2" y="0" width="2.6" height="11" rx="1"/>' } }),
@@ -1458,12 +1464,14 @@ class Component extends DCLogic {
         key:'back', onClick:back, whileTap:{ scale:MT.PRESS_SCALE.iconButton }, transition:MT.PRESS
       }, this.mo({
         position:'absolute', left:16, top:56 + EE, width:40, height:40, borderRadius:999, display:'flex',
-        alignItems:'center', justifyContent:'center', cursor:'pointer', pointerEvents:'auto',
-        backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)'
+        alignItems:'center', justifyContent:'center', cursor:'pointer', pointerEvents:'auto', boxSizing:'border-box',
+        /* the app's glass button (PS.Glass / Figma Blur/Glass, owner 2026-11-24): Bg/Glass, a 1 px white line, the Blur/Glass shadow, half the backdrop blur */
+        border: '1px solid ' + this.tok('--fg-on-emphasis', '#ffffff'),
+        backdropFilter:'blur(calc(var(--blur-backdrop-bg, 10px) / 2))', WebkitBackdropFilter:'blur(calc(var(--blur-backdrop-bg, 10px) / 2))'
       }, {
-        backgroundColor: 'rgba(255,255,255,0.6)',
+        backgroundColor: this.tok('--bg-glass', 'rgba(255,255,255,0.8)'),
         color: C.ink,
-        boxShadow: '0px 0px 24px 0px rgba(0,1,40,0.08)'
+        boxShadow: this.tok('--blur-glass-shadow', '0px 0px 12px 0px rgba(0,1,40,0.08), 0px 0px 2px 0px rgba(0,1,40,0.16)')
       }, { duration:0.2 })), this.ic('chevL', 20, 'currentColor', 2)),
       this.el('div', Object.assign({ key:'title' }, this.mo({
         position:'absolute', left:0, right:0, top:56 + EE, height:40, display:'flex', alignItems:'center',

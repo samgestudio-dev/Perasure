@@ -74,7 +74,7 @@
       h('div', { className: 'ps-idside__box' },
         h('div', { className: 'ps-idside__row' },
           h('span', { className: PS.cx('ps-idside__pic', pic && 'is-done') }, h('img', { src: pic || PS.asset('art/id-' + (p.side || 'front') + '.png'), alt: '' }),
-            pic ? h(m.span, { className: 'ps-idside__tick', initial: { scale: 0.6, opacity: 0 }, animate: { scale: 1, opacity: 1, transition: Object.assign({}, MT.SPRING, { restDelta: 0.001 }) } }, h(PS.Icon, { name: 'check', size: 12, color: 'inverse' })) : null),
+            pic ? h(m.span, { className: 'ps-idside__tick', initial: { scale: 0.6, opacity: 0 }, animate: { scale: 1, opacity: 1, transition: Object.assign({}, MT.SPRING, { restDelta: 0.001 }) } }, h(PS.Icon, { name: 'check', size: 12, color: 'on-accent' })) : null),
           h('span', { className: 'ps-idside__text' }, h('span', { className: 'ps-t-section-md' }, p.name), h('span', { className: 'ps-t-caption-sm' }, pic ? 'Added. Retake it if it’s blurry.' : p.hint))),
         h(PS.Divider),
         h('div', { className: 'ps-idside__btns' },
@@ -94,7 +94,7 @@
             animate: { opacity: 1, rotate: PS.reduce ? 0 : 360, transition: { opacity: MT.ENTER, rotate: { duration: 8, ease: 'linear', repeat: Infinity } } }, exit: { opacity: 0, transition: MT.LEAVE } },
           h('circle', { cx: 100, cy: 100, r: 90 })) : null),
         h(AP, null, busy ? h(m.span, Object.assign({ key: 'c', className: 'ps-selfie__state is-brand' }, PS.fade(MT.Y.text)), h(PS.Icon, { name: 'upload-cloud', size: 26, color: 'brand-light' }), h('span', { className: 'ps-t-section-sm' }, 'Uploading'))
-          : state === 'failed' ? h(m.span, Object.assign({ key: 'f', className: 'ps-selfie__state is-negative' }, PS.fade(MT.Y.text)), h(PS.Icon, { name: 'alert-filled', size: 26, color: 'var(--color-text-negative-default)' }), h('span', { className: 'ps-t-section-sm' }, 'Failed'))
+          : state === 'failed' ? h(m.span, Object.assign({ key: 'f', className: 'ps-selfie__state is-negative' }, PS.fade(MT.Y.text)), h(PS.Icon, { name: 'alert-filled', size: 26, color: 'var(--fg-danger)' }), h('span', { className: 'ps-t-section-sm' }, 'Failed'))
           : cam.state === 'none' ? h('span', { key: 'n', className: 'ps-selfie__none ps-t-caption-sm' }, 'The camera isn’t available here. Tap Next to use a sample.') : null)),
       p.children);
   };
@@ -112,7 +112,7 @@
         cam.state === 'none' && !shot ? h('span', { className: 'ps-t-caption-sm' }, 'The camera isn’t available here. Take the picture anyway to use a sample.') : null),
       h(PS.Swap, { k: shot ? 'b' : 'a', block: true, className: 'ps-face__hint' }, h('p', { className: 'ps-t-body-lg-em' }, shot ? 'Make sure your face and eyes are uncovered' : 'Keep your face within the oval')),
       h('div', { className: 'ps-face__bot' }, h(PS.Crossfade, { k: shot ? 'b' : 'a', className: 'ps-face__acts' }, shot
-        ? [h(PS.Button, { key: 'a', variant: 'shade', className: 'ps-face__again', onClick: p.onRetake }, 'Take again'), h(PS.Button, { key: 'n', variant: 'inverse', onClick: p.onNext }, 'Next')]
+        ? [h(PS.Button, { key: 'a', variant: 'inverse', onClick: p.onRetake }, 'Take again'), h(PS.Button, { key: 'n', onClick: p.onNext }, 'Next')]   /* Figma 11203:17105: Inverse + Primary */
         : h(PS.Shutter, { onClick: p.onTake }))));
   };
 
@@ -144,8 +144,8 @@
      onLogin · onRecover · onOther — onRetry · onManual · onClose */
   PS.IdResult = function IdResult(p) {
     if (p.state === 'failed') return h(R.Fragment, null,
-      h(PS.SheetHead, { align: 'left', bottom: true, title: 'We couldn’t verify your ID', icon: 'warning-filled', iconColor: 'var(--color-icon-negative-light)', onClose: p.onClose }),
-      h('p', { className: 'ps-t-body-md', style: { color: 'var(--color-text-negative-light)' } }, 'Repeated failures may affect your application, so check the photo carefully.'),
+      h(PS.SheetHead, { align: 'left', bottom: true, title: 'We couldn’t verify your ID', icon: 'warning-filled', iconColor: 'var(--fg-danger-muted)', onClose: p.onClose }),
+      h('p', { className: 'ps-t-body-md', style: { color: 'var(--fg-danger-muted)' } }, 'Repeated failures may affect your application, so check the photo carefully.'),
       h(PS.PhotoTips),
       h(PS.ButtonRow, null,
         h(PS.Button, { variant: 'ghost', size: 'md', onClick: p.onRetry }, 'Try again'),
@@ -189,17 +189,17 @@
       h('div', { ref: p.bodyRef, className: PS.cx('ps-ssheet__body', white && 'ps-ssheet__body--white') }, p.children));
   };
   /* BankList: banks grouped by their first letter, each group a white card, a 24 px logo before each name (Figma 52:8428)
-     groups [{ title, items: [{ id, name, logo }] }] · onPick(item) */
+     groups [{ title, items: [{ id, name, logo }] }] · onPick(item) · q (the search text: its part of each name in Fg/Accent, PS.mark) */
   PS.BankList = function BankList(p) {
     return p.groups.map(function (g) {
       return h(PS.Card, { key: g.title, className: 'ps-banks' }, h('p', { className: 'ps-t-caption-xs ps-c-tertiary' }, g.title), g.items.map(function (b, i) {
         return h(R.Fragment, { key: b.id }, i ? h(PS.Divider) : null, h(m.button, Object.assign({ type: 'button', className: 'ps-banks__row ps-t-body-md-em', onClick: function () { p.onPick(b); } }, PS.press()),
-          h('img', { src: b.logo, alt: '' }), b.name));
+          h('img', { src: b.logo, alt: '' }), h('span', null, PS.mark(b.name, (p.q || '').trim().toLowerCase()))));
       }));
     });
   };
 
-  /* mark(text, q): the typed part of a search hit in brand blue */
+  /* mark(text, q): the typed part of a search hit in Fg/Accent (q lower case) */
   PS.mark = function mark(text, q) {
     var i = text.toLowerCase().indexOf(q); if (!q || i < 0) return text;
     return [text.slice(0, i), h('span', { key: 'm', className: 'ps-c-brand' }, text.slice(i, i + q.length)), text.slice(i + q.length)];

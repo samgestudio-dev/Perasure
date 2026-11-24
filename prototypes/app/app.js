@@ -14,7 +14,7 @@ window.APP = (function () {
     stack: [{ name: 'opening', key: 'k0', params: {} }], dir: 0, tab: 'home',
     sheet: null, tip: null, toast: null, toasts: [], busy: false, otp: null, submitting: false, intro: false,
     user: T.user || 'approved', loan: T.loan || 'active',
-    repay: CS.current && /^(active|overdue)$/.test(CS.current.state) ? CS.current.state : null,   /* the loan being repaid: it stays when another one is ordered */
+    repay: CS.current && /^(active|today|overdue)$/.test(CS.current.state) ? (CS.current.state === 'today' ? 'active' : CS.current.state) : null,   /* the loan being repaid: it stays when another one is ordered */
     seenScam: false, rated: false,
     coupons: CS.coupons(T.coupons == null ? '6' : T.coupons), used: CS.used,
     inbox: null, method: { kind: 'wallet', id: 'gcash', name: 'GCash', last4: '4057' }, order: null, phone: '9171236789'

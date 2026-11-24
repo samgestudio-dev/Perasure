@@ -1,0 +1,763 @@
+{
+ "runId": "perasure-rebrand-2026-11-19",
+ "file": "OBsvf42AiRapcRrasD7KNm",
+ "scope": "full library (consolidated) on page 'Component - Rebranding'; legacy Component page untouched",
+ "modes": {
+  "Primitive": {
+   "collection": "VariableCollectionId:1450:11892",
+   "legacy": "1450:0",
+   "rebrand": "10980:0"
+  },
+  "Semantic": {
+   "collection": "VariableCollectionId:1020:5688",
+   "legacy": "1020:4",
+   "rebrand": "10980:1"
+  },
+  "Component": {
+   "collection": "VariableCollectionId:198:8252",
+   "legacy": "198:0",
+   "rebrand": "10980:2"
+  }
+ },
+ "createdVariables": [],
+ "pages": {
+  "Branding": "10972:32412",
+  "Design": "3259:657",
+  "Design - Rebranding": "10977:32417",
+  "Component (legacy)": "3384:681"
+ },
+ "inventory_v1": [
+  "Button",
+  "TextLink",
+  "Tag",
+  "Chip",
+  "Check",
+  "Tooltip",
+  "Toast",
+  "Field",
+  "SelectBar",
+  "OtpBoxes",
+  "Search",
+  "Segmented",
+  "LineTabs",
+  "ListItem",
+  "Installment",
+  "KV",
+  "TopBar",
+  "Navigator",
+  "Sheet",
+  "Popover",
+  "CreditCard",
+  "PaymentCard",
+  "InboxItem",
+  "StateCard",
+  "EmptyState",
+  "CouponTicket",
+  "UploadTile"
+ ],
+ "components": {
+  "Button": {
+   "set": "10987:225",
+   "section": "10982:16",
+   "variants": 30,
+   "axes": "Size(Large,Small) × Variant(Primary,Secondary,Text,Destructive,Navy) × State(Default,Pressed,Disabled)",
+   "props": [
+    "Label",
+    "Subtitle",
+    "Subtitle text",
+    "Leading icon",
+    "Icon (swap)",
+    "Loading"
+   ],
+   "showcase": "10987:226"
+  },
+  "TextLink": {
+   "set": "11006:366",
+   "section": "10982:16",
+   "variants": 6,
+   "axes": "Tone(Default,Inverse) × State(Default,Pressed,Disabled)",
+   "props": [
+    "Label",
+    "Trailing icon",
+    "Icon (swap)"
+   ],
+   "showcase": "10988:134",
+   "note": "rebuilt on v2 (old set 10988:133 deleted after its instances moved)"
+  },
+  "Tag": {
+   "set": "10988:272",
+   "section": "10982:16",
+   "variants": 30,
+   "axes": "Size(Medium,Small) × Tone(Accent,Positive,Navy,Neutral,Negative) × Emphasis(Subtle,Strong,Outline)",
+   "props": [
+    "Label",
+    "Leading icon",
+    "Icon (swap)"
+   ],
+   "showcase": "10988:273",
+   "note": "Outline = border + content, no fill (coordinator decision 5)"
+  },
+  "Chip": {
+   "set": "10989:185",
+   "section": "10982:16",
+   "variants": 8,
+   "axes": "Size(Medium,Small) × State(Default,Selected,Pressed,Disabled)",
+   "props": [
+    "Label"
+   ],
+   "showcase": "10989:186"
+  },
+  "Check": {
+   "set": "10989:254",
+   "section": "10982:16",
+   "variants": 8,
+   "axes": "Size(Medium,Small) × State(Off,On,Disabled,On-disabled)",
+   "props": [],
+   "showcase": "10989:255"
+  },
+  "Tooltip": {
+   "set": "10991:475",
+   "section": "10982:17",
+   "variants": 18,
+   "axes": "Type(Simple,Rich) × Arrow(Top-start,Top,Top-end,Bottom-start,Bottom,Bottom-end,Left,Right,None)",
+   "props": [
+    "Text",
+    "Title",
+    "Leading icon",
+    "Icon (swap)",
+    "Close"
+   ],
+   "showcase": "10991:525"
+  },
+  "Toast": {
+   "set": "10991:524",
+   "section": "10982:17",
+   "variants": 4,
+   "axes": "Status(Success,Error,Info,Neutral)",
+   "props": [
+    "Message",
+    "Action",
+    "Action label",
+    "Close"
+   ],
+   "showcase": "10991:633"
+  },
+  "Field": {
+   "set": "11009:437",
+   "section": "10982:18",
+   "variants": 10,
+   "axes": "Layout(Floating,Stacked) × State(Default,Focus,Filled,Error,Disabled)",
+   "props": [
+    "Label",
+    "Placeholder",
+    "Value",
+    "Message",
+    "Message text",
+    "Prefix",
+    "Prefix text",
+    "Trailing icon",
+    "Icon (swap)"
+   ],
+   "showcase": "11009:489"
+  },
+  "Search": {
+   "set": "11009:488",
+   "section": "10982:18",
+   "variants": 3,
+   "axes": "State(Default,Focus,Filled)",
+   "props": [
+    "Placeholder",
+    "Value"
+   ],
+   "showcase": "11009:655"
+  },
+  "SelectBar": {
+   "set": "11009:954",
+   "section": "10982:18",
+   "variants": 8,
+   "axes": "Style(Card,Plain) × State(Default,Selected,Pressed,Disabled)",
+   "props": [
+    "Label",
+    "Logo",
+    "Logo image (swap)",
+    "Note",
+    "Note text"
+   ],
+   "showcase": "11009:1032",
+   "nests": "Check"
+  },
+  "OtpBoxes": {
+   "set": "11009:1031",
+   "section": "10982:18",
+   "variants": 5,
+   "axes": "State(Empty,Typing,Filled,Error,Disabled)",
+   "props": [
+    "6 exposed .OtpBox (Digit)"
+   ],
+   "showcase": "11009:1228",
+   "buildingBlock": {
+    ".OtpBox": "11009:965 (5: Empty,Filled,Active,Error,Disabled)"
+   }
+  },
+  "Segmented": {
+   "set": "11011:646",
+   "section": "10982:18",
+   "variants": 6,
+   "axes": "Items(2,3) × Selected(1..Items) × State(Default; Disabled for 2/1)",
+   "props": [
+    "exposed .Segment (Label)"
+   ],
+   "showcase": "11011:718",
+   "buildingBlock": {
+    ".Segment": "11011:614 (3: Default,Selected,Pressed)"
+   },
+   "note": "owner style: grey track Bg/Neutral/Default, white thumb"
+  },
+  "LineTabs": {
+   "set": "11011:717",
+   "section": "10982:18",
+   "variants": 5,
+   "axes": "Items(2,3) × Selected(1..Items)",
+   "props": [
+    "exposed .LineTab (Label)"
+   ],
+   "showcase": "11011:739",
+   "buildingBlock": {
+    ".LineTab": "11011:659 (3: Default,Selected,Off)"
+   }
+  },
+  "PhoneField": {
+   "set": "11018:830",
+   "section": "10982:18",
+   "variants": 6,
+   "axes": "State(Default,Focus,Filled,Error-empty,Error,Disabled)",
+   "props": [
+    "Label",
+    "Placeholder",
+    "Country code",
+    "Digits 1",
+    "Digits 2",
+    "Digits 3",
+    "Message",
+    "Message text"
+   ],
+   "showcase": "11018:831",
+   "rule": "Log in / Change phone only; forms use Field"
+  },
+  "Scrim": {
+   "set": "11021:822",
+   "section": "10982:20",
+   "variants": 2,
+   "axes": "Type(Gradient,Flat)",
+   "props": [],
+   "showcase": "11021:823"
+  },
+  "ListItem": {
+   "set": "11025:971",
+   "section": "10982:19",
+   "variants": 6,
+   "axes": "Tone(Default,Brand) × State(Default,Pressed,Disabled)",
+   "props": [
+    "Title",
+    "Subtitle",
+    "Subtitle text",
+    "Leading",
+    "Leading icon (swap)",
+    "Tag (exposed Tag)",
+    "Value",
+    "Value text",
+    "Chevron",
+    "Trailing icon (swap)",
+    "Divider"
+   ],
+   "showcase": "11025:972"
+  },
+  "Installment": "11113:3535",
+  "KV": {
+   "set": "11028:1193",
+   "section": "10982:19",
+   "variants": 6,
+   "axes": "Layout(Inline,Stacked) × Tone(Default,Positive,Negative)",
+   "props": [
+    "Label",
+    "Value",
+    "Info icon",
+    "Divider"
+   ],
+   "showcase": "11028:1194"
+  },
+  "TopBar": {
+   "set": "11036:1355",
+   "section": "10982:20",
+   "variants": 10,
+   "axes": "Type(Back+Title,Back+Title+Action,Brand,Pill,Search) × Style(Solid,Clear)",
+   "props": [
+    "Title",
+    "exposed .GlassButton"
+   ],
+   "showcase": "11036:1356",
+   "buildingBlocks": {
+    ".GlassButton": "11036:1186 (Icon,Back,Pill)",
+    ".BrandMark": "11036:1187"
+   }
+  },
+  "Navigator": {
+   "set": "11037:1403",
+   "section": "10982:20",
+   "variants": 3,
+   "axes": "Active(Home,Payment,Account)",
+   "props": [
+    "exposed .NavTab (Label, Icon)"
+   ],
+   "showcase": "11037:1404",
+   "buildingBlocks": {
+    ".NavTab": "11037:1351 (Active,Inactive)",
+    ".Icon/Home": "11037:1327",
+    ".Icon/Payment": "11037:1334",
+    ".Icon/Account": "11037:1342"
+   }
+  },
+  "Sheet": {
+   "set": "11038:1448",
+   "section": "10982:20",
+   "variants": 3,
+   "axes": "Kind(Plain,Card,Page)",
+   "props": [
+    "Title",
+    "Head",
+    "Content (swap .Slot)",
+    "Footer",
+    "Handle"
+   ],
+   "showcase": "11038:1449",
+   "buildingBlocks": {
+    ".Slot": "11038:1391"
+   }
+  },
+  "Popover": {
+   "set": "11039:1543",
+   "section": "10982:20",
+   "variants": 2,
+   "axes": "Type(Menu,Content)",
+   "props": [
+    "Title",
+    "exposed rows"
+   ],
+   "showcase": "11039:1544",
+   "buildingBlocks": {
+    ".PopoverOption": "11039:1488 (Default,Selected)"
+   }
+  },
+  "CreditCard": "11093:2768",
+  "PaymentCard": "11093:2765",
+  "InboxItem": {
+   "set": "11043:1798",
+   "section": "10982:21",
+   "variants": 4,
+   "axes": "State(Unread,Read) × Tone(Default,Overdue)",
+   "props": [
+    "Kind",
+    "Time",
+    "Action label"
+   ],
+   "showcase": "11043:1848"
+  },
+  "StateCard": "11098:2828",
+  "EmptyState": {
+   "set": "11044:1917",
+   "section": "10982:21",
+   "variants": 2,
+   "axes": "Action(Off,On)",
+   "props": [
+    "Title",
+    "Body"
+   ],
+   "showcase": "11044:2021"
+  },
+  "UploadTile": {
+   "set": "11044:2020",
+   "section": "10982:21",
+   "variants": 8,
+   "axes": "Type=Picture: State(Empty,Loading,Done,Error); Type=File: State(Uploaded,Uploading,Compressing,Failed)",
+   "props": [
+    "Label",
+    "File name",
+    "File type"
+   ],
+   "showcase": "11044:2071"
+  },
+  "CouponTicket": {
+   "set": "11046:2168",
+   "section": "10982:21",
+   "variants": 6,
+   "axes": "State(Use,Pick,Selected,Used,Expired,Unavailable)",
+   "props": [
+    "Value",
+    "Label",
+    "Rule",
+    "Best"
+   ],
+   "showcase": "11046:2288"
+  },
+  "HomeCoupons": {
+   "set": "11046:2287",
+   "section": "10982:21",
+   "variants": 2,
+   "axes": "Layout(Pair,One)",
+   "props": [
+    "Title"
+   ],
+   "showcase": "11046:2401"
+  },
+  "Slider": "11063:2368",
+  "AmountCard": "11064:2451",
+  "AmountEntry": "11064:2482",
+  "SendingCard": "11066:2509",
+  "OfferCard": "11066:2514",
+  "Strip": "11093:2760",
+  "Banners": "11098:2917",
+  "TrustCard": "11098:2978",
+  "Legal": "11098:3049",
+  "DotTitle": "11098:3130",
+  "Notice": "11098:3131",
+  "PenaltyInfo": "11098:3132",
+  ".PaymentNotice": "11100:11176",
+  "PermissionCard": "11086:2666",
+  "BottomBar": "11086:2672",
+  "ContactMethod": "11086:2675",
+  ".KeypadKey": "11102:3057",
+  "Keypad": "11095:2874",
+  "ScheduleItem": "11095:2797",
+  "ScamStrip": "11113:3512",
+  "ScamTips": "11113:3516",
+  "OtpStatus": "11113:3519",
+  "PayBar": "11113:3520",
+  "PayDock": "11114:3886",
+  "Accordion": "11113:3523",
+  ".BankRow": "11113:3530",
+  "BankList": "11114:3891",
+  "InstallmentCard": "11114:3620",
+  "OrderDetails": "11113:3536",
+  "ProtectionCard": "11113:3537",
+  "MethodCard": "11113:3538",
+  "RepayCard": "11114:3890",
+  "QrPanel": "11113:3539",
+  "PayTimer": "11113:3544",
+  ".MethodTabs": "11113:3540",
+  "MethodPicker": "11113:3543"
+ },
+ "completedSteps": [
+  "discovery",
+  "variables-rebrand-mode",
+  "components/actions",
+  "components/feedback",
+  "tokens-v2-figma",
+  "rebind-v2/actions-feedback",
+  "specs/actions-feedback",
+  "components/inputs",
+  "specs/inputs",
+  "components/lists",
+  "specs/lists",
+  "components/structure",
+  "specs/structure",
+  "components/product-cards",
+  "specs/product-cards",
+  "phase1/eye-review-50",
+  "phase1/check-50-clean-2026-11-20",
+  "owner/android-only-sizes",
+  "owner/amount-tracking-graded",
+  "parity/amount-components-reexported",
+  "owner/peso-hanken-all-sizes",
+  "owner/brand100-tag-navy-default",
+  "phase1/overlays-50-regraded",
+  "phase1/account-20",
+  "phase1/application-details-35",
+  "phase1/check-105-2026-11-20",
+  "components/account-9",
+  "components/application-details-12",
+  "phase1/field-no-border-at-rest",
+  "legacy/collections-restored",
+  "phase1/older-sections-diffed",
+  "phase1/onboarding-4",
+  "phase1/short-link-6",
+  "phase1/check-115-2026-11-20",
+  "entry17/bin-5-styles",
+  "entry17/field-no-ring",
+  "entry17/brief16-periwinkle-on-navy",
+  "phase1/inbox-a-7",
+  "phase1/change-bank-card-2",
+  "phase1/check-124-2026-11-20",
+  "entry18/statecard-timer",
+  "entry18/brief26-chevron-left",
+  "entry18/brief16-audit",
+  "entry18/brief18-surface-tint",
+  "entry18/brief19-popups",
+  "entry18/brief20-empty-placement",
+  "entry18/brief21-tooltip-tone",
+  "entry18/brief24-button-neutral",
+  "entry18/brief25-date-picker",
+  "phase1/check-124-2026-11-20g",
+  "entry18/brief27-accent-strong",
+  "entry18/brief32-partial-laurels-34-icons",
+  "entry19/brief32-icons-legacy",
+  "entry19/remote-legacy-replaced",
+  "entry19/brief28",
+  "entry19/uploadtile-label-sm",
+  "entry19/brief29",
+  "entry19/brief30",
+  "entry19/brief31",
+  "entry19/brief22-filled-icons",
+  "entry19/brief23-renames",
+  "phase1/check-120-2026-11-20i",
+  "entry19/filled-icons-sheet-fixed",
+  "entry19/overlays-119",
+  "entry19/component-pngs-18",
+  "entry19/type-audit",
+  "entry20/brief33-body-sm-xs",
+  "phase1/check-120-2026-11-20j",
+  "phase1/faqs-7",
+  "phase1/loan-history-5",
+  "phase1/miniapp-1",
+  "phase1/app-download-1",
+  "phase1/global-fallback-1",
+  "phase1/mobile-phone-change-6",
+  "phase1/rating-popover-3",
+  "phase1/order-state-4",
+  "entry23/brief34",
+  "entry23/brief35",
+  "entry23/brief36",
+  "entry23/brief37",
+  "coupon-center",
+  "entry25/brief38",
+  "entry25/decision3",
+  "entry26/final-pass"
+ ],
+ "sections": {
+  "01 · Actions": "10982:16",
+  "02 · Feedback": "10982:17",
+  "03 · Inputs": "10982:18",
+  "04 · Lists": "10982:19",
+  "05 · Structure": "10982:20",
+  "06 · Product cards": "10982:21",
+  "07 · Icons": "11210:62554"
+ },
+ "sectionsNote": "2026-11-19: Actions 2400x1276, Feedback 2400x1464, Inputs 2524x2895 (y 3064); sections 04–06 moved to make room (see Figma for current y). All sections and sets use the v2 collections' Light mode; Legacy-collection modes removed.",
+ "nextStep": "Owner decision on OrderAmountCard (a/b/c, entry 25); then swap the 16 frames, add the binAmountCard checker rule, re-shoot their overlays. Open: landing-page review quotes (miniature type), loose PermissionCard frame 11193:49210.",
+ "status": "2026-11-20: entry 26 — final full pass of phase 1: 176 non-bin frames in 20 sections; checker 153/175 clean, 22 accepted; 16 frames on _bin/AmountCard pending owner (OrderAmountCard). Waiting for review.",
+ "pendingWork": [
+  "Field TEXT-property defaults still read 'Phone number' (changing a TEXT property default re-applies one fill to every linked label — Figma quirk; left as is)",
+  "OrderAmountCard + 16 frames off _bin/AmountCard (owner, option c for now)",
+  "Landing page review quotes overflow (11263:18293, 11263:18317): miniature type question",
+  "Loose frame PermissionCard 11193:49210 on Design - Rebranding: remove or bin"
+ ],
+ "tokensV2": {
+  "collections": {
+   "Primitive": "VariableCollectionId:10999:15",
+   "Semantic": "VariableCollectionId:10999:16",
+   "Component": "VariableCollectionId:10999:17"
+  },
+  "modes": {
+   "Primitive": "10999:0",
+   "Semantic": "10999:1",
+   "Component": "10999:2"
+  },
+  "counts": {
+   "primitive": 145,
+   "semantic": 239,
+   "component": 22
+  },
+  "legacyCollections": {
+   "Legacy · Primitive": "VariableCollectionId:1450:11892",
+   "Legacy · Semantic": "VariableCollectionId:1020:5688",
+   "Legacy · Component": "VariableCollectionId:198:8252"
+  },
+  "textStyles": "19 v2 styles (lean, 2026-11-19): Display/md, Display/sm, Headline/sm, Title/lg, Title/md, Title/sm, Title/xs, Body/lg, Body/lg-strong, Body/md, Body/md-strong, Label/md, Label/sm, Caption/sm, Caption/xs, Amount/xxl, Amount/lg, Amount/md, Amount/xs",
+  "effectStyles": "4: Elevation/1, Elevation/2, Elevation/3, Blur/Glass (Blur/Scrim deleted 2026-11-19, 0 users)",
+  "source": "rebrand/tokens/v2/build.py",
+  "addedPrimitives": "2026-11-19 figma-lib: Palette/Navy/50–500 (11014:718–723), Palette/Ambient/400–950 (11014:724–730); hidden, scopes [], WEB var(--palette-…)",
+  "scrim": "2026-11-19: Palette/Alpha/Navy/0,32,40,56 (11020:15–18); Overlay/Scrim/Default (10999:161, renamed from Overlay/Scrim → Navy/40), Overlay/Scrim/Top/Mid/Bottom (11020:19–21)",
+  "coupon": "2026-11-19: Component Coupon/Gradient/Top|Upper|Mid|Bottom (11030:15–18) → Palette/Green 700/600/400/200",
+  "Surface/Tint/Default": "VariableID:11212:20681",
+  "Content/Accent-strong": "VariableID:11223:15",
+  "Bg/Brand/Muted": "VariableID:11235:5231",
+  "Bg/Positive/Strong": "VariableID:11235:24021"
+ },
+ "specs": "rebrand/spec/<Name>.md for all 13 components (+ README with the conventions)",
+ "screens": {
+  "page": "10977:32417",
+  "pageName": "Design - Rebranding",
+  "sections": {
+   "Register": {
+    "id": "11051:15",
+    "frames": {
+     "6880:14528": "11051:16",
+     "3259:663": "11051:32",
+     "3269:329": "11051:244",
+     "3279:172": "11051:303",
+     "3282:196": "11051:321"
+    }
+   },
+   "User home": {
+    "id": "11052:211",
+    "frames": {
+     "8921:30605": "11052:212",
+     "8914:30139": "11052:454",
+     "8957:16440": "11052:609",
+     "9867:36920": "11052:667",
+     "8958:19617": "11052:903"
+    }
+   },
+   "Home": {
+    "id": "11053:846",
+    "frames": {
+     "10789:29220": "11053:847",
+     "10029:45495": "11053:1033",
+     "9137:25806": "11053:1210",
+     "10545:37326": "11053:1397",
+     "8958:19822": "11053:1619",
+     "9078:23064": "11053:1776",
+     "9078:23260": "11053:1939",
+     "9081:23675": "11053:2088",
+     "9560:32792": "11053:2212",
+     "9426:18065": "11055:1916",
+     "8958:20032": "11055:1957",
+     "10952:29768": "11055:2141",
+     "10261:36235": "11055:2349",
+     "9137:26172": "11055:2492",
+     "10722:58385": "11055:2682"
+    }
+   },
+   "User Order": {
+    "id": "11109:5008",
+    "frames": {
+     "9137:26671": "11109:5010",
+     "9137:26562": "11109:5153",
+     "5588:5243": "11109:5350",
+     "5588:5261": "11109:5592",
+     "5803:14326": "11109:5726",
+     "5932:8908": "11109:6329",
+     "6220:14019": "11109:6835",
+     "9137:27682": "11109:7308",
+     "9137:28053": "11109:7524",
+     "9137:28357": "11109:7745",
+     "9137:28667": "11109:7970"
+    }
+   },
+   "Payment": {
+    "id": "11109:5009",
+    "frames": {
+     "10534:35615": "11109:8198",
+     "10545:37955": "11109:8723",
+     "10545:38381": "11109:9162",
+     "6220:13381": "11109:9617",
+     "6889:14706": "11109:9756",
+     "8988:17764": "11109:9870",
+     "8995:18429": "11109:10262",
+     "8995:18706": "11109:10651",
+     "5922:9772": "11109:11022",
+     "5925:9474": "11109:11112",
+     "5925:9552": "11109:11215",
+     "6062:14058": "11109:11309",
+     "6062:16635": "11109:12194",
+     "6062:17810": "11109:12948"
+    }
+   }
+  },
+  "todo": [
+   "Account",
+   "Application Details",
+   "Onboarding",
+   "rest (skip bin / Payso OFW / OFW BIN / loose frames)"
+  ],
+  "parityExport": "rebrand/parity/figma/*.png — 35 files at 1x (get_screenshot cannot upscale)"
+ },
+ "phaseRule": "Phase 1: layout identical to the legacy Design-page frames; only colours/tokens/typeface (same sizes)/owner-requested changes. Phase 2 (after all flows): audit vs Design page, derive rules, list legacy inconsistencies, agree with owner, then optimise. See BRIEF + CHANGES 'Later'.",
+ "componentsAdded2026-11-19": {
+  "Slider": {
+   "id": "11063:2368",
+   "section": "03 · Inputs",
+   "showcase": "11063:2369"
+  },
+  "AmountCard": {
+   "id": "11064:2451",
+   "showcase": "11064:2483"
+  },
+  "AmountEntry": {
+   "id": "11064:2482",
+   "showcase": "11064:2566"
+  },
+  "SendingCard": {
+   "id": "11066:2509",
+   "showcase": "11066:2619"
+  },
+  "OfferCard": {
+   "id": "11066:2514",
+   "showcase": "11066:2627"
+  }
+ },
+ "textLinkFix": "TextLink set 11006:366 renamed from \"Component 1\"; 13 instances renamed",
+ "phase1": {
+  "rule": "BRIEF phase rule: screens = legacy layout in new colours",
+  "kit": "figma.root.getSharedPluginData('perasure.rebrand','kit'|'map'|'rules'|'rm'|'raw'|'handlers')",
+  "notes": "rebrand/figma/phase1-rebuild.md",
+  "overlays": "rebrand/parity/figma/screens/"
+ },
+ "componentsAdded2026-11-20": {
+  "Radio": "11156:5430",
+  "VerifiedBadge": "11156:5431",
+  "ReasonRow": "11157:4367",
+  ".ReasonText": "11157:4370",
+  ".ResendTimer": "11157:4373",
+  "LinkRow": "11157:4380",
+  "ActivityItem": "11157:4385",
+  "HubCard": "11157:4389",
+  "CreditLimitCard": "11157:4388",
+  ".FileBadge": "11166:4404",
+  "ResultBadge": "11166:4407",
+  ".DateCell": "11166:4410",
+  ".Weekday": "11166:4411",
+  ".MenuRow": "11166:4416",
+  "PlaceTab": "11166:4420",
+  "PlaceRow": "11166:4427",
+  "ChoiceButton": "11166:4430",
+  ".FileRow": "11166:4435",
+  "DocCard": "11166:4925",
+  "EmailSuggestions": "11166:4926",
+  "RatingStar": "11187:19925",
+  ".InboxTime": "11180:54341",
+  "Icon / Chevron left": "11210:62555",
+  "Icon / Chevron up": "11210:62557",
+  "Icon / Chevron down": "11210:62561",
+  ".SheetHeader": "11216:4546",
+  "Button Variant=Neutral": "11218:4557..4605",
+  "Tooltip Tone": "10991:475 (36 variants)",
+  "Icon / Chevron left (line)": "11226:4563",
+  "Filled icons (10)": "11238:4570..4663",
+  "Filled icons sheet": "11241:21197",
+  "LoanHistoryItem": "11259:22291",
+  "LoanStateCard": "11263:25900",
+  "Button Variant=Plain": "11268:4645..4693",
+  ".GlassButton Type=Close": "11271:24010",
+  "CouponOption": "11273:4944",
+  "CouponPayCard": "11273:4945"
+ },
+ "sectionsRebrand": {
+  "Account": "11155:9694",
+  "Application Details": "11163:11297",
+  "Onboarding": "11187:15612",
+  "Short link": "11189:15908",
+  "inbox-a": "11200:16448",
+  "换绑卡流程 · Change bank card": "11203:17057",
+  "bin": "11196:16445",
+  "FAQs": "11257:46356",
+  "Loan history": "11259:17665",
+  "Miniapp loading": "11263:17952",
+  "App download landing page": "11263:17984",
+  "Global fallback": "11263:18591",
+  "Mobile phone change": "11263:18771",
+  "Rating popover": "11263:19751",
+  "Order state": "11263:21265",
+  "Coupon center": "11272:19793"
+ },
+ "legacyCollectionsRestored": "2026-11-20: Rebrand mode removed and the 11 added variables deleted; backup rebrand/figma/legacy-additions-backup.json"
+}

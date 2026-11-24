@@ -12,6 +12,7 @@
         if (T.intro && +T.intro && APP.S.user === 'approved' && CS.credit.temporary > 0) APP.set({ intro: 'play' });
         APP.home(deep === 'payment' || deep === 'account' ? deep : 'home', 0);
         if (deep && APP.screens[deep]) APP.go(deep);
+        else if (String(T.credit) === 'low' && APP.S.user === 'approved') APP.go('coupons');   /* Tune → Coupon you can’t use: start where it happens */
       }, APP.q.get('page') ? 60 : APP.rnd(900, 1500));
       return function () { clearTimeout(t); };
     }, []);
@@ -22,7 +23,7 @@
   APP.screen('login', function Login() {
     var s = R.useState(''), phone = s[0], setPhone = s[1], e = R.useState(null), err = e[0], setErr = e[1], a = R.useState(true), agree = a[0], setAgree = a[1];
     function submit() {
-      if (!/^9\d{9}$/.test(phone)) { setErr('Enter your 10-digit mobile number, starting with 9.'); return; }
+      if (!/^9\d{9}$/.test(phone)) { setErr('Enter your 10‑digit mobile number, starting with 9.'); return; }
       if (!agree) { APP.say('Tick the box to agree to the terms first.'); return; }
       APP.set({ phone: phone }); APP.go('sending');
     }
@@ -70,7 +71,7 @@
     }
     var ph = p.params.phone || APP.S.phone;   /* a new number being confirmed (phone change), else the one logging in */
     return h(PS.Screen, { secondary: true, top: { left: h(PS.Back, { onClick: function () { APP.back(); } }), right: APP.tune() } },
-      h(APP.Head, { title: 'Verification code sent', body: h(R.Fragment, null, 'Enter the verification code sent to', h('br'), '+63 ••••••' + ph.slice(-4) + ' via ' + (WAYS.filter(function (w) { return w.id === st.way; })[0].label) + '.') }),
+      h(APP.Head, { title: 'Verification code sent', body: h(R.Fragment, null, 'Enter the verification code sent to', h('br'), '+63 ', h(PS.Mask), ph.slice(-4) + ' via ' + (WAYS.filter(function (w) { return w.id === st.way; })[0].label) + '.') }),
       h(PS.OtpForm, { value: st.code, onChange: onCode, error: st.err, disabled: st.busy, ways: WAYS, way: st.way, left: st.left,
         onWay: function (w) { set({ way: w, code: '', err: null, left: 59 }); APP.say('We sent a new code by ' + WAYS.filter(function (x) { return x.id === w; })[0].label + '.'); },
         onResend: function () { set({ code: '', err: null, left: 59 }); APP.say('We sent you a new code.'); } }));

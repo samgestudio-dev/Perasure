@@ -9,7 +9,7 @@ window.CS = (function () {
 
   var credit = { available: 45000, total: 50000, temporary: 10000, temporaryUntil: 'Nov 20' };
   var loan = { min: 500, step: 500, terms: [3, 6, 8], term: 6, days: 15, interest: 0.015, fee: 0.005, start: new Date(2026, 10, 12) };
-  var user = { initials: 'SG', name: 'Sam Ge', verified: true };
+  var user = { initials: 'SG', name: 'Sam Ge' };
   var payment = { amount: 800, due: 'Dec 27, 2026', badge: 'Due in 45 days' };
   var today = 'Nov 12, 2026';
 

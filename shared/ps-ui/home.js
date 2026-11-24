@@ -36,27 +36,31 @@
         : h('div', { className: 'ps-credit__one' },
           h('p', null, h('span', { className: 'ps-t-section-sm-light' }, 'Total credit: '), h(PS.Amount, { value: tot, className: 'ps-credit__total' })),
           bar),
-      h(PS.Button, { variant: 'shade', onClick: p.onWithdraw }, p.action || 'Withdraw'));
+      h(PS.Button, { size: 'md', className: 'ps-credit__cta', onClick: p.onWithdraw }, p.action || 'Withdraw'));   /* the green primary button (Figma CreditCard, rebrand v3) */
   };
   /* PaymentCard: next repayment · amount · was (struck-through original, optional) · due (date text) · badge ('Due in 45 days')
-     onPay · payLabel (default 'Pay ₱800 now') · title ('Next payment') · overdue (red badge)
-     notice { title, body, onHelp }: the overdue layout — due date under the amount, the penalty box, a full-width button */
+     stage upcoming (default: grey badge, navy button) | today (navy badge and button) | overdue (red badge and button;
+     the amount stays green in every stage; the old overdue: true still works) · onPay · payLabel (default 'Pay ₱800 now') · title ('Next payment')
+     notice { title, body, onHelp }: the overdue layout — due date under the amount, the penalty box, a full-width button (Figma PaymentCard) */
   PS.PaymentCard = function PaymentCard(p) {
+    var stage = p.stage || (p.overdue ? 'overdue' : 'upcoming');
     var head = h('div', { className: 'ps-payment__head' }, h('p', { className: 'ps-t-section-sm' }, p.title || 'Next payment'),
-      p.badge ? h(PS.Tag, { tone: p.overdue ? 'negative' : 'soft' }, p.badge) : null);
+      p.badge ? h(PS.Tag, { tone: stage === 'overdue' ? 'negative' : stage === 'today' ? 'brand' : 'neutral' }, p.badge) : null);
     var amt = h('div', { className: 'ps-payment__amt' }, h(PS.Amount, { value: p.amount }), p.was != null ? h(PS.Amount, { value: p.was, strike: true }) : null);
     var due = h('p', { className: 'ps-payment__date ps-t-body-md' }, h(PS.Icon, { name: 'calendar', size: 16, color: 'secondary' }), p.notice ? 'Due ' + p.due : p.due);
-    if (p.notice) return h(PS.Card, { variant: 'outline', raised: true, className: 'ps-payment ps-payment--stack' }, head,
+    var btn = stage === 'overdue' ? 'danger' : p.notice ? 'primary' : 'navy';   /* upcoming and today: navy fill, white label, no line (owner 2026-11-24; was a white outlined button before the due date) */
+    var cls = 'ps-payment ps-payment--' + stage;
+    if (p.notice) return h(PS.Card, { variant: 'outline', raised: true, className: cls + ' ps-payment--stack' }, head,
       h('div', { className: 'ps-payment__sum' }, amt, due),
       h('div', { className: 'ps-payment__note' }, h('p', null, p.notice.title), h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, p.notice.body),
         p.notice.onHelp ? h(m.button, Object.assign({ type: 'button', 'aria-label': 'How penalties work', onClick: function (e) { p.notice.onHelp(e.currentTarget); } }, PS.press(true)),
           h(PS.Icon, { name: 'help-circle', size: 16, color: 'tertiary' })) : null),
-      h(PS.Button, { block: true, size: 'md', onClick: p.onPay }, p.payLabel || 'Pay now'));
-    return h(PS.Card, { variant: 'outline', raised: true, className: 'ps-payment' }, head, amt,   /* default shadow (owner) */
+      h(PS.Button, { block: true, size: 'md', variant: btn, onClick: p.onPay }, p.payLabel || 'Pay now'));
+    return h(PS.Card, { variant: 'outline', raised: true, className: cls }, head, amt,   /* default shadow (owner) */
       h(PS.Divider),
       h('div', { className: 'ps-payment__foot' },
         h('div', { className: 'ps-payment__due' }, h('p', { className: 'ps-t-caption-sm ps-c-tertiary' }, 'Due date'), due),
-        h(PS.Button, { size: 'sm', onClick: p.onPay }, p.payLabel || 'Pay ' + PS.money(p.amount, p.amount % 1 ? 2 : 0) + ' now')));
+        h(PS.Button, { size: 'sm', variant: btn, onClick: p.onPay }, p.payLabel || 'Pay ' + PS.money(p.amount, p.amount % 1 ? 2 : 0) + ' now')));
   };
 
   /* HomeCoupons: "Coupons for your next loan" (Figma 10750:62557 two, 10750:61878 one) · coupons [{ type: percent | amount | limit,
@@ -142,7 +146,7 @@
         h('div', { className: 'ps-trust__tile ps-inset' },
           h('div', { className: 'ps-trust__logo' }, h('div', null, h('div', { className: 'ps-trust__sec' },
             h('img', { src: PS.asset('logos/sec-shape.svg'), alt: '' }), h('span', null, 'SEC Registration')))),
-          h('p', { className: 'ps-t-caption-sm' }, 'SEC-licensed, with bank-level security'))),
+          h('p', { className: 'ps-t-caption-sm' }, 'SEC‑licensed, with bank‑level security'))),
       h(PS.PartnerLogos));
   };
 

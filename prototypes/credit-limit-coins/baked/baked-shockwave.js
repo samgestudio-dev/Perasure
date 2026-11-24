@@ -385,7 +385,7 @@ function render(t){
    One staggered tween per group instead of one tween per element. */
 function burst(tl, at){
   var b = $('burst'); b.innerHTML = '';
-  var BLUE = '#3FA0F0', WHITE = '#EEF5EF';
+  var BLUE = '#5CD680', WHITE = '#EEF5EF';
   /* two thin rings, hugging the amount's shape, one just after the other */
   var RINGS = [[3.5, BLUE], [2, WHITE]];
   var rings = RINGS.map(function(r){ return el('ellipse', { cx:0, cy:0, rx:150, ry:48, fill:'none', stroke:r[1] }, b); });
@@ -567,7 +567,7 @@ function build(){
   /* anticipation: a tiny squeeze just before it lands */
   tl.to(amountEl, { scale:.94, duration:.08, ease:'power2.in' }, 'land-=.08');
   /* punch: big, blue, then an elastic settle */
-  tl.to(amountEl, { scale:1.3, color:'#3FA0F0', duration:.11, ease:'power3.out' }, 'land');
+  tl.to(amountEl, { scale:1.3, color:'#5CD680', duration:.11, ease:'power3.out' }, 'land');
   tl.to(amountEl, { scale:1, duration:.6, ease:'elastic.out(1.15,0.42)' }, 'land+=.11');
   tl.to(amountEl, { color:'#EEF5EF', duration:.6, ease:'power1.inOut' }, 'land+=.55');
   /* burst: rings, rays and sparkles thrown out from the number */

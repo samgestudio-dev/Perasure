@@ -116,7 +116,7 @@
         h('div', { className: 'ps-otps__head' }, h(PS.Swap, { k: st.step, block: true }, h('span', { className: 'ps-t-title-sm' }, one ? 'Enter code' : 'Verify it’s you')),
           h(PS.Close, { onClick: one ? function () { set({ step: 0, code: '', err: null }); } : p.onClose })),
         h(PS.Swap, { k: st.step, block: true }, h('span', { className: 'ps-t-body-md ps-otps__desc', style: { display: 'block' } },
-          one ? 'We sent a one-time code to you by SMS. Copy and paste it below.' : 'We need to make sure you still have access to your registered phone number.'))),
+          one ? 'We sent a one‑time code to you by SMS. Copy and paste it below.' : 'We need to make sure you still have access to your registered phone number.'))),
       h(m.div, { className: 'ps-otps__mid', initial: false, animate: { height: midH }, transition: MT.SPRING },
         h(AP, { initial: false, mode: 'popLayout' }, one
           ? h(m.div, Object.assign({ key: 'code', className: 'ps-otps__pane' }, PS.fade(MT.Y.block)),
@@ -143,7 +143,11 @@
   PS.CreditLimitIntro = function CreditLimitIntro(p) {
     var d = p.data || {}, box = R.useRef(null), fr = R.useRef(null), cb = R.useRef(p); cb.current = p;
     R.useEffect(function () {
-      var doneAt = 0, leaving = false, hold = 0, safety = 0, dead = false;
+      var doneAt = 0, leaving = false, hold = 0, safety = 0, dead = false, html = document.documentElement;
+      /* while it shows, the page behind is the screen's dark colour: iOS Safari 26 tints the status bar (its soft top edge) from the page, which
+         otherwise drew a light band over the top of the dark screen (owner, 2026-11-23) */
+      html.classList.add('ps-climit-on');
+      function unTint() { html.classList.remove('ps-climit-on'); }
       /* as intro.js: at rest the box (its styles put back: full screen, dark) goes in the same moment — hidden here at once, since React
          removes it a frame or more later and it would flash back */
       function finish() {
@@ -154,6 +158,7 @@
       }
       function go() {
         if (dead) return;
+        unTint();
         var b = box.current, f = fr.current, P = cb.current;
         if (!PS.reduce && P.exit) {
           var src = null;
@@ -177,7 +182,7 @@
           doc.addEventListener('click', function () { if (doneAt) leave(); }, true); } catch (x) {}
       };
       f.addEventListener('load', loaded);
-      return function () { dead = true; window.removeEventListener('message', on); clearTimeout(hold); clearTimeout(safety); f.removeEventListener('load', loaded); };
+      return function () { dead = true; unTint(); window.removeEventListener('message', on); clearTimeout(hold); clearTimeout(safety); f.removeEventListener('load', loaded); };
     }, []);
     var src = PS.root + 'prototypes/credit-limit-coins/baked/baked-heap.html?old=' + (d.old || 30000) + '&new=' + (d.new || 40000) + '&inc=' + (d.inc || 10000) + (d.exp ? '&exp=' + encodeURIComponent(d.exp) : '');
     return h('div', { ref: box, className: 'ps-climit' }, h('iframe', { ref: fr, src: src, title: 'Credit limit increase', allow: 'autoplay' }));

@@ -16,36 +16,37 @@ window.CS = (function () {
     limitUntil: 'May 31, 2027' };   /* limitUntil: how long the long-term limit lasts (the card's ⓘ when there is no temporary credit) */
   /* what follows from them: total credit = limit + temporary · available = total − used */
   /* temporaryLeft: what is left of the temporary credit — it is used first (owner), so a loan takes from it before the long-term limit */
+  if (String(TUNE.credit) === 'low') NUM.used = NUM.limit + NUM.temporary - 5000;   /* Tune → Available credit ₱5,000: coupons whose minimum is out of reach (owner 2026-11-24) */
   var credit = { limit: NUM.limit, used: NUM.used, temporary: NUM.temporary, total: NUM.limit + NUM.temporary, available: NUM.limit + NUM.temporary - NUM.used,
     temporaryLeft: Math.max(0, NUM.temporary - NUM.used),
     temporaryUntil: NUM.temporaryUntil, temporaryUntilLong: NUM.temporaryUntilLong, temporaryUntilFull: NUM.temporaryUntilFull, temporaryUntilISO: NUM.temporaryUntilISO, limitUntil: NUM.limitUntil };
   /* take: a loan was ordered — its amount is used credit from now on (a limit coupon can let one loan go past the credit: none is left then) */
   function take(amount) { credit.used += amount; credit.available = Math.max(0, credit.total - credit.used); credit.temporaryLeft = Math.max(0, credit.temporary - credit.used); }
   var loan = { min: 500, step: 100, terms: [4, 6, 8], term: 6, days: 15, interest: 0.015, fee: 0.005, penalty: 0.05, grace: 3, start: new Date(2026, 10, 12) };
-  var user = { initials: 'SG', name: 'Sam Ge', verified: true };
+  var user = { initials: 'SG', name: 'Sam Ge' };
   var payment = { amount: 800, due: 'Dec 27, 2026', badge: 'Due in 45 days' };
   var today = 'Nov 12, 2026';
 
-  /* coupons to use. kind: discount | limit · type: percent | amount | limit (picture) · scope: first (first-payment interest) | all
+  /* coupons to use. kind: discount | limit · type: percent | amount | limit (picture) · scope: first (first‑payment interest) | all
      min: smallest loan it works with · terms: terms it works with · long: the rule line is cut, ⓘ opens the whole rule */
   var ALL = [
-    { id: 'd25', kind: 'discount', type: 'percent', pct: 25, scope: 'first', value: '25% OFF', name: '25% off first-payment interest', label: 'First-payment interest',
+    { id: 'd25', kind: 'discount', type: 'percent', pct: 25, scope: 'first', value: '25% OFF', name: '25% off first‑payment interest', label: 'First‑payment interest',
       min: 0, terms: [4, 6, 8], expiresAt: NOW + 24 * HOUR - 1000, until: 'Nov 13, 2026' },
     { id: 'd20', kind: 'discount', type: 'percent', pct: 20, scope: 'all', value: '20% OFF', name: '20% off interest on all payments', label: 'Interest on all payments',
       min: 6000, terms: [6, 8], until: 'Nov 30, 2026' },
-    { id: 'a300', kind: 'discount', type: 'amount', off: 300, scope: 'first', value: '₱300 OFF', name: '₱300 off first-payment interest', label: 'First-payment interest',
+    { id: 'a300', kind: 'discount', type: 'amount', off: 300, scope: 'first', value: '₱300 OFF', name: '₱300 off first‑payment interest', label: 'First‑payment interest',
       min: 10000, terms: [4, 6], long: true, extra: 'One per account, on your first loan of the month', until: 'Dec 15, 2026' },
     { id: 'l5', kind: 'limit', type: 'limit', add: 5000, value: '+₱5,000', name: '+₱5,000 credit limit', label: 'Credit limit increase', min: 6000, terms: [4, 6, 8], until: 'Nov 30, 2026' },
     { id: 'l3', kind: 'limit', type: 'limit', add: 3000, value: '+₱3,000', name: '+₱3,000 credit limit', label: 'Credit limit increase', min: 0, terms: [6, 8], until: 'Dec 10, 2026' },
     { id: 'l2', kind: 'limit', type: 'limit', add: 2000, value: '+₱2,000', name: '+₱2,000 credit limit', label: 'Credit limit increase', min: 20000, terms: [4, 6, 8], until: 'Dec 31, 2026' }
   ];
   var USED = [
-    { id: 'u1', type: 'percent', value: '25% OFF', label: 'First-payment interest', rule: 'Any amount · 4 / 6 / 8 terms', meta: 'Used on Oct 24, 2026' },   /* on the current loan: its date is set below */
+    { id: 'u1', type: 'percent', value: '25% OFF', label: 'First‑payment interest', rule: 'Any amount · 4 / 6 / 8 terms', meta: 'Used on Oct 24, 2026' },   /* on the current loan: its date is set below */
     { id: 'u2', type: 'percent', value: '20% OFF', label: 'Interest on all payments', rule: 'Borrow ₱6,000 or more · 6 / 8 terms', meta: 'Used on Sep 30, 2026' },
     { id: 'u3', type: 'limit', value: '+₱5,000', label: 'Credit limit increase', rule: 'Borrow ₱6,000 or more · 4 / 6 / 8 terms', meta: 'Used on Sep 30, 2026' }
   ];
   var EXPIRED = [
-    { id: 'x1', type: 'amount', value: '₱200 OFF', label: 'First-payment interest', rule: 'Borrow ₱5,000 or more · 3 / 6 terms', meta: 'Expired on Nov 1, 2026' },
+    { id: 'x1', type: 'amount', value: '₱200 OFF', label: 'First‑payment interest', rule: 'Borrow ₱5,000 or more · 3 / 6 terms', meta: 'Expired on Nov 1, 2026' },
     { id: 'x2', type: 'limit', value: '+₱3,000', label: 'Credit limit increase', rule: 'Any amount · 6 / 8 terms', meta: 'Expired on Oct 15, 2026' }
   ];
 
@@ -90,16 +91,17 @@ window.CS = (function () {
   /* ---- the current loan: the one whose principal is the used credit. The home payment card, the Payment tab, the payment detail, the loan
      application page, the credit history and the messages all read it, so they speak of the same loan.
      Tune → Loan: repaying (taken 10 days ago: first payment in 5 days) · overdue (taken 18 days ago: the first payment is 3 days late, the last
-     day without a penalty) · in review / transfer failed (applied today). It used the 25% first-payment coupon (u1 in "used"). ---- */
+     day without a penalty) · in review / transfer failed (applied today). It used the 25% first‑payment coupon (u1 in "used"). ---- */
   function fmt(d, long) { return d.toLocaleDateString('en-US', { month: long ? 'long' : 'short', day: 'numeric', year: 'numeric' }); }
   var current = (function () {
     if (!NUM.used) return null;
-    var st = String(TUNE.loan || 'active'), DAY = 864e5, term = 4, amount = NUM.used, ago = st === 'overdue' ? 18 : st === 'active' ? 10 : 0;
+    var st = String(TUNE.loan || 'active'), DAY = 864e5, term = 4, amount = NUM.used, ago = st === 'overdue' ? 18 : st === 'today' ? loan.days : st === 'active' ? 10 : 0;   /* today: the first payment falls due today */
     var start = new Date(loan.start.getTime() - ago * DAY), c = calc(amount, term, ALL[0], null), dues = [];
     for (var k = 1; k <= term; k++) {
       var d = new Date(start.getTime() + k * loan.days * DAY), left = Math.round((d - loan.start) / DAY), late = left < 0 ? -left : 0, off = k === 1 ? c.save : 0;
       dues.push({ id: 'p' + k, month: d.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(), day: ('0' + d.getDate()).slice(-2), amount: round2(c.per - off),
-        late: late, penalty: late > loan.grace ? round2(c.principal * loan.penalty) : 0, due: fmt(d, true), dueShort: fmt(d), loanDate: fmt(start, true),
+        late: late, penalty: late > loan.grace ? round2(c.principal * loan.penalty) : 0, due: fmt(d, true), dueShort: fmt(d), loanDate: fmt(start, true), loanShort: fmt(start),
+        graceEnd: fmt(new Date(d.getTime() + loan.grace * DAY)).replace(/, \d{4}$/, ''),   /* the last day without a penalty ('Jan 18') */
         interest: round2(c.interest - off), fee: c.fee, coupon: off, today: !late && !left, badge: late ? null : left ? 'Due in ' + left + ' day' + (left === 1 ? '' : 's') : 'Due today' });
     }
     return { state: st, amount: amount, term: term, date: fmt(start), ago: ago, per: c.per, first: dues[0].amount, dues: dues,
@@ -124,6 +126,9 @@ window.CS = (function () {
   function coupons(set) {
     if (String(set) === '0') return [];
     if (String(set) === '1') return ALL.filter(function (c) { return c.id === 'l5'; });
+    /* Tune → Special case "Coupon you can't use" (₱5,000 available): no limit coupon that could lift a loan to a minimum — 25% off works,
+       20% off (₱6,000), ₱300 off (₱10,000) and +₱2,000 (₱20,000; ₱5,000 + ₱2,000 = ₱7,000) can't be used on any loan (owner 2026-11-24) */
+    if (String(set) === 'case') return ALL.filter(function (c) { return ['d25', 'd20', 'a300', 'l2'].indexOf(c.id) >= 0; });
     return ALL.slice();
   }
   return { credit: credit, take: take, current: current, loan: loan, user: user, payment: payment, today: today, coupons: coupons, used: USED, expired: EXPIRED,

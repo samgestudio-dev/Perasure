@@ -98,7 +98,7 @@
     /* measure everything first, before anything moves */
     var B = box.getBoundingClientRect(), CR = card.getBoundingClientRect();
     var to = { t:CR.top - B.top, r:B.right - CR.right, b:B.bottom - CR.bottom, l:CR.left - B.left };
-    var cardBlue = '#2c74be';
+    var cardBlue = '#000128';   // the navy card (--bg-brand, rebrand v3)
     var src = null;
     try {
       var d = f && f.contentDocument, a = d && d.getElementById('amount');

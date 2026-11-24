@@ -42,10 +42,10 @@
     COLOR: 0.15,                                               /* colour changes: 150 ms */
     /* menus (owner asked for an iPhone menu's life — the one thing that bounces): the list grows out of the finger on a light-bounce spring,
        its height a beat behind its width so it unfolds like a drop; rows follow one after another; it shrinks back into the finger quickly */
-    MENU: { type: 'spring', visualDuration: 0.34, bounce: 0.3 },
-    MENU_Y: { type: 'spring', visualDuration: 0.42, bounce: 0.32 },
-    MENU_ROW: function (i) { return { delay: 0.05 + Math.min(i, 8) * 0.022, y: { type: 'spring', visualDuration: 0.36, bounce: 0.35 }, opacity: { duration: 0.2, ease: EASE_IN }, filter: { duration: 0.2, ease: EASE_IN } }; },
-    MENU_OUT: { duration: 0.18, ease: [0.4, 0, 1, 1] }
+    MENU: { type: 'spring', visualDuration: 0.22, bounce: 0.28 },
+    MENU_Y: { type: 'spring', visualDuration: 0.26, bounce: 0.3 },
+    MENU_ROW: function (i) { return { delay: 0.02 + Math.min(i, 8) * 0.014, y: { type: 'spring', visualDuration: 0.24, bounce: 0.32 }, opacity: { duration: 0.12, ease: EASE_IN }, filter: { duration: 0.12, ease: EASE_IN } }; },   /* faster (owner, 2026-11-24): the menu was dragging */
+    MENU_OUT: { duration: 0.12, ease: [0.4, 0, 1, 1] }
   };
   PS.T = { spring: MT.SPRING, ui: MT.SPRING, layout: MT.SPRING, sheet: MT.SPRING, page: MT.SPRING, snap: MT.PRESS, pop: MT.SPRING };
   PS.TAP = { scale: MT.PRESS_SCALE.pill };
@@ -93,10 +93,10 @@
   PS.num = num;
   PS.money = function (n, dec) { var s = num(n, dec); return s.charAt(0) === '-' ? '-₱' + s.slice(1) : '₱' + s; };
 
-  /* colour shorthands for icons: a token name or any CSS colour */
-  var ICON_C = { primary: 'var(--color-icon-primary)', secondary: 'var(--color-icon-secondary)', tertiary: 'var(--color-icon-tertiary)',
-    placeholder: 'var(--color-icon-placeholder)', brand: 'var(--color-icon-brand-default)', 'brand-light': 'var(--color-icon-brand-light)',
-    positive: 'var(--color-icon-positive-heavy)', inverse: 'var(--color-icon-inverse)', countdown: 'var(--ps-countdown)', text: 'currentColor' };
+  /* colour shorthands for icons: a token name or any CSS colour (on-accent: an icon on the green fill is navy, rebrand v3) */
+  var ICON_C = { primary: 'var(--fg-default)', secondary: 'var(--fg-muted)', tertiary: 'var(--fg-subtle)',
+    placeholder: 'var(--fg-placeholder)', brand: 'var(--fg-accent)', 'brand-light': 'var(--fg-accent)',
+    positive: 'var(--fg-success-strong)', inverse: 'var(--fg-on-emphasis)', 'on-accent': 'var(--fg-on-accent)', countdown: 'var(--ps-countdown)', text: 'currentColor' };
 
   /* Icon: a one-colour icon from assets/icons, drawn as a mask so its colour is a token.
      name: file name without .svg · size (px, 20) · color: primary | secondary | tertiary | brand | positive | inverse | … (default: text colour) */
@@ -119,7 +119,8 @@
      KERN: Reddit Sans Bold kerning (1/2048 em) for the pairs an amount holds — for amounts drawn one glyph per box (typed digits),
      which the browser can't kern; same table as the Withdraw demo's (withdraw.js Component.KERN). */
   PS.KERN = {"01":-43,"02":-3,"03":-3,"04":-7,"05":-9,"07":-40,"0.":-43,"0,":-43,"10":7,"11":10,"12":-5,"14":17,"15":7,"16":7,"17":24,"18":7,"21":-19,"23":-25,"24":-33,"26":-24,"27":-3,"28":-24,"31":-54,"32":-41,"33":-29,"34":9,"35":-21,"36":-7,"37":-40,"38":-9,"39":-14,"3.":-21,"3,":-21,"40":24,"41":-22,"42":-14,"44":17,"45":-14,"46":13,"48":24,"51":-71,"52":-14,"54":17,"57":-3,"59":-9,"5.":-24,"5,":-24,"61":-61,"62":-41,"63":-9,"64":25,"65":-26,"67":-26,"69":-13,"6.":-3,"6,":-3,"70":-43,"71":-16,"72":-37,"73":-38,"74":-156,"75":-3,"76":-124,"77":13,"78":-57,"79":-9,"7.":-257,"7,":-257,"81":-54,"82":-41,"83":-29,"84":9,"85":-21,"86":-7,"87":-40,"88":-9,"89":-14,"8.":-21,"8,":-21,"91":-10,"93":-33,"94":-55,"96":-32,"97":-15,"9.":-196,"9,":-196,".0":-43,".1":-121,".4":17,".6":-3,".7":-47,".8":-21,".9":-80,"..":-14,".,":-14,",0":-43,",1":-121,",4":17,",6":-3,",7":-47,",8":-21,",9":-80,",.":-14,",,":-14};
-  PS.kern = function (a, b) { return a && b ? (PS.KERN[a + b] || 0) / 2048 : 0; };
+  /* Hanken Grotesk everywhere (owner, 2026-11-24): KERN is Reddit Sans's table and no longer applies — no pair kerning */
+  PS.kern = function () { return 0; };
   /* Peso: a title's text with every ₱ in the number font (owner: titles stay in their own font, only the ₱ is Reddit Sans) */
   PS.Peso = function Peso(p) {
     var t = String(p.children == null ? '' : p.children);
@@ -141,7 +142,9 @@
     return h('span', { className: PS.cx('ps-amount', !p.strike && p.num && 'ps-t-number-' + p.num, p.strike && 'ps-amount--strike', p.className), style: p.style }, kids);
   };
 
-  /* Button: variant primary | text | inverse | shade (on the blue card) | outline (coupon "Use") · size lg | sm · block
+  /* Button: variant primary | text | plain (white, Figma Plain) | neutral (grey, Figma Neutral) | inverse (white outline on dark, Figma Inverse)
+     | secondary (white, grey line, Figma Secondary) | navy (Figma Navy) | danger (Figma Destructive)
+     | shade (on the blue card) | outline (coupon "Use") · size lg | sm · block
      disabled (can't be pressed) · inactive (looks disabled but still calls onClick — e.g. to point at what's missing) */
   PS.Button = function Button(p) {
     var v = p.variant || 'primary', size = p.size || (v === 'outline' || v === 'shade' ? null : 'lg');
@@ -168,9 +171,11 @@
       h('span', { className: 'ps-brand__name' }, 'PeraSure'));
   };
 
-  /* Tag: tone outline ("Protected") | soft ("Due in 45 days") | best ("Best") | solid (menu "New") */
+  /* Tag: tone outline ("Protected") | soft | neutral ("Due in 45 days") | brand ("Due today") | negative ("Overdue · 3 days") | best ("Best") | solid (menu "New") */
   PS.Tag = function Tag(p) { return h('span', { className: PS.cx('ps-tag', 'ps-tag--' + (p.tone || 'outline'), p.className) }, p.children); };
   /* Count: the round number badge of tabs · n · on (inside the active tab) */
+  /* Mask: the hidden digits of a phone number ("••••••"), spaced so they read as six dots (owner 2026-11-24: Hanken's bullets sit tight) */
+  PS.Mask = function Mask(p) { return h('span', { className: 'ps-mask' }, p.children || '••••••'); };
   PS.Count = function Count(p) { return h('span', { className: PS.cx('ps-count', p.on && 'ps-count--on') }, p.n); };
   /* Chip: summary pills · tone positive (✓ Saved) | brand (↑ New limit) */
   PS.Chip = function Chip(p) {

@@ -8,6 +8,8 @@
   var R = window.React, PS = window.PS, APP = window.APP, h = R.createElement, m = PS.m, MT = PS.MT;
 
   var ID_TYPES = ['PhilSys National ID', 'UMID', 'Driver’s License', 'Passport', 'SSS ID', 'PRC ID', 'Postal ID', 'Voter’s ID', 'TIN ID'];
+  /* the IDs Figma's ID type sheet marks with an Accent "Higher credit" tag */
+  var ID_TAGS = { 'UMID': 'Higher credit', 'SSS ID': 'Higher credit', 'Driver’s License': 'Higher credit', 'Passport': 'Higher credit' };
   var MARITAL = ['Single', 'Married', 'Separated', 'Widowed'];
   var JOBS = ['BPO Worker', 'Freelance', 'Staff/Factory Worker', 'Government/Public Utility', 'Self-employed', 'House Wife', 'Unemployed/Retired'];
   var TENURE = ['Less than 6 months', '6 to 12 months', '1 to 2 years', 'More than 2 years'];
@@ -69,7 +71,7 @@
     function album(side) { pickFile('image/*', function (pic) { var f = {}; f[side] = pic; setK(f); }); }
     return h(APP.Page, { title: '', bottom: h(PS.BottomBar, null, h(PS.Button, { block: true, inactive: !ready, onClick: next }, 'Next')) },
       h(APP.Head, { title: 'Verify your identity', body: 'Choose an ID type and upload a clear photo.' }),
-      h(PS.FormField, { label: 'ID type', value: k.type, placeholder: 'Select ID type', menu: { options: ID_TYPES, onPick: function (o) { setK({ type: o }); } } }),
+      h(PS.FormField, { label: 'ID type', value: k.type, placeholder: 'Select ID type', menu: { options: ID_TYPES, tags: ID_TAGS, onPick: function (o) { setK({ type: o }); } } }),
       h(PS.AP, { initial: false }, k.type ? h(m.div, Object.assign({ key: 'sides', className: 'app-stack-20' }, PS.fade(MT.Y.block)),
         h(PS.IdSideCard, { side: 'front', title: 'Upload front side of ID', name: 'Front side of ID', hint: 'Show the side with your photo', pic: k.front,
           onCamera: function () { APP.go('camera', { side: 'front' }); }, onAlbum: function () { album('front'); } }),
@@ -97,7 +99,7 @@
     return h(APP.Page, { title: '', bottom: h(PS.BottomBar, null, h(PS.Button, { block: true, inactive: !F.ok(), onClick: function () { F.submit(function () { APP.go('kyc-selfie'); }); } }, 'Next')) },
       h(APP.Head, { title: 'Check the details', body: 'Review the details we read from your ID and fill in anything missing.' }),
       h('div', { className: 'app-form' },
-        h(PS.FormField, { label: 'ID type', value: v.type, placeholder: 'Select ID type', error: F.err('type'), menu: { options: ID_TYPES, onPick: function (o) { F.set('type', o); } } }),
+        h(PS.FormField, { label: 'ID type', value: v.type, placeholder: 'Select ID type', error: F.err('type'), menu: { options: ID_TYPES, tags: ID_TAGS, onPick: function (o) { F.set('type', o); } } }),
         h(PS.FormField, { label: 'House no. / street / barangay', value: v.street, placeholder: 'House number, street, barangay', error: F.err('street'), onChange: function (x) { F.set('street', x); }, onBlur: function () { F.touch('street'); } }),
         h(PS.FormField, { label: 'City / province', value: v.city, placeholder: 'Select city and province', error: F.err('city'), onClick: function () { APP.open('city', { then: function (c) { F.set('city', c); } }); } }),
         h(PS.FormField, { label: 'First name', value: v.first, placeholder: 'Enter your first name', error: F.err('first'), clear: true, onChange: function (x) { F.set('first', x); }, onBlur: function () { F.touch('first'); } }),
@@ -163,7 +165,7 @@
         field('income', { label: 'Total monthly income (PHP)', placeholder: 'Enter your monthly income', inputMode: 'numeric', clear: true }),
         /* DS 9548:30951: each file on a white card, then the dashed "Add files" (with the hint only while there are none) */
         h(PS.FileList, { label: 'Support documents (optional)', files: v.files, max: 3, onAdd: add, note: 'Supports JPG, JPEG, PNG and PDF.',
-          hint: 'Show us your job or income with payslips, bank or e-wallet statements, or a company ID.',
+          hint: 'Show us your job or income with payslips, bank or e‑wallet statements, or a company ID.',
           onRemove: function (i) { F.set('files', v.files.filter(function (x, j) { return j !== i; })); } })));
   });
 

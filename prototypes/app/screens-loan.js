@@ -17,6 +17,7 @@
     var lim = CS.best(list, 'limit', amount || CREDIT.available, term), max = CREDIT.available + (lim ? lim.add : 0);
     amount = amount || max; if (amount <= CREDIT.available) lim = CS.fits(lim, amount, term) ? lim : null;
     var disc = CS.best(list, 'discount', amount, term), want = withId ? find(list, withId) : null, moved = false;
+    if (want && never(want)) want = null;   /* out of reach: the loan opens without it (APP.openLoan shows why) */
     if (want) {
       if (want.terms.indexOf(term) < 0) { term = want.terms[want.terms.length - 1]; moved = true; }
       if (want.kind === 'limit') { lim = want; amount = CREDIT.available + want.add; } else disc = want;
@@ -24,11 +25,14 @@
       if (want.kind === 'limit') disc = CS.fits(disc, amount, term) ? disc : CS.best(list, 'discount', amount, term);
       else lim = CS.fits(lim, amount, term) ? lim : CS.best(list, 'limit', amount, term);
     }
+    if (want) { var pl = plan({ amount: amount, term: term }, want.kind === 'limit' ? (CS.fits(disc, amount, term) ? disc : null) : want, want.kind === 'limit' ? want : lim);   /* the same rule as everywhere: its pair if it needs one, never past the cap */
+      return { amount: pl.amount, term: pl.term, disc: pl.disc, lim: pl.lim, moved: moved }; }
     return { amount: amount, term: term, disc: disc ? disc.id : null, lim: lim ? lim.id : null, moved: moved };
   }
   APP.openLoan = function (withId, amount, term) {
-    var l = fresh(amount, term, withId); APP.set({ L: l, agree: false, lastRow: {} }); APP.go('loan');
-    if (l.moved) APP.say('To use this coupon, we set your loan to ' + l.term + ' terms.');
+    var l = fresh(amount, term, withId), w = withId && find(APP.S.coupons, withId); APP.set({ L: l, agree: false, lastRow: {} }); APP.go('loan');
+    if (w && never(w)) setTimeout(function () { APP.noCoupon(w); }, 620);
+    else if (l.moved) APP.say('To use this coupon, we set your loan to ' + l.term + ' terms.');
   };
 
   /* ---- amount keypad: type the amount, pick a term to continue ---- */
@@ -66,15 +70,57 @@
     if (out.amount > max) out.amount = max;
     APP.set({ L: out, keep: asks, sheet: asks.length ? { name: 'keep', params: {} } : APP.S.sheet });
   };
+  /* meet: the loan moved up to what the coupons need (owner 2026-11-24: a coupon the user ticks is used — the loan moves to its threshold,
+     not refused). Term: kept if every coupon takes it, else 6 when they all do, else the longest they share; amount: at least each one's
+     minimum (to the step). Nothing lower is ever made higher than it needs. */
+  function meet(l, cs) {
+    var out = Object.assign({}, l), all = function (t) { return cs.every(function (c) { return c.terms.indexOf(t) >= 0; }); };
+    if (!all(out.term)) { var both = LOAN.terms.filter(all); if (both.length) out.term = both.indexOf(6) >= 0 ? 6 : both[both.length - 1]; }
+    cs.forEach(function (c) { var a = Math.ceil(c.min / LOAN.step) * LOAN.step; if (out.amount < a) out.amount = a; });
+    return out;
+  }
+  APP.meetCoupons = meet;
+  /* pair: for a discount whose minimum is above the available credit, the limit coupon (one the user has) that lifts the loan enough —
+     it shares a term with it, and its own minimum is met too; the smallest increase that does it. reach: the most a loan can be with this
+     coupon (available credit, + its own increase for a limit coupon, + its pair's for a discount). never: a coupon whose minimum is above
+     that whatever the amount or term — it can't be used on this loan at all; ticking or "Use"-ing it shows why (sheet 'nocoupon'),
+     nothing else changes (owner 2026-11-24) */
+  function pair(c) {
+    if (!c || c.kind === 'limit' || c.min <= CREDIT.available) return null;
+    return APP.S.coupons.filter(function (L) {
+      return L.kind === 'limit' && L.terms.some(function (t) { return c.terms.indexOf(t) >= 0; }) && Math.max(c.min, L.min) <= CREDIT.available + L.add;
+    }).sort(function (a, b) { return a.add - b.add; })[0] || null;
+  }
+  function reach(c) { var P = pair(c); return CREDIT.available + (c && c.kind === 'limit' ? c.add : P ? P.add : 0); }
+  function never(c) { return !!c && c.min > reach(c); }
+  /* plan: the loan with these coupons on, moved to what they need; a discount that needs more than the credit brings its pair along
+     (unless the limit coupon on already lifts it enough) */
+  function plan(l, disc, lim) {
+    var cap = function (L) { return CREDIT.available + (L ? L.add : 0); };
+    var n = meet(l, [disc, lim].filter(Boolean));
+    if (disc && n.amount > cap(lim)) { lim = pair(disc); n = meet(l, [disc, lim].filter(Boolean)); }
+    if (n.amount > cap(lim)) n.amount = cap(lim);
+    n.disc = disc ? disc.id : null; n.lim = lim ? lim.id : null;
+    return n;
+  }
+  APP.planLoan = plan;
+  APP.neverFits = never;
+  APP.noCoupon = function (c) { APP.open('nocoupon', { id: c.id }); };
+  function moved(a, b) { return a.amount !== b.amount || a.term !== b.term; }
+  function sayLoan(l) { APP.say('Your loan is now ' + termLine(l.amount, l.term) + '.'); }
+  APP.sayLoan = sayLoan;
   function toggleRow(c) {
     var l = Object.assign({}, L()), lim = c.kind === 'limit', on = lim ? l.lim === c.id : l.disc === c.id;
     if (on) {
       if (lim) { l.lim = null; if (l.amount > CREDIT.available) { l.amount = CREDIT.available; APP.say('Your amount is now ' + money(CREDIT.available, 0) + ', your limit without the increase.'); } } else l.disc = null;
       setL(l); return;
     }
-    var r = CS.why(c, l.amount, l.term);
-    if (r) { APP.say(r + '. See all to pick another.'); return; }
-    if (lim) l.lim = c.id; else l.disc = c.id; setL(l);
+    if (never(c)) { APP.noCoupon(c); return; }
+    if (CS.fits(c, l.amount, l.term)) { if (lim) l.lim = c.id; else l.disc = c.id; setL(l); return; }
+    var n = lim ? plan(l, null, c) : plan(l, c, find(APP.S.coupons, l.lim));
+    if (lim) n.disc = l.disc;                         /* the discount on stays on; the check below asks about it if the move takes it off */
+    APP.loanCheck(n);                                 /* the loan moves to the coupon's threshold; a coupon that move takes off is asked about */
+    sayLoan(APP.S.L);
   }
 
   /* ---- loan detail ---- */
@@ -142,25 +188,31 @@
 
   /* ---- sheets of the loan page ---- */
   APP.sheet('picker', { kind: 'page', label: 'Coupons', render: function Picker() {
-    var S = APP.use(), l = S.L, draft = S.draft || { tab: 'discount', disc: l.disc, lim: l.lim }, coupons = S.coupons, kind = draft.tab;
+    var S = APP.use(), l = S.L || fresh(null, null, null), draft = S.draft || { tab: 'discount', disc: l.disc, lim: l.lim },   /* ?page=loan has no S.L: the loan loanParts shows */
+      coupons = S.coupons, kind = draft.tab;
     var discs = coupons.filter(function (c) { return c.kind === 'discount'; }), lims = coupons.filter(function (c) { return c.kind === 'limit'; }), list = kind === 'limit' ? lims : discs;
-    var c2 = CS.calc(l.amount, l.term, find(coupons, draft.disc), find(coupons, draft.lim)), top = CS.best(coupons, kind, l.amount, l.term);
+    /* every coupon can be picked (no Unavailable, owner 2026-11-24): what is picked is shown on the loan it will need, and only Confirm moves the
+       loan there (the ✕ leaves it as it was) */
+    var out = [find(coupons, draft.disc), find(coupons, draft.lim)].filter(never);   /* picked, but out of reach: Confirm leaves it off and says why */
+    var dPick = find(coupons, draft.disc), lPick = find(coupons, draft.lim); if (never(dPick)) dPick = null; if (never(lPick)) lPick = null;
+    var nl = plan(l, dPick, lPick), dOn = find(coupons, nl.disc), lOn = find(coupons, nl.lim);
+    var c2 = CS.calc(nl.amount, nl.term, dOn, lOn), top = CS.best(coupons, kind, l.amount, l.term);
     var sorted = list.slice().sort(function (a, b) { return (CS.fits(b, l.amount, l.term) ? 1 : 0) - (CS.fits(a, l.amount, l.term) ? 1 : 0); });
     function confirm() {
-      var n = Object.assign({}, l, { disc: draft.disc, lim: draft.lim }), max = CREDIT.available + (find(coupons, n.lim) ? find(coupons, n.lim).add : 0);
-      if (n.amount > max) { n.amount = max; APP.say('Your amount is now ' + money(max, 0) + ', your limit without the increase.'); }
+      var n = Object.assign({}, nl), raised = moved(n, l);
+      if (out.length) { APP.set({ L: n, sheet: null }); setTimeout(function () { APP.noCoupon(out[0]); }, 320); return; }
+      if (raised) sayLoan(n);
       APP.set({ L: n, sheet: null });
     }
     return h(PS.CouponPicker, { tab: kind, onTab: function (t) { APP.set({ draft: Object.assign({}, draft, { tab: t }) }); }, onClose: APP.close,
       tabs: [{ id: 'discount', label: 'Discount' }, { id: 'limit', label: 'Limit increase' }],   /* DS 10836:28988: no counts */
-      intro: 'You can use 1 interest discount and 1 limit increase on each loan.', loan: termLine(l.amount, l.term),
+      /* no intro line or Your loan row (owner 2026-11-24, Figma 11273:35457 removed) */
       summary: h(PS.Summary, { total: c2.total, was: c2.was, saved: c2.save, newLimit: c2.limit, onConfirm: confirm }) },
       sorted.length ? sorted.map(function (c) {
         var ok = CS.fits(c, l.amount, l.term), on = (kind === 'limit' ? draft.lim : draft.disc) === c.id;
         return h(PS.CouponOption, { key: c.id, value: c.value, label: c.label, rule: c.rule, expiresAt: c.expiresAt, best: ok && top === c,
-          state: on ? 'selected' : ok ? 'default' : 'unavailable',
-          onPick: function () { var r = CS.why(c, l.amount, l.term); if (r) { APP.say(r + '.'); return; }
-            var d = Object.assign({}, draft); if (c.kind === 'limit') d.lim = d.lim === c.id ? null : c.id; else d.disc = d.disc === c.id ? null : c.id; APP.set({ draft: d }); } });
+          state: on ? 'selected' : 'default',
+          onPick: function () { var d = Object.assign({}, draft); if (c.kind === 'limit') d.lim = d.lim === c.id ? null : c.id; else d.disc = d.disc === c.id ? null : c.id; APP.set({ draft: d }); } });
       }) : h(PS.EmptyState, { title: kind === 'limit' ? 'No limit increases yet' : 'No discounts yet', body: 'When you get one, it shows up here.', style: { marginTop: '4.5rem' } }));
   } });
   /* Keep your coupon? — every coupon the change took off, together: one coupon → one card; more → the coupons side by side, swiped like the
@@ -196,20 +248,30 @@
     return h(PS.Decision, { pages: keep.map(page), index: i, onIndex: setI, onClose: finish,
       primary: { label: 'Keep coupon', onClick: function () { answer(true); } }, secondary: { label: 'Don’t use coupon', onClick: function () { answer(false); } } });
   } });
+  /* You can't use your coupon on this loan: a coupon that can never be met (its minimum is more than can be borrowed now). The Keep your coupon?
+     card's build — the coupon picture, title, why — without the loan facts, and one button (owner 2026-11-24, Figma 11273:26662 without 11273:33246) */
+  APP.sheet('nocoupon', { kind: 'card', label: 'Can’t use this coupon', render: function NoCoupon(p) {
+    var S = APP.use(), K = find(S.coupons, p.params.id);
+    if (!K) return null;
+    var lim = K.kind === 'limit', can = reach(K);
+    var body = 'This coupon needs a loan of ' + money(K.min, 0) + ' or more, ' + (lim ? 'and even with the ' + K.value + ', you can borrow up to ' : 'and you can borrow up to ') + money(can, 0) +
+      ' right now. So we’ve left it off this loan.' + (K.until ? ' It’s yours to use until ' + K.until + '.' : '');
+    return h(PS.Decision, { art: K.type, title: 'You can’t use your ' + CS.short(K) + ' on this loan', body: body, onClose: APP.close, primary: { label: 'Got it', onClick: APP.close } });
+  } });
   APP.sheet('plan', { kind: 'plain', label: 'Repayment plan', render: function Plan() {
-    var S = APP.use(), l = S.L;
+    var S = APP.use(), l = S.L || fresh(null, null, null);   /* the loan page has no S.L (only ordering sets it): the same loan loanParts shows */
     return h(R.Fragment, null, h(PS.SheetTitle, { onClose: APP.close }, 'Repayment plan'),
       h(PS.RepaymentPlan, { items: CS.schedule(l.amount, l.term, find(S.coupons, l.disc)) }), h(PS.Button, { block: true, onClick: APP.close }, 'Continue'));
   } });
 
-  /* ---- withdrawal method: e-wallet or bank, then the account number ---- */
+  /* ---- withdrawal method: e‑wallet or bank, then the account number ---- */
   APP.screen('method', function Method() {
     var S = APP.use(), cur = S.method;
     var s = R.useState({ kind: cur.kind, id: cur.id, name: cur.name, acct: '', err: null }), st = s[0], setSt = s[1];
     function set(o) { setSt(function (x) { return Object.assign({}, x, o); }); }
     R.useEffect(function () { if (S.pickedBank) { set({ kind: 'bank', id: S.pickedBank[0], name: S.pickedBank[1], err: null }); APP.set({ pickedBank: null }); } }, [S.pickedBank]);
     function save() {
-      if (!/^\d{10,16}$/.test(st.acct)) { set({ err: st.kind === 'wallet' ? 'Enter the mobile number linked to this e-wallet (10–11 digits).' : 'Enter your account number (10–16 digits).' }); return; }
+      if (!/^\d{10,16}$/.test(st.acct)) { set({ err: 'Enter your account number (10–16 digits).' }); return; }
       APP.run(function () { APP.set({ method: { kind: st.kind, id: st.id, name: st.name, last4: st.acct.slice(-4) }, loan: APP.S.loan === 'failed' ? 'reviewing' : APP.S.loan }); APP.back(); APP.say('We’ll send your money to ' + st.name + ' ending in ' + st.acct.slice(-4) + '.'); });
     }
     return h(APP.Page, { title: 'Withdrawal methods', bottom: h(PS.BottomBar, null, h(PS.Button, { block: true, onClick: save }, 'Continue')) },
@@ -221,7 +283,7 @@
           ? h('div', { className: 'app-stack-12', role: 'radiogroup' }, AD.wallets.map(function (w) {
               return h(PS.SelectBar, { key: w.id, on: st.id === w.id, label: w.name, logo: 'pay-' + w.id, note: w.note, onClick: function () { set({ id: w.id, name: w.name }); } }); }))
           : h(PS.Field, { label: 'Bank name', value: st.name, placeholder: 'Choose your bank', onClick: function () { APP.open('banks'); } }))),
-      h(PS.Field, { label: st.kind === 'wallet' ? 'Mobile number' : 'Account number', value: st.acct, placeholder: 'Enter your ' + (st.kind === 'wallet' ? 'mobile' : 'account') + ' number', inputMode: 'numeric', clear: true, error: st.err,
+      h(PS.Field, { label: 'Account number', value: st.acct, placeholder: 'Enter your account number', inputMode: 'numeric', clear: true, error: st.err,
         onChange: function (v) { set({ acct: v.replace(/[^\d]/g, '').slice(0, 16), err: null }); } }));
   });
   APP.sheet('banks', { kind: 'page', label: 'Choose your bank', render: function Banks() {
@@ -230,8 +292,8 @@
     keys = Object.keys(groups).sort();
     return h(PS.SearchSheet, { value: q, onChange: setQ, placeholder: 'Search bank name', onClose: APP.close },
       keys.length ? h(PS.BankList, { groups: keys.map(function (k) { return { title: k, items: groups[k].map(function (b) { return { id: b[0], name: b[1], logo: PS.asset('logos/pay-' + b[0] + '.png'), b: b }; }) }; }),
-        onPick: function (it) { APP.set({ pickedBank: it.b, sheet: null }); } })
-        : h(PS.EmptyState, { title: 'No matching banks found', body: 'Check the spelling or try another name.', style: { marginTop: '4.5rem' } }));
+        q: q, onPick: function (it) { APP.set({ pickedBank: it.b, sheet: null }); } })
+        : h(PS.EmptyState, { title: 'No matching banks found', style: { marginTop: '4.5rem' } }));
   } });
 
   /* ---- coupon centre ---- */

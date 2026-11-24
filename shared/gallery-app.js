@@ -30,10 +30,10 @@
   }
   function WhiteSheet(p) {
     var body = R.useRef(null), k = p.v.q.trim().toLowerCase();
-    var cats = !k ? CATS : CATS.map(function (x) { return Object.assign({}, x, { groups: x.groups.map(function (g) { return Object.assign({}, g, { items: g.items.filter(function (it) { return it.name.toLowerCase().indexOf(k) >= 0; }) }); }).filter(function (g) { return g.items.length; }) }); }).filter(function (x) { return x.groups.length; });
+    var any = !k || CATS.some(function (x) { return x.groups.some(function (g) { return g.items.some(function (it) { return it.name.toLowerCase().indexOf(k) >= 0; }); }); });
     return h(PS.SearchSheet, { tone: 'white', value: p.v.q, onChange: function (q) { p.set({ q: q, c: p.v.c }); }, placeholder: 'Search payment method', onClose: p.close, bodyRef: body },
-      cats.length ? h(PS.MethodPicker, { cats: cats, value: p.v.c, onCat: function (c) { p.set({ q: p.v.q, c: c }); }, scroller: body, onPick: p.close })
-        : h(PS.EmptyState, { title: 'No repayment method found', body: 'Check the spelling or try another name.', style: { marginTop: '4.5rem' } }));
+      any ? h(PS.MethodPicker, { cats: CATS, q: k, value: p.v.c, onCat: function (c) { p.set({ q: p.v.q, c: c }); }, scroller: body, onPick: p.close })
+        : h(PS.EmptyState, { title: 'No repayment method found', style: { marginTop: '4.5rem' } }));
   }
   var PENALTIES = [['Days 1-3', 'No penalty, but your payment is overdue.'], ['Day 4', '5% of the unpaid principal for each installment.'], ['Every 30 days', 'Another 5% on the principal that’s still unpaid.']];
   var SCAMS = [{ anim: 'customer-service', title: 'Customer service is only available in the app', body: 'If you’re unsure about anything, contact customer service in the app.' },
@@ -43,7 +43,7 @@
   /* Ticker: counts v.left down once a second (the Resend countdown) */
   function Ticker(p) { R.useEffect(function () { if (p.v.left <= 0) return; var t = setTimeout(function () { p.set(Object.assign({}, p.v, { left: p.v.left - 1 })); }, 1000); return function () { clearTimeout(t); }; }, [p.v]); return p.children; }
   var ARTICLE = [{ p: 'To apply, you need to:' }, { list: ['Be a Filipino citizen', 'Be between 18 and 65 years old', 'Have a valid government ID, like a Driver’s License, UMID, Passport, TIN ID or Postal ID', 'Have a regular source of income'] },
-    { h: 'What if I don’t have a payslip?' }, { p: 'You can still apply. Bank or e-wallet statements, or a company ID, can show your income too.' }];
+    { h: 'What if I don’t have a payslip?' }, { p: 'You can still apply. Bank or e‑wallet statements, or a company ID, can show your income too.' }];
 
   var CATS = [{ id: 'qr', icon: 'qr-code', label: 'QR Code', groups: [{ title: 'Direct App Pay', tag: 'Recommend', items: [{ id: 'a', name: 'GCash' }] }, { title: 'QR Code', items: [{ id: 'b', name: 'GCash' }, { id: 'c', name: 'Maya' }] }] },
     { id: 'bill', icon: 'receipt', label: 'Bill Payment', groups: [{ title: 'Bills Payment', items: [{ id: 'd', name: 'GCash' }, { id: 'e', name: 'ShopeePay' }] }] },
@@ -85,7 +85,7 @@
           ['Notice', function () { return h(PS.Notice, { onClick: noop }, 'All PeraSure transactions happen in the app. Never send money through third parties.'); }],
           ['Result', function () { return h(PS.Result, { anim: 'customer-service-chat', title: 'Help us improve PeraSure', body: 'Share your concerns with our online customer service.' }, h(PS.Button, { block: true }, 'Contact customer support')); }]] },
       { name: 'Tooltip', desc: 'Places itself: 8 px under what was tapped, centred, or with its edge 16 px past it near a side; always inside the 16 px margins; above when there is no room below.',
-        props: 'open · text (string or node) · anchor (PS.frameRect(el)) · width · icon (a 28 px brand tile and a ×) · big (16 padding, radius 24: the penalty explainer) · onClose',
+        props: 'open · text (string or node) · anchor (PS.frameRect(el)) · width · icon (bare icon before the text and a grey ×: \'pending\' = the Figma clock) · big (16 padding, radius 24: the penalty explainer) · onClose',
         states: [['Try it', live(null, function (tip, set) {
           return frame(260, [h('div', { key: 'r', style: { display: 'flex', justifyContent: 'space-between', padding: 24 } }, ['left', 'middle', 'right'].map(function (k) {
             return h(PS.Glass, { key: k, icon: 'help-circle', label: 'Help', onClick: function (e) { set({ anchor: PS.frameRect(e.currentTarget), text: 'Your available amount is what you can borrow today.' }); } }); })),
@@ -93,7 +93,7 @@
           ['Icon · big', live(null, function (tip, set) {
           return frame(420, [h('div', { key: 'r', style: { display: 'flex', justifyContent: 'space-between', padding: 24 } }, [['icon', 'info'], ['big', 'help-circle']].map(function (k) {
             return h(PS.Glass, { key: k[0], icon: k[1], label: k[0], onClick: function (e) { set({ kind: k[0], anchor: PS.frameRect(e.currentTarget) }); } }); })),
-            h(PS.Tooltip, { key: 't', open: !!tip, anchor: tip && tip.anchor, icon: tip && tip.kind === 'icon' ? 'coupon' : null, big: tip && tip.kind === 'big', width: tip && tip.kind === 'big' ? 288 : undefined,
+            h(PS.Tooltip, { key: 't', open: !!tip, anchor: tip && tip.anchor, icon: tip && tip.kind === 'icon' ? 'pending' : null, big: tip && tip.kind === 'big', width: tip && tip.kind === 'big' ? 288 : undefined,
               text: !tip ? '' : tip.kind === 'big' ? h(PS.PenaltyInfo, { rows: PENALTIES }) : 'Borrow ₱10,000 or more · 3 / 6 terms · One per account', onClose: function () { set(null); } })]); })]] },
       { name: 'Toasts', desc: 'Messages at the top, like iPhone notifications: every tap shows a new one at once, covering the one before (it slips down, shrinks and fades; three deep). Swipe one left to close it.',
         props: 'items [{ id, text }] · onClose(id) · top',
@@ -109,7 +109,7 @@
         props: 'label · value · onChange · placeholder · error · hint · clear · onClick (picker) · inputMode — PhoneField: value · onChange · error',
         states: [
           ['Typing', live('', function (v, set) { return h(PS.Field, { label: 'Account number', value: v, onChange: set, placeholder: 'Enter your account number', clear: true }); })],
-          ['Error', function () { return h(PS.Field, { label: 'Mobile number', value: '0917', onChange: noop, error: 'Enter the mobile number linked to this e-wallet (10–11 digits).' }); }],
+          ['Error', function () { return h(PS.Field, { label: 'Account number', value: '0917', onChange: noop, error: 'Enter your account number (10–16 digits).' }); }],
           ['Picker', function () { return h(PS.Field, { label: 'Bank name', value: '', placeholder: 'Choose your bank', onClick: noop }); }],
           ['Phone', live('', function (v, set) { return h(PS.PhoneField, { value: v, onChange: set }); })]] },
       { name: 'OtpBoxes · ContactMethods', desc: 'Six code boxes over one input: grey when empty, light blue when filled, the brand ring on the one being typed, red when wrong. Under them, how the code is sent.',
@@ -129,18 +129,27 @@
         states: [['Pick', live({ i: -1, t: '' }, function (v, set) { return h(PS.ReasonList, { items: ['I no longer need the money', 'I borrowed by mistake', 'The fees are higher than I expected', 'Other reason'], value: v.i, text: v.t,
           onChange: function (i) { set({ i: i, t: v.t }); }, onText: function (t) { set({ i: v.i, t: t }); } }); })]] },
       { name: 'Keypad · Segmented · SelectBar', desc: 'The amount keypad, the two-way switch (its pill glides) and an option with a radio.',
-        props: 'Keypad: onKey · extra · cascade — Segmented: items · value · onChange — SelectBar: on · label · logo · note · onClick',
+        props: 'Keypad: onKey · extra · cascade — Segmented: items · value · onChange — SelectBar: on · label · logo · note · trailing (radio at the end) · onClick',
         states: [
           ['Keypad', function () { return h(PS.Keypad, { onKey: noop }); }],
           ['Segmented', live('wallet', function (v, set) { return h(PS.Segmented, { id: 'g-seg', value: v, onChange: set, items: [{ id: 'wallet', label: 'E-Wallet' }, { id: 'bank', label: 'Online bank' }] }); })],
           ['Options', live('gcash', function (v, set) { return col([['maya', 'Maya'], ['gcash', 'GCash']].map(function (w) {
-            return h(PS.SelectBar, { key: w[0], on: v === w[0], label: w[1], logo: 'pay-' + w[0], note: 'Supports ₱50k+ loans', onClick: function () { set(w[0]); } }); })); })]] },
+            return h(PS.SelectBar, { key: w[0], on: v === w[0], label: w[1], logo: 'pay-' + w[0], note: 'Supports ₱50k+ loans', onClick: function () { set(w[0]); } }); })); })],
+          ['Trailing radio', live('Single', function (v, set) { return col(['Single', 'Married'].map(function (w) { return h(PS.SelectBar, { key: w, on: v === w, label: w, trailing: true, onClick: function () { set(w); } }); })); })]] },
+      { name: 'ChoiceSheet', desc: 'What a short choice field opens (Figma Marital status popover): a bottom sheet with a centred title and trailing-radio cards; list: ListItem rows with an Accent tag (ID type).',
+        props: 'title · options [strings] · value · onPick · list · tags { option: label } — FormField sheet { title, options, onPick, list, tags } opens it',
+        states: [['Cards', live('Single', function (v, set) { return frame(400, h('div', { className: 'ps-page' }, h(PS.Sheet, { open: true, kind: 'plain', className: 'ps-sheet--choice', onClose: noop },
+            h(PS.ChoiceSheet, { title: 'Marital status', options: ['Single', 'Married', 'Separated', 'Widowed'], value: v, onPick: set })))); })],
+          ['List · tags', live('', function (v, set) { return frame(560, h('div', { className: 'ps-page' }, h(PS.Sheet, { open: true, kind: 'plain', className: 'ps-sheet--choice ps-sheet--choice-list', onClose: noop },
+            h(PS.ChoiceSheet, { title: 'ID type', list: true, options: ['PhilSys National ID', 'UMID', 'Driver’s License', 'Passport', 'SSS ID', 'PRC ID'], tags: { 'UMID': 'Higher credit', 'Driver’s License': 'Higher credit', 'Passport': 'Higher credit', 'SSS ID': 'Higher credit' }, value: v, onPick: set })))); })],
+          ['From a field', live('', function (v, set) { return frame(420, h('div', { className: 'ps-page', style: { padding: 16 } }, h(PS.FormField, { label: 'Gender', value: v, placeholder: 'Select your gender', sheet: { options: ['Male', 'Female'], onPick: set } }))); })]] },
       { name: 'FormField · Popover', desc: 'The application forms\' field (label above, white 44 px box) and its popover list (DS 7201:12032): glass card, 36 px pills, at most 220 high with a thumb and a fade, 8 px under the box, above it when there is no room.',
-        props: 'FormField: label · value · placeholder · onChange | onClick | menu { options, onPick } · icon · clear · error · suggest + onSuggest — Popover: open · options · value · onPick · onClose · anchor · block',
+        props: 'FormField: label · value · placeholder · onChange | onClick | menu { options, onPick } | sheet { title, options, onPick, list, tags } · icon · clear · error · suggest + onSuggest — Popover: open · options · value · onPick · onClose · anchor · block',
         states: [
           ['Typing', live('', function (v, set) { return h(PS.FormField, { label: 'Email', value: v, placeholder: 'Enter your email', clear: true, onChange: set, suggest: v && v.indexOf('@') < 0 ? [v + '@gmail.com', v + '@yahoo.com'] : [], onSuggest: set }); })],
           ['Error', function () { return h(PS.FormField, { label: 'Total monthly income (PHP)', value: '35k', onChange: noop, clear: true, error: 'Please enter numbers only' }); }],
           ['Menu', live('', function (v, set) { return frame(300, h(PS.FormField, { label: 'Job type', value: v, placeholder: 'Select your job type', menu: { options: ['BPO Worker', 'Freelance', 'Staff/Factory Worker', 'Government/Public Utility', 'Self-employed', 'House Wife', 'Unemployed/Retired'], onPick: set } })); })],
+          ['Menu with tags', live('', function (v, set) { return frame(300, h(PS.FormField, { label: 'ID type', value: v, placeholder: 'Select ID type', menu: { options: ['PhilSys National ID', 'UMID', 'Driver’s License', 'Passport', 'SSS ID'], tags: { 'UMID': 'Higher credit', 'Driver’s License': 'Higher credit', 'Passport': 'Higher credit', 'SSS ID': 'Higher credit' }, onPick: set } })); })],
           ['Date', function () { return h(PS.FormField, { label: 'Next payday', value: '', placeholder: 'Select your next payday', icon: 'calendar', onClick: noop }); }],
           ['Picked', function () { return h(PS.FormField, { label: 'City / province', value: 'Quezon City, Metro Manila', placeholder: 'Select city and province', onClick: noop }); }]] },
       { name: 'DatePicker · Wheel', desc: 'The date card (DS 7628:14113): month and year steppers, the days with the chosen one on a brand circle; tap the month or the year for a wheel (react-wheel-picker, vendor/react-wheel-picker@1.2.3) with Cancel / Confirm. The body keeps six weeks\' height.',
@@ -177,7 +186,7 @@
           ['In progress', function () { return h(PS.StateCard, { icon: 'history', title: 'Application in progress', body: 'We’ve got your application and we’re reviewing it now.' }); }],
           ['Add documents', function () { return h(PS.StateCard, { title: 'Help us review your application', body: 'Add documents that show your job or income.', timer: { label: 'Time remaining', value: '47h 57m 10s' }, button: { label: 'Add documents', tone: 'white', onClick: noop } }); }],
           ['Not approved', function () { return h(PS.StateCard, { title: 'Application wasn’t approved', body: 'We can’t offer you a credit limit right now. You can apply again after 30 days.', support: { text: 'Have a question about the result? Chat with support!', onClick: noop } }); }],
-          ['Expired', function () { return h(PS.StateCard, { title: 'Your application expired', body: 'Apply again to see your credit limit.', button: { label: 'Reapply now', icon: 'money-out', onClick: noop } }); }]] },
+          ['Expired', function () { return h(PS.StateCard, { title: 'Your application expired', body: 'Apply again to see your credit limit.', button: { label: 'Reapply now', onClick: noop } }); }]] },
       { name: 'Strip', desc: 'A white one-line card that leads somewhere: loan updates, or a question to support. Raised: the default shadow (on home).', props: 'icon · tone · title · sub · text · count · chevron · raised · onClick',
         states: [
           ['Loan update', function () { return h(PS.Strip, { icon: 'info', title: 'You have updates on your loan', sub: 'Tap to view the latest status', count: 1, onClick: noop }); }],
@@ -186,7 +195,7 @@
       { name: 'Hero · Reviews · OfferCard · PermissionCard', desc: 'The first home page before there is a limit, what customers say, another product when ours isn’t available, and one permission with its reason.',
         props: 'Hero: label · amount · tagline · stats · action — Reviews: items — OfferCard: logo · tag · label · value · rows — PermissionCard: icon · title · body',
         states: [
-          ['Hero', function () { return h(PS.Hero, { label: 'You may qualify for up to', amount: 50000, tagline: 'Simple, Fast, Made for You.', stats: [{ value: '<0.3%', label: 'Daily rate' }, { value: '91-180d', label: 'Terms' }, { value: '3 mins', label: 'Approval' }], action: 'Check your limit', onClick: noop }); }],
+          ['Hero', function () { return h(PS.Hero, { label: 'You may qualify for up to', amount: 50000, tagline: 'Fast, clear,\ncredit when life can’t wait.', stats: [{ value: '<0.3%', label: 'Daily rate' }, { value: '91-180d', label: 'Terms' }, { value: '3 mins', label: 'Approval' }], action: 'Check your limit', onClick: noop }); }],
           ['Reviews', function () { return h(PS.Reviews, { items: [{ title: 'Borrow Again Anytime', text: '"Super convenient revolving limit! Paid my dues and was able to borrow again in just a few minutes."', name: 'John S.' }, { title: '100% Legit, Low Interest', text: '"Legit and highly recommended, low interest and no hidden fees."', name: 'Maria C.' }] }); }],
           ['Offer', function () { return h(PS.OfferCard, { logo: 'loadcash', name: 'LoadCash', tag: 'Best match', label: 'Max amount', value: '₱50,000', rows: [{ label: 'Max term', value: '180 days' }], onClick: noop }); }],
           ['Permission', function () { return h(PS.PermissionCard, { icon: 'camera', title: 'Camera', body: 'Used for facial verification, ID verification, and uploading ID photos.' }); }]] }] },
@@ -196,12 +205,15 @@
         props: 'Installment: month · day · amount · sub · tone · on · onToggle · note · noteIcon · onDetail — PayBar: total · was · onPay · disabled — ScamStrip: children · onClick',
         states: [
           ['Overdue', live(true, function (v, set) { return h(PS.Installment, { month: 'JAN', day: '15', amount: 2050, tone: 'negative', sub: 'Overdue 18 days', note: 'Includes ₱50.00 penalty', noteIcon: 'info', on: v, onToggle: function () { set(!v); }, onDetail: noop }); })],
-          ['Upcoming', live(false, function (v, set) { return h(PS.Installment, { month: 'JUL', day: '20', amount: 1234.5, tone: 'brand', sub: 'Due in 45 days', note: 'No penalty for 3 days after the due date', noteIcon: 'order', on: v, onToggle: function () { set(!v); }, onDetail: noop }); })],
+          ['Upcoming', live(false, function (v, set) { return h(PS.Installment, { month: 'JUL', day: '20', amount: 1234.5, tone: 'brand', sub: 'Due in 45 days', note: 'Loan from Dec 31, 2026', noteIcon: 'order', on: v, onToggle: function () { set(!v); }, onDetail: noop }); })],
+          ['Due today', live(true, function (v, set) { return h(PS.Installment, { month: 'JAN', day: '15', amount: 2000, tone: 'brand', sub: 'Due today', note: 'It\'s your due date. No penalty until Jan 18', noteIcon: 'order', on: v, onToggle: function () { set(!v); }, onDetail: noop }); })],
+          ['Overdue 1–2 days', live(true, function (v, set) { return h(PS.Installment, { month: 'JAN', day: '15', amount: 2000, tone: 'negative', sub: 'Overdue 2 days', note: 'Pay now to avoid a ₱50.00 penalty', noteIcon: 'info', on: v, onToggle: function () { set(!v); }, onDetail: noop }); })],
+          ['Overdue 3 days', live(true, function (v, set) { return h(PS.Installment, { month: 'JAN', day: '15', amount: 2000, tone: 'negative', sub: 'Overdue 3 days', note: 'Pay by 11:59 PM to avoid a ₱50.00 penalty', noteIcon: 'info', on: v, onToggle: function () { set(!v); }, onDetail: noop }); })],
           ['Total', function () { return h(PS.PayBar, { total: 2050, onPay: noop }); }],
-          ['Scam strip', function () { return h(PS.ScamStrip, { onClick: noop }, 'Beware of scams. Contact in-app customer service to verify transaction requests from outside the app.'); }],
+          ['Scam strip', function () { return h(PS.ScamStrip, { onClick: noop }, 'Beware of scams. Contact in‑app customer service to verify transaction requests from outside the app.'); }],
           ['Nothing picked', function () { return h(PS.PayBar, { total: 0, disabled: true, onPay: noop }); }],
           ['Docked', function () { return frame(200, h(PS.PayDock, null, h(PS.PayBar, { total: 2050, onPay: noop }))); }]] },
-      { name: 'RepayCard · InsetRows · QrPanel · PayTimer · Accordion', desc: 'What to pay and how: a button to the e-wallet, the reference rows, or a QR code; then an example that opens.',
+      { name: 'RepayCard · InsetRows · QrPanel · PayTimer · Accordion', desc: 'What to pay and how: a button to the e‑wallet, the reference rows, or a QR code; then an example that opens.',
         props: 'RepayCard: amount · due · onCopy · children — InsetRows: rows — QrPanel: merchant · onSave — PayTimer: seconds — Accordion: title · open · children',
         states: [
           ['App', function () { return h(PS.RepayCard, { amount: 2000, due: 'December 12, 2026', onCopy: noop }, h(PS.Button, { block: true }, 'Open GCash'), h(PS.PayTimer, null)); }],
@@ -209,9 +221,10 @@
           ['QR code', function () { return h(PS.RepayCard, { amount: 2000, due: 'December 12, 2026', onCopy: noop }, h(PS.QrPanel, { merchant: 'Payso', onSave: noop }), h(PS.PayTimer, null)); }],
           ['Example', function () { return h(PS.Accordion, { title: 'Repayment example (GCash)', open: true }, '1. Open the GCash app and tap "Pay Bills".\n2. Select "Loans" and find "PeraSure".'); }]] },
       { name: 'MethodPicker · Pager', desc: 'Ways to pay: categories on a rail, the methods of each on the right. Pager: the dots under cards you step through.',
-        props: 'MethodPicker: cats · value · onCat · onPick — Pager: n · i',
+        props: 'MethodPicker: cats · value · onCat · onPick · q (search: matches only, typed part green) — Pager: n · i',
         states: [
           ['Methods', live('qr', function (v, set) { return h(PS.MethodPicker, { cats: CATS, value: v, onCat: set, onPick: noop }); })],
+          ['Searching', live('qr', function (v, set) { return h(PS.MethodPicker, { cats: CATS, q: 'gc', value: v, onCat: set, onPick: noop }); })],
           ['Pager', live(0, function (v, set) { return col([h(PS.Pager, { key: 'p', n: 3, i: v }), h(PS.Button, { key: 'b', size: 'sm', onClick: function () { set((v + 1) % 3); } }, 'Next')]); })]] },
       { name: 'Carousel', desc: 'Pages side by side, swiped left or right (or moved by index) on the Smooth spring, as tall as the tallest page so nothing jumps; the dots follow the swipe. Only the card on show plays its animation, again from the start each time (the anti-scam cards).',
         props: 'pages [nodes] · index · onIndex(i) · dots · gap (pages → dots: a gap token, default 2xl)',
@@ -267,15 +280,15 @@
       { name: 'FileList · FileNote', desc: 'Support documents in a form (DS 9548:30951): each file on a white card, then the dashed Add files with the count (and the hint while there are none); it opens Take a photo / Choose from photos / Choose from files.',
         props: 'FileList: label · files [{ name, size, pic }] · max · hint · note · onAdd(option) · onRemove(index) — FileNote: children',
         states: [['Files', live([{ name: 'Payslip_scan_Sept_2026.jpg', size: 2516582, pic: PS.asset('art/id-front.png') }], function (v, set) {
-            return frame(300, h('div', { style: { padding: 16 } }, h(PS.FileList, { label: 'Support documents (optional)', files: v, max: 3, note: 'Supports JPG, JPEG, PNG and PDF.', hint: 'Show us your job or income with payslips, bank or e-wallet statements, or a company ID.',
+            return frame(300, h('div', { style: { padding: 16 } }, h(PS.FileList, { label: 'Support documents (optional)', files: v, max: 3, note: 'Supports JPG, JPEG, PNG and PDF.', hint: 'Show us your job or income with payslips, bank or e‑wallet statements, or a company ID.',
               onAdd: function (o) { if (v.length < 3) set(v.concat([{ name: o === 'Choose from files' ? 'COE_2026.pdf' : 'Photo_' + (v.length + 1) + '.jpg', size: 900000, pic: o === 'Choose from files' ? null : PS.asset('art/id-back.png') }])); },
               onRemove: function (i) { set(v.filter(function (x, j) { return j !== i; })); } }))); })],
-          ['Empty', function () { return h(PS.FileList, { label: 'Support documents (optional)', files: [], max: 3, note: 'Supports JPG, JPEG, PNG and PDF.', hint: 'Show us your job or income with payslips, bank or e-wallet statements, or a company ID.', onAdd: noop, onRemove: noop }); }]] },
+          ['Empty', function () { return h(PS.FileList, { label: 'Support documents (optional)', files: [], max: 3, note: 'Supports JPG, JPEG, PNG and PDF.', hint: 'Show us your job or income with payslips, bank or e‑wallet statements, or a company ID.', onAdd: noop, onRemove: noop }); }]] },
       { name: 'SearchSheet · BankList', desc: 'A full-height sheet\'s search and close over the top, on the sheet\'s own veil so what scrolls up fades under it. Grey (Figma 52:7763) for the bank list — banks by first letter, a 24 px logo before each — or white (DS 7792:15391: sheet className ps-sheet--white) for the ways to pay.',
-        props: 'SearchSheet: placeholder · value · onChange · onClose · tone inset | white · bodyRef · children — BankList: groups [{ title, items: [{ id, name, logo }] }] · onPick',
+        props: 'SearchSheet: placeholder · value · onChange · onClose · tone inset | white · bodyRef · children — BankList: groups [{ title, items: [{ id, name, logo }] }] · q (highlight) · onPick',
         states: [['Banks', function () { return h(InSheet, { kind: 'page', height: 620, render: function (close) { return h(Stateful, { first: '', render: function (q, setQ) {
             var g = bankGroups(q);
-            return h(PS.SearchSheet, { value: q, onChange: setQ, placeholder: 'Search bank name', onClose: close }, g.length ? h(PS.BankList, { groups: g, onPick: close }) : h(PS.EmptyState, { title: 'No matching banks found', body: 'Check the spelling or try another name.', style: { marginTop: '4.5rem' } })); } }); } }); }],
+            return h(PS.SearchSheet, { value: q, onChange: setQ, placeholder: 'Search bank name', onClose: close }, g.length ? h(PS.BankList, { groups: g, q: q, onPick: close }) : h(PS.EmptyState, { title: 'No matching banks found', style: { marginTop: '4.5rem' } })); } }); } }); }],
           ['White', function () { return h(InSheet, { kind: 'page', className: 'ps-sheet--white', height: 620, render: function (close) { return h(Stateful, { first: { q: '', c: 'qr' }, render: function (v, set) {
             return h(WhiteSheet, { v: v, set: set, close: close }); } }); } }); }]] },
       { name: 'PlacePicker', desc: 'The address sheet (DS 5975:10755 · 5975:10704 · 5975:11304): Region → Province → City, the line under the step; or search, with cities, provinces and regions in groups and the typed part in brand blue. The app gives it the Philippines\' real list (PSA PSGC); here a short sample.',
@@ -299,7 +312,7 @@
           ['Facts', function () { return h(PS.Facts, { rows: [{ label: 'SEC registered number', value: '2020100002616-03' }, { label: 'Certificate of authority (CA)', value: 'No. 3410' }] }); }],
           ['Help topics', function () { return h(PS.LinkList, { tall: true, tone: 'link', title: 'Explore all topics', items: [{ label: 'Applying for a loan', onClick: noop }, { label: 'Repayments', onClick: noop }, { label: 'Your account', onClick: noop }] }); }]] },
       { name: 'Message · Bullets', desc: 'An inbox message (its kind and time over the card), and a card of short points after grey dots ("What you need to know").', props: 'Message: kind · time · title · body — Bullets: items',
-        states: [['Message', function () { return h(PS.Message, { kind: 'Reminder', time: '12:59, MAY 18', title: 'You have a new coupon', body: '25% off first-payment interest on your next loan. Use it before Nov 13, 2026.' }); }],
+        states: [['Message', function () { return h(PS.Message, { kind: 'Reminder', time: '12:59, MAY 18', title: 'You have a new coupon', body: '25% off first‑payment interest on your next loan. Use it before Nov 13, 2026.' }); }],
           ['Bullets', function () { return h(PS.Section, { label: 'WHAT YOU NEED TO KNOW' }, h(PS.Bullets, { items: ['You only need to repay the principal amount.', 'We’ll cancel your loan once we get the full principal within 12 hours.', 'Cancelling often may affect your future loan applications.'] })); }]] },
       { name: 'ActivityItem · InboxItem · HistoryRow', desc: 'One line of credit history, a message, and a loan in the history with its state.',
         props: 'ActivityItem: icon · tone · title · sub · amount · up · date · note · noteValue — InboxItem: kind · time · unread · title · body · onOpen — HistoryRow: amount · state · label · onClick',

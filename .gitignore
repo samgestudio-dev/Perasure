@@ -1,3 +1,9 @@
 __pycache__/
 *.pyc
 devmode-visual-out/
+.DS_Store
+# rebrand comparison images stay local (owner, 2026-11-24): only parity's REPORT.md and sheet.html are kept
+rebrand/parity/motion/
+rebrand/parity/figma/
+rebrand/parity/demo/
+rebrand/parity/tracking/

@@ -1,8 +1,8 @@
 /* Withdraw fund flow — page styles. No progressive blur since tokens v2026.11.17 (owner): the bars are token veils only. */
   html,body{margin:0;padding:0;background:#dfe6e5;}
-  body{font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
-  a{color:#2c74be;text-decoration:none}
-  a:hover{color:#20558d;text-decoration:underline}
+  body{font-family:'Hanken Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+  a{color:var(--fg-accent);text-decoration:none}
+  a:hover{color:var(--fg-accent-strong);text-decoration:underline}
   *{-webkit-tap-highlight-color:transparent}
   .psScroll::-webkit-scrollbar{width:0;height:0}
   @keyframes psBlink{0%,49%{opacity:1}50%,100%{opacity:0}}
@@ -31,8 +31,8 @@
   /* header / bottom bars — PeraSure standard (CLAUDE.md "Header and bottom bars", tokens v2026.11.17): no progressive blur;
      home is a tab page: header Gradient/Top-nav-filled, tab bar Gradient/Bottom-primary-nav-filled, the bottom one fading out at
      the end of the scroll (withdraw.js) */
-  .ps-home-top > .ps-veil { background: var(--gradient-top-nav-filled); }
-  .ps-home-bot > .ps-veil { background: var(--gradient-bottom-primary-nav-filled); }
+  .ps-home-top > .ps-veil { background: var(--gradient-nav-top); }
+  .ps-home-bot > .ps-veil { background: var(--gradient-nav-bottom); }
   /* the blur layers in the page's markup are never drawn */
   .ps-home-top > div:not(:last-child), .ps-home-bot > div:not(:last-child){display:none}
   /* blur on — backdrop blurs are the most expensive thing on screen for the GPU (each is a

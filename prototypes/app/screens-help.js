@@ -27,15 +27,15 @@
     { id: 'multiple', topic: 'apply', q: 'Can I have multiple active loans?', blocks: [
       { p: 'Yes, as long as you have credit available. Each loan uses part of your credit limit, and repaying a loan frees that amount up again.' }] },
     { id: 'failed', topic: 'money', q: 'What if my loan couldn’t be disbursed?', blocks: [
-      { p: 'This can happen when the account details are wrong, or when your bank or e-wallet has a temporary problem. If it happens, we’ll let you know by SMS.' },
+      { p: 'This can happen when the account details are wrong, or when your bank or e‑wallet has a temporary problem. If it happens, we’ll let you know by SMS.' },
       { p: 'Update your receiving account in the app within 48 hours, and we’ll try again. If it isn’t updated within 48 hours, we’ll cancel the loan request, and you’ll need to send a new one.' },
       { p: 'Before you send a request, check that your account details are correct.' }] },
     { id: 'howlong', topic: 'money', q: 'How long does it take to get my money?', blocks: [
-      { p: 'Once we approve your loan, we send the money in about 1–5 minutes. It can take longer when your bank or e-wallet is busy.' }] },
+      { p: 'Once we approve your loan, we send the money in about 1–5 minutes. It can take longer when your bank or e‑wallet is busy.' }] },
     { id: 'method', topic: 'money', q: 'Can I change where my money is sent?', blocks: [
-      { p: 'Yes. On the order page, tap the withdrawal method and choose another e-wallet or bank account. We’ll send the money to the account you choose.' }] },
+      { p: 'Yes. On the order page, tap the withdrawal method and choose another e‑wallet or bank account. We’ll send the money to the account you choose.' }] },
     { id: 'howpay', topic: 'repay', q: 'How do I repay my loan?', blocks: [
-      { p: 'Open Payment, choose what you’d like to pay, then pick a payment method: an e-wallet, a bank transfer or a payment partner.' },
+      { p: 'Open Payment, choose what you’d like to pay, then pick a payment method: an e‑wallet, a bank transfer or a payment partner.' },
       { p: 'We show you the amount and how to pay before you confirm.' }] },
     { id: 'late', topic: 'repay', q: 'What happens if I miss a payment?', blocks: [
       { p: 'A late payment adds a penalty for each day it stays unpaid, and it can lower your credit limit. Your payment card shows the amount to pay today.' },
@@ -89,7 +89,7 @@
   });
 
   /* ---- changing the phone number (DS 8833:31439 → 8655:27420 → 8655:27434 → 8833:31280 → 8667:28313 → 8667:28329) ---- */
-  function validPhone(v) { return /^9\d{9}$/.test(v) ? null : 'Enter your 10-digit mobile number, starting with 9.'; }
+  function validPhone(v) { return /^9\d{9}$/.test(v) ? null : 'Enter your 10‑digit mobile number, starting with 9.'; }
   /* leave the flow: back to the page it was started from */
   function leaveFlow() { var st = APP.S.stack, i = st.map(function (x) { return x.name; }).lastIndexOf('phone-old'); APP.back(i > 0 ? st.length - i : 1); }
   APP.screen('phone-old', function PhoneOld() {
@@ -135,7 +135,7 @@
   var KINDS = [
     { id: 'payslip', title: 'Payslips', sub: 'From the last 2–3 months' },
     { id: 'coe', title: 'Certificate of employment (COE)', sub: 'Issued in the last 90 days' },
-    { id: 'salary', title: 'Salary deposit records', sub: 'From your bank or e-wallet, last 2–3 months' },
+    { id: 'salary', title: 'Salary deposit records', sub: 'From your bank or e‑wallet, last 2–3 months' },
     { id: 'sss', title: 'SSS contribution records', sub: 'Showing your employer’s contributions, last 3–6 months' },
     { id: 'gsis', title: 'GSIS contribution records', sub: 'Last 3–6 months' }];
   var PICK = ['Take a photo', 'Choose from photos', 'Choose from files'], MAX = 5, failedOnce = false, fid = 0;

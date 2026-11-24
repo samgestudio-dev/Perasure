@@ -3,7 +3,7 @@
 (function () {
   'use strict';
   var R = window.React, PS = window.PS, h = R.createElement, m = PS.m, AP = PS.AP;
-  var COINS = PS.root + 'animations/coins-loading/';
+  var COINS = PS.root + 'rebrand/animations/coins-loading/';   /* the rebrand coin (dark green, owner 2026-11-24); root animations/ keeps the legacy blue */
 
   /* Coin: the PeraSure coin · state loading (spins) | success (finishes the turn, lands on the tick, once) · onDone
      size: how big the coin is drawn (50) · inset: how much of it hangs outside its box on each side (the Loading page: 7 on a 50 px coin) */
@@ -68,7 +68,10 @@
   };
 
   /* Splash: the app opening — the PeraSure mark in the middle of the page, growing in */
+  /* while it shows, the page edge around the frame is navy too (owner 2026-11-24: on iOS 26 the light page colour showed above it, under the
+     status bar, like a header band) — as the Credit limit screen does */
   PS.Splash = function Splash() {
+    R.useLayoutEffect(function () { var c = document.documentElement.classList; c.add('ps-splash-on'); return function () { c.remove('ps-splash-on'); }; }, []);
     return h('div', { className: 'ps-splash' }, h(m.img, { src: PS.asset('logos/perasure-mark.svg'), alt: 'PeraSure', style: { width: '4rem', height: '4rem' },
       initial: { opacity: 0, scale: 0.9 }, animate: { opacity: 1, scale: 1, transition: PS.MT.ENTER } }));
   };
