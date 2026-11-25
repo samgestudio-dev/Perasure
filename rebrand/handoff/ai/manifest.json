@@ -63,12 +63,16 @@
    "bytes": 5322
   },
   {
+   "path": "PROMPTS.md",
+   "bytes": 2643
+  },
+  {
    "path": "README.md",
-   "bytes": 34616
+   "bytes": 34878
   },
   {
    "path": "manifest.json",
-   "bytes": 42333
+   "bytes": 42385
   },
   {
    "path": "01-tokens/figma-tokens.header.css",

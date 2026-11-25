@@ -178,6 +178,7 @@ After steps 0–6, 8 of production's 927 tests fail because they pin the old loo
 |---|---|---|
 | `README.md` | md | this file |
 | `OPEN-QUESTIONS.md` | md | the owner's decisions of 2026-11-24 and what is still open |
+| `PROMPTS.md` | md | ready-to-paste prompts for the developers' AI: H5 team (`phi_h5_025`) and native team (ID camera) |
 | `manifest.json` | json | machine index of this package (baseline, files, schemas, apply order, precedence) |
 | `tools/apply.py` | python | the reference applier (steps 0–8 + fmt, report JSON) |
 | `tools/counts.py` | python | every count of the package from the data; `--write` refreshes the generated blocks and `manifest.json` |
@@ -253,6 +254,8 @@ git status --short            # empty: the hooks changed nothing at the commit p
 - [ ] Screens checked side by side with the Figma frames named in `03-design-intent/visual-changes.json` (`figmaNode`), at 360 and 390 px wide, Android WebView and iOS.
 
 ## CHANGELOG
+
+**2026-11-25 (zip):** new `PROMPTS.md` (prompts for the H5 and native teams' AI). The package is also sent as a zip; nothing else changes.
 
 **2026-11-25 (later):** new `08-native/` — N-001 ID camera layout (after CashSaya's ID camera, PeraSure look kept; design change C-157, coverage (a)). The screen is native (`startOcrCapture`), so nothing in the edit list, `apply.py` or the proof changes.
 
