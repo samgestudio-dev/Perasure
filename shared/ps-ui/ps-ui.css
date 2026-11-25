@@ -1132,6 +1132,7 @@ html:not(.ps-edge) .ps-bot--note { padding-bottom: var(--spacing-padding-lg); }
 .ps-shutter { width: 3.75rem; height: 3.75rem; border-radius: 50%; border: 3px solid var(--fg-on-emphasis); display: flex; align-items: center; justify-content: center; }
 .ps-shutter > i { width: 3rem; height: 3rem; border-radius: 50%; background: var(--fg-on-emphasis); }   /* 60: a 3 ring, 3, a 48 disc */
 .ps-cam { position: absolute; inset: 0; background: #000; overflow: hidden; color: var(--fg-on-emphasis); }
+html.ps-edge .ps-cam { top: calc(-1 * var(--e)); }   /* iOS 26 edge mode: black up behind the status bar, like .ps-face (the back button and the box's space count --e from here) */
 .ps-cam__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 /* the box's space: from 24 under the back button to 24 above the shutter (its top = 3.5 + 3.75); the box centres in it */
 .ps-cam__view { position: absolute; left: 0; right: 0; top: calc(40px + 3.5rem + var(--spacing-padding-2xl) + var(--e, 0px)); bottom: calc(7.25rem + var(--spacing-padding-2xl) + var(--sb, 0px));
