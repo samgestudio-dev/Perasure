@@ -1,0 +1,51 @@
+{
+  "id": "N-001",
+  "name": "ID camera layout",
+  "changeId": "C-157",
+  "owner": "native app team (Android + iOS): the screen opened by the JS bridge method startOcrCapture(cardType, desc, callbackName)",
+  "notInH5": "phi_h5_025 does not draw this screen. src/pages/AuthPage/Identity/index.tsx handleCameraUpload(side) -> src/utils/jsbridge/media.ts openNativeCameraCapture(cardType) -> bridge.startOcrCapture(cardType, '', callbackName). Nothing in the H5 repo changes.",
+  "decided": "2026-11-25, design owner: lay the ID camera out like CashSaya's ID camera, keep PeraSure's look and pieces",
+  "figma": { "file": "kYyNV2MgxvH1w9bJ46A3yx", "page": "Design - Rebranding", "front": "11163:17229", "back": "11163:17306", "frame": "360 x 749 (status bar 40 included)" },
+  "demo": { "repo": "samgestudio-dev/Perasure", "branch": "tokens/rebrand-v3", "component": "shared/ps-ui/apply.js PS.IdCamera", "css": "shared/ps-ui/ps-ui.css .ps-cam*", "open": "prototypes/app/index.html?page=camera&auto=0" },
+  "units": "dp (Android) = pt (iOS) = design px at 360 wide; nothing is scaled with the screen except where a rule says so",
+  "orientation": "the phone stays in portrait; the content is laid out for an ID held sideways: title, box and hint form one column that is rotated 90 degrees clockwise (title ends up on the right, hint on the left, both reading top to bottom)",
+  "layers": [
+    { "name": "background", "rule": "full screen, colour #000000 (palette/base/black)" },
+    { "name": "camera preview", "rule": "full screen behind everything, aspect-fill (object-fit: cover)" },
+    { "name": "dim", "rule": "everything outside the box: #000000 at 60 % over the preview; inside the box: clear" },
+    { "name": "box", "rule": "see geometry; stroke 2.5 inside, #FFFFFF (fg/on-emphasis); corner radius 8 (radius/xs); no fill" },
+    { "name": "side title", "rule": "ID card icon 28 + gap 12 + text; icon and text #298648 (fg/accent); text Title/sm = Hanken Grotesk Bold 18 / line 24, letter-spacing -1 %; one line" },
+    { "name": "hint", "rule": "Body/sm = Hanken Grotesk Regular 12 / line 16, #FFFFFF, centred; one line; if it is longer than the box's long side (large system font) it wraps inside that length" },
+    { "name": "back button", "rule": "40 circle, fill #FFFFFF at 20 % (bg/glass-on-dark), chevron-left 18 #FFFFFF rotated 90 degrees clockwise (points up); right 16, top = status bar + 16. Unchanged" },
+    { "name": "shutter", "rule": "60: 3 ring #FFFFFF, 3 gap, 48 disc #FFFFFF; centred; bottom = navigation bar + 56. Unchanged" }
+  ],
+  "geometry": {
+    "constants": { "edge": 8, "line": 28, "gap": 4, "ratio": 1.585, "spaceAbove": 24, "spaceBelow": 24 },
+    "view": "the space the box centres in: top = back button bottom + 24 (= status bar + 16 + 40 + 24); bottom = shutter top - 24 (= screen height - navigation bar - 56 - 60 - 24)",
+    "shortSide": "S = min(screenWidth - 2*edge - 2*line - 2*gap, viewHeight / ratio)   // S is the box's width on screen",
+    "longSide": "L = S * ratio   // the box's height on screen (ID-1 card: 85.6 x 53.98 mm)",
+    "box": "centred in the view: x = (screenWidth - S) / 2, y = view.top + (viewHeight - L) / 2",
+    "sideTitle": "right of the box, gap 4 from the box's right edge, in a 28-wide lane; centred along the box's long side",
+    "hint": "left of the box, gap 4 from the box's left edge; its 28-wide lane mirrors the title's, the text sits against the box side of the lane; centred along the box's long side",
+    "line": "both text lanes are 28 wide so the box stays centred even though the hint is only 16 tall"
+  },
+  "examples": [
+    { "screen": "360 x 749, status bar 40, no navigation bar (Figma frame)", "view": [120, 609], "box": { "x": 40, "y": 142.6, "w": 280, "h": 443.8 }, "sideTitle": { "x": 324, "w": 28 }, "hint": { "x": 20, "w": 16 }, "backButton": { "x": 304, "y": 56 }, "shutter": { "x": 150, "y": 633 } },
+    { "screen": "360 x 640, status bar 40 (short screen: the height limits the box)", "view": [120, 500], "box": { "x": 60.1, "y": 120, "w": 239.7, "h": 380 }, "sideTitle": { "x": 303.9, "w": 28 }, "hint": { "x": 40.1, "w": 16 } }
+  ],
+  "copy": {
+    "front": "Front side of your ID",
+    "back": "Back side of your ID",
+    "hint": "Make sure every detail is clear and the whole ID fits in the box.",
+    "note": "The hint replaces the longer 'Please make sure that all the details are clear and the whole ID fits in the box' so it fits on one line."
+  },
+  "before": "Old design (Figma before 2026-11-25): a fixed 259 x 382 box starting 184 from the top, hint wrapped over two lines.",
+  "unchanged": ["capture, OCR, upload and callback behaviour", "cardType frame selection (UMID / TIN / SSS / default) — every card type uses the same ID-1 box", "back button and shutter look and position", "colours, fonts, icon"],
+  "open": [
+    "The H5 page does not tell the native camera which side it is taking (openNativeCameraCapture(cardType) has no side). If the native screen cannot know front / back, keep its current title; passing the side (for example through desc) would be an H5 behaviour change, not in this package."
+  ],
+  "references": {
+    "figma-front-360x749.png": "Figma 11163:17229 after the change",
+    "figma-back-360x749.png": "Figma 11163:17306 after the change"
+  }
+}

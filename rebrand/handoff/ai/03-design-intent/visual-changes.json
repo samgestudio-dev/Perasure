@@ -3720,6 +3720,21 @@
   "superseded": null
  },
  {
+  "id": "C-157",
+  "area": "component",
+  "designName": "ID camera layout",
+  "demoComponent": "PS.IdCamera (.ps-cam__view / __land / __box)",
+  "element": "box / side title / hint",
+  "property": "position, size",
+  "before": "fixed box 259 x 382 (Figma) / 21 rem frame 9 rem down (demo); hint over two lines",
+  "after": "ID-1 box (1 : 1.585) as big as fits: short side = min(width - 2*8 - 2*28 - 2*4, space / 1.585), centred 24 under the back button to 24 above the shutter; side title and one-line hint 4 from it, all turned 90 deg clockwise (layout after CashSaya's ID camera, PeraSure look kept)",
+  "figmaNode": "11163:17229; 11163:17306",
+  "sourceEntry": "log 84",
+  "ownerDecision": true,
+  "note": "Native screen in production (startOcrCapture): 08-native/README.md N-001. Hint copy shortened to fit one line.",
+  "superseded": null
+ },
+ {
   "id": "P-001",
   "area": "page",
   "designName": "Inbox / Credit history",

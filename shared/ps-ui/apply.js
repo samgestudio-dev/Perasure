@@ -50,17 +50,23 @@
     return h(m.button, Object.assign({ type: 'button', className: PS.cx('ps-shutter', p.className), 'aria-label': p.label || 'Take the picture', onClick: p.onClick }, PS.press(true)), h('i'));
   };
 
-  /* IdCamera (Figma 52:6602 / 52:6616; DS 5788:13914 / 5797:13982): the whole screen, laid out for an ID held sideways — the hint down the
-     left, the ID's box, the side (ID card mark + name, Text/Brand/Light) down the right, the shutter, a back button turned the same way.
+  /* IdCamera (Figma 52:6602 / 52:6616; DS 5788:13914 / 5797:13982): the whole screen, laid out for an ID held sideways. Layout after CashSaya's ID
+     camera (owner, 2026-11-25; PeraSure's own look and pieces kept): the box has the ID's own shape (ID-1, 1 : 1.585) and is as big as the
+     screen allows — as wide as the screen minus the two text lines, or as tall as the space between the back button and the shutter — centred
+     in that space. The side (ID card mark + name, Text/Brand/Light) and the hint (one line) sit 4 from the box on either side, and the three
+     turn 90° clockwise together (side on the right, hint on the left). The shutter, and the back button turned the same way.
      side front | back · cam (PS.useCamera('environment', true)) · onShoot · onClose */
   PS.IdCamera = function IdCamera(p) {
     var cam = p.cam || {}, side = p.side || 'front';
     return h('div', { className: PS.cx('ps-cam', p.className) },
       h('video', { ref: cam.video, className: 'ps-cam__video', playsInline: true, muted: true, autoPlay: true }),
-      h('div', { className: 'ps-cam__frame' },
-        h('p', { className: 'ps-cam__hint ps-t-caption-sm' }, 'Make sure every detail is clear and the whole ID fits in the box.'),
-        h('div', { className: 'ps-cam__box' }, cam.state === 'none' ? h('span', { className: 'ps-t-caption-sm' }, 'The camera isn’t available here. Take the picture anyway to use a sample.') : null),
-        h('p', { className: 'ps-cam__side ps-t-title-sm' }, h(PS.Icon, { name: 'id-card', size: 28, color: 'brand-light' }), side === 'front' ? 'Front side of your ID' : 'Back side of your ID')),
+      h('div', { className: 'ps-cam__view' },
+        h('div', { className: 'ps-cam__land' },
+          h('div', { className: 'ps-cam__line ps-cam__line--side' },
+            h('p', { className: 'ps-cam__side ps-t-title-sm' }, h(PS.Icon, { name: 'id-card', size: 28, color: 'brand-light' }), side === 'front' ? 'Front side of your ID' : 'Back side of your ID')),
+          h('div', { className: 'ps-cam__box' }, cam.state === 'none' ? h('span', { className: 'ps-t-caption-sm' }, 'The camera isn’t available here. Take the picture anyway to use a sample.') : null),
+          h('div', { className: 'ps-cam__line ps-cam__line--hint' },
+            h('p', { className: 'ps-cam__hint ps-t-caption-sm' }, 'Make sure every detail is clear and the whole ID fits in the box.')))),
       h(PS.Shutter, { onClick: p.onShoot }),
       h(m.button, Object.assign({ type: 'button', className: 'ps-cam__close', 'aria-label': 'Close the camera', onClick: p.onClose }, PS.press(true)), h(PS.Icon, { name: 'chevron-left', size: 18, color: 'inverse' })));
   };

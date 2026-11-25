@@ -60,15 +60,15 @@
  "files": [
   {
    "path": "OPEN-QUESTIONS.md",
-   "bytes": 4950
+   "bytes": 5322
   },
   {
    "path": "README.md",
-   "bytes": 33880
+   "bytes": 34616
   },
   {
    "path": "manifest.json",
-   "bytes": 41637
+   "bytes": 42333
   },
   {
    "path": "01-tokens/figma-tokens.header.css",
@@ -136,11 +136,11 @@
   },
   {
    "path": "03-design-intent/visual-changes.json",
-   "bytes": 128708
+   "bytes": 129560
   },
   {
    "path": "03-design-intent/visual-changes.md",
-   "bytes": 76602
+   "bytes": 77228
   },
   {
    "path": "04-assets/assets-changed.json",
@@ -272,7 +272,7 @@
   },
   {
    "path": "05-coverage/coverage.json",
-   "bytes": 37498
+   "bytes": 37731
   },
   {
    "path": "06-production-audit/SUMMARY.md",
@@ -1080,7 +1080,7 @@
   },
   {
    "path": "07-motion/verify/render_specs_md.py",
-   "bytes": 4415
+   "bytes": 4473
   },
   {
    "path": "07-motion/verify/specs-prod.mjs",
@@ -1295,6 +1295,22 @@
    "bytes": 159
   },
   {
+   "path": "08-native/README.md",
+   "bytes": 3606
+  },
+  {
+   "path": "08-native/id-camera/figma-back-360x749.png",
+   "bytes": 17076
+  },
+  {
+   "path": "08-native/id-camera/figma-front-360x749.png",
+   "bytes": 16914
+  },
+  {
+   "path": "08-native/id-camera/spec.json",
+   "bytes": 5293
+  },
+  {
    "path": "tools/apply.py",
    "bytes": 30488
   },
@@ -1424,5 +1440,22 @@
   ],
   "hooks": "pre-commit: tsc -b + lint-staged (prettier --write, eslint --fix); commit-msg: commitlint config-conventional. Every package output is a fixed point of both, so the hooks change nothing at A / B / C.",
   "messageExample": "style(rebrand): apply the visual hand-off (tokens, edits, assets)"
+ },
+ "native": {
+  "readFirst": "08-native/README.md",
+  "note": "Screens the native app draws; not applied to phi_h5_025 and not touched by tools/apply.py.",
+  "specs": [
+   {
+    "id": "N-001",
+    "screen": "ID camera layout",
+    "spec": "08-native/id-camera/spec.json",
+    "changeId": "C-157",
+    "figma": [
+     "11163:17229",
+     "11163:17306"
+    ],
+    "decided": "2026-11-25"
+   }
+  ]
  }
 }

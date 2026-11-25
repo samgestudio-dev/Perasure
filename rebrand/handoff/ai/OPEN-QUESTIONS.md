@@ -15,6 +15,10 @@ The design owner answered on **2026-11-24**. The answers are applied in `02-chan
   cmap (fontTools, an OFL-permitted modification) and ship that file; or use U+2010 / a `white-space: nowrap` span instead
   (copy / markup change). → `README.md` "Step 5" (glyph check), `04-assets/assets-to-replace.json` (`glyphCheck`)
 
+- **ID camera side title (2026-11-25, native):** the new ID camera layout (`08-native/README.md` N-001) is for the native app. The H5 page
+  doesn't pass the side to `startOcrCapture`, so the native screen may not know front from back. Keep its current title, or pass the
+  side (an H5 behaviour change, not in this package). → `08-native/id-camera/spec.json` (`open`)
+
 Nothing else is open. No edit is `manual` any more: E285 / E286 (PaymentMethodDrawer category icons) carry new CSS filter
 chains computed for `#298648` / `#8a8a9c` (exact in Chrome).
 

@@ -5,7 +5,7 @@ Source of every row: the work log `rebrand/log/figma.md` ("log NN" = the coordin
 Where the log contradicts itself the later entry wins; the earlier one is named under *Superseded*. ★ = owner decision.
 Not here: behaviour, logic, flow, structure and copy — see `excluded.md`. Icons / illustrations / animations files: `assets-changed.json`.
 
-Rows: 251 (global 92, of which token mapping 52; component 156; page 3). Owner decisions: 188.
+Rows: 252 (global 92, of which token mapping 52; component 157; page 3). Owner decisions: 189.
 
 ## 1. Global rules
 
@@ -1401,6 +1401,13 @@ Old CSS token (pre-rebrand value) → new token (v3 value). Counts = uses in `sh
 | id | element | property | before | after | source | ★ |
 |---|---|---|---|---|---|---|
 | C-156 | grey texts | colour, font | #97A0A6 / #6A757D (Inter) | --fg-disabled #8A8A9C / --fg-subtle #61627A (Hanken) | diff |  |
+
+### ID camera layout
+*Demo:* `PS.IdCamera (.ps-cam__view / __land / __box)`
+
+| id | element | property | before | after | source | ★ |
+|---|---|---|---|---|---|---|
+| C-157 | box / side title / hint | position, size | fixed box 259 × 382 (Figma) / 21 rem frame 9 rem down (demo); hint over two lines | ID-1 box (1 : 1.585) as big as fits, centred between the back button and the shutter (24 each); side title and one-line hint 4 from it, all turned 90° clockwise — layout after CashSaya's ID camera, PeraSure look kept. Native screen in production: `08-native/` N-001 · Figma 11163:17229, 11163:17306 | log 84 | ★ |
 
 ## 4. Pages
 

@@ -1133,14 +1133,22 @@ html:not(.ps-edge) .ps-bot--note { padding-bottom: var(--spacing-padding-lg); }
 .ps-shutter > i { width: 3rem; height: 3rem; border-radius: 50%; background: var(--fg-on-emphasis); }   /* 60: a 3 ring, 3, a 48 disc */
 .ps-cam { position: absolute; inset: 0; background: #000; overflow: hidden; color: var(--fg-on-emphasis); }
 .ps-cam__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.ps-cam__frame { --h: min(23.875rem, calc(var(--ph, 100vh) - 40px - 9rem - 8.75rem - var(--e, 0px) - var(--sb, 0px)));
-  position: absolute; left: 50%; top: calc(40px + 9rem + var(--e, 0px)); width: min(21rem, calc(100% - 1.5rem)); height: var(--h); transform: translateX(-50%); }
-.ps-cam__box { position: absolute; left: 2.4375rem; right: 2.375rem; top: 0; height: 100%; border: 2.5px solid var(--fg-on-emphasis); border-radius: var(--radius-xs);   /* 2.5: no token */
+/* the box's space: from 24 under the back button to 24 above the shutter (its top = 3.5 + 3.75); the box centres in it */
+.ps-cam__view { position: absolute; left: 0; right: 0; top: calc(40px + 3.5rem + var(--spacing-padding-2xl) + var(--e, 0px)); bottom: calc(7.25rem + var(--spacing-padding-2xl) + var(--sb, 0px));
+  display: flex; align-items: center; justify-content: center; container-type: size; }
+/* side · box · hint in a column turned 90° clockwise; both text lines get the side's height (the 28 mark) so the box stays centred */
+.ps-cam__land { --ps-id-ratio: 1.585; --ps-id-line: var(--font-line-height-28); flex: none; display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-xs); transform: rotate(90deg); }
+.ps-cam__line { position: relative; z-index: 1; display: flex; justify-content: center; width: 0; min-width: 100%; min-height: var(--ps-id-line); }   /* as long as the box (a long hint wraps at large text sizes); above the box's dimmed surround */
+.ps-cam__line--side { align-items: flex-end; }
+.ps-cam__line--hint { align-items: flex-start; }
+.ps-cam__box { flex: none; --ps-id-h: 13.75rem; width: calc(var(--ps-id-h) * var(--ps-id-ratio)); height: var(--ps-id-h); box-sizing: border-box;
+  border: 2.5px solid var(--fg-on-emphasis); border-radius: var(--radius-xs);   /* 2.5: no token */
   box-shadow: 0 0 0 2000px rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; padding: var(--spacing-padding-lg); text-align: center; }
-.ps-cam__hint, .ps-cam__side { z-index: 1; }   /* above the box's dimmed surround */
-.ps-cam__hint { position: absolute; left: 1rem; top: 50%; width: calc(var(--h) - 3.375rem); transform: translate(-50%, -50%) rotate(90deg); text-align: center; }
-.ps-cam__side { position: absolute; left: calc(100% - 0.875rem); top: 50%; display: flex; align-items: center; gap: var(--spacing-gap-md); white-space: nowrap; transform: translate(-50%, -50%) rotate(90deg);
-  color: var(--fg-accent); }
+@supports (width: 1cqw) {
+  .ps-cam__box { --ps-id-h: min(100cqw - 2 * var(--spacing-gap-sm) - 2 * var(--ps-id-line) - 2 * var(--spacing-gap-xs), 100cqh / var(--ps-id-ratio)); }
+}
+.ps-cam__side { margin: 0; display: flex; align-items: center; gap: var(--spacing-gap-md); white-space: nowrap; color: var(--fg-accent); }
+.ps-cam__hint { margin: 0; max-width: 100%; text-align: center; }
 .ps-cam > .ps-shutter { position: absolute; left: 50%; bottom: calc(3.5rem + var(--sb, 0px)); margin-left: -1.875rem; }
 .ps-cam__close { position: absolute; right: 1rem; top: calc(40px + 1rem + var(--e, 0px)); width: 2.5rem; height: 2.5rem; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center;
   background: color-mix(in srgb, var(--fg-on-emphasis) 10%, transparent); touch-action: manipulation; }   /* DS: white at 10 % */

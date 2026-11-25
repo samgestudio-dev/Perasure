@@ -1,9 +1,9 @@
 {
  "meta": {
   "baseline": "production phi_h5_025 master 0d9bdd4",
-  "visualChangeRows": 251,
+  "visualChangeRows": 252,
   "rowsWithPerFileEdits": 99,
-  "rowsWithoutProductionCounterpart": 44,
+  "rowsWithoutProductionCounterpart": 45,
   "rowsReachedWithoutPerFileEdit": 108,
   "componentsNotExplicitlyCovered": 44
  },
@@ -227,6 +227,11 @@
    "changeId": "C-155",
    "designName": "LoanStateCard",
    "why": "Figma only."
+  },
+  {
+   "changeId": "C-157",
+   "designName": "ID camera layout",
+   "why": "The ID camera is drawn by the native app (startOcrCapture from src/utils/jsbridge/media.ts); spec for the native team in 08-native/README.md (N-001)."
   }
  ],
  "a2_rowsWithCounterpartButNoPerFileEdit": [
