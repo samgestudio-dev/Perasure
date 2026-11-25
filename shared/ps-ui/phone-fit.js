@@ -27,16 +27,20 @@
    draws real page pixels behind the status bar. Other browsers keep the plain behaviour.
    Sets --vh, --ph, --ftop, --e, --sb on <html> (used by ps-ui.css: .ps-wrap, .ps-frame, .ps-screen, bars) and fires
    "ps-viewport". No re-fit while an input has focus (Android keyboards resize the viewport); it re-fits on blur.
-   ?edge=1 / ?edge=0 forces the Safari mode on / off, ?debug=1 shows the numbers. */
+   ?edge=1 / ?edge=0 forces the Safari mode on / off, ?debug=1 shows the numbers.
+   PS_FIT.web = true: a scrolling web page — only the screen fit; no scroll lock, no edge mode (see below). */
 (function(){
   var root = document.documentElement, meta = document.querySelector('meta[name="viewport"]'), lastR = 0;
   var ua = navigator.userAgent, qs = location.search;
   var touch = !!(window.matchMedia && matchMedia('(pointer: coarse)').matches);
   var iosSafari = /iP(hone|od)/.test(ua) && /Safari\//.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS|GSA\/|DuckDuckGo|YaBrowser/.test(ua);
   var ver = +((/Version\/(\d+)/.exec(ua) || [])[1] || 0);
-  var edge = /[?&]edge=1/.test(qs) || (iosSafari && ver >= 26 && !/[?&]edge=0/.test(qs));
-  root.classList.add('ps-phone'); if (edge) root.classList.add('ps-edge');
   var T = window.PS_TUNE || {}, F = window.PS_FIT || {};
+  /* PS_FIT.web: a scrolling web page (the SMS landing page), not the app's phone frame — only the screen fit (the viewport width) is set;
+     the page keeps its own scrolling (no html.ps-phone lock, no Safari edge runway) and stays edge to edge (viewport-fit=cover) */
+  var web = !!F.web;
+  var edge = !web && (/[?&]edge=1/.test(qs) || (iosSafari && ver >= 26 && !/[?&]edge=0/.test(qs)));
+  if (!web) root.classList.add('ps-phone'); if (edge) root.classList.add('ps-edge');
   var mode = F.mode || T.fit || 'cap', zmax = +(F.max || T.zoom || 1.15) || 1.15;
   /* the text size: ts = the phone's setting (1 = default), ui = the part the whole layout follows, tx = the rest, for text only */
   var TS_MIN = 0.85, TS_MAX = 1.5, UI_MAX = 1.3, ios = /iP(hone|od|ad)/.test(ua) || (/Macintosh/.test(ua) && touch);
@@ -61,7 +65,7 @@
     G.ts = t.ts; G.ui = t.ui; G.tx = t.tx; G.med = t.med;
   }
   root.setAttribute('data-fit', mode);
-  if (!touch && meta) meta.setAttribute('content', 'width=device-width, initial-scale=1');
+  if (!touch && meta) meta.setAttribute('content', 'width=device-width, initial-scale=1' + (web ? ', viewport-fit=cover' : ''));
   /* status-bar height (pt) by screen height, used when Safari reports no top inset */
   function statusPt(h){ return h >= 874 ? 62 : h >= 852 ? 59 : h >= 812 ? 47 : 20; }
   function env(){
@@ -90,7 +94,7 @@
       else W = Math.round(sw0 / Math.max(1, Math.min(zmax, sw0 / 360)));
       V = Math.floor(W * r);
       var ms = Math.max(0.1, Math.ceil(sw0 / W * 1000) / 1000);
-      if (meta) meta.setAttribute('content', (W === sw0 ? 'width=device-width, initial-scale=1' : 'width=' + W) + ', user-scalable=no, maximum-scale=' + ms + (edge ? ', viewport-fit=cover' : ''));
+      if (meta) meta.setAttribute('content', (W === sw0 ? 'width=device-width, initial-scale=1' : 'width=' + W) + ', user-scalable=no, maximum-scale=' + ms + (edge || web ? ', viewport-fit=cover' : ''));
     } else V = Math.max(600, window.innerHeight);
     var top = 0, sb = 0, ext = 0, hs = V, run = 0;
     if (edge) {

@@ -18,13 +18,21 @@
 <script src="vendor/react-dom@18.3.1/react-dom.production.min.js"></script>
 <script src="vendor/motion@14.4.0/motion-react.js"></script>
 <script src="vendor/mui-material@5.18.0/material-ui.production.min.js"></script>
-<script src="assets/playground-ui.js?v=202611250430"></script>
-<script src="animations/animations.js?v=202611250430"></script>
+<script src="assets/playground-ui.js?v=202611250832"></script>
+<script src="animations/animations.js?v=202611250832"></script>
 <script>
 /* ---- Prototype registry (the "Prototypes" tab) -----------------------------------------
    To add a prototype: put its files in prototypes/<slug>/ and add one entry below.
    The first variant is the recommended one. Animations live in animations/animations.js. */
 var DEMOS = [
+  {
+    title: 'SMS landing page',
+    tag: 'Web',
+    desc: 'The page selected users open from an SMS: why PeraSure, a loan calculator with the app’s numbers (the app’s amount card, the answer on navy), the trust card, and Get it on Google Play.',
+    variants: [
+      { name: 'Standard', note: 'Phone web page. Opens PeraSure on Google Play (com.perasure.loan)', href: 'prototypes/sms-landing/index.html' }
+    ]
+  },
   {
     title: 'First application',
     tag: 'Apply',

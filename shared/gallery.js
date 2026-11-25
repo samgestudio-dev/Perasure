@@ -113,8 +113,9 @@
         states: [['Two', function () { return h('div', { style: { paddingTop: 8 } }, h(PS.HomeCoupons, { coupons: [{ type: 'percent', value: '50% OFF', until: 'Until Nov 11, 2026' }, { type: 'limit', value: '+₱5,000', until: 'Until Nov 11, 2026' }] })); }],
           ['Amount off', function () { return h('div', { style: { paddingTop: 8 } }, h(PS.HomeCoupons, { coupons: [{ type: 'amount', value: '₱300 OFF', until: 'Until Dec 15, 2026' }, { type: 'percent', value: '20% OFF', until: 'Until Nov 30, 2026' }] })); }],
           ['One', function () { return h('div', { style: { paddingTop: 40 } }, h(PS.HomeCoupons, { coupons: [{ type: 'limit', value: '+₱5,000', kind: 'Credit limit', label: 'Borrow more than ₱20,000', cond: 'Any term' }] })); }]] },
-      { name: 'TrustCard · Legal', desc: '“Made for Filipinos”, the NPC and SEC tiles, partner logos (scrolling), and the company lines.', props: 'TrustCard kicker · title — Legal lines',
-        states: [['Default', function () { return h('div', { style: { display: 'flex', flexDirection: 'column', gap: 20 } }, h(PS.TrustCard), h(PS.Legal)); }]] },
+      { name: 'TrustCard · Legal', desc: '“Made for Filipinos”, the NPC and SEC tiles, partner logos (scrolling), and the company lines.', props: 'TrustCard kicker · title — Legal lines · tone default | inverse (on navy)',
+        states: [['Default', function () { return h('div', { style: { display: 'flex', flexDirection: 'column', gap: 20 } }, h(PS.TrustCard), h(PS.Legal)); }],
+          ['Legal on navy', function () { return h('div', { style: { padding: '1.5rem 1rem', borderRadius: 'var(--radius-md)', background: 'var(--bg-brand)' } }, h(PS.Legal, { tone: 'inverse' })); }]] },
       { name: 'DotTitle · Banners · PartnerLogos', desc: 'The small section title with the red dot, "More from PeraSure" cards that scroll sideways, and the bank and wallet logos scrolling slowly.', props: 'DotTitle: children — Banners: items [{ id, title, body, onClick }] — PartnerLogos: none',
         states: [['More from PeraSure', function () { return h('div', { style: { display: 'flex', flexDirection: 'column', gap: 8 } }, h(PS.DotTitle, null, 'More from PeraSure'),
             h(PS.Banners, { items: [{ id: 'b1', title: 'Invite a friend', body: 'You both get a coupon when they take their first loan.' }, { id: 'b2', title: 'Pay early, save more', body: 'See how early payments lower your interest.' }] })); }],
@@ -166,8 +167,9 @@
           ['Animated', function () { return h('div', { className: 'g-row', style: { flexWrap: 'wrap', gap: 16 } }, ['percent', 'amount', 'limit'].map(function (t) { return h(PS.CouponArt, { key: t, type: t, size: 80, animate: true }); })); }]] },
     ] },
     { id: 'loan', title: 'Loan', items: [
-      { name: 'AmountCard', desc: 'Disbursement amount with the slider, and the loan term. A limit coupon turns the maximum green.', props: 'amount · min · max · step · boost · onAmount · onCommit · terms · term · termNote · onTerm',
-        states: [['Default', function () { return h(LoanDemo, { boost: false }); }], ['Limit coupon', function () { return h(LoanDemo, { boost: true }); }]] },
+      { name: 'AmountCard', desc: 'Disbursement amount with the slider, and the loan term. A limit coupon turns the maximum green.', props: 'amount · min · max · step · boost · onAmount · onCommit · terms · term · termNote · onTerm · size md | lg · tone accent | navy · edit (false: no pencil)',
+        states: [['Default', function () { return h(LoanDemo, { boost: false }); }], ['Limit coupon', function () { return h(LoanDemo, { boost: true }); }],
+          ['Large · navy · no pencil (SMS landing)', function () { return h(LoanDemo, { size: 'lg', tone: 'navy', edit: false }); }]] },
       { name: 'OrderDetails', desc: 'Order detail rows; a row with no value is hidden.', props: 'rows [{ label, value, tone }] · link · onLink',
         states: [['With discount', function () { return h(PS.OrderDetails, { link: 'View payment schedule', rows: [{ label: 'Daily fee', value: '₱60.00' }, { label: 'First payment date', value: 'Nov 27, 2026' }, { label: 'Per installment', value: '₱8,400.00' }, { label: 'Discount', value: '-₱810.00', tone: 'positive' }, { label: 'Total payment', value: '₱49,590.00' }] }); }],
           ['No discount', function () { return h(PS.OrderDetails, { link: 'View payment schedule', rows: [{ label: 'Daily fee', value: '₱60.00' }, { label: 'Discount', value: null }, { label: 'Total payment', value: '₱50,400.00' }] }); }]] },
@@ -210,7 +212,7 @@
   function Tabs3() { var id = R.useRef('g-t3-' + (++seq)).current; return h(Toggle, { init: 'use', render: function (v, set) { return h(PS.Tabs, { id: id, value: v, onChange: set, items: [{ id: 'use', label: 'To use', count: 6 }, { id: 'used', label: 'Used' }, { id: 'expired', label: 'Expired' }] }); } }); }
   function LoanDemo(p) {
     var s = R.useState(45000), t = R.useState(6), max = p.boost ? 50000 : 45000;
-    return h(PS.AmountCard, { amount: Math.min(s[0], max), min: 500, max: max, step: 500, boost: p.boost, onAmount: s[1], terms: [3, 6, 8], term: t[0], onTerm: t[1], onEdit: noop });
+    return h(PS.AmountCard, { amount: Math.min(s[0], max), min: 500, max: max, step: 500, boost: p.boost, size: p.size, tone: p.tone, edit: p.edit, onAmount: s[1], terms: [3, 6, 8], term: t[0], onTerm: t[1], onEdit: noop });
   }
   /* InSheet: any content in a sheet that opens again with a button · kind (card) · className · height · render(close) */
   function InSheet(p) {

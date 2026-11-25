@@ -47,6 +47,13 @@
     MENU_ROW: function (i) { return { delay: 0.02 + Math.min(i, 8) * 0.014, y: { type: 'spring', visualDuration: 0.24, bounce: 0.32 }, opacity: { duration: 0.12, ease: EASE_IN }, filter: { duration: 0.12, ease: EASE_IN } }; },   /* faster (owner, 2026-11-24): the menu was dragging */
     MENU_OUT: { duration: 0.12, ease: [0.4, 0, 1, 1] }
   };
+  /* R-SPRING travel stretch (07-motion, production stretchSpring()): a travel longer than 378 px stretches the same spring — s = travel / 378
+     (at most 2.5): stiffness ÷ s², damping ÷ s, so it never moves faster than the Smooth spring and never bounces (e.g. the SMS landing page's turns) */
+  MT.stretch = function (travel, base, max) {   /* max: a lower cap than 2.5 for a piece that must stay brisk (the landing page's turn: 1.5, owner) */
+    base = base || MT.SPRING;
+    var k = Math.min(max || 2.5, Math.max(1, Math.abs(travel) / 378));
+    return k === 1 ? base : Object.assign({}, base, { stiffness: base.stiffness / (k * k), damping: base.damping / k });
+  };
   PS.T = { spring: MT.SPRING, ui: MT.SPRING, layout: MT.SPRING, sheet: MT.SPRING, page: MT.SPRING, snap: MT.PRESS, pop: MT.SPRING };
   PS.TAP = { scale: MT.PRESS_SCALE.pill };
   PS.TAP_ICON = { scale: MT.PRESS_SCALE.icon };

@@ -496,7 +496,13 @@ button.ps-ticket { display: block; width: 100%; text-align: left; }
 .ps-amountcard__amt { display: flex; align-items: center; gap: 0.25rem; height: 2.5rem; color: var(--fg-accent); }
 .ps-amountcard__amt .ps-amount { font-size: var(--font-size-display-sm); line-height: var(--font-line-height-display-sm); letter-spacing: 0.03em; }   /* Number/lg, ₱ included (Figma 13733:14030) */
 .ps-amountcard__edit { height: 1.75rem; display: flex; align-items: flex-end; color: var(--fg-accent); }
+.ps-amountcard--navy .ps-amountcard__amt, .ps-amountcard--navy .ps-amountcard__edit { color: var(--fg-default); }   /* tone navy: as the loan estimate (owner, 2026-11-23) */
+.ps-amountcard--lg .ps-amountcard__amt { height: auto; min-height: var(--font-line-height-amount-xxl); }
+.ps-amountcard--lg .ps-amountcard__amt .ps-amount { font-size: var(--font-size-amount-xxl); line-height: var(--font-line-height-amount-xxl); letter-spacing: 0.02em; }   /* size lg: Amount/xxl 48 */
+.ps-amountcard--lg .ps-amountcard__amt .ps-amount__dec { font-size: var(--font-size-amount-md); line-height: var(--font-line-height-amount-md); }   /* .00 at Amount/md 24 */
+.ps-amountcard--lg .ps-amountcard__edit { height: auto; align-self: flex-end; padding-bottom: 0.5rem; }
 .ps-slider { position: relative; height: 1.5625rem; }
+.ps-slider::before { content: ''; position: absolute; left: -0.75rem; right: -0.75rem; top: -0.875rem; bottom: -0.75rem; }   /* the touch area (owner 2026-11-25): about 51 tall and 12 past each end — at least the 44 touch target; invisible, takes the slider's own pointer handling */
 .ps-slider__track { position: absolute; left: 0; right: 0; bottom: 0.375rem; height: 0.5rem; border-radius: var(--radius-full); background: var(--bg-inset); overflow: hidden; isolation: isolate; }
 .ps-slider__fill { position: absolute; inset: 0; border-radius: var(--radius-full); background: var(--bg-success); will-change: transform; }   /* Figma Slider on the rebrand screens: fill Bg/Success (#76DC93 = Border/Selected), white knob */
 .ps-slider__rail { position: absolute; left: 0; bottom: 0.0625rem; width: 0; height: 1.125rem; pointer-events: none; will-change: transform; }
@@ -1091,6 +1097,8 @@ img.ps-file__type { object-fit: cover; }
 .ps-ltabs__tab { flex: 1 1 0; min-width: 0; display: flex; justify-content: center; padding: var(--spacing-padding-md) 0 0; color: var(--fg-subtle); transition: color 0.15s ease; touch-action: manipulation; }
 .ps-ltabs__tab > span { position: relative; padding-bottom: var(--spacing-padding-sm); white-space: nowrap; }
 .ps-ltabs__tab.is-on { color: var(--fg-accent); }
+.ps-ltabs--hug { gap: var(--spacing-gap-lg); }
+.ps-ltabs--hug .ps-ltabs__tab { flex: 1 1 auto; }   /* hug: tabs as wide as their labels, the spare room shared out */
 .ps-ltabs__tab.is-off { color: var(--palette-navy-200); cursor: default; }   /* Figma PlaceTab Default (not yet available): Palette/Navy/200, paler than Picked (Fg/Subtle) */
 .ps-ltabs__bar { position: absolute; left: 0; right: 0; bottom: 0; height: var(--stroke-width-strong); border-radius: var(--radius-full); background: var(--control-checked-bg); }   /* Figma .LineTab Selected bar: Control/Checked-bg (light green) */
 
@@ -1352,3 +1360,119 @@ html.ps-edge .ps-paydock { height: calc(9.375rem + var(--sb)); }
 .ps-bullets { gap: var(--spacing-gap-sm); }
 .ps-bullets > p { display: flex; gap: var(--spacing-gap-sm); }
 .ps-bullets > p > i { flex: none; width: 0.25rem; height: 0.25rem; margin-top: 0.5rem; border-radius: var(--radius-full); background: var(--fg-subtle); }
+
+/* ===================== Landing (landing.js): the SMS landing page's pieces — a scrolling web page, not the phone frame ===================== */
+:root {
+  --ps-lhero-fade: linear-gradient(180deg, rgba(0, 1, 40, 0.5) 0%, rgba(0, 1, 40, 0.08) 24%, rgba(0, 1, 40, 0.2) 46%, rgba(0, 1, 40, 0.86) 70%, #000128 86%);   /* hero photo → Bg/Brand navy, so the words keep ≥ 4.5:1 — no token for a photo fade */
+  --ps-on-navy-soft: rgba(255, 255, 255, 0.78);   /* body text on navy (white 78 %: 13:1) — no token */
+  --ps-on-navy-faint: rgba(255, 255, 255, 0.6);   /* small print on navy (white 60 %: 8:1) — no token */
+  --ps-on-navy-line: rgba(255, 255, 255, 0.14);   /* hairlines on navy — no token */
+  --ps-on-navy-tint: rgba(255, 255, 255, 0.06);   /* the stats tile's fill on navy — no token */
+  --ps-navy-glass: rgba(0, 1, 40, 0.7);           /* the hero tag on the photo: navy, 70 % — no token */
+  --ps-lnav-h: 3.5rem;                            /* the landing top bar: 56 */
+  --ps-play-lg: 3.5rem;                           /* the Play button: 56, one step above Size/Control/lg (48) — the page's one big action */
+}
+html.ps-landing, html.ps-landing body { background: var(--bg-page); }   /* no CSS smooth scroll: PS.useJumpZones glides the page itself */
+html.ps-landing body { -webkit-text-size-adjust: 100%; }
+.ps-landing__page { max-width: 600px; margin: 0 auto; background: var(--bg-page); overflow-x: clip; }
+
+/* Glow: the light-blue glow at the foot of every navy surface (Figma HubCard 11159:12524 "Glow / 1", geometry of .ps-credit__glow) */
+.ps-glow-host { position: relative; overflow: hidden; isolation: isolate; }
+.ps-glow-host > :not(.ps-glow):not(.ps-lhero__img) { position: relative; z-index: 1; }
+.ps-glow { position: absolute; z-index: 0; left: calc(50% - 0.0312rem - 14.9875rem); bottom: -6.0812rem; width: 29.975rem; height: 11.1rem; pointer-events: none; max-width: none; }
+
+/* PlayButton: the app's Button (ps-btn) as a link — only what a link needs on top */
+.ps-play { text-decoration: none; touch-action: manipulation; gap: var(--spacing-gap-sm); }
+.ps-play.ps-btn--primary:active { background: var(--button-primary-bg-pressed); }
+.ps-play.ps-btn--navy:active { background: var(--button-navy-bg-pressed); }
+.ps-play--sm { min-height: var(--size-control-sm); }
+.ps-play__mark { flex: none; }
+
+/* LandingNav */
+.ps-lnav { position: fixed; top: 0; left: 0; right: 0; z-index: 30; max-width: 600px; margin: 0 auto; height: calc(var(--ps-lnav-h) + env(safe-area-inset-top));
+  padding: env(safe-area-inset-top) var(--spacing-page-x-sm) 0; display: flex; align-items: center; justify-content: space-between; background: transparent; }
+.ps-lnav.is-solid { background: var(--bg-brand); box-shadow: 0 1px 0 var(--ps-on-navy-line); }
+.ps-lnav__brand { display: inline-flex; align-items: center; gap: 0.625rem; color: var(--fg-on-emphasis); font: var(--font-weight-semi-bold) calc(1.0208rem * var(--ps-tx, 1))/calc(1.4583rem * var(--ps-tx, 1)) var(--font-family-title); }   /* the app's brand name (.ps-brand__name) */
+.ps-lnav__brand img { width: 1.25rem; height: 1.25rem; }
+
+/* LandingHero */
+.ps-lhero { position: relative; isolation: isolate; display: flex; flex-direction: column; min-height: 100vh; min-height: 100svh; background: var(--bg-brand); color: var(--fg-on-emphasis); overflow: hidden; }   /* one full screen; the words sit at its foot */
+.ps-lhero__img { position: absolute; z-index: -1; left: 0; right: 0; top: 0; bottom: 13rem; background-size: cover; background-position: 70% 30%; }   /* the photo fills the screen above the button area and fades into navy */
+.ps-lhero__img { --ps-lhero-lift: 5rem; top: calc(-1 * var(--ps-lhero-lift)); }   /* owner 2026-11-25: the photo starts 5rem above the screen, so the person sits higher, above the fade */
+.ps-lhero__img::after { content: ''; position: absolute; inset: var(--ps-lhero-lift, 0) 0 -2px; background: var(--ps-lhero-fade); }   /* starts at the hero's top (the photo is lifted, the fade is not); -2px: no hairline of photo under its end */
+.ps-lhero__body { display: flex; flex-direction: column; gap: var(--spacing-gap-lg); padding: calc(var(--ps-lnav-h) + env(safe-area-inset-top) + var(--spacing-section-xl)) var(--spacing-page-x-sm) calc(var(--spacing-section-lg) + env(safe-area-inset-bottom));
+  flex: 1 0 auto; justify-content: flex-end; }
+.ps-lhero__body--plain { padding-top: calc(var(--ps-lnav-h) + env(safe-area-inset-top) + var(--spacing-section-xl)); }
+.ps-lhero__kicker { display: inline-flex; align-self: flex-start; align-items: center; gap: var(--spacing-gap-sm); padding: var(--spacing-gap-xs) var(--spacing-padding-md); border-radius: var(--radius-full);
+  background: var(--ps-navy-glass); box-shadow: inset 0 0 0 1px var(--ps-on-navy-line); color: var(--fg-accent-on-brand); }   /* on the photo: a navy pill, so it reads on any part of the picture (no backdrop blur: it would redraw every frame of the page turn) */
+.ps-lhero__kicker i { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--fg-accent-on-brand); }
+.ps-lhero__title { color: var(--fg-on-emphasis); text-shadow: 0 2px 24px rgba(0, 1, 40, 0.35); }   /* the shadow keeps the slogan clear where it meets the photo */
+.ps-lhero__text { color: var(--ps-on-navy-soft); }
+.ps-lhero__stats { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: var(--spacing-gap-xs); border-radius: var(--radius-lg); background: var(--ps-on-navy-tint); box-shadow: inset 0 0 0 1px var(--ps-on-navy-line); }
+.ps-lhero__stats > div { display: flex; flex-direction: column-reverse; gap: var(--spacing-gap-2xs); padding: var(--spacing-padding-md) var(--spacing-padding-sm); text-align: center; }
+.ps-lhero__stats > div + div { background: linear-gradient(var(--ps-on-navy-line), var(--ps-on-navy-line)) left center / 1px 50% no-repeat; }   /* short dividers, half the tile's height */
+.ps-lhero__stats dt { color: var(--ps-on-navy-soft); }
+.ps-lhero__stats dd { color: var(--fg-accent-on-brand); white-space: nowrap; }
+.ps-lhero__cta { display: flex; flex-direction: column; align-items: stretch; gap: var(--spacing-gap-sm); margin-top: var(--spacing-gap-sm); }
+.ps-lhero__more { display: inline-flex; align-self: center; align-items: center; gap: var(--spacing-gap-xs); min-height: var(--size-control-lg); padding: 0 var(--spacing-padding-lg);
+  border: 0; background: none; color: var(--fg-on-emphasis); cursor: pointer; touch-action: manipulation; }
+.ps-lhero__note { color: var(--ps-on-navy-faint); text-align: center; text-wrap: balance; }
+
+/* LandingSection */
+.ps-lsec { display: flex; flex-direction: column; gap: var(--spacing-gap-2xl); padding: var(--spacing-section-2xl) var(--spacing-page-x-sm); }
+.ps-lsec--page { background: var(--bg-page); }
+.ps-lsec--white { background: var(--bg-default); }
+.ps-lsec--navy { background: var(--bg-brand); color: var(--fg-on-emphasis); }
+.ps-lsec__head { display: flex; flex-direction: column; gap: var(--spacing-gap-sm); }
+.ps-lsec__head h2 { text-wrap: balance; }
+.ps-lsec--center { align-items: stretch; text-align: center; }
+.ps-lsec--center .ps-lsec__head { align-items: center; }
+.ps-lsec.ps-lsec--center p { text-wrap: balance; }   /* centred lines: even lengths */
+.ps-lsec p, .ps-lhero p, .ps-step p { text-wrap: pretty; }   /* no word left alone on the last line */
+.ps-lsec__kicker { color: var(--fg-subtle); text-transform: uppercase; }   /* as the app's .ps-section__label */
+.ps-lsec__body { color: var(--fg-muted); }
+.ps-lsec--navy .ps-lsec__kicker { color: var(--ps-on-navy-soft); }
+.ps-lsec--navy .ps-lsec__body { color: var(--ps-on-navy-soft); }
+
+/* LoanCalculator: the app's AmountCard on top (its own rounded corners and shadow), the navy card tucked under its foot by one corner radius */
+.ps-calc { display: flex; flex-direction: column; gap: var(--spacing-gap-md); }
+.ps-calc__card { display: flex; flex-direction: column; -webkit-user-select: none; user-select: none; }   /* dragging the slider never selects the amount */
+.ps-calc__card > .ps-amountcard { position: relative; z-index: 1; }   /* the white card lies over the navy one */
+.ps-calc__result { display: flex; flex-direction: column; margin-top: calc(-1 * var(--radius-card)); padding: calc(var(--radius-card) + var(--spacing-padding-sm)) var(--spacing-padding-lg) var(--spacing-padding-lg);
+  border-radius: 0 0 var(--radius-card) var(--radius-card); background: var(--bg-brand); color: var(--fg-on-emphasis); box-shadow: var(--elevation-1); }
+.ps-calc__rows { display: flex; flex-direction: column; }
+.ps-calc__rows > div { display: flex; justify-content: space-between; align-items: baseline; gap: var(--spacing-gap-md); padding: var(--spacing-padding-md) 0; }
+.ps-calc__rows > div + div { box-shadow: inset 0 1px 0 var(--ps-on-navy-line); }
+.ps-calc__rows dt { color: var(--ps-on-navy-soft); }
+.ps-calc__rows dd { color: var(--fg-on-emphasis); white-space: nowrap; }
+.ps-calc__rows .is-save dd { color: var(--fg-accent-on-brand); }   /* the discount: green, as the app's order details (on navy: the on-brand green) */
+.ps-calc__rows .is-total dt { color: var(--fg-on-emphasis); }
+.ps-calc__rows .is-total dd { color: var(--fg-accent-on-brand); }   /* the answer: the total in green (Number/xs) */
+.ps-calc__action { margin-top: var(--spacing-gap-md); }
+.ps-calc__note { padding: 0 var(--spacing-gap-xs); text-align: center; }
+
+/* the calculator's "View payment schedule" (on navy: the on-brand green, a 44 tap height) */
+.ps-calc__link { display: inline-flex; align-self: flex-start; align-items: center; gap: var(--spacing-gap-xs); min-height: var(--size-control-md); margin-top: var(--spacing-gap-xs);
+  padding: 0; border: 0; background: none; color: var(--fg-accent-on-brand); cursor: pointer; touch-action: manipulation; }
+
+/* LandingLayer + LoanPlanSheet */
+.ps-llayer .ps-layer { position: fixed; left: 0; right: 0; top: 0; bottom: 0; width: auto; height: auto; max-width: 600px; margin: 0 auto; z-index: 50; }   /* the app's sheet layer, fixed to the screen on a web page */
+.ps-llayer .ps-sheet--plain { padding-bottom: calc(var(--spacing-padding-lg) + env(safe-area-inset-bottom)); }   /* clear of the phone's home bar (the app does this in its frame) */
+
+/* Steps */
+.ps-steps { list-style: none; display: flex; flex-direction: column; }
+.ps-step { position: relative; display: flex; gap: var(--spacing-gap-lg); padding-bottom: var(--spacing-gap-2xl); }
+.ps-step:last-child { padding-bottom: 0; }
+.ps-step:not(:last-child)::before { content: ''; position: absolute; left: calc(1rem - 1px); top: 2.5rem; bottom: var(--spacing-gap-sm); width: 2px; border-radius: 1px; background: var(--border-accent-muted); }
+.ps-step__n { flex: none; width: 2rem; height: 2rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--button-primary-bg); color: var(--button-primary-fg); }
+.ps-step > div { display: flex; flex-direction: column; gap: var(--spacing-gap-xs); padding-top: var(--spacing-gap-xs); }
+
+/* StickyCta */
+.ps-sticky { position: fixed; z-index: 30; left: 0; right: 0; bottom: 0; max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--spacing-gap-sm); text-align: center;
+  padding: var(--spacing-padding-md) var(--spacing-page-x-sm) calc(var(--spacing-padding-md) + env(safe-area-inset-bottom));
+  background: var(--bg-default); box-shadow: var(--elevation-2); border-radius: var(--radius-xl) var(--radius-xl) 0 0; will-change: transform; }
+
+/* Legal · tone inverse: the company lines on a navy band (the landing page's closing band) */
+.ps-legal--inverse { gap: var(--spacing-gap-2xs); color: var(--ps-on-navy-faint); }
+.ps-legal--inverse p { text-wrap: balance; }
+.ps-legal--inverse > :first-child { margin-bottom: var(--spacing-gap-xs); color: var(--ps-on-navy-soft); letter-spacing: 0.06em; }   /* the company: a touch brighter, spaced caps */

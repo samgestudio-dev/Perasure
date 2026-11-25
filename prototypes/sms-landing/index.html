@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" class="ps-landing">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000128">
+<meta name="format-detection" content="telephone=no">
+<script>if ('scrollRestoration' in history) history.scrollRestoration = 'manual';   /* the page always opens on the hero, even after a reload */
+window.PS_FIT = { web: true, mode: 'cap', max: 1.15 };   /* the app's default screen fit (owner): the 360 design enlarged with the screen, at most 1.15× */</script>
+<script src="../../shared/ps-ui/phone-fit.js?v=202611250832"></script>
+<link rel="icon" href="../../shared/ps-ui/assets/logos/perasure-mark.svg" type="image/svg+xml">
+<title>PeraSure: fast, clear credit when life can’t wait</title>
+<meta name="description" content="Borrow ₱500 to ₱90,000 and pay it back in 4, 6 or 8 terms. See your daily fee and every payment before you apply.">
+<!-- SMS landing page — Figma kYyNV2MgxvH1w9bJ46A3yx · 15228:62417 "白名单卖点落地页". Opened from an SMS sent to selected users: the selling
+     points lead to Google Play, and the calculator uses the same maths and numbers as the app's "Your loan estimate" (PS.loanQuote =
+     prototypes/app/coupons-data.js → calc). Built only from shared pieces: shared/ps-ui/landing.js and the app's AmountCard, TrustCard
+     and Legal. page.js holds the copy and the flow, page.css only places them. Photo: Figma AI (gpt-image), full size in source/. -->
+<link rel="stylesheet" href="../../tokens/tokens.css">
+<link rel="stylesheet" href="../../tokens-rem/tokens-rem.css?v=202611250832">
+<link rel="stylesheet" href="../../assets/fonts/fonts-2026.11.17.css">
+<link rel="preload" href="../../assets/fonts/hanken-grotesk-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../assets/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../assets/fonts/reddit-sans-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="img/hero.jpg" as="image">
+<link rel="stylesheet" href="../../shared/ps-ui/ps-ui.css?v=202611250832">
+<link rel="stylesheet" href="page.css">
+</head>
+<body>
+<div id="root"></div>
+<script src="../../vendor/react@18.3.1/react.production.min.js"></script>
+<script src="../../vendor/react-dom@18.3.1/react-dom.production.min.js"></script>
+<script src="../../vendor/motion@14.4.0/motion-react.js"></script>
+<script src="../../shared/ps-ui/core.js?v=202611250832"></script>
+<script src="../../shared/ps-ui/layout.js?v=202611250832"></script>
+<script src="../../shared/ps-ui/loan.js?v=202611250832"></script>
+<script src="../../shared/ps-ui/home.js?v=202611250832"></script>
+<script src="../../shared/ps-ui/landing.js?v=202611250832"></script>
+<script src="page.js"></script>
+</body>
+</html>

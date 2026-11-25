@@ -9,6 +9,7 @@ Phone-first motion prototypes. The repo is private; it is served at samge.studio
 
 | Demo | Variants |
 | --- | --- |
+| SMS landing page | [Standard](prototypes/sms-landing/index.html) (for selected users who open the SMS link: slogan and facts, the loan calculator with the app's numbers, trust card, Get it on Google Play; components in `shared/ps-ui/landing.js`) |
 | First application | [Standard](prototypes/first-application/index.html) (log in → code → home before a limit → the application → Submit → credit limit ready, on the app's own screens; Tune: forms empty / filled in, after Submit, code / ID / selfie outcomes) · [guide](prototypes/first-application/README.md) |
 | PeraSure app | [Test app](prototypes/app/index.html) (the whole app as a test environment: every account and loan state in Tune, made-up loading; in progress) · [guide](prototypes/app/README.md) |
 | Coupon system | [Standard](prototypes/coupon-system/index.html) (home / account → coupon centre → apply a loan with coupons; Tune: blur, six / one / no coupons) · [guide](prototypes/coupon-system/README.md) |

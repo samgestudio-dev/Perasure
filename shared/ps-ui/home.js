@@ -150,10 +150,10 @@
       h(PS.PartnerLogos));
   };
 
-  /* Legal: the company lines at the bottom of home · lines (first one bold) */
+  /* Legal: the company lines at the bottom of home · lines (first one bold) · tone default | inverse (on navy: the SMS landing page's closing band) */
   PS.Legal = function Legal(p) {
     var lines = p.lines || ['SULIT LENDING CORPORATION', 'SEC Registration No. 2020100002616-03', 'Certificate of Authority to Operate as a Financing/Lending Company No.3333'];
-    return h('div', { className: 'ps-legal ps-t-caption-xs' }, lines.map(function (l, i) {
+    return h('div', { className: PS.cx('ps-legal ps-t-caption-xs', p.tone === 'inverse' && 'ps-legal--inverse') }, lines.map(function (l, i) {
       return h('p', { key: i, className: i ? null : 'ps-t-section-xs' }, l);
     }));
   };

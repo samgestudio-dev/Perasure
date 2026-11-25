@@ -18,7 +18,7 @@
   }
   var M = window.Motion;
 
-  /* Slider: amount slider (pointer + keyboard) · value · min · max · step · onChange(v) while dragging · onCommit(v) on release
+  /* Slider: amount slider (pointer + keyboard; its touch area reaches past the bar: ps-ui.css .ps-slider::before) · value · min · max · step · onChange(v) while dragging · onCommit(v) on release
      boost (max is raised by a coupon: green end with the coupon mark). The knob and fill follow the finger at once; when the
      value or the max changes for any other reason they glide there on the Smooth spring. Transforms only.
      (AmountCard hands in its own motion values: amt, maxMv, held.) */
@@ -64,7 +64,9 @@
   };
 
   /* AmountCard: "Disbursement amount" + slider + loan term · amount · min · max · step · boost · onAmount(v) · onCommit(v)
-     terms [3, 6, 8] · term · termNote ('15 days / term') · onTerm(t) · label · onEdit (the pencil opens the keypad).
+     terms [3, 6, 8] · term · termNote ('15 days / term') · onTerm(t) · label · onEdit (the pencil opens the keypad)
+     · size md (Amount 32, the app) | lg (Amount 48 with .00 at 24: the SMS landing page) · tone accent (green, the order page) | navy (the
+     loan estimate's navy amount and pencil) · edit false (no pencil: the SMS landing page, where the amount is set with the slider only).
      The amount follows the slider at once; when a coupon changes it, the amount counts with the gliding knob (in steps). */
   PS.AmountCard = function AmountCard(p) {
     var held = R.useRef(false), step = p.step || 500, rest = step * 0.1;
@@ -77,14 +79,14 @@
         if (decEl.current) decEl.current.textContent = '.' + t[1];
       });
     }, [amt, step]);
-    return h(PS.Card, { variant: 'raised', className: 'ps-amountcard' },
+    return h(PS.Card, { variant: 'raised', className: PS.cx('ps-amountcard', p.size === 'lg' && 'ps-amountcard--lg', p.tone === 'navy' && 'ps-amountcard--navy') },
       h('div', { style: { display: 'flex', flexDirection: 'column', gap: 'var(--spacing-gap-sm)' } },
         h('div', { style: { display: 'flex', flexDirection: 'column', gap: 'var(--spacing-gap-xs)' } },
           h('p', { className: 'ps-t-body-md-em ps-c-tertiary' }, p.label || 'Disbursement amount'),
           h('div', { className: 'ps-amountcard__amt', 'aria-live': 'off' },
             h('span', { className: 'ps-amount' }, h('span', { className: 'ps-amount__cur' }, '₱'),
               h('span', { className: 'ps-amount__int', ref: intEl }, init.current[0]), h('span', { className: 'ps-amount__dec', ref: decEl }, '.' + init.current[1])),
-            p.onEdit ? h(m.button, Object.assign({ type: 'button', className: 'ps-amountcard__edit', 'aria-label': 'Type the amount', onClick: p.onEdit }, PS.press(true)), h(PS.Icon, { name: 'edit', size: 20 }))
+            p.edit === false ? null : p.onEdit ? h(m.button, Object.assign({ type: 'button', className: 'ps-amountcard__edit', 'aria-label': 'Type the amount', onClick: p.onEdit }, PS.press(true)), h(PS.Icon, { name: 'edit', size: 20 }))
               : h('span', { className: 'ps-amountcard__edit' }, h(PS.Icon, { name: 'edit', size: 20 })))),
         h(PS.Slider, { value: p.amount, min: p.min, max: p.max, step: step, boost: p.boost, onChange: p.onAmount, onCommit: p.onCommit, label: p.label || 'Disbursement amount',
           amt: amt, maxMv: mx, held: held })),

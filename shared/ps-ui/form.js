@@ -274,9 +274,10 @@
       })));
   };
   /* LineTabs: tabs with a brand underline (the address sheet, DS 5975:10755) · items [{ id, label, off }] (off: can't be chosen yet) · value ·
-     onChange(id) · id (the underline's layout id). The underline glides on the Smooth spring; label colours change in 150 ms. */
+     onChange(id) · id (the underline's layout id) · hug (each tab as wide as its label, for long labels: the SMS landing page's schedule sheet).
+     The underline glides on the Smooth spring; label colours change in 150 ms. */
   PS.LineTabs = function LineTabs(p) {
-    return h('div', { className: 'ps-ltabs', role: 'tablist' }, p.items.map(function (it) {
+    return h('div', { className: PS.cx('ps-ltabs', p.hug && 'ps-ltabs--hug'), role: 'tablist' }, p.items.map(function (it) {
       var on = it.id === p.value;
       return h('button', { key: it.id, type: 'button', role: 'tab', 'aria-selected': on, disabled: !!it.off, className: PS.cx('ps-ltabs__tab ps-t-body-md-em', on && 'is-on', it.off && 'is-off'),
           onClick: function () { if (!on && !it.off) p.onChange(it.id); } },
