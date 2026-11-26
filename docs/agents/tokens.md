@@ -11,7 +11,8 @@
   print a short summary; work from that.
 - **Owner attached a plugin export** (`perasure-tokens-*.json`):
   `python3 tools/sync-tokens.py <file> --message-out /tmp/msg.txt`.
-- **Sync straight from Figma** (file `OBsvf42AiRapcRrasD7KNm`):
+- **Sync straight from Figma** (file `kYyNV2MgxvH1w9bJ46A3yx`, the rebrand PeraSure design system — the default token source since
+  2026-11-26, owner: https://www.figma.com/design/kYyNV2MgxvH1w9bJ46A3yx/PeraSure-design-system?node-id=10977-32417. The old file `OBsvf42AiRapcRrasD7KNm` is the blue era: never sync from it):
   1. `python3 tools/sync-tokens.py --digest` → one line of JSON.
   2. `use_figma` (read-only) with `code` = the full text of `tools/figma-tokens/core.js` followed by
      `return await psMcp(<that JSON>, 0);`.

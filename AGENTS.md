@@ -15,9 +15,12 @@ read straight from GitHub (the Worker lives in the repo `samgestudio-dev/devmode
 - **`main` = the rebrand v3** (navy #000128 ground, green #5CD680 action). This is the default for all work.
 - **The blue version is archive only:** branch `legacy/blue`, tag `legacy-blue`. Don't build on it or copy from it.
   Its old CSS names and values: `tokens/legacy/2026.11.17.css`.
-- **The current files are at the repo root** (`shared/`, `prototypes/`, `tokens/`). The copies under `rebrand/` were the
-  rebrand's working copy (tokens v2, last changed 2026-11-24) and are **superseded**. Don't read components, pages or
-  tokens from `rebrand/` (the one live part of `rebrand/` is the developer hand-off, see below).
+- **The current files are at the repo root** (`shared/`, `prototypes/`, `tokens/`). The copies under `rebrand/` (`rebrand/shared`,
+  `prototypes`, `tokens`, `spec`, `index.html`) were the rebrand's working copy (tokens v2, last changed 2026-11-24) and are
+  **superseded**. Don't read components, pages or tokens from them. The live parts of `rebrand/` are the developer hand-off
+  (`rebrand/handoff/ai/` and its later updates in `rebrand/handoff/updates/`).
+- Branch `tokens/rebrand-v3` is where the rebrand was built; it is fully merged into `main` (the hand-off still names it as its
+  design source). Work on `main`.
 
 ## Components first (owner's rule — this repo and every PeraSure project)
 
@@ -81,8 +84,9 @@ stay in this file.
 | Website landing page | `prototypes/landing-page/` | Not the SMS page |
 | Design tokens (CSS variables) | `tokens/tokens.css` (JSON: `tokens/tokens.json`) | In rem: `tokens-rem/tokens-rem.css`. Version: `tokens/version.json` |
 | What changed in the tokens | `tokens/CHANGELOG.md`, `tokens/MIGRATION-2026.11.21.md` (+ `.csv`) | Old → new CSS names |
-| Old (blue) token names | `tokens/legacy/2026.11.17.css`, `tokens/legacy/2026.11.12.css` | Load after `tokens/tokens.css` |
-| Developer hand-off for production (`phi_h5_025`) | `rebrand/handoff/ai/README.md` | Edit list, token mapping, motion (`07-motion/`), native screens (`08-native/`), `OPEN-QUESTIONS.md` |
+| Old (blue) token names | `tokens/legacy/2026.11.17.css` (the blue version just before the rebrand) | Load after `tokens/tokens.css`. `2026.11.12.css` holds only names retired on 2026-11-17 (older) |
+| Developer hand-off for production (`phi_h5_025`) | `rebrand/handoff/ai/README.md` **+** `rebrand/handoff/updates/` | The package: edit list, token mapping, motion (`07-motion/`), native screens (`08-native/`), `OPEN-QUESTIONS.md`. `updates/`: changes made after it was delivered, applied on top — read both |
+| Loan amounts, credit and dates the app shows | `prototypes/app/coupons-data.js` (`NUM`) | Table: `prototypes/app/README.md` → "One set of numbers"; rules: [docs/agents/app.md](docs/agents/app.md) |
 | Animations (Lottie / GSAP) | `animations/<slug>/` | Registry: `animations/animations.js`. Player: `animations/player.html?a=<slug>` |
 | Fonts | `assets/fonts/` (loaded by `fonts-2026.11.17.css`) | Rebrand: Hanken Grotesk for everything. Reddit Sans, Inter and Satoshi files remain for older pages |
 | Libraries (React, Motion, GSAP, Lottie…) | `vendor/<lib>@<version>/` | Pinned; never a CDN |
@@ -90,23 +94,29 @@ stay in this file.
 | Rebrand decisions and Figma node ids | `rebrand/log/`, `rebrand/figma/ledger.json`, `rebrand/BRIEF.md` | History and reasons, not code |
 | Run the demos locally / on a phone | `tools/dev-server.py`, `tools/phone-server.command` | Other scripts in `tools/`: `stamp.py` (cache busting), tokens (`sync-tokens.py`, `legacy-tokens.py`, `rem-tokens.py`) |
 
-Figma: rebrand file `kYyNV2MgxvH1w9bJ46A3yx` (pages *Design - Rebranding*, *Component - Rebranding*).
+Figma: rebrand file `kYyNV2MgxvH1w9bJ46A3yx` (pages *Design - Rebranding*, *Component - Rebranding*) — also the token source:
+https://www.figma.com/design/kYyNV2MgxvH1w9bJ46A3yx/PeraSure-design-system?node-id=10977-32417. The old file `OBsvf42AiRapcRrasD7KNm`
+is the blue era: don't sync tokens from it.
 
 ## Skip these when searching
 
 - `devmode/` (≈1,900 files): generated data and saved snapshots for PeraSure Dev Mode. Read `devmode/README.md` only when the task is about Dev Mode.
-- `rebrand/handoff/` except `rebrand/handoff/ai/`: generated hand-off output (`dist/`, `reviews/`, `updates/`) and **copies** of
-  this repo's docs (`rebrand/handoff/README.md`, `rebrand/handoff/CLAUDE.md` are copies of the root files, not the guide).
+- `rebrand/handoff/` except `ai/` and `updates/` (both live): generated hand-off output (`dist/`, `reviews/`) and old **copies** of
+  this repo's docs (`rebrand/handoff/README.md`, `rebrand/handoff/CLAUDE.md`: copies from 2026-11-20, not the guide).
 - `rebrand/shared/`, `rebrand/prototypes/`, `rebrand/tokens/`, `rebrand/spec/`, `rebrand/index.html`: the superseded working copy.
 - Superseded docs: `rebrand/DEV-HANDOFF.md` and `rebrand/tokens/MAPPING.md` (use `rebrand/handoff/ai/` instead).
 - `vendor/`: third-party libraries.
 
-Quick search that skips them: `git grep -n "<text>" -- . ':!devmode' ':!rebrand' ':!vendor'`
+Quick search that skips them: `git grep -n "<text>" -- . ':!devmode' ':!rebrand' ':!vendor'` (for the hand-off, search
+`rebrand/handoff/ai rebrand/handoff/updates` instead).
 
 ## Checking before you push
 
 - **Index:** decide whether the file index or a topic guide needs an edit (see "Keep this index current" below); if it does,
   update it in this commit. Then run `python3 tools/check-agent-docs.py` (every link in the agent docs must exist).
+- **Cache stamp:** a change to the Playground pages, `animations/`, `assets/` or `shared/` → `python3 tools/stamp.py` (see "Caching").
+- **Iteration:** a change to a page, a component or a motion → record it in Dev Mode (skill `perasure-iteration-log`,
+  [docs/agents/devmode.md](docs/agents/devmode.md)).
 - Open the picker and every new link at a phone viewport (e.g. 390×664, touch, DPR 3) and confirm the demo
   loads with no console errors.
 - Tap through the main flow once.

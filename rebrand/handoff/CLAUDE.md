@@ -1,3 +1,8 @@
+> ⚠️ **Old copy — not the rules (2026-11-26).** This file was copied on 2026-11-20 and is not kept up to date: its token names, fonts
+> and sections are from before the rebrand v3. An agent working anywhere in this repo, this folder included, follows the root
+> [`AGENTS.md`](../../AGENTS.md) and its topic guides in `docs/agents/`. Only the "Developer handoff" section below is specific to this
+> copy; for the developers' package itself read [`ai/README.md`](ai/README.md) and [`updates/`](updates/).
+
 > Copy of the repo's `CLAUDE.md` with the **Developer handoff docs** section added (owner, 2026-11-20: every change goes into a copy in
 > `rebrand/`; the original at the repo root is unchanged). Paths here are relative to the repo root, not to this folder.
 

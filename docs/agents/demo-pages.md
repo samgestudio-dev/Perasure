@@ -77,17 +77,19 @@ bundle was unpacked onto the shared environment):
 
   | Page | Header | Bottom |
   |---|---|---|
-  | Primary (the Home / Payment / Account tabs) | `--gradient-top-nav-filled` (Ambient #F0F5F4 80 → 40 → 0) | tab bar `--gradient-bottom-primary-nav-filled` (white 0 → 60 → 80) |
-  | Secondary (二级页面: every other page) | solid page colour (`--color-surface-page-default`) | `--gradient-bottom-secondary-nav-filled` (Ambient 0 → 60 → 80) |
-  | Amount entry and order page (not secondary) | `--gradient-top-nav-filled` | `--gradient-bottom-secondary-nav-filled` (`BottomBar{secondary}`) |
-  | Page sheet's foot (the coupon picker's total + Confirm) | — | `--gradient-bottom-secondary-nav-filled` |
+  | Primary (the Home / Payment / Account tabs) | `--gradient-nav-top` (Mist #F0F5F4 80 → 40 → 0) | tab bar `--gradient-nav-bottom` (white 0 → 60 → 80) |
+  | Secondary (二级页面: every other page) | solid page colour (`--bg-page`) | `--gradient-nav-bottom-mist` (Ambient 0 → 60 → 80) |
+  | Amount entry and order page (not secondary) | `--gradient-nav-top` | `--gradient-nav-bottom-mist` (`BottomBar{secondary}`) |
+  | Page sheet's foot (the coupon picker's total + Confirm) | — | `--gradient-nav-bottom-mist` |
 
   A bottom action bar on a tab page uses the primary gradient. The glass buttons and the tab bar's pill keep their own normal
   background blur (that is the glass, not a progressive blur). The veils come and go with the scroll as before: the header's appears as
   content scrolls under it; on a scrolling page the bottom one fades out over the last stretch of scroll (as tall as the bar), so at
   the very bottom it is gone; a page that does not scroll shows none. Both extend behind the iOS status bar / search bar. The Withdraw
   demo (its own bars in withdraw.js / withdraw.css, `BLUR = false`) and Change co-maker follow the same table.
-  The old #EBF0EF secondary bottom and `--gradient-bottom-nav-filled` are retired (`tokens/legacy/2026.11.12.css` keeps the old names).
+  Token names as of v2026.11.23 (Figma styles `Gradient/Nav-top`, `Nav-bottom`, `Nav-bottom-mist`); the v2026.11.17 names
+  (`--gradient-top-nav-filled`…) are in `tokens/legacy/2026.11.17.css`. The old #EBF0EF secondary bottom and `--gradient-bottom-nav-filled`
+  are retired (`tokens/legacy/2026.11.12.css` keeps those names).
 - Motion: prefer Motion (formerly Framer Motion; `vendor/motion@14.4.0/motion-react.js`) with `LazyMotion` + `m` (strict), drive continuous values with motion values
   instead of React state, animate only `transform` / `opacity` where possible, and respect
   `prefers-reduced-motion`.
@@ -95,7 +97,7 @@ bundle was unpacked onto the shared environment):
   Motion, so a prototype links them from the repo instead of inlining them — the page's own file then holds only
   what the prototype adds, which is what developers would actually ship. Fonts:
   `<link rel="stylesheet" href="../../assets/fonts/fonts-2026.11.17.css">` and `font-family: var(--ps-font-text | --ps-font-body |
-  --ps-font-num)` (emphasised amounts use `--ps-font-num`: Reddit Sans, ₱ included — see "Number font" in [app.md](app.md)). Libraries:
+  --ps-font-num)` (emphasised amounts use `--ps-font-num` = `--font-family-number`, Hanken Grotesk since the rebrand — see "Number font" in [app.md](app.md)). Libraries:
   `<script src="../../vendor/…">` with a relative path. Never a CDN at runtime, no build step, no base64 fonts or
   pasted library code in the page. Data and code specific to the prototype (a recording, an SVG) may stay inline or
   sit next to it in its folder. Existing prototypes that were made as single files stay as they are unless the owner

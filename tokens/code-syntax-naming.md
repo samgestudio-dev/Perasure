@@ -393,8 +393,8 @@ Blur / Backdrop / bg
 ### Gradient / Opacity
 
 ```text
-Gradient / Top-nav-filled
-→ var(--gradient-top-nav-filled)
+Gradient / Nav-top
+→ var(--gradient-nav-top)
 
 Layer Opacity / Muted
 → var(--layer-opacity-muted)

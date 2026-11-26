@@ -141,9 +141,9 @@ Home and the loan screen ("Apply a loan" and the order details) use the PeraSure
 
 Since tokens v2026.11.17 (owner) there is **no progressive blur**; each bar is one token veil:
 
-- home (a tab page): header `--gradient-top-nav-filled`, tab bar `--gradient-bottom-primary-nav-filled`;
+- home (a tab page): header `--gradient-nav-top`, tab bar `--gradient-nav-bottom`;
 - the loan screen (amount entry and order details — not secondary pages, but the secondary bottom, owner): header
-  `--gradient-top-nav-filled`, Confirm bar `--gradient-bottom-secondary-nav-filled` (it replaced the hand-written #EBF0EF).
+  `--gradient-nav-top`, Confirm bar `--gradient-nav-bottom-mist` (it replaced the hand-written #EBF0EF).
 - The bottom veil fades out over the last stretch of scroll (as tall as the bar), gone at the very bottom (home: `homeScroll`;
   order details: `updEnd`). On the order details the Confirm bar's veil is its own layer, in with the confirm chrome and out
   at the end of the scroll. The blur code (`BLUR`, `pblur`) is still in withdraw.js but switched off (`BLUR = false`).

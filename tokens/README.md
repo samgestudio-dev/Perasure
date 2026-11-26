@@ -1,7 +1,7 @@
 # PeraSure design tokens
 
-The variables and styles of the [PeraSure design system](https://www.figma.com/design/OBsvf42AiRapcRrasD7KNm/PeraSure-design-system?node-id=3259-657)
-Figma file, versioned for prototypes and developers. The Playground picker does not show or load them.
+The variables and styles of the [PeraSure design system](https://www.figma.com/design/kYyNV2MgxvH1w9bJ46A3yx/PeraSure-design-system?node-id=10977-32417)
+Figma file (the rebrand file `kYyNV2MgxvH1w9bJ46A3yx`, token source since 2026-11-26; the old blue file `OBsvf42AiRapcRrasD7KNm` is no longer synced), versioned for prototypes and developers. The Playground picker does not show or load them.
 
 Current version: see [`version.json`](version.json) · history: [`CHANGELOG.md`](CHANGELOG.md) · git tags `tokens-v<version>`.
 

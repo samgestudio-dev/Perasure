@@ -7,7 +7,7 @@
 ```
 index.html                 picker ("Playground"): "Prototypes" tab (DEMOS array) + "Animations" tab (reads animations/animations.js)
 assets/playground-ui.js    shared Material UI theme + icons for the picker and the player (window.PG)
-assets/fonts/              the app's fonts (Hanken Grotesk, Inter, Reddit Sans; Satoshi kept for old versions) + fonts-2026.11.17.css —
+assets/fonts/              the app's fonts (Hanken Grotesk: the rebrand uses it for everything; Inter, Reddit Sans and Satoshi kept for old versions) + fonts-2026.11.17.css —
                            shared by all prototypes (fonts.css is the frozen version before 2026.11.17: old Dev Mode snapshots link it)
 prototypes/_template/index.html  starting point for a new prototype (links the shared fonts and libraries); not on the picker
 shared/ps-ui/              PeraSure UI components (React, configurable): ps-ui.css (tokens only), core.js, layout.js, home.js,
@@ -49,5 +49,12 @@ README.md                  human-facing summary + demo / animation tables
 ```
 
 `<slug>` is lowercase-kebab-case, e.g. `withdraw-fund-flow`, `repayment-success`.
-docs/agents/ (the topic guides for AI agents, listed in AGENTS.md) and tools/check-agent-docs.py (checks their links) are not
-in the block above.
+Not in the block above:
+
+```
+docs/agents/               the topic guides for AI agents (listed in AGENTS.md); tools/check-agent-docs.py checks their links
+shared/ps-ui/landing.js    the SMS landing page's components (LandingHero, LoanCalculator…) — page: prototypes/sms-landing/
+tokens/legacy/             old token names and values: 2026.11.17.css = the blue version before the rebrand, 2026.11.12.css = older
+rebrand/handoff/ai/        the developers' rebrand hand-off for phi_h5_025 (live); rebrand/handoff/updates/ = later updates on top of it
+rebrand/                   everything else here is the rebrand's superseded working copy and history (see AGENTS.md "Skip these")
+```

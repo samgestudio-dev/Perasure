@@ -5,7 +5,7 @@
 ## The full app (`prototypes/app`)
 
 One prototype that holds the whole app, like a test environment (owner's rule): every screen and motion piece in the repo plus the
-rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), built on the shared components. Guide: `prototypes/app/README.md`.
+rest of the app from Figma (pre-rebrand app file `barda5NcnFzxG7CHtISKsW`, page `38:1137`; the rebrand look: `kYyNV2MgxvH1w9bJ46A3yx`, *Design - Rebranding*), built on the shared components. Guide: `prototypes/app/README.md`.
 
 - **New work goes in here too.** When a new screen, flow or motion piece is added to the repo, add it to the app as well (a screen in
   `screens-*.js`, its states in Tune), so the app stays complete. Change co-maker and the landing page are not part of it.
@@ -35,8 +35,8 @@ rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), buil
 - **Toasts sit at the top** (owner): under the header bar, like an iPhone notification (`PS.Toasts`). Every tap shows a new one at once (never
   queued or merged); the new one covers the old, which moves down a little, shrinks and fades (a stack of 3, not a list); a swipe left closes one.
 - **Secondary pages** (owner): every page except the Home / Payment / Account tabs has a solid header in the page colour (`PS.Screen{secondary}`)
-  and the secondary bottom (`Gradient/Bottom-secondary-nav-filled`); the immersive amount entry and the order page are not secondary pages
-  (header `Gradient/Top-nav-filled`) but take the secondary bottom too (owner, 2026-11-17). Full rule: "Header and bottom bars" in [demo-pages.md](demo-pages.md).
+  and the secondary bottom (`Gradient/Nav-bottom-mist`); the immersive amount entry and the order page are not secondary pages
+  (header `Gradient/Nav-top`) but take the secondary bottom too (owner, 2026-11-17). Full rule: "Header and bottom bars" in [demo-pages.md](demo-pages.md).
 - **Lists in the application are popovers** (owner, DS 7201:12032 — the bottom-sheet lists are retired): `PS.FormField{menu}` / `PS.Popover`.
   Like an iPhone menu they open centred on where the finger tapped, kept 8 px from the page's sides, and grow out of that point on a
   light-bounce spring (`PS.MT.MENU`, the one thing that bounces), rows following one after another; a picked row lights up, then it folds away.
@@ -48,14 +48,12 @@ rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), buil
 - **The coupon picker** (owner, DS 10836:28988): tabs without counts; each coupon a white card (`PS.CouponOption`) — picking gives it a 1 px
   brand line inside (DS 10842:29606, over the strip too), the default shadow and the mark; the "Expires in" strip shows only with less than a day left, and only as the strip under the card (owner). Used by the app and
   the Coupon system demo. The coupon centre keeps its tickets (`PS.CouponTicket`).
-- **Number font** (owner, tokens v2026.11.17): `Font/Family/Number` = **Reddit Sans** (it has its own ₱; before: Satoshi with ₱ from Inter).
-  It is only for **emphasised amounts**, always in a Number text style — `Number/xs 16/20 +2 %`, `sm 18/24 +3 %`, `md 24/32 0`,
-  `lg 32/40 +2 %`, `xl 36/100 % +4 %`, `xxl 48/100 % +3 %`, all Bold (`.ps-t-number-*`, `PS.Amount{num, decNum}`). Never for small notes
-  and labels beside an amount (Total credit, Used / Available, an old price, the credit limit pill's "+₱…", "Previous limit") — those
-  are Inter; never for list numbers (Tips 1 2 3 — Hanken). A title (a coupon's value "+₱5,000", "₱300 OFF") keeps its own font and
-  only its ₱ is the number font (`PS.Peso`). An amount Figma sets at a size with no Number style takes the one the owner picks (OfferCard 28 → lg 32)
-  — ask the owner. Amounts drawn one glyph per box (typed digits, the Withdraw morph) carry Reddit Sans's kerning as margins
-  (`PS.KERN` / `PS.kern`, withdraw.js `Component.KERN`): split boxes don't kern. Details: `shared/README.md` → "Number font".
+- **Number font** (owner, rebrand 2026-11-24, tokens v2026.11.23): **Hanken Grotesk, like all text** — one typeface for everything,
+  amounts included (`--font-family-number` and `--font-family-amount` are Hanken; `--ps-font-num` follows them). Emphasised amounts still
+  use the amount text styles: `.ps-t-number-*` in `ps-ui.css` (`PS.Amount{num, decNum}`), = Figma `Amount/*` (tokens `.ps-text-amount-*`);
+  a ₱ inside a title uses `PS.Peso`. An amount at a size with no amount style: ask the owner. No pair kerning any more (`PS.kern` returns 0;
+  `PS.KERN` is Reddit Sans's old table). Before the rebrand it was Reddit Sans (Satoshi before 2026.11.17): branch `legacy/blue`.
+  Details: `shared/README.md` → "Number font".
 - **Applying** (owner): Your loan estimate → Basic info → ID type + both sides → Check the details → selfie → trusted contact → Submit
   (`APP.apply()`). Addresses are the Philippines' real Region → Province → City list (`prototypes/app/ph-places.js`, PSA PSGC).
 - **Carousels of animations** (owner): only the card on screen plays, and it plays again from the start each time it is swiped to
@@ -69,13 +67,13 @@ rest of the app from Figma (file `barda5NcnFzxG7CHtISKsW`, page `38:1137`), buil
   (order details, borrower protection and its Protected / Add button, withdrawal method, agreement + nudge), look and copy — apart from new
   features (the coupons section, its Discount row) and the numbers. Host it, never re-make it: `withdraw-host.js` patches only sample data
   and sizes (`PATCHES` / `WIDE`) and gives hooks (`host.blocks`, `order`, `extraRows`, `method…`, `on…`). Home's credit card is the demo's
-  own (`APP.WdHero`), so the Credit limit increase closes into it with the demo's `introExit` in both credit states.
+  own (`APP.WdHero`) when there is temporary credit left (and no `?card=ps`); otherwise it is `PS.CreditCard` (`screens-home.js`). With `APP.WdHero`, the Credit limit increase closes into it with the demo's `introExit` in both credit states.
 - **Same size on every page** (owner): nothing is scaled — the demo is laid out as wide as the frame (`host.width`). Its wrappers carry
   `.ps-wd` (ps-ui.css: what the demo's withdraw.css gives its elements — instant taps on iOS, caret blink, content-box).
 - **Page changes crossfade** (owner), like home's tabs — never a sideways slide (`PS.Pages`).
 - **Temporary credit is used first** (owner): the card's temporary amount is what is left of it (`CS.credit.temporaryLeft`). The amount entry's
   maximum is the available credit; a limit coupon raises it only on the order page, once ticked.
-- **Default shadow** on home's blue card, payment card and updates strip (owner). Coupon pictures are Figma's SVG exports (`PS.CouponArt`).
+- **Default shadow** on home's credit card, payment card and updates strip (owner). Coupon pictures are Figma's SVG exports (`PS.CouponArt`).
 - **Sheets** (owner): every sheet whose content scrolls has the coupon picker's veil at its top (the sheet's own colour, 80 % → 0, behind
   the search / tabs), so what scrolls up fades out; the drag handle is always the top layer.
 - **Bars have no colour while they cover nothing** (owner): the header's veil appears as content scrolls under it, the bottom / tab bar's goes

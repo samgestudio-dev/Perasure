@@ -13,7 +13,8 @@ states as props; the look lives here once. Change a component here and every pro
   Mode shows. `gallery.html` only sends old links on to Dev Mode.
 - **The whole app built on it:** [`prototypes/app/`](../prototypes/app/README.md).
 - **First prototype built on it:** [`prototypes/coupon-system/`](../prototypes/coupon-system/README.md).
-- Figma source: PeraSure design system (`OBsvf42AiRapcRrasD7KNm`) — home `10730:58631`, loan `10656:51873`,
+- Figma source: the rebrand file `kYyNV2MgxvH1w9bJ46A3yx` (pages *Component - Rebranding*, *Design - Rebranding*). Pre-rebrand
+  node ids in the old blue file (`OBsvf42AiRapcRrasD7KNm`) — home `10730:58631`, loan `10656:51873`,
   coupons section `10594:45373`, account `10750:63340`.
 
 ## Using it in a prototype
@@ -78,6 +79,7 @@ rule in `CLAUDE.md` asks.
 | `pay.js` | `ScamStrip`, `Installment`, `PayBar`, `RepayCard`, `InsetRows`, `PayTimer`, `QrPanel`, `Accordion`, `MethodPicker`, `Pager`, `Carousel` (`dots` · `gap`); `Accordion` `small` · `icon` (a brand tile before the title), `PenaltyInfo`, `ScamTips` (sheet className `ps-scams`), `GuestPay`, `PayDock` |
 | `list.js` | `LinkList` (`tall`), `Facts`, `ActivityItem`, `InboxItem`, `HistoryRow`, `HubCard`, `Tiles`, `Tips`, `Bullets` |
 | `apply.js` | applying and identity: `PageHead`, `useCamera` + `pickFile` (the phone's camera / file picker), `Shutter`, `IdCamera`, `IdSideCard`, `Selfie` (live / checking / failed), `FaceCamera`, `IdResult` (in use / failed, sheet className `ps-idres`) with `SheetHero`, `ChoiceList` / `ChoiceButton`, `PhotoTips`; `FileList` + `FileNote`, `SearchSheet` (grey, or white with sheet className `ps-sheet--white`), `BankList`, `PlacePicker` (Region → Province → City, search) + `PS.mark`, `EstimateCard`; help articles: `Article`, `Feedback`, `RelatedLinks`; `PageHero` |
+| `landing.js` | the SMS landing page's pieces (`prototypes/sms-landing/`): `LandingNav`, `LandingHero`, `LandingSection`, `LoanCalculator`, `LandingLayer`, `LoanPlanSheet`, `Steps`, `StickyCta`, `PlayButton`, `Glow` |
 | `fx.js` | the earlier demos' motion as components: `OrderSubmit`, `OtpSheet`, `CreditLimitIntro` (hosts the shipped page; `exit` hands the closing to the page, as the demo's intro.js does) |
 | `withdraw-host.js` | `PS.loadWithdraw()`: the Withdraw demo's loan screen (slide up, amount entry, morph into the order card) the demo's home card and loan screen (slide up, amount entry, morph, the order page's own blocks) run from the demo's own code, laid out at the host's width; the host gives the limit, numbers, sample data, extra blocks and taps (header of the file) — wrappers get `.ps-wd` |
 | `phone-fit.js` | responsive phone page, iOS 26 edge to edge; fit mode cap (default, ≤ 1.15×) / rem (the same factor through the root font size) / fit (1:1) / scale (old 360 zoom), from `window.PS_FIT` or Tune (`fit`, `zoom`); sets `--vh --ph --ftop --e --sb` |
@@ -101,31 +103,31 @@ in form.js, `PS.Lottie{active}` / `PS.Anim{active}` (core.js: play from the star
 `PS.Popover` opens centred on the last tap (or `at`), 8 from the page's sides, growing from that point; without a tap, its right edge on the
 anchor's. `PS.Wheel`'s band is its highlight (it covers the wheel's own line: no double text) and it owns every touch on it.
 
-## Number font and bars (owner, tokens v2026.11.17)
+## Number font and bars (owner, rebrand tokens v2026.11.23)
 
-**Number font.** `--ps-font-num` = token `Font/Family/Number` = **Reddit Sans** (variable 200–900, with its own ₱;
-`assets/fonts/reddit-sans-var.woff2`, OFL). Before 2026.11.17 it was Satoshi with ₱ from Inter (`--font-family-satoshi`, now in
-`tokens/legacy/2026.11.12.css`).
+**Number font.** Since the rebrand (owner, 2026-11-24) it is **Hanken Grotesk, like all text**: `--ps-font-num` = token
+`Font/Family/Number` = Hanken. Before: Reddit Sans (v2026.11.17, kept in `tokens/legacy/2026.11.17.css`), and before that Satoshi with
+₱ from Inter (`tokens/legacy/2026.11.12.css`).
 
 | Rule | How |
 |---|---|
-| Only **emphasised amounts** use it, always in a Number text style | `.ps-t-number-xs/sm/md/lg/xl/xxl` = DS `Number/*`: 16/20 +2 % · 18/24 +3 % · 24/32 0 · 32/40 +2 % · 36/100 % +4 % · 48/100 % +3 %, all Bold. `PS.Amount{ num: 'lg' }`, a smaller ".00" with `decNum: 'xs'` |
-| **Notes and labels** beside an amount stay **Inter** | Total credit, Used / Available, an old (struck) price, the intro's "+₱10,000 added" / "Previous limit" |
-| **Titles** keep their own font; **only the ₱** in them is the number font | `h(PS.Peso, null, '+₱5,000')` → `<span class="ps-peso">₱</span>` (coupon values on home, the coupon centre, the coupon picker) |
-| **List numbers** are not amounts | Tips' 1 2 3: Hanken |
-| A size with **no Number style** | ask the owner (OfferCard's 28 → lg 32, owner's choice) |
-| **One glyph per box** (typed digits, the Withdraw morph) | boxes don't kern, so each box carries its pair's kern as a right margin: `PS.kern(a, b)` (em) from `PS.KERN`, Reddit Sans Bold's GPOS pairs; withdraw.js has the same table (`Component.KERN`) |
+| **Emphasised amounts** use an amount text style | `.ps-t-number-xs/sm/md/lg/xl/xxl` (= Figma `Amount/*`, tokens `.ps-text-amount-*`), all Bold. `PS.Amount{ num: 'lg' }`, a smaller ".00" with `decNum: 'xs'` |
+| **Notes and labels** beside an amount are not amounts | their own body / label style: Total credit, Used / Available, an old (struck) price, "Previous limit" |
+| **Titles** keep their own style; the ₱ in them goes through `PS.Peso` | `h(PS.Peso, null, '+₱5,000')` → `<span class="ps-peso">₱</span>` |
+| **List numbers** are not amounts | Tips' 1 2 3 |
+| A size with **no amount style** | ask the owner |
+| **One glyph per box** (typed digits, the Withdraw morph) | no pair kerning since the rebrand: `PS.kern` returns 0 (`PS.KERN` is Reddit Sans's old table) |
 
-Where it is used (2026.11.17): home credit card (xl + xs), payment card (md), coupon picker total (md), order / estimate amount
+Where amount styles are used: home credit card (xl + xs), payment card (md), coupon picker total (md), order / estimate amount
 card (lg), amount entry (₱ lg, digits xxl, ".00" xs), account credit limit card (xs), credit limit hub (lg + xs), pay page (lg), loan
 application (lg), payment tab instalments (sm) and total (md), loan history (sm), credit history (xs), guest hero (xl), More for you
 (lg), the Credit limit increase's big number.
 
 **Bars** (`PS.TopBar`, `PS.BottomBar`, `PS.Navigator`, `PS.Bands`): no progressive blur — one token veil each. Tab pages: header
-`--gradient-top-nav-filled`, tab bar `--gradient-bottom-primary-nav-filled`; secondary pages (`PS.Screen{secondary}`): solid header,
-bottom `--gradient-bottom-secondary-nav-filled`; the amount entry and the order page: header `--gradient-top-nav-filled`, bottom
-`BottomBar{secondary}`; a page sheet's foot: `--gradient-bottom-secondary-nav-filled`. Table and reasons: `CLAUDE.md` → "Header and
-bottom bars".
+`--gradient-nav-top`, tab bar `--gradient-nav-bottom`; secondary pages (`PS.Screen{secondary}`): solid header,
+bottom `--gradient-nav-bottom-mist`; the amount entry and the order page: header `--gradient-nav-top`, bottom
+`BottomBar{secondary}`; a page sheet's foot: `--gradient-nav-bottom-mist`. Table and reasons: `docs/agents/demo-pages.md` →
+"Header and bottom bars".
 
 ## Rules for changing components
 

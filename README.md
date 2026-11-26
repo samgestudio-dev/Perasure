@@ -84,9 +84,9 @@ their own code for now.
 all plugins, as browser scripts and as ES modules in `esm/`), React 18.3.1, ReactDOM 18.3.1 and
 Material UI 5.18.0 (used by the Playground pages; theme in `assets/playground-ui.js`) and Matter.js 0.19.0.
 
-`assets/fonts/` holds the app's fonts — Hanken Grotesk and Inter (variable, 100–900) and Satoshi (500, 700) —
-with `fonts.css`, which defines them and three variables: `--ps-font-text` (Hanken Grotesk), `--ps-font-body`
-(Inter) and `--ps-font-num` (Satoshi for amounts, with ₱ taken from Inter, as in the app).
+`assets/fonts/` holds the app's fonts. The rebrand uses **Hanken Grotesk for everything**, amounts included (tokens
+`--font-family-*`); Inter, Reddit Sans and Satoshi stay for older pages. `fonts-2026.11.17.css` loads them (`fonts.css` is the frozen
+older version that old Dev Mode snapshots link).
 
 Motion 14.4.0 (formerly Framer Motion) in `vendor/motion@14.4.0/`, two browser builds — load one per page,
 both define `window.Motion`:
