@@ -104,7 +104,7 @@
       { name: 'CreditCard', desc: 'Available amount, total and temporary credit, Withdraw.', props: 'available · total · temporary · temporaryUntil · onWithdraw · onInfo · label · action',
         states: [['Temporary credit', function () { return h(PS.CreditCard, { available: 40000, total: 50000, temporary: 10000, temporaryUntil: 'Nov 20' }); }],
           ['No temporary', function () { return h(PS.CreditCard, { available: 15000, total: 50000 }); }]] },
-      { name: 'PaymentCard', desc: 'The next repayment; overdue: a red badge, and with a notice the overdue layout (the due date under the amount, the penalty box, a full-width button).', props: 'amount · was · due · badge · stage upcoming | today | overdue · onPay · payLabel · title · notice { title, body, onHelp }',
+      { name: 'PaymentCard', desc: 'The next repayment; overdue: a red badge (the button stays navy), and with a notice the overdue layout (the due date under the amount, the penalty box, a full-width button).', props: 'amount · was · due · badge · stage upcoming | today | overdue · onPay · payLabel · title · notice { title, body, onHelp }',
         states: [['Default', function () { return h(PS.PaymentCard, { amount: 800, due: 'Dec 27, 2026', badge: 'Due in 45 days' }); }],
           ['Discounted', function () { return h(PS.PaymentCard, { amount: 700, was: 800, due: 'Dec 27, 2026', badge: 'Due in 45 days' }); }],
           ['Due today', function () { return h(PS.PaymentCard, { amount: 800, due: 'Dec 27, 2026', badge: 'Due today', stage: 'today' }); }],

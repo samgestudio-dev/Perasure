@@ -39,7 +39,7 @@
       h(PS.Button, { size: 'md', className: 'ps-credit__cta', onClick: p.onWithdraw }, p.action || 'Withdraw'));   /* the green primary button (Figma CreditCard, rebrand v3) */
   };
   /* PaymentCard: next repayment · amount · was (struck-through original, optional) · due (date text) · badge ('Due in 45 days')
-     stage upcoming (default: grey badge, navy button) | today (navy badge and button) | overdue (red badge and button;
+     stage upcoming (default: grey badge, navy button) | today (navy badge and button) | overdue (red badge, navy button — owner 2026-11-26, was red;
      the amount stays green in every stage; the old overdue: true still works) · onPay · payLabel (default 'Pay ₱800 now') · title ('Next payment')
      notice { title, body, onHelp }: the overdue layout — due date under the amount, the penalty box, a full-width button (Figma PaymentCard) */
   PS.PaymentCard = function PaymentCard(p) {
@@ -48,7 +48,7 @@
       p.badge ? h(PS.Tag, { tone: stage === 'overdue' ? 'negative' : stage === 'today' ? 'brand' : 'neutral' }, p.badge) : null);
     var amt = h('div', { className: 'ps-payment__amt' }, h(PS.Amount, { value: p.amount }), p.was != null ? h(PS.Amount, { value: p.was, strike: true }) : null);
     var due = h('p', { className: 'ps-payment__date ps-t-body-md' }, h(PS.Icon, { name: 'calendar', size: 16, color: 'secondary' }), p.notice ? 'Due ' + p.due : p.due);
-    var btn = stage === 'overdue' ? 'danger' : p.notice ? 'primary' : 'navy';   /* upcoming and today: navy fill, white label, no line (owner 2026-11-24; was a white outlined button before the due date) */
+    var btn = stage !== 'overdue' && p.notice ? 'primary' : 'navy';   /* upcoming, today and overdue: navy fill, white label, no line (owner 2026-11-24; overdue too since 2026-11-26, Figma PaymentCard Due / Overdue / Overdue coupon — it was the red Destructive button) */
     var cls = 'ps-payment ps-payment--' + stage;
     if (p.notice) return h(PS.Card, { variant: 'outline', raised: true, className: cls + ' ps-payment--stack' }, head,
       h('div', { className: 'ps-payment__sum' }, amt, due),

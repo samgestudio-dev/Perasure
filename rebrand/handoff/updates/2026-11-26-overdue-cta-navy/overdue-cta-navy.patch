@@ -1,0 +1,33 @@
+diff --git a/src/pages/HomePage/Home/HomeComposite.module.css b/src/pages/HomePage/Home/HomeComposite.module.css
+index e6c5ab2..c5d64ea 100644
+--- a/src/pages/HomePage/Home/HomeComposite.module.css
++++ b/src/pages/HomePage/Home/HomeComposite.module.css
+@@ -344,11 +344,6 @@
+   white-space: nowrap;
+ }
+ 
+-.repaymentFooter button[data-overdue='true'] {
+-  background: var(--button-destructive-bg);
+-  color: var(--button-destructive-fg);
+-}
+-
+ .promotion {
+   width: 100%;
+ }
+diff --git a/src/pages/HomePage/Home/HomeComposite.tsx b/src/pages/HomePage/Home/HomeComposite.tsx
+index 4c3c8de..19cb8fb 100644
+--- a/src/pages/HomePage/Home/HomeComposite.tsx
++++ b/src/pages/HomePage/Home/HomeComposite.tsx
+@@ -699,11 +699,7 @@ export default function HomeComposite({
+                     {repayment.repaymentDueDate}
+                   </strong>
+                 </div>
+-                <button
+-                  data-overdue={repayment.isRepaymentOverdue}
+-                  onClick={onOpenPayment}
+-                  type="button"
+-                >
++                <button onClick={onOpenPayment} type="button">
+                   {t('home.composite.repayment.payNow', {
+                     amount: repayment.repaymentAmount,
+                   })}
