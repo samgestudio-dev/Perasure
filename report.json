@@ -1,0 +1,8168 @@
+{
+ "against": "v1-20261117-n1",
+ "at": "2026-11-26T06:55:14.200Z",
+ "commit": "781161a060f4f466066aeefa937c937fc2834deb",
+ "items": 319,
+ "changed": [
+  {
+   "id": "page-sending-0",
+   "kind": "page",
+   "label": "Sending code",
+   "labelZh": "发送验证码",
+   "page": "sending",
+   "state": 0,
+   "components": [
+    "Anim",
+    "Lottie",
+    "SendingCard",
+    "Card"
+   ],
+   "pixels": 1820,
+   "ratio": 0.00648,
+   "box": [
+    78,
+    358,
+    203,
+    86
+   ],
+   "image": "images/page-sending-0.webp",
+   "first": [
+    189,
+    358
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-permission-0",
+   "kind": "page",
+   "label": "Permissions",
+   "labelZh": "权限说明",
+   "page": "permission",
+   "state": 0,
+   "components": [
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 29097,
+   "ratio": 0.10362,
+   "box": [
+    28,
+    32,
+    304,
+    744
+   ],
+   "image": "images/page-permission-0.webp",
+   "first": [
+    30,
+    32
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-otp-0",
+   "kind": "page",
+   "label": "Verification code",
+   "labelZh": "输入验证码",
+   "page": "otp",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 7285,
+   "ratio": 0.02594,
+   "box": [
+    19,
+    30,
+    322,
+    391
+   ],
+   "image": "images/page-otp-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-login-0",
+   "kind": "page",
+   "label": "Log in",
+   "labelZh": "登录",
+   "page": "login",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 24340,
+   "ratio": 0.08668,
+   "box": [
+    24,
+    30,
+    309,
+    734
+   ],
+   "image": "images/page-login-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-opening-0",
+   "kind": "page",
+   "label": "Opening",
+   "labelZh": "启动页",
+   "page": "opening",
+   "state": 0,
+   "components": [
+    "Icon",
+    "HomeActions",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 80791,
+   "ratio": 0.28772,
+   "box": [
+    16,
+    28,
+    328,
+    737
+   ],
+   "image": "images/page-opening-0.webp",
+   "first": [
+    275,
+    28
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-home-0",
+   "kind": "page",
+   "label": "Home · Credit ready · repaying",
+   "labelZh": "首页 · 额度可用 · 还款中",
+   "page": "home",
+   "state": 0,
+   "components": [
+    "Icon",
+    "HomeActions",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 80791,
+   "ratio": 0.28772,
+   "box": [
+    16,
+    28,
+    328,
+    737
+   ],
+   "image": "images/page-home-0.webp",
+   "first": [
+    275,
+    28
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-home-1",
+   "kind": "page",
+   "label": "Home · Credit ready · no loan",
+   "labelZh": "首页 · 额度可用 · 未借款",
+   "page": "home",
+   "state": 1,
+   "components": [
+    "Icon",
+    "HomeActions",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 76100,
+   "ratio": 0.27101,
+   "box": [
+    16,
+    28,
+    328,
+    740
+   ],
+   "image": "images/page-home-1.webp",
+   "first": [
+    275,
+    28
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-home-2",
+   "kind": "page",
+   "label": "Home · Overdue",
+   "labelZh": "首页 · 逾期",
+   "page": "home",
+   "state": 2,
+   "components": [
+    "Icon",
+    "HomeActions",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 89342,
+   "ratio": 0.31817,
+   "box": [
+    16,
+    28,
+    328,
+    729
+   ],
+   "image": "images/page-home-2.webp",
+   "first": [
+    275,
+    28
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-home-3",
+   "kind": "page",
+   "label": "Home · Loan in review",
+   "labelZh": "首页 · 借款审核中",
+   "page": "home",
+   "state": 3,
+   "components": [
+    "Icon",
+    "HomeActions",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 78801,
+   "ratio": 0.28063,
+   "box": [
+    16,
+    28,
+    328,
+    728
+   ],
+   "image": "images/page-home-3.webp",
+   "first": [
+    275,
+    28
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-home-4",
+   "kind": "page",
+   "label": "Home · Transfer failed",
+   "labelZh": "首页 · 放款失败",
+   "page": "home",
+   "state": 4,
+   "components": [
+    "Icon",
+    "HomeActions",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 78801,
+   "ratio": 0.28063,
+   "box": [
+    16,
+    28,
+    328,
+    728
+   ],
+   "image": "images/page-home-4.webp",
+   "first": [
+    275,
+    28
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-home-5",
+   "kind": "page",
+   "label": "Home · Logged out",
+   "labelZh": "首页 · 未登录",
+   "page": "home",
+   "state": 5,
+   "components": [
+    "Icon",
+    "HomeActions",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 78107,
+   "ratio": 0.27816,
+   "box": [
+    16,
+    28,
+    328,
+    748
+   ],
+   "image": "images/page-home-5.webp",
+   "first": [
+    318,
+    28
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-home-6",
+   "kind": "page",
+   "label": "Home · New user",
+   "labelZh": "首页 · 新用户",
+   "page": "home",
+   "state": 6,
+   "components": [
+    "Icon",
+    "HomeActions",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 78107,
+   "ratio": 0.27816,
+   "box": [
+    16,
+    28,
+    328,
+    748
+   ],
+   "image": "images/page-home-6.webp",
+   "first": [
+    318,
+    28
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-home-7",
+   "kind": "page",
+   "label": "Home · Application in review",
+   "labelZh": "首页 · 申请审核中",
+   "page": "home",
+   "state": 7,
+   "components": [
+    "Icon",
+    "HomeActions",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 44578,
+   "ratio": 0.15875,
+   "box": [
+    16,
+    28,
+    328,
+    742
+   ],
+   "image": "images/page-home-7.webp",
+   "first": [
+    275,
+    28
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-home-8",
+   "kind": "page",
+   "label": "Home · Documents needed",
+   "labelZh": "首页 · 需补充材料",
+   "page": "home",
+   "state": 8,
+   "components": [
+    "Icon",
+    "HomeActions",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 79859,
+   "ratio": 0.2844,
+   "box": [
+    16,
+    28,
+    328,
+    733
+   ],
+   "image": "images/page-home-8.webp",
+   "first": [
+    275,
+    28
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-home-9",
+   "kind": "page",
+   "label": "Home · Not approved",
+   "labelZh": "首页 · 申请未通过",
+   "page": "home",
+   "state": 9,
+   "components": [
+    "Icon",
+    "HomeActions",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 71911,
+   "ratio": 0.25609,
+   "box": [
+    16,
+    28,
+    328,
+    752
+   ],
+   "image": "images/page-home-9.webp",
+   "first": [
+    275,
+    28
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-home-10",
+   "kind": "page",
+   "label": "Home · Limit expired",
+   "labelZh": "首页 · 额度已过期",
+   "page": "home",
+   "state": 10,
+   "components": [
+    "Icon",
+    "HomeActions",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 64170,
+   "ratio": 0.22853,
+   "box": [
+    16,
+    28,
+    328,
+    728
+   ],
+   "image": "images/page-home-10.webp",
+   "first": [
+    275,
+    28
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-amount-0",
+   "kind": "page",
+   "label": "Amount (fallback)",
+   "labelZh": "输入金额（备用页）",
+   "page": "amount",
+   "state": 0,
+   "components": [
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 11118,
+   "ratio": 0.03959,
+   "box": [
+    24,
+    0,
+    312,
+    748
+   ],
+   "image": "images/page-amount-0.webp",
+   "first": [
+    26,
+    0
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-home-11",
+   "kind": "page",
+   "label": "Home · Credit on hold",
+   "labelZh": "首页 · 额度冻结",
+   "page": "home",
+   "state": 11,
+   "components": [
+    "Icon",
+    "HomeActions",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 72061,
+   "ratio": 0.25663,
+   "box": [
+    16,
+    28,
+    328,
+    734
+   ],
+   "image": "images/page-home-11.webp",
+   "first": [
+    275,
+    28
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-withdraw-0",
+   "kind": "page",
+   "label": "Amount (Withdraw)",
+   "labelZh": "借款金额（Withdraw）",
+   "page": "withdraw",
+   "state": 0,
+   "components": [
+    "Brand",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 6087,
+   "ratio": 0.02168,
+   "box": [
+    24,
+    31,
+    275,
+    701
+   ],
+   "image": "images/page-withdraw-0.webp",
+   "first": [
+    37,
+    31
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-loan-0",
+   "kind": "page",
+   "label": "Loan details (fallback)",
+   "labelZh": "借款详情（备用页）",
+   "page": "loan",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 20157,
+   "ratio": 0.07178,
+   "box": [
+    30,
+    30,
+    304,
+    719
+   ],
+   "image": "images/page-loan-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-method-0",
+   "kind": "page",
+   "label": "Withdrawal method",
+   "labelZh": "收款方式",
+   "page": "method",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 24951,
+   "ratio": 0.08886,
+   "box": [
+    16,
+    30,
+    328,
+    734
+   ],
+   "image": "images/page-method-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-order-0",
+   "kind": "page",
+   "label": "Loan application · In review",
+   "labelZh": "借款申请状态 · 审核中",
+   "page": "order",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 15000,
+   "ratio": 0.05342,
+   "box": [
+    23,
+    30,
+    307,
+    452
+   ],
+   "image": "images/page-order-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-order-1",
+   "kind": "page",
+   "label": "Loan application · Transfer failed",
+   "labelZh": "借款申请状态 · 放款失败",
+   "page": "order",
+   "state": 1,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 28102,
+   "ratio": 0.10008,
+   "box": [
+    23,
+    30,
+    307,
+    734
+   ],
+   "image": "images/page-order-1.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-coupons-0",
+   "kind": "page",
+   "label": "Coupon centre · Six",
+   "labelZh": "优惠券中心 · 6 张",
+   "page": "coupons",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 22532,
+   "ratio": 0.08024,
+   "box": [
+    18,
+    30,
+    302,
+    735
+   ],
+   "image": "images/page-coupons-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-coupons-1",
+   "kind": "page",
+   "label": "Coupon centre · One",
+   "labelZh": "优惠券中心 · 1 张",
+   "page": "coupons",
+   "state": 1,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 7508,
+   "ratio": 0.02674,
+   "box": [
+    18,
+    30,
+    302,
+    207
+   ],
+   "image": "images/page-coupons-1.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-coupons-2",
+   "kind": "page",
+   "label": "Coupon centre · None",
+   "labelZh": "优惠券中心 · 没有",
+   "page": "coupons",
+   "state": 2,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 5453,
+   "ratio": 0.01942,
+   "box": [
+    18,
+    30,
+    304,
+    446
+   ],
+   "image": "images/page-coupons-2.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-keep-0",
+   "kind": "page",
+   "label": "Keep your coupon? · One coupon",
+   "labelZh": "保留优惠券？ · 一张券",
+   "page": "keep",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 143954,
+   "ratio": 0.51266,
+   "box": [
+    0,
+    30,
+    360,
+    750
+   ],
+   "image": "images/page-keep-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-keep-1",
+   "kind": "page",
+   "label": "Keep your coupon? · Two coupons (swipe)",
+   "labelZh": "保留优惠券？ · 两张券（左右滑）",
+   "page": "keep",
+   "state": 1,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 138042,
+   "ratio": 0.4916,
+   "box": [
+    0,
+    30,
+    360,
+    750
+   ],
+   "image": "images/page-keep-1.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-picker-0",
+   "kind": "page",
+   "label": "Choose coupons",
+   "labelZh": "选择优惠券",
+   "page": "picker",
+   "state": 0,
+   "components": [
+    "Brand",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 6087,
+   "ratio": 0.02168,
+   "box": [
+    24,
+    31,
+    275,
+    701
+   ],
+   "image": "images/page-picker-0.webp",
+   "first": [
+    37,
+    31
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-plan-0",
+   "kind": "page",
+   "label": "Repayment plan",
+   "labelZh": "还款计划",
+   "page": "plan",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 20157,
+   "ratio": 0.07178,
+   "box": [
+    30,
+    30,
+    304,
+    719
+   ],
+   "image": "images/page-plan-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-banks-0",
+   "kind": "page",
+   "label": "Choose your bank",
+   "labelZh": "选择银行",
+   "page": "banks",
+   "state": 0,
+   "components": [
+    "TopBar"
+   ],
+   "pixels": 35021,
+   "ratio": 0.12472,
+   "box": [
+    0,
+    0,
+    360,
+    761
+   ],
+   "image": "images/page-banks-0.webp",
+   "first": [
+    0,
+    0
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-payment-0",
+   "kind": "page",
+   "label": "Repay · Repaying",
+   "labelZh": "还款 · 还款中",
+   "page": "payment",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Glass",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 22023,
+   "ratio": 0.07843,
+   "box": [
+    18,
+    29,
+    322,
+    727
+   ],
+   "image": "images/page-payment-0.webp",
+   "first": [
+    320,
+    29
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-payment-1",
+   "kind": "page",
+   "label": "Repay · Overdue",
+   "labelZh": "还款 · 逾期",
+   "page": "payment",
+   "state": 1,
+   "components": [
+    "Icon",
+    "Glass",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 21563,
+   "ratio": 0.07679,
+   "box": [
+    20,
+    29,
+    320,
+    727
+   ],
+   "image": "images/page-payment-1.webp",
+   "first": [
+    320,
+    29
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-payment-2",
+   "kind": "page",
+   "label": "Repay · Nothing to repay",
+   "labelZh": "还款 · 没有待还",
+   "page": "payment",
+   "state": 2,
+   "components": [
+    "Icon",
+    "Glass",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 3851,
+   "ratio": 0.01371,
+   "box": [
+    21,
+    29,
+    318,
+    728
+   ],
+   "image": "images/page-payment-2.webp",
+   "first": [
+    320,
+    29
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-payment-3",
+   "kind": "page",
+   "label": "Repay · Logged out",
+   "labelZh": "还款 · 未登录",
+   "page": "payment",
+   "state": 3,
+   "components": [
+    "Icon",
+    "Glass",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 34103,
+   "ratio": 0.12145,
+   "box": [
+    21,
+    29,
+    318,
+    728
+   ],
+   "image": "images/page-payment-3.webp",
+   "first": [
+    320,
+    29
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-pay-0",
+   "kind": "page",
+   "label": "Pay · App",
+   "labelZh": "支付页 · App 支付",
+   "page": "pay",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 29967,
+   "ratio": 0.10672,
+   "box": [
+    28,
+    30,
+    300,
+    420
+   ],
+   "image": "images/page-pay-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-pay-1",
+   "kind": "page",
+   "label": "Pay · QR code",
+   "labelZh": "支付页 · 二维码",
+   "page": "pay",
+   "state": 1,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 75911,
+   "ratio": 0.27034,
+   "box": [
+    28,
+    30,
+    300,
+    614
+   ],
+   "image": "images/page-pay-1.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-pay-2",
+   "kind": "page",
+   "label": "Pay · Transfer",
+   "labelZh": "支付页 · 转账",
+   "page": "pay",
+   "state": 2,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 9716,
+   "ratio": 0.0346,
+   "box": [
+    28,
+    30,
+    300,
+    332
+   ],
+   "image": "images/page-pay-2.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-paydetail-0",
+   "kind": "page",
+   "label": "Payment detail",
+   "labelZh": "还款明细",
+   "page": "paydetail",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Glass",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 106066,
+   "ratio": 0.37773,
+   "box": [
+    0,
+    29,
+    360,
+    713
+   ],
+   "image": "images/page-paydetail-0.webp",
+   "first": [
+    320,
+    29
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-scams-0",
+   "kind": "page",
+   "label": "Anti-scam tips",
+   "labelZh": "防诈骗提示",
+   "page": "scams",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Glass",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 141920,
+   "ratio": 0.50541,
+   "box": [
+    0,
+    29,
+    360,
+    751
+   ],
+   "image": "images/page-scams-0.webp",
+   "first": [
+    320,
+    29
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-paymethods-0",
+   "kind": "page",
+   "label": "Choose how to pay",
+   "labelZh": "选择还款方式",
+   "page": "paymethods",
+   "state": 0,
+   "components": [
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 10717,
+   "ratio": 0.03817,
+   "box": [
+    0,
+    0,
+    360,
+    740
+   ],
+   "image": "images/page-paymethods-0.webp",
+   "first": [
+    0,
+    0
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-kyc-estimate-0",
+   "kind": "page",
+   "label": "Loan estimate",
+   "labelZh": "借款估算",
+   "page": "kyc-estimate",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 37473,
+   "ratio": 0.13345,
+   "box": [
+    24,
+    30,
+    304,
+    734
+   ],
+   "image": "images/page-kyc-estimate-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-kyc-basic-0",
+   "kind": "page",
+   "label": "Basic information",
+   "labelZh": "基本信息",
+   "page": "kyc-basic",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 15712,
+   "ratio": 0.05595,
+   "box": [
+    24,
+    30,
+    286,
+    738
+   ],
+   "image": "images/page-kyc-basic-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-kyc-id-0",
+   "kind": "page",
+   "label": "ID · Not chosen",
+   "labelZh": "身份证件 · 未选择",
+   "page": "kyc-id",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 3622,
+   "ratio": 0.0129,
+   "box": [
+    25,
+    30,
+    304,
+    715
+   ],
+   "image": "images/page-kyc-id-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-kyc-id-1",
+   "kind": "page",
+   "label": "ID · Uploaded",
+   "labelZh": "身份证件 · 已上传",
+   "page": "kyc-id",
+   "state": 1,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 22956,
+   "ratio": 0.08175,
+   "box": [
+    25,
+    30,
+    304,
+    734
+   ],
+   "image": "images/page-kyc-id-1.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-camera-0",
+   "kind": "page",
+   "label": "ID camera",
+   "labelZh": "证件拍照",
+   "page": "camera",
+   "state": 0,
+   "components": [],
+   "pixels": 15597,
+   "ratio": 0.05554,
+   "box": [
+    15,
+    138,
+    333,
+    444
+   ],
+   "image": "images/page-camera-0.webp",
+   "first": [
+    44,
+    138
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-kyc-check-0",
+   "kind": "page",
+   "label": "Check the details",
+   "labelZh": "核对信息",
+   "page": "kyc-check",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 13874,
+   "ratio": 0.04941,
+   "box": [
+    23,
+    30,
+    305,
+    718
+   ],
+   "image": "images/page-kyc-check-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-kyc-selfie-0",
+   "kind": "page",
+   "label": "Selfie",
+   "labelZh": "自拍",
+   "page": "kyc-selfie",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 24353,
+   "ratio": 0.08673,
+   "box": [
+    24,
+    30,
+    305,
+    734
+   ],
+   "image": "images/page-kyc-selfie-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-kyc-contact-0",
+   "kind": "page",
+   "label": "Trusted contact",
+   "labelZh": "紧急联系人",
+   "page": "kyc-contact",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 12564,
+   "ratio": 0.04474,
+   "box": [
+    24,
+    30,
+    310,
+    715
+   ],
+   "image": "images/page-kyc-contact-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-docs-0",
+   "kind": "page",
+   "label": "Proof of income",
+   "labelZh": "补充收入证明",
+   "page": "docs",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 17995,
+   "ratio": 0.06408,
+   "box": [
+    23,
+    30,
+    310,
+    716
+   ],
+   "image": "images/page-docs-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-id-inuse-0",
+   "kind": "page",
+   "label": "ID already in use",
+   "labelZh": "证件已被使用",
+   "page": "id-inuse",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 140456,
+   "ratio": 0.5002,
+   "box": [
+    0,
+    30,
+    360,
+    750
+   ],
+   "image": "images/page-id-inuse-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-id-failed-0",
+   "kind": "page",
+   "label": "ID check failed",
+   "labelZh": "证件识别失败",
+   "page": "id-failed",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 143777,
+   "ratio": 0.51203,
+   "box": [
+    0,
+    30,
+    360,
+    750
+   ],
+   "image": "images/page-id-failed-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-date-0",
+   "kind": "page",
+   "label": "Select date",
+   "labelZh": "选择日期",
+   "page": "date",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 124438,
+   "ratio": 0.44316,
+   "box": [
+    0,
+    30,
+    360,
+    750
+   ],
+   "image": "images/page-date-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-city-0",
+   "kind": "page",
+   "label": "Select city",
+   "labelZh": "选择城市",
+   "page": "city",
+   "state": 0,
+   "components": [
+    "TopBar"
+   ],
+   "pixels": 35665,
+   "ratio": 0.12701,
+   "box": [
+    0,
+    0,
+    360,
+    738
+   ],
+   "image": "images/page-city-0.webp",
+   "first": [
+    0,
+    0
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-account-0",
+   "kind": "page",
+   "label": "Account · Logged in",
+   "labelZh": "我的 · 已登录",
+   "page": "account",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Glass",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 11987,
+   "ratio": 0.04269,
+   "box": [
+    32,
+    29,
+    299,
+    739
+   ],
+   "image": "images/page-account-0.webp",
+   "first": [
+    320,
+    29
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-account-1",
+   "kind": "page",
+   "label": "Account · Logged out",
+   "labelZh": "我的 · 未登录",
+   "page": "account",
+   "state": 1,
+   "components": [
+    "Icon",
+    "HomeActions",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 23707,
+   "ratio": 0.08443,
+   "box": [
+    16,
+    28,
+    328,
+    728
+   ],
+   "image": "images/page-account-1.webp",
+   "first": [
+    274,
+    28
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-hub-0",
+   "kind": "page",
+   "label": "Credit limit hub",
+   "labelZh": "额度中心",
+   "page": "hub",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 74580,
+   "ratio": 0.2656,
+   "box": [
+    16,
+    30,
+    328,
+    725
+   ],
+   "image": "images/page-hub-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-credit-0",
+   "kind": "page",
+   "label": "Credit history",
+   "labelZh": "额度记录",
+   "page": "credit",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 32963,
+   "ratio": 0.11739,
+   "box": [
+    16,
+    30,
+    328,
+    493
+   ],
+   "image": "images/page-credit-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-inbox-0",
+   "kind": "page",
+   "label": "Inbox · Unread",
+   "labelZh": "消息中心 · 有未读",
+   "page": "inbox",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 37432,
+   "ratio": 0.1333,
+   "box": [
+    16,
+    30,
+    328,
+    685
+   ],
+   "image": "images/page-inbox-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-inbox-1",
+   "kind": "page",
+   "label": "Inbox · All read",
+   "labelZh": "消息中心 · 全部已读",
+   "page": "inbox",
+   "state": 1,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 37311,
+   "ratio": 0.13287,
+   "box": [
+    16,
+    30,
+    328,
+    671
+   ],
+   "image": "images/page-inbox-1.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-inbox-2",
+   "kind": "page",
+   "label": "Inbox · Empty",
+   "labelZh": "消息中心 · 没有消息",
+   "page": "inbox",
+   "state": 2,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 8497,
+   "ratio": 0.03026,
+   "box": [
+    16,
+    30,
+    328,
+    466
+   ],
+   "image": "images/page-inbox-2.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-history-0",
+   "kind": "page",
+   "label": "Loan history",
+   "labelZh": "借款记录",
+   "page": "history",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 14538,
+   "ratio": 0.05177,
+   "box": [
+    24,
+    30,
+    276,
+    543
+   ],
+   "image": "images/page-history-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-message-0",
+   "kind": "page",
+   "label": "Message",
+   "labelZh": "消息详情",
+   "page": "message",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 5119,
+   "ratio": 0.01823,
+   "box": [
+    30,
+    30,
+    302,
+    154
+   ],
+   "image": "images/page-message-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-cancel-0",
+   "kind": "page",
+   "label": "Cancel a loan",
+   "labelZh": "取消借款",
+   "page": "cancel",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 30534,
+   "ratio": 0.10874,
+   "box": [
+    24,
+    30,
+    288,
+    716
+   ],
+   "image": "images/page-cancel-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-loan-record-0",
+   "kind": "page",
+   "label": "Loan record",
+   "labelZh": "借款详情",
+   "page": "loan-record",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 17134,
+   "ratio": 0.06102,
+   "box": [
+    23,
+    30,
+    307,
+    736
+   ],
+   "image": "images/page-loan-record-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-manage-0",
+   "kind": "page",
+   "label": "Manage account",
+   "labelZh": "账户管理",
+   "page": "manage",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 252,
+   "ratio": 0.0009,
+   "box": [
+    32,
+    30,
+    200,
+    129
+   ],
+   "image": "images/page-manage-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-delete-0",
+   "kind": "page",
+   "label": "Delete account",
+   "labelZh": "注销账户",
+   "page": "delete",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 19168,
+   "ratio": 0.06826,
+   "box": [
+    24,
+    30,
+    304,
+    716
+   ],
+   "image": "images/page-delete-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-about-0",
+   "kind": "page",
+   "label": "About PeraSure",
+   "labelZh": "关于 PeraSure",
+   "page": "about",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 10718,
+   "ratio": 0.03817,
+   "box": [
+    31,
+    30,
+    229,
+    714
+   ],
+   "image": "images/page-about-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-sec-0",
+   "kind": "page",
+   "label": "SEC registration",
+   "labelZh": "SEC 注册信息",
+   "page": "sec",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 22080,
+   "ratio": 0.07863,
+   "box": [
+    17,
+    30,
+    326,
+    550
+   ],
+   "image": "images/page-sec-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-bir-0",
+   "kind": "page",
+   "label": "BIR registration",
+   "labelZh": "BIR 注册信息",
+   "page": "bir",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 6667,
+   "ratio": 0.02374,
+   "box": [
+    32,
+    30,
+    293,
+    419
+   ],
+   "image": "images/page-bir-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-support-0",
+   "kind": "page",
+   "label": "Contact us",
+   "labelZh": "联系我们",
+   "page": "support",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 9134,
+   "ratio": 0.03253,
+   "box": [
+    24,
+    30,
+    304,
+    395
+   ],
+   "image": "images/page-support-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-logout-0",
+   "kind": "page",
+   "label": "Log out",
+   "labelZh": "退出登录",
+   "page": "logout",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Glass",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 214174,
+   "ratio": 0.76273,
+   "box": [
+    0,
+    29,
+    360,
+    751
+   ],
+   "image": "images/page-logout-0.webp",
+   "first": [
+    320,
+    29
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-doc-0",
+   "kind": "page",
+   "label": "Legal text",
+   "labelZh": "协议文本",
+   "page": "doc",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 4864,
+   "ratio": 0.01732,
+   "box": [
+    31,
+    30,
+    282,
+    120
+   ],
+   "image": "images/page-doc-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-delete-ok-0",
+   "kind": "page",
+   "label": "Delete your account?",
+   "labelZh": "确认注销",
+   "page": "delete-ok",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 201715,
+   "ratio": 0.71836,
+   "box": [
+    0,
+    30,
+    360,
+    750
+   ],
+   "image": "images/page-delete-ok-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-delete-no-0",
+   "kind": "page",
+   "label": "Can’t delete yet",
+   "labelZh": "暂时无法注销",
+   "page": "delete-no",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 212395,
+   "ratio": 0.75639,
+   "box": [
+    0,
+    30,
+    360,
+    750
+   ],
+   "image": "images/page-delete-no-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-faqs-0",
+   "kind": "page",
+   "label": "Help centre",
+   "labelZh": "帮助中心",
+   "page": "faqs",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 20976,
+   "ratio": 0.0747,
+   "box": [
+    32,
+    30,
+    280,
+    734
+   ],
+   "image": "images/page-faqs-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-rating-0",
+   "kind": "page",
+   "label": "Rating",
+   "labelZh": "评分",
+   "page": "rating",
+   "state": 0,
+   "components": [
+    "Icon",
+    "HomeActions",
+    "TopBar",
+    "Bands"
+   ],
+   "pixels": 158075,
+   "ratio": 0.56295,
+   "box": [
+    0,
+    28,
+    360,
+    752
+   ],
+   "image": "images/page-rating-0.webp",
+   "first": [
+    275,
+    28
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-faq-topic-0",
+   "kind": "page",
+   "label": "Help topic",
+   "labelZh": "帮助分类",
+   "page": "faq-topic",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 2207,
+   "ratio": 0.00786,
+   "box": [
+    26,
+    30,
+    275,
+    342
+   ],
+   "image": "images/page-faq-topic-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-phone-old-0",
+   "kind": "page",
+   "label": "Change number · old",
+   "labelZh": "更换手机号 · 旧号码",
+   "page": "phone-old",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 4237,
+   "ratio": 0.01509,
+   "box": [
+    25,
+    30,
+    309,
+    715
+   ],
+   "image": "images/page-phone-old-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-faq-0",
+   "kind": "page",
+   "label": "Help article",
+   "labelZh": "帮助文章",
+   "page": "faq",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 15627,
+   "ratio": 0.05565,
+   "box": [
+    17,
+    30,
+    308,
+    623
+   ],
+   "image": "images/page-faq-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-phone-new-0",
+   "kind": "page",
+   "label": "Change number · new",
+   "labelZh": "更换手机号 · 新号码",
+   "page": "phone-new",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 5361,
+   "ratio": 0.01909,
+   "box": [
+    24,
+    30,
+    303,
+    715
+   ],
+   "image": "images/page-phone-new-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-phone-selfie-0",
+   "kind": "page",
+   "label": "Change number · selfie",
+   "labelZh": "更换手机号 · 自拍",
+   "page": "phone-selfie",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 24437,
+   "ratio": 0.08703,
+   "box": [
+    24,
+    30,
+    305,
+    734
+   ],
+   "image": "images/page-phone-selfie-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-missing-0",
+   "kind": "page",
+   "label": "Not built yet",
+   "labelZh": "未上线页面",
+   "page": "missing",
+   "state": 0,
+   "components": [
+    "Icon",
+    "Back",
+    "Glass",
+    "TopBar"
+   ],
+   "pixels": 1589,
+   "ratio": 0.00566,
+   "box": [
+    32,
+    30,
+    276,
+    446
+   ],
+   "image": "images/page-missing-0.webp",
+   "first": [
+    37,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Rise_Crossfade-0",
+   "kind": "component",
+   "label": "Rise · Crossfade · Rise",
+   "labelZh": "Rise · Crossfade · Rise",
+   "entry": "Rise · Crossfade",
+   "state": 0,
+   "components": [
+    "Rise",
+    "Crossfade"
+   ],
+   "pixels": 7580,
+   "ratio": 0.07211,
+   "box": [
+    31,
+    32,
+    269,
+    220
+   ],
+   "image": "images/comp-Rise_Crossfade-0.webp",
+   "first": [
+    216,
+    32
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Icon-0",
+   "kind": "component",
+   "label": "Icon · Set",
+   "labelZh": "Icon · Set",
+   "entry": "Icon",
+   "state": 0,
+   "components": [
+    "Icon"
+   ],
+   "pixels": 2642,
+   "ratio": 0.05132,
+   "box": [
+    16,
+    17,
+    326,
+    97
+   ],
+   "image": "images/comp-Icon-0.webp",
+   "first": [
+    295,
+    17
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "page-face-0",
+   "kind": "page",
+   "label": "Confirm your identity",
+   "labelZh": "人脸确认",
+   "page": "face",
+   "state": 0,
+   "components": [],
+   "pixels": 4585,
+   "ratio": 0.01633,
+   "box": [
+    62,
+    238,
+    235,
+    242
+   ],
+   "image": "images/page-face-0.webp",
+   "first": [
+    97,
+    238
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Anim_Lottie_Art-1",
+   "kind": "component",
+   "label": "Anim · Lottie · Art · Art",
+   "labelZh": "Anim · Lottie · Art · Art",
+   "entry": "Anim · Lottie · Art",
+   "state": 1,
+   "components": [
+    "Art",
+    "Lottie",
+    "Anim"
+   ],
+   "pixels": 993,
+   "ratio": 0.02299,
+   "box": [
+    169,
+    29,
+    38,
+    38
+   ],
+   "image": "images/comp-Anim_Lottie_Art-1.webp",
+   "first": [
+    182,
+    29
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Amount-0",
+   "kind": "component",
+   "label": "Amount · Number/xs 16",
+   "labelZh": "Amount · Number/xs 16",
+   "entry": "Amount",
+   "state": 0,
+   "components": [
+    "Amount"
+   ],
+   "pixels": 979,
+   "ratio": 0.02266,
+   "box": [
+    15,
+    20,
+    92,
+    15
+   ],
+   "image": "images/comp-Amount-0.webp",
+   "first": [
+    17,
+    20
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Amount-1",
+   "kind": "component",
+   "label": "Amount · Number/sm 18",
+   "labelZh": "Amount · Number/sm 18",
+   "entry": "Amount",
+   "state": 1,
+   "components": [
+    "Amount"
+   ],
+   "pixels": 988,
+   "ratio": 0.02287,
+   "box": [
+    15,
+    21,
+    95,
+    16
+   ],
+   "image": "images/comp-Amount-1.webp",
+   "first": [
+    17,
+    21
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Amount-2",
+   "kind": "component",
+   "label": "Amount · Number/md 24",
+   "labelZh": "Amount · Number/md 24",
+   "entry": "Amount",
+   "state": 2,
+   "components": [
+    "Amount"
+   ],
+   "pixels": 1441,
+   "ratio": 0.03336,
+   "box": [
+    15,
+    22,
+    99,
+    19
+   ],
+   "image": "images/comp-Amount-2.webp",
+   "first": [
+    19,
+    22
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Amount-3",
+   "kind": "component",
+   "label": "Amount · Number/lg 32",
+   "labelZh": "Amount · Number/lg 32",
+   "entry": "Amount",
+   "state": 3,
+   "components": [
+    "Amount"
+   ],
+   "pixels": 3298,
+   "ratio": 0.07634,
+   "box": [
+    15,
+    23,
+    185,
+    29
+   ],
+   "image": "images/comp-Amount-3.webp",
+   "first": [
+    97,
+    23
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Amount-4",
+   "kind": "component",
+   "label": "Amount · Number/xl 36 + xs",
+   "labelZh": "Amount · Number/xl 36 + xs",
+   "entry": "Amount",
+   "state": 4,
+   "components": [
+    "Amount"
+   ],
+   "pixels": 3444,
+   "ratio": 0.07972,
+   "box": [
+    15,
+    20,
+    181,
+    33
+   ],
+   "image": "images/comp-Amount-4.webp",
+   "first": [
+    66,
+    20
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Amount-5",
+   "kind": "component",
+   "label": "Amount · Number/xxl 48",
+   "labelZh": "Amount · Number/xxl 48",
+   "entry": "Amount",
+   "state": 5,
+   "components": [
+    "Amount"
+   ],
+   "pixels": 3913,
+   "ratio": 0.09058,
+   "box": [
+    15,
+    22,
+    190,
+    43
+   ],
+   "image": "images/comp-Amount-5.webp",
+   "first": [
+    18,
+    22
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Amount-6",
+   "kind": "component",
+   "label": "Amount · Struck",
+   "labelZh": "Amount · Struck",
+   "entry": "Amount",
+   "state": 6,
+   "components": [
+    "Amount"
+   ],
+   "pixels": 391,
+   "ratio": 0.00905,
+   "box": [
+    16,
+    23,
+    68,
+    12
+   ],
+   "image": "images/comp-Amount-6.webp",
+   "first": [
+    17,
+    23
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Amount-7",
+   "kind": "component",
+   "label": "Amount · ₱ in a title",
+   "labelZh": "Amount · ₱ in a title",
+   "entry": "Amount",
+   "state": 7,
+   "components": [
+    "Amount"
+   ],
+   "pixels": 859,
+   "ratio": 0.01988,
+   "box": [
+    16,
+    22,
+    73,
+    18
+   ],
+   "image": "images/comp-Amount-7.webp",
+   "first": [
+    29,
+    22
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Button-0",
+   "kind": "component",
+   "label": "Button · Primary",
+   "labelZh": "Button · Primary",
+   "entry": "Button",
+   "state": 0,
+   "components": [
+    "Button"
+   ],
+   "pixels": 15271,
+   "ratio": 0.3535,
+   "box": [
+    16,
+    16,
+    328,
+    48
+   ],
+   "image": "images/comp-Button-0.webp",
+   "first": [
+    35,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Button-1",
+   "kind": "component",
+   "label": "Button · Small",
+   "labelZh": "Button · Small",
+   "entry": "Button",
+   "state": 1,
+   "components": [
+    "Button"
+   ],
+   "pixels": 4212,
+   "ratio": 0.0975,
+   "box": [
+    16,
+    16,
+    124,
+    36
+   ],
+   "image": "images/comp-Button-1.webp",
+   "first": [
+    29,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Button-2",
+   "kind": "component",
+   "label": "Button · Text",
+   "labelZh": "Button · Text",
+   "entry": "Button",
+   "state": 2,
+   "components": [
+    "Button"
+   ],
+   "pixels": 860,
+   "ratio": 0.01991,
+   "box": [
+    120,
+    34,
+    121,
+    14
+   ],
+   "image": "images/comp-Button-2.webp",
+   "first": [
+    120,
+    34
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Button-3",
+   "kind": "component",
+   "label": "Button · Plain",
+   "labelZh": "Button · Plain",
+   "entry": "Button",
+   "state": 3,
+   "components": [
+    "Button"
+   ],
+   "pixels": 410,
+   "ratio": 0.00949,
+   "box": [
+    154,
+    34,
+    53,
+    14
+   ],
+   "image": "images/comp-Button-3.webp",
+   "first": [
+    155,
+    34
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Button-4",
+   "kind": "component",
+   "label": "Button · Neutral",
+   "labelZh": "Button · Neutral",
+   "entry": "Button",
+   "state": 4,
+   "components": [
+    "Button"
+   ],
+   "pixels": 7227,
+   "ratio": 0.16729,
+   "box": [
+    16,
+    16,
+    328,
+    44
+   ],
+   "image": "images/comp-Button-4.webp",
+   "first": [
+    21,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Button-5",
+   "kind": "component",
+   "label": "Button · Inverse",
+   "labelZh": "Button · Inverse",
+   "entry": "Button",
+   "state": 5,
+   "components": [
+    "Button"
+   ],
+   "pixels": 26002,
+   "ratio": 0.6019,
+   "box": [
+    16,
+    16,
+    328,
+    80
+   ],
+   "image": "images/comp-Button-5.webp",
+   "first": [
+    27,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Button-6",
+   "kind": "component",
+   "label": "Button · Outline",
+   "labelZh": "Button · Outline",
+   "entry": "Button",
+   "state": 6,
+   "components": [
+    "Button"
+   ],
+   "pixels": 7891,
+   "ratio": 0.13366,
+   "box": [
+    16,
+    16,
+    328,
+    124
+   ],
+   "image": "images/comp-Button-6.webp",
+   "first": [
+    21,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Button-7",
+   "kind": "component",
+   "label": "Button · Secondary · navy · danger",
+   "labelZh": "Button · Secondary · navy · danger",
+   "entry": "Button",
+   "state": 7,
+   "components": [
+    "Button"
+   ],
+   "pixels": 11100,
+   "ratio": 0.24866,
+   "box": [
+    16,
+    16,
+    240,
+    84
+   ],
+   "image": "images/comp-Button-7.webp",
+   "first": [
+    30,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Button-8",
+   "kind": "component",
+   "label": "Button · Disabled",
+   "labelZh": "Button · Disabled",
+   "entry": "Button",
+   "state": 8,
+   "components": [
+    "Button"
+   ],
+   "pixels": 287,
+   "ratio": 0.00664,
+   "box": [
+    154,
+    35,
+    52,
+    10
+   ],
+   "image": "images/comp-Button-8.webp",
+   "first": [
+    156,
+    35
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Glass_Back_Close-0",
+   "kind": "component",
+   "label": "Glass · Back · Close · Pills",
+   "labelZh": "Glass · Back · Close · Pills",
+   "entry": "Glass · Back · Close",
+   "state": 0,
+   "components": [
+    "Glass",
+    "Back",
+    "Close"
+   ],
+   "pixels": 222,
+   "ratio": 0.00514,
+   "box": [
+    30,
+    30,
+    242,
+    16
+   ],
+   "image": "images/comp-Glass_Back_Close-0.webp",
+   "first": [
+    262,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Glass_Back_Close-1",
+   "kind": "component",
+   "label": "Glass · Back · Close · All",
+   "labelZh": "Glass · Back · Close · All",
+   "entry": "Glass · Back · Close",
+   "state": 1,
+   "components": [
+    "Glass",
+    "Back",
+    "Close"
+   ],
+   "pixels": 203,
+   "ratio": 0.0047,
+   "box": [
+    32,
+    28,
+    282,
+    17
+   ],
+   "image": "images/comp-Glass_Back_Close-1.webp",
+   "first": [
+    133,
+    28
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Tag_Count_Chip-0",
+   "kind": "component",
+   "label": "Tag · Count · Chip · All",
+   "labelZh": "Tag · Count · Chip · All",
+   "entry": "Tag · Count · Chip",
+   "state": 0,
+   "components": [
+    "Tag",
+    "Count",
+    "Chip"
+   ],
+   "pixels": 7477,
+   "ratio": 0.17308,
+   "box": [
+    16,
+    16,
+    321,
+    60
+   ],
+   "image": "images/comp-Tag_Count_Chip-0.webp",
+   "first": [
+    22,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Check_Agreement-0",
+   "kind": "component",
+   "label": "Check · Agreement · Marks",
+   "labelZh": "Check · Agreement · Marks",
+   "entry": "Check · Agreement",
+   "state": 0,
+   "components": [
+    "Check",
+    "Agreement"
+   ],
+   "pixels": 202,
+   "ratio": 0.00468,
+   "box": [
+    40,
+    16,
+    16,
+    16
+   ],
+   "image": "images/comp-Check_Agreement-0.webp",
+   "first": [
+    45,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Check_Agreement-1",
+   "kind": "component",
+   "label": "Check · Agreement · Agreement",
+   "labelZh": "Check · Agreement · Agreement",
+   "entry": "Check · Agreement",
+   "state": 1,
+   "components": [
+    "Check",
+    "Agreement"
+   ],
+   "pixels": 2671,
+   "ratio": 0.06183,
+   "box": [
+    16,
+    18,
+    324,
+    24
+   ],
+   "image": "images/comp-Check_Agreement-1.webp",
+   "first": [
+    124,
+    18
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Check_Agreement-2",
+   "kind": "component",
+   "label": "Check · Agreement · Nudge",
+   "labelZh": "Check · Agreement · Nudge",
+   "entry": "Check · Agreement",
+   "state": 2,
+   "components": [
+    "Check",
+    "Agreement"
+   ],
+   "pixels": 1792,
+   "ratio": 0.04148,
+   "box": [
+    42,
+    18,
+    278,
+    59
+   ],
+   "image": "images/comp-Check_Agreement-2.webp",
+   "first": [
+    124,
+    18
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Card_Divider_Link-0",
+   "kind": "component",
+   "label": "Card · Divider · Link · Cards",
+   "labelZh": "Card · Divider · Link · Cards",
+   "entry": "Card · Divider · Link",
+   "state": 0,
+   "components": [
+    "Divider",
+    "Card",
+    "Link"
+   ],
+   "pixels": 1577,
+   "ratio": 0.01542,
+   "box": [
+    32,
+    36,
+    107,
+    204
+   ],
+   "image": "images/comp-Card_Divider_Link-0.webp",
+   "first": [
+    42,
+    36
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Card_Divider_Link-1",
+   "kind": "component",
+   "label": "Card · Divider · Link · Lines · link",
+   "labelZh": "Card · Divider · Link · Lines · link",
+   "entry": "Card · Divider · Link",
+   "state": 1,
+   "components": [
+    "Divider",
+    "Card",
+    "Link"
+   ],
+   "pixels": 2013,
+   "ratio": 0.02838,
+   "box": [
+    32,
+    36,
+    152,
+    118
+   ],
+   "image": "images/comp-Card_Divider_Link-1.webp",
+   "first": [
+    36,
+    36
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Section_KV_Rows-0",
+   "kind": "component",
+   "label": "Section · KV · Rows · Section",
+   "labelZh": "Section · KV · Rows · Section",
+   "entry": "Section · KV · Rows",
+   "state": 0,
+   "components": [
+    "Section",
+    "KV",
+    "Rows"
+   ],
+   "pixels": 2029,
+   "ratio": 0.04697,
+   "box": [
+    28,
+    21,
+    303,
+    57
+   ],
+   "image": "images/comp-Section_KV_Rows-0.webp",
+   "first": [
+    28,
+    21
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Section_KV_Rows-1",
+   "kind": "component",
+   "label": "Section · KV · Rows · Rows",
+   "labelZh": "Section · KV · Rows · Rows",
+   "entry": "Section · KV · Rows",
+   "state": 1,
+   "components": [
+    "Section",
+    "KV",
+    "Rows"
+   ],
+   "pixels": 2845,
+   "ratio": 0.04012,
+   "box": [
+    32,
+    36,
+    295,
+    118
+   ],
+   "image": "images/comp-Section_KV_Rows-1.webp",
+   "first": [
+    33,
+    36
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Swap-0",
+   "kind": "component",
+   "label": "Swap · Tap",
+   "labelZh": "Swap · Tap",
+   "entry": "Swap",
+   "state": 0,
+   "components": [
+    "Swap"
+   ],
+   "pixels": 15271,
+   "ratio": 0.3535,
+   "box": [
+    16,
+    16,
+    328,
+    48
+   ],
+   "image": "images/comp-Swap-0.webp",
+   "first": [
+    35,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-TextLink_InfoButton_SectionLabel-0",
+   "kind": "component",
+   "label": "TextLink · InfoButton · SectionLabel · All",
+   "labelZh": "TextLink · InfoButton · SectionLabel · All",
+   "entry": "TextLink · InfoButton · SectionLabel",
+   "state": 0,
+   "components": [
+    "TextLink",
+    "InfoButton",
+    "SectionLabel"
+   ],
+   "pixels": 3303,
+   "ratio": 0.04096,
+   "box": [
+    24,
+    21,
+    283,
+    178
+   ],
+   "image": "images/comp-TextLink_InfoButton_SectionLabel-0.webp",
+   "first": [
+    24,
+    21
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-TopBar-0",
+   "kind": "component",
+   "label": "TopBar · Order page (veil)",
+   "labelZh": "TopBar · Order page (veil)",
+   "entry": "TopBar",
+   "state": 0,
+   "components": [
+    "TopBar"
+   ],
+   "pixels": 73,
+   "ratio": 0.00164,
+   "box": [
+    32,
+    70,
+    178,
+    12
+   ],
+   "image": "images/comp-TopBar-0.webp",
+   "first": [
+    37,
+    70
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-TopBar-1",
+   "kind": "component",
+   "label": "TopBar · Secondary page (solid)",
+   "labelZh": "TopBar · Secondary page (solid)",
+   "entry": "TopBar",
+   "state": 1,
+   "components": [
+    "TopBar"
+   ],
+   "pixels": 62,
+   "ratio": 0.00139,
+   "box": [
+    32,
+    70,
+    185,
+    12
+   ],
+   "image": "images/comp-TopBar-1.webp",
+   "first": [
+    37,
+    70
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-TopBar-2",
+   "kind": "component",
+   "label": "TopBar · Brand",
+   "labelZh": "TopBar · Brand",
+   "entry": "TopBar",
+   "state": 2,
+   "components": [
+    "TopBar"
+   ],
+   "pixels": 158,
+   "ratio": 0.00354,
+   "box": [
+    56,
+    68,
+    273,
+    17
+   ],
+   "image": "images/comp-TopBar-2.webp",
+   "first": [
+    275,
+    68
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-TopBar-3",
+   "kind": "component",
+   "label": "TopBar · With tabs",
+   "labelZh": "TopBar · With tabs",
+   "entry": "TopBar",
+   "state": 3,
+   "components": [
+    "TopBar"
+   ],
+   "pixels": 3682,
+   "ratio": 0.0562,
+   "box": [
+    18,
+    70,
+    188,
+    86
+   ],
+   "image": "images/comp-TopBar-3.webp",
+   "first": [
+    37,
+    70
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-BottomBar_Navigator-0",
+   "kind": "component",
+   "label": "BottomBar · Navigator · Navigator",
+   "labelZh": "BottomBar · Navigator · Navigator",
+   "entry": "BottomBar · Navigator",
+   "state": 0,
+   "components": [
+    "BottomBar",
+    "Navigator"
+   ],
+   "pixels": 1708,
+   "ratio": 0.03954,
+   "box": [
+    58,
+    39,
+    250,
+    47
+   ],
+   "image": "images/comp-BottomBar_Navigator-0.webp",
+   "first": [
+    72,
+    39
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-BottomBar_Navigator-1",
+   "kind": "component",
+   "label": "BottomBar · Navigator · Bottom bar · primary",
+   "labelZh": "BottomBar · Navigator · Bottom bar · primary",
+   "entry": "BottomBar · Navigator",
+   "state": 1,
+   "components": [
+    "BottomBar",
+    "Navigator"
+   ],
+   "pixels": 15381,
+   "ratio": 0.35604,
+   "box": [
+    48,
+    34,
+    264,
+    60
+   ],
+   "image": "images/comp-BottomBar_Navigator-1.webp",
+   "first": [
+    66,
+    34
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-BottomBar_Navigator-2",
+   "kind": "component",
+   "label": "BottomBar · Navigator · Bottom bar · secondary",
+   "labelZh": "BottomBar · Navigator · Bottom bar · secondary",
+   "entry": "BottomBar · Navigator",
+   "state": 2,
+   "components": [
+    "BottomBar",
+    "Navigator"
+   ],
+   "pixels": 15381,
+   "ratio": 0.35604,
+   "box": [
+    48,
+    34,
+    264,
+    60
+   ],
+   "image": "images/comp-BottomBar_Navigator-2.webp",
+   "first": [
+    66,
+    34
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-BottomBar_Navigator-3",
+   "kind": "component",
+   "label": "BottomBar · Navigator · With a note",
+   "labelZh": "BottomBar · Navigator · With a note",
+   "entry": "BottomBar · Navigator",
+   "state": 3,
+   "components": [
+    "BottomBar",
+    "Navigator"
+   ],
+   "pixels": 19334,
+   "ratio": 0.33991,
+   "box": [
+    27,
+    27,
+    307,
+    107
+   ],
+   "image": "images/comp-BottomBar_Navigator-3.webp",
+   "first": [
+    34,
+    27
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-BottomBar_Navigator-4",
+   "kind": "component",
+   "label": "BottomBar · Navigator · With consent",
+   "labelZh": "BottomBar · Navigator · With consent",
+   "entry": "BottomBar · Navigator",
+   "state": 4,
+   "components": [
+    "BottomBar",
+    "Navigator"
+   ],
+   "pixels": 19259,
+   "ratio": 0.30055,
+   "box": [
+    32,
+    52,
+    282,
+    102
+   ],
+   "image": "images/comp-BottomBar_Navigator-4.webp",
+   "first": [
+    270,
+    52
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Cover_Fallback-0",
+   "kind": "component",
+   "label": "Cover · Fallback · Loading",
+   "labelZh": "Cover · Fallback · Loading",
+   "entry": "Cover · Fallback",
+   "state": 0,
+   "components": [
+    "Cover",
+    "Fallback"
+   ],
+   "pixels": 806,
+   "ratio": 0.00523,
+   "box": [
+    151,
+    184,
+    57,
+    91
+   ],
+   "image": "images/comp-Cover_Fallback-0.webp",
+   "first": [
+    177,
+    184
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Cover_Fallback-1",
+   "kind": "component",
+   "label": "Cover · Fallback · Failed",
+   "labelZh": "Cover · Fallback · Failed",
+   "entry": "Cover · Fallback",
+   "state": 1,
+   "components": [
+    "Cover",
+    "Fallback"
+   ],
+   "pixels": 12328,
+   "ratio": 0.08001,
+   "box": [
+    32,
+    70,
+    280,
+    228
+   ],
+   "image": "images/comp-Cover_Fallback-1.webp",
+   "first": [
+    37,
+    70
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Sheet-0",
+   "kind": "component",
+   "label": "Sheet · Plain",
+   "labelZh": "Sheet · Plain",
+   "entry": "Sheet",
+   "state": 0,
+   "components": [
+    "Sheet"
+   ],
+   "pixels": 114037,
+   "ratio": 0.64912,
+   "box": [
+    0,
+    59,
+    360,
+    405
+   ],
+   "image": "images/comp-Sheet-0.webp",
+   "first": [
+    1,
+    59
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Sheet-1",
+   "kind": "component",
+   "label": "Sheet · Card",
+   "labelZh": "Sheet · Card",
+   "entry": "Sheet",
+   "state": 1,
+   "components": [
+    "Sheet"
+   ],
+   "pixels": 57911,
+   "ratio": 0.32964,
+   "box": [
+    0,
+    59,
+    360,
+    421
+   ],
+   "image": "images/comp-Sheet-1.webp",
+   "first": [
+    1,
+    59
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Sheet-2",
+   "kind": "component",
+   "label": "Sheet · Page",
+   "labelZh": "Sheet · Page",
+   "entry": "Sheet",
+   "state": 2,
+   "components": [
+    "Sheet"
+   ],
+   "pixels": 76941,
+   "ratio": 0.34033,
+   "box": [
+    0,
+    0,
+    360,
+    597
+   ],
+   "image": "images/comp-Sheet-2.webp",
+   "first": [
+    0,
+    0
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-SheetHead_ButtonRow_Confirm-0",
+   "kind": "component",
+   "label": "SheetHead · ButtonRow · Confirm · Centred",
+   "labelZh": "SheetHead · ButtonRow · Confirm · Centred",
+   "entry": "SheetHead · ButtonRow · Confirm",
+   "state": 0,
+   "components": [
+    "SheetHead",
+    "ButtonRow",
+    "Confirm"
+   ],
+   "pixels": 177,
+   "ratio": 0.0041,
+   "box": [
+    128,
+    46,
+    185,
+    13
+   ],
+   "image": "images/comp-SheetHead_ButtonRow_Confirm-0.webp",
+   "first": [
+    128,
+    46
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-SheetHead_ButtonRow_Confirm-1",
+   "kind": "component",
+   "label": "SheetHead · ButtonRow · Confirm · Left · mark",
+   "labelZh": "SheetHead · ButtonRow · Confirm · Left · mark",
+   "entry": "SheetHead · ButtonRow · Confirm",
+   "state": 1,
+   "components": [
+    "SheetHead",
+    "ButtonRow",
+    "Confirm"
+   ],
+   "pixels": 518,
+   "ratio": 0.01199,
+   "box": [
+    57,
+    47,
+    256,
+    22
+   ],
+   "image": "images/comp-SheetHead_ButtonRow_Confirm-1.webp",
+   "first": [
+    303,
+    47
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-SheetHead_ButtonRow_Confirm-2",
+   "kind": "component",
+   "label": "SheetHead · ButtonRow · Confirm · Confirm",
+   "labelZh": "SheetHead · ButtonRow · Confirm · Confirm",
+   "entry": "SheetHead · ButtonRow · Confirm",
+   "state": 2,
+   "components": [
+    "SheetHead",
+    "ButtonRow",
+    "Confirm"
+   ],
+   "pixels": 70407,
+   "ratio": 0.53145,
+   "box": [
+    0,
+    44,
+    360,
+    316
+   ],
+   "image": "images/comp-SheetHead_ButtonRow_Confirm-2.webp",
+   "first": [
+    0,
+    44
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-SheetHead_ButtonRow_Confirm-3",
+   "kind": "component",
+   "label": "SheetHead · ButtonRow · Confirm · One button",
+   "labelZh": "SheetHead · ButtonRow · Confirm · One button",
+   "entry": "SheetHead · ButtonRow · Confirm",
+   "state": 3,
+   "components": [
+    "SheetHead",
+    "ButtonRow",
+    "Confirm"
+   ],
+   "pixels": 74891,
+   "ratio": 0.53616,
+   "box": [
+    0,
+    47,
+    360,
+    333
+   ],
+   "image": "images/comp-SheetHead_ButtonRow_Confirm-3.webp",
+   "first": [
+    0,
+    47
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Tooltip_Toast-0",
+   "kind": "component",
+   "label": "Tooltip · Toast · Tooltip",
+   "labelZh": "Tooltip · Toast · Tooltip",
+   "entry": "Tooltip · Toast",
+   "state": 0,
+   "components": [
+    "Tooltip",
+    "Toast"
+   ],
+   "pixels": 1857,
+   "ratio": 0.0403,
+   "box": [
+    73,
+    41,
+    209,
+    34
+   ],
+   "image": "images/comp-Tooltip_Toast-0.webp",
+   "first": [
+    74,
+    41
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Toasts-0",
+   "kind": "component",
+   "label": "Toasts · Try it",
+   "labelZh": "Toasts · Try it",
+   "entry": "Toasts",
+   "state": 0,
+   "components": [
+    "Toasts"
+   ],
+   "pixels": 3859,
+   "ratio": 0.05154,
+   "box": [
+    123,
+    148,
+    114,
+    36
+   ],
+   "image": "images/comp-Toasts-0.webp",
+   "first": [
+    135,
+    148
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Loader_Coin_Dots_Busy-0",
+   "kind": "component",
+   "label": "Loader · Coin · Dots · Busy · Loader",
+   "labelZh": "Loader · Coin · Dots · Busy · Loader",
+   "entry": "Loader · Coin · Dots · Busy",
+   "state": 0,
+   "components": [
+    "Coin",
+    "Dots",
+    "Loader",
+    "Busy"
+   ],
+   "pixels": 561,
+   "ratio": 0.00783,
+   "box": [
+    151,
+    49,
+    57,
+    86
+   ],
+   "image": "images/comp-Loader_Coin_Dots_Busy-0.webp",
+   "first": [
+    177,
+    49
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Loader_Coin_Dots_Busy-1",
+   "kind": "component",
+   "label": "Loader · Coin · Dots · Busy · Coin → tick",
+   "labelZh": "Loader · Coin · Dots · Busy · Coin → tick",
+   "entry": "Loader · Coin · Dots · Busy",
+   "state": 1,
+   "components": [
+    "Coin",
+    "Dots",
+    "Loader",
+    "Busy"
+   ],
+   "pixels": 12365,
+   "ratio": 0.14554,
+   "box": [
+    16,
+    40,
+    328,
+    156
+   ],
+   "image": "images/comp-Loader_Coin_Dots_Busy-1.webp",
+   "first": [
+    178,
+    40
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Loader_Coin_Dots_Busy-2",
+   "kind": "component",
+   "label": "Loader · Coin · Dots · Busy · Dots",
+   "labelZh": "Loader · Coin · Dots · Busy · Dots",
+   "entry": "Loader · Coin · Dots · Busy",
+   "state": 2,
+   "components": [
+    "Coin",
+    "Dots",
+    "Loader",
+    "Busy"
+   ],
+   "pixels": 101,
+   "ratio": 0.00234,
+   "box": [
+    156,
+    50,
+    47,
+    6
+   ],
+   "image": "images/comp-Loader_Coin_Dots_Busy-2.webp",
+   "first": [
+    158,
+    50
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Loader_Coin_Dots_Busy-3",
+   "kind": "component",
+   "label": "Loader · Coin · Dots · Busy · Busy",
+   "labelZh": "Loader · Coin · Dots · Busy · Busy",
+   "entry": "Loader · Coin · Dots · Busy",
+   "state": 3,
+   "components": [
+    "Coin",
+    "Dots",
+    "Loader",
+    "Busy"
+   ],
+   "pixels": 72,
+   "ratio": 0.00167,
+   "box": [
+    167,
+    37,
+    26,
+    6
+   ],
+   "image": "images/comp-Loader_Coin_Dots_Busy-3.webp",
+   "first": [
+    169,
+    37
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-StatusBox_Notice_Result-0",
+   "kind": "component",
+   "label": "StatusBox · Notice · Result · Status",
+   "labelZh": "StatusBox · Notice · Result · Status",
+   "entry": "StatusBox · Notice · Result",
+   "state": 0,
+   "components": [
+    "StatusBox",
+    "Notice",
+    "Result"
+   ],
+   "pixels": 3876,
+   "ratio": 0.07083,
+   "box": [
+    28,
+    31,
+    266,
+    85
+   ],
+   "image": "images/comp-StatusBox_Notice_Result-0.webp",
+   "first": [
+    52,
+    31
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-StatusBox_Notice_Result-1",
+   "kind": "component",
+   "label": "StatusBox · Notice · Result · Notice",
+   "labelZh": "StatusBox · Notice · Result · Notice",
+   "entry": "StatusBox · Notice · Result",
+   "state": 1,
+   "components": [
+    "StatusBox",
+    "Notice",
+    "Result"
+   ],
+   "pixels": 3258,
+   "ratio": 0.07542,
+   "box": [
+    32,
+    31,
+    291,
+    44
+   ],
+   "image": "images/comp-StatusBox_Notice_Result-1.webp",
+   "first": [
+    59,
+    31
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-StatusBox_Notice_Result-2",
+   "kind": "component",
+   "label": "StatusBox · Notice · Result · Result",
+   "labelZh": "StatusBox · Notice · Result · Result",
+   "entry": "StatusBox · Notice · Result",
+   "state": 2,
+   "components": [
+    "StatusBox",
+    "Notice",
+    "Result"
+   ],
+   "pixels": 16308,
+   "ratio": 0.14901,
+   "box": [
+    32,
+    139,
+    296,
+    141
+   ],
+   "image": "images/comp-StatusBox_Notice_Result-2.webp",
+   "first": [
+    67,
+    139
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Overlay-0",
+   "kind": "component",
+   "label": "Overlay · Page",
+   "labelZh": "Overlay · Page",
+   "entry": "Overlay",
+   "state": 0,
+   "components": [
+    "Overlay"
+   ],
+   "pixels": 1110,
+   "ratio": 0.0115,
+   "box": [
+    151,
+    58,
+    57,
+    182
+   ],
+   "image": "images/comp-Overlay-0.webp",
+   "first": [
+    177,
+    58
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Overlay-1",
+   "kind": "component",
+   "label": "Overlay · Glass",
+   "labelZh": "Overlay · Glass",
+   "entry": "Overlay",
+   "state": 1,
+   "components": [
+    "Overlay"
+   ],
+   "pixels": 220,
+   "ratio": 0.00228,
+   "box": [
+    166,
+    124,
+    30,
+    12
+   ],
+   "image": "images/comp-Overlay-1.webp",
+   "first": [
+    166,
+    124
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Splash_SendingCard-0",
+   "kind": "component",
+   "label": "Splash · SendingCard · Splash",
+   "labelZh": "Splash · SendingCard · Splash",
+   "entry": "Splash · SendingCard",
+   "state": 0,
+   "components": [
+    "Splash",
+    "SendingCard"
+   ],
+   "pixels": 109451,
+   "ratio": 0.98711,
+   "box": [
+    0,
+    0,
+    360,
+    308
+   ],
+   "image": "images/comp-Splash_SendingCard-0.webp",
+   "first": [
+    0,
+    0
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Splash_SendingCard-1",
+   "kind": "component",
+   "label": "Splash · SendingCard · Sending",
+   "labelZh": "Splash · SendingCard · Sending",
+   "entry": "Splash · SendingCard",
+   "state": 1,
+   "components": [
+    "Splash",
+    "SendingCard"
+   ],
+   "pixels": 1810,
+   "ratio": 0.01995,
+   "box": [
+    78,
+    163,
+    203,
+    43
+   ],
+   "image": "images/comp-Splash_SendingCard-1.webp",
+   "first": [
+    81,
+    163
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Field_PhoneField-0",
+   "kind": "component",
+   "label": "Field · PhoneField · Typing",
+   "labelZh": "Field · PhoneField · Typing",
+   "entry": "Field · PhoneField",
+   "state": 0,
+   "components": [
+    "Field",
+    "PhoneField"
+   ],
+   "pixels": 954,
+   "ratio": 0.02208,
+   "box": [
+    32,
+    29,
+    178,
+    31
+   ],
+   "image": "images/comp-Field_PhoneField-0.webp",
+   "first": [
+    34,
+    29
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Field_PhoneField-1",
+   "kind": "component",
+   "label": "Field · PhoneField · Error",
+   "labelZh": "Field · PhoneField · Error",
+   "entry": "Field · PhoneField",
+   "state": 1,
+   "components": [
+    "Field",
+    "PhoneField"
+   ],
+   "pixels": 2245,
+   "ratio": 0.04724,
+   "box": [
+    32,
+    29,
+    289,
+    78
+   ],
+   "image": "images/comp-Field_PhoneField-1.webp",
+   "first": [
+    33,
+    29
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Field_PhoneField-2",
+   "kind": "component",
+   "label": "Field · PhoneField · Picker",
+   "labelZh": "Field · PhoneField · Picker",
+   "entry": "Field · PhoneField",
+   "state": 2,
+   "components": [
+    "Field",
+    "PhoneField"
+   ],
+   "pixels": 554,
+   "ratio": 0.01282,
+   "box": [
+    32,
+    29,
+    118,
+    31
+   ],
+   "image": "images/comp-Field_PhoneField-2.webp",
+   "first": [
+    32,
+    29
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Field_PhoneField-3",
+   "kind": "component",
+   "label": "Field · PhoneField · Phone",
+   "labelZh": "Field · PhoneField · Phone",
+   "entry": "Field · PhoneField",
+   "state": 3,
+   "components": [
+    "Field",
+    "PhoneField"
+   ],
+   "pixels": 794,
+   "ratio": 0.01838,
+   "box": [
+    60,
+    29,
+    234,
+    31
+   ],
+   "image": "images/comp-Field_PhoneField-3.webp",
+   "first": [
+    128,
+    29
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-OtpBoxes_ContactMethods-1",
+   "kind": "component",
+   "label": "OtpBoxes · ContactMethods · Filled",
+   "labelZh": "OtpBoxes · ContactMethods · Filled",
+   "entry": "OtpBoxes · ContactMethods",
+   "state": 1,
+   "components": [
+    "OtpBoxes",
+    "ContactMethods"
+   ],
+   "pixels": 1098,
+   "ratio": 0.02542,
+   "box": [
+    16,
+    16,
+    160,
+    60
+   ],
+   "image": "images/comp-OtpBoxes_ContactMethods-1.webp",
+   "first": [
+    28,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-OtpBoxes_ContactMethods-3",
+   "kind": "component",
+   "label": "OtpBoxes · ContactMethods · Methods",
+   "labelZh": "OtpBoxes · ContactMethods · Methods",
+   "entry": "OtpBoxes · ContactMethods",
+   "state": 3,
+   "components": [
+    "OtpBoxes",
+    "ContactMethods"
+   ],
+   "pixels": 1465,
+   "ratio": 0.03391,
+   "box": [
+    30,
+    16,
+    304,
+    73
+   ],
+   "image": "images/comp-OtpBoxes_ContactMethods-3.webp",
+   "first": [
+    51,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-OtpBoxes_ContactMethods-4",
+   "kind": "component",
+   "label": "OtpBoxes · ContactMethods · Checking",
+   "labelZh": "OtpBoxes · ContactMethods · Checking",
+   "entry": "OtpBoxes · ContactMethods",
+   "state": 4,
+   "components": [
+    "OtpBoxes",
+    "ContactMethods"
+   ],
+   "pixels": 2196,
+   "ratio": 0.05083,
+   "box": [
+    16,
+    16,
+    328,
+    60
+   ],
+   "image": "images/comp-OtpBoxes_ContactMethods-4.webp",
+   "first": [
+    28,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Keypad_Segmented_SelectBar-0",
+   "kind": "component",
+   "label": "Keypad · Segmented · SelectBar · Keypad",
+   "labelZh": "Keypad · Segmented · SelectBar · Keypad",
+   "entry": "Keypad · Segmented · SelectBar",
+   "state": 0,
+   "components": [
+    "Keypad",
+    "Segmented",
+    "SelectBar"
+   ],
+   "pixels": 503,
+   "ratio": 0.00514,
+   "box": [
+    64,
+    35,
+    240,
+    197
+   ],
+   "image": "images/comp-Keypad_Segmented_SelectBar-0.webp",
+   "first": [
+    69,
+    35
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Keypad_Segmented_SelectBar-1",
+   "kind": "component",
+   "label": "Keypad · Segmented · SelectBar · Segmented",
+   "labelZh": "Keypad · Segmented · SelectBar · Segmented",
+   "entry": "Keypad · Segmented · SelectBar",
+   "state": 1,
+   "components": [
+    "Keypad",
+    "Segmented",
+    "SelectBar"
+   ],
+   "pixels": 1066,
+   "ratio": 0.02468,
+   "box": [
+    71,
+    30,
+    232,
+    12
+   ],
+   "image": "images/comp-Keypad_Segmented_SelectBar-1.webp",
+   "first": [
+    72,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Keypad_Segmented_SelectBar-2",
+   "kind": "component",
+   "label": "Keypad · Segmented · SelectBar · Options",
+   "labelZh": "Keypad · Segmented · SelectBar · Options",
+   "entry": "Keypad · Segmented · SelectBar",
+   "state": 2,
+   "components": [
+    "Keypad",
+    "Segmented",
+    "SelectBar"
+   ],
+   "pixels": 3459,
+   "ratio": 0.06492,
+   "box": [
+    16,
+    34,
+    328,
+    90
+   ],
+   "image": "images/comp-Keypad_Segmented_SelectBar-2.webp",
+   "first": [
+    87,
+    34
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Search_Consent-0",
+   "kind": "component",
+   "label": "Search · Consent · Search",
+   "labelZh": "Search · Consent · Search",
+   "entry": "Search · Consent",
+   "state": 0,
+   "components": [
+    "Search",
+    "Consent"
+   ],
+   "pixels": 567,
+   "ratio": 0.01312,
+   "box": [
+    56,
+    30,
+    121,
+    12
+   ],
+   "image": "images/comp-Search_Consent-0.webp",
+   "first": [
+    58,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Search_Consent-1",
+   "kind": "component",
+   "label": "Search · Consent · Consent",
+   "labelZh": "Search · Consent · Consent",
+   "entry": "Search · Consent",
+   "state": 1,
+   "components": [
+    "Search",
+    "Consent"
+   ],
+   "pixels": 1573,
+   "ratio": 0.03641,
+   "box": [
+    16,
+    18,
+    284,
+    20
+   ],
+   "image": "images/comp-Search_Consent-1.webp",
+   "first": [
+    254,
+    18
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-UploadTile-0",
+   "kind": "component",
+   "label": "UploadTile · States",
+   "labelZh": "UploadTile · States",
+   "entry": "UploadTile",
+   "state": 0,
+   "components": [
+    "UploadTile"
+   ],
+   "pixels": 1433,
+   "ratio": 0.01305,
+   "box": [
+    16,
+    64,
+    278,
+    214
+   ],
+   "image": "images/comp-UploadTile-0.webp",
+   "first": [
+    254,
+    64
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-UploadTile-1",
+   "kind": "component",
+   "label": "UploadTile · No picture",
+   "labelZh": "UploadTile · No picture",
+   "entry": "UploadTile",
+   "state": 1,
+   "components": [
+    "UploadTile"
+   ],
+   "pixels": 435,
+   "ratio": 0.01007,
+   "box": [
+    17,
+    16,
+    66,
+    66
+   ],
+   "image": "images/comp-UploadTile-1.webp",
+   "first": [
+    60,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-FormField_Popover-0",
+   "kind": "component",
+   "label": "FormField · Popover · Typing",
+   "labelZh": "FormField · Popover · Typing",
+   "entry": "FormField · Popover",
+   "state": 0,
+   "components": [
+    "FormField",
+    "Popover"
+   ],
+   "pixels": 726,
+   "ratio": 0.01681,
+   "box": [
+    25,
+    19,
+    114,
+    47
+   ],
+   "image": "images/comp-FormField_Popover-0.webp",
+   "first": [
+    25,
+    19
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-FormField_Popover-1",
+   "kind": "component",
+   "label": "FormField · Popover · Error",
+   "labelZh": "FormField · Popover · Error",
+   "entry": "FormField · Popover",
+   "state": 1,
+   "components": [
+    "FormField",
+    "Popover"
+   ],
+   "pixels": 2500,
+   "ratio": 0.056,
+   "box": [
+    24,
+    18,
+    304,
+    81
+   ],
+   "image": "images/comp-FormField_Popover-1.webp",
+   "first": [
+    183,
+    18
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-FormField_Popover-2",
+   "kind": "component",
+   "label": "FormField · Popover · Menu",
+   "labelZh": "FormField · Popover · Menu",
+   "entry": "FormField · Popover",
+   "state": 2,
+   "components": [
+    "FormField",
+    "Popover"
+   ],
+   "pixels": 1065,
+   "ratio": 0.0096,
+   "box": [
+    8,
+    3,
+    140,
+    47
+   ],
+   "image": "images/comp-FormField_Popover-2.webp",
+   "first": [
+    10,
+    3
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-FormField_Popover-3",
+   "kind": "component",
+   "label": "FormField · Popover · Menu with tags",
+   "labelZh": "FormField · Popover · Menu with tags",
+   "entry": "FormField · Popover",
+   "state": 3,
+   "components": [
+    "FormField",
+    "Popover"
+   ],
+   "pixels": 1986,
+   "ratio": 0.01791,
+   "box": [
+    8,
+    3,
+    331,
+    63
+   ],
+   "image": "images/comp-FormField_Popover-3.webp",
+   "first": [
+    9,
+    3
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-FormField_Popover-4",
+   "kind": "component",
+   "label": "FormField · Popover · Date",
+   "labelZh": "FormField · Popover · Date",
+   "entry": "FormField · Popover",
+   "state": 4,
+   "components": [
+    "FormField",
+    "Popover"
+   ],
+   "pixels": 2023,
+   "ratio": 0.04683,
+   "box": [
+    24,
+    19,
+    304,
+    47
+   ],
+   "image": "images/comp-FormField_Popover-4.webp",
+   "first": [
+    25,
+    19
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-DocCard_FileRow-0",
+   "kind": "component",
+   "label": "DocCard · FileRow · Empty",
+   "labelZh": "DocCard · FileRow · Empty",
+   "entry": "DocCard · FileRow",
+   "state": 0,
+   "components": [
+    "FileRow",
+    "DocCard"
+   ],
+   "pixels": 1010,
+   "ratio": 0.02338,
+   "box": [
+    33,
+    32,
+    297,
+    35
+   ],
+   "image": "images/comp-DocCard_FileRow-0.webp",
+   "first": [
+    33,
+    32
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-DocCard_FileRow-1",
+   "kind": "component",
+   "label": "DocCard · FileRow · Files",
+   "labelZh": "DocCard · FileRow · Files",
+   "entry": "DocCard · FileRow",
+   "state": 1,
+   "components": [
+    "FileRow",
+    "DocCard"
+   ],
+   "pixels": 14246,
+   "ratio": 0.09893,
+   "box": [
+    28,
+    32,
+    304,
+    331
+   ],
+   "image": "images/comp-DocCard_FileRow-1.webp",
+   "first": [
+    33,
+    32
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-DocCard_FileRow-2",
+   "kind": "component",
+   "label": "DocCard · FileRow · Picture",
+   "labelZh": "DocCard · FileRow · Picture",
+   "entry": "DocCard · FileRow",
+   "state": 2,
+   "components": [
+    "FileRow",
+    "DocCard"
+   ],
+   "pixels": 1708,
+   "ratio": 0.03954,
+   "box": [
+    64,
+    21,
+    163,
+    29
+   ],
+   "image": "images/comp-DocCard_FileRow-2.webp",
+   "first": [
+    64,
+    21
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-SelfieTips_LineTabs-0",
+   "kind": "component",
+   "label": "SelfieTips · LineTabs · Selfie tips",
+   "labelZh": "SelfieTips · LineTabs · Selfie tips",
+   "entry": "SelfieTips · LineTabs",
+   "state": 0,
+   "components": [
+    "SelfieTips",
+    "LineTabs"
+   ],
+   "pixels": 1892,
+   "ratio": 0.02766,
+   "box": [
+    34,
+    37,
+    294,
+    113
+   ],
+   "image": "images/comp-SelfieTips_LineTabs-0.webp",
+   "first": [
+    82,
+    37
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-SelfieTips_LineTabs-1",
+   "kind": "component",
+   "label": "SelfieTips · LineTabs · Tabs",
+   "labelZh": "SelfieTips · LineTabs · Tabs",
+   "entry": "SelfieTips · LineTabs",
+   "state": 1,
+   "components": [
+    "SelfieTips",
+    "LineTabs"
+   ],
+   "pixels": 1043,
+   "ratio": 0.02414,
+   "box": [
+    47,
+    32,
+    256,
+    24
+   ],
+   "image": "images/comp-SelfieTips_LineTabs-1.webp",
+   "first": [
+    48,
+    32
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-DatePicker_Wheel-0",
+   "kind": "component",
+   "label": "DatePicker · Wheel · Days",
+   "labelZh": "DatePicker · Wheel · Days",
+   "entry": "DatePicker · Wheel",
+   "state": 0,
+   "components": [
+    "Wheel",
+    "DatePicker"
+   ],
+   "pixels": 4131,
+   "ratio": 0.02391,
+   "box": [
+    43,
+    50,
+    274,
+    320
+   ],
+   "image": "images/comp-DatePicker_Wheel-0.webp",
+   "first": [
+    53,
+    50
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-DatePicker_Wheel-1",
+   "kind": "component",
+   "label": "DatePicker · Wheel · Wheel",
+   "labelZh": "DatePicker · Wheel · Wheel",
+   "entry": "DatePicker · Wheel",
+   "state": 1,
+   "components": [
+    "Wheel",
+    "DatePicker"
+   ],
+   "pixels": 147,
+   "ratio": 0.00176,
+   "box": [
+    155,
+    104,
+    49,
+    16
+   ],
+   "image": "images/comp-DatePicker_Wheel-1.webp",
+   "first": [
+    157,
+    104
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-OtpForm-0",
+   "kind": "component",
+   "label": "OtpForm · Live",
+   "labelZh": "OtpForm · Live",
+   "entry": "OtpForm",
+   "state": 0,
+   "components": [
+    "OtpForm"
+   ],
+   "pixels": 3950,
+   "ratio": 0.04253,
+   "box": [
+    19,
+    95,
+    322,
+    126
+   ],
+   "image": "images/comp-OtpForm-0.webp",
+   "first": [
+    20,
+    95
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-OtpForm-1",
+   "kind": "component",
+   "label": "OtpForm · Wrong code",
+   "labelZh": "OtpForm · Wrong code",
+   "entry": "OtpForm",
+   "state": 1,
+   "components": [
+    "OtpForm"
+   ],
+   "pixels": 8093,
+   "ratio": 0.07972,
+   "box": [
+    19,
+    91,
+    325,
+    167
+   ],
+   "image": "images/comp-OtpForm-1.webp",
+   "first": [
+    25,
+    91
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-ReasonList-0",
+   "kind": "component",
+   "label": "ReasonList · Pick",
+   "labelZh": "ReasonList · Pick",
+   "entry": "ReasonList",
+   "state": 0,
+   "components": [
+    "ReasonList"
+   ],
+   "pixels": 1786,
+   "ratio": 0.01162,
+   "box": [
+    33,
+    40,
+    295,
+    345
+   ],
+   "image": "images/comp-ReasonList-0.webp",
+   "first": [
+    44,
+    40
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Countdown_CouponArt-0",
+   "kind": "component",
+   "label": "Countdown · CouponArt · Countdown",
+   "labelZh": "Countdown · CouponArt · Countdown",
+   "entry": "Countdown · CouponArt",
+   "state": 0,
+   "components": [
+    "CouponArt",
+    "Countdown"
+   ],
+   "pixels": 664,
+   "ratio": 0.01537,
+   "box": [
+    16,
+    19,
+    111,
+    12
+   ],
+   "image": "images/comp-Countdown_CouponArt-0.webp",
+   "first": [
+    16,
+    19
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Countdown_CouponArt-1",
+   "kind": "component",
+   "label": "Countdown · CouponArt · Pictures",
+   "labelZh": "Countdown · CouponArt · Pictures",
+   "entry": "Countdown · CouponArt",
+   "state": 1,
+   "components": [
+    "CouponArt",
+    "Countdown"
+   ],
+   "pixels": 439,
+   "ratio": 0.00726,
+   "box": [
+    100,
+    43,
+    132,
+    88
+   ],
+   "image": "images/comp-Countdown_CouponArt-1.webp",
+   "first": [
+    106,
+    43
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-CouponTicket-0",
+   "kind": "component",
+   "label": "CouponTicket · To use",
+   "labelZh": "CouponTicket · To use",
+   "entry": "CouponTicket",
+   "state": 0,
+   "components": [
+    "CouponTicket"
+   ],
+   "pixels": 3868,
+   "ratio": 0.06887,
+   "box": [
+    41,
+    28,
+    279,
+    91
+   ],
+   "image": "images/comp-CouponTicket-0.webp",
+   "first": [
+    263,
+    28
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-CouponTicket-1",
+   "kind": "component",
+   "label": "CouponTicket · Long rule",
+   "labelZh": "CouponTicket · Long rule",
+   "entry": "CouponTicket",
+   "state": 1,
+   "components": [
+    "CouponTicket"
+   ],
+   "pixels": 4314,
+   "ratio": 0.07682,
+   "box": [
+    40,
+    28,
+    280,
+    91
+   ],
+   "image": "images/comp-CouponTicket-1.webp",
+   "first": [
+    263,
+    28
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-CouponTicket-2",
+   "kind": "component",
+   "label": "CouponTicket · Picker",
+   "labelZh": "CouponTicket · Picker",
+   "entry": "CouponTicket",
+   "state": 2,
+   "components": [
+    "CouponTicket"
+   ],
+   "pixels": 4270,
+   "ratio": 0.07603,
+   "box": [
+    16,
+    16,
+    304,
+    116
+   ],
+   "image": "images/comp-CouponTicket-2.webp",
+   "first": [
+    28,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-CouponTicket-3",
+   "kind": "component",
+   "label": "CouponTicket · Unavailable",
+   "labelZh": "CouponTicket · Unavailable",
+   "entry": "CouponTicket",
+   "state": 3,
+   "components": [
+    "CouponTicket"
+   ],
+   "pixels": 2354,
+   "ratio": 0.04192,
+   "box": [
+    41,
+    61,
+    203,
+    56
+   ],
+   "image": "images/comp-CouponTicket-3.webp",
+   "first": [
+    41,
+    61
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-CouponTicket-4",
+   "kind": "component",
+   "label": "CouponTicket · Used",
+   "labelZh": "CouponTicket · Used",
+   "entry": "CouponTicket",
+   "state": 4,
+   "components": [
+    "CouponTicket"
+   ],
+   "pixels": 1970,
+   "ratio": 0.03508,
+   "box": [
+    41,
+    60,
+    154,
+    59
+   ],
+   "image": "images/comp-CouponTicket-4.webp",
+   "first": [
+    41,
+    60
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-CouponTicket-5",
+   "kind": "component",
+   "label": "CouponTicket · Expired",
+   "labelZh": "CouponTicket · Expired",
+   "entry": "CouponTicket",
+   "state": 5,
+   "components": [
+    "CouponTicket"
+   ],
+   "pixels": 2488,
+   "ratio": 0.0443,
+   "box": [
+    41,
+    34,
+    153,
+    85
+   ],
+   "image": "images/comp-CouponTicket-5.webp",
+   "first": [
+    53,
+    34
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Tabs-0",
+   "kind": "component",
+   "label": "Tabs · Coupon centre",
+   "labelZh": "Tabs · Coupon centre",
+   "entry": "Tabs",
+   "state": 0,
+   "components": [
+    "Tabs"
+   ],
+   "pixels": 3629,
+   "ratio": 0.084,
+   "box": [
+    18,
+    18,
+    108,
+    36
+   ],
+   "image": "images/comp-Tabs-0.webp",
+   "first": [
+    31,
+    18
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Tabs-1",
+   "kind": "component",
+   "label": "Tabs · Picker (glass)",
+   "labelZh": "Tabs · Picker (glass)",
+   "entry": "Tabs",
+   "state": 1,
+   "components": [
+    "Tabs"
+   ],
+   "pixels": 5141,
+   "ratio": 0.119,
+   "box": [
+    30,
+    30,
+    150,
+    36
+   ],
+   "image": "images/comp-Tabs-1.webp",
+   "first": [
+    43,
+    30
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Tabs-2",
+   "kind": "component",
+   "label": "Tabs · Split",
+   "labelZh": "Tabs · Split",
+   "entry": "Tabs",
+   "state": 2,
+   "components": [
+    "Tabs"
+   ],
+   "pixels": 12305,
+   "ratio": 0.26704,
+   "box": [
+    16,
+    16,
+    328,
+    88
+   ],
+   "image": "images/comp-Tabs-2.webp",
+   "first": [
+    29,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-EmptyState-0",
+   "kind": "component",
+   "label": "EmptyState · Default",
+   "labelZh": "EmptyState · Default",
+   "entry": "EmptyState",
+   "state": 0,
+   "components": [
+    "EmptyState"
+   ],
+   "pixels": 1771,
+   "ratio": 0.02617,
+   "box": [
+    37,
+    148,
+    285,
+    14
+   ],
+   "image": "images/comp-EmptyState-0.webp",
+   "first": [
+    277,
+    148
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-EmptyState-1",
+   "kind": "component",
+   "label": "EmptyState · Page",
+   "labelZh": "EmptyState · Page",
+   "entry": "EmptyState",
+   "state": 1,
+   "components": [
+    "EmptyState"
+   ],
+   "pixels": 1544,
+   "ratio": 0.00705,
+   "box": [
+    32,
+    70,
+    283,
+    356
+   ],
+   "image": "images/comp-EmptyState-1.webp",
+   "first": [
+    37,
+    70
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-CouponOption-0",
+   "kind": "component",
+   "label": "CouponOption · Pick",
+   "labelZh": "CouponOption · Pick",
+   "entry": "CouponOption",
+   "state": 0,
+   "components": [
+    "CouponOption"
+   ],
+   "pixels": 2485,
+   "ratio": 0.05752,
+   "box": [
+    32,
+    33,
+    272,
+    36
+   ],
+   "image": "images/comp-CouponOption-0.webp",
+   "first": [
+    35,
+    33
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-CouponOption-1",
+   "kind": "component",
+   "label": "CouponOption · Less than a day left",
+   "labelZh": "CouponOption · Less than a day left",
+   "entry": "CouponOption",
+   "state": 1,
+   "components": [
+    "CouponOption"
+   ],
+   "pixels": 3188,
+   "ratio": 0.06417,
+   "box": [
+    16,
+    16,
+    328,
+    98
+   ],
+   "image": "images/comp-CouponOption-1.webp",
+   "first": [
+    32,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-CouponOption-2",
+   "kind": "component",
+   "label": "CouponOption · Unavailable",
+   "labelZh": "CouponOption · Unavailable",
+   "entry": "CouponOption",
+   "state": 2,
+   "components": [
+    "CouponOption"
+   ],
+   "pixels": 2996,
+   "ratio": 0.05987,
+   "box": [
+    32,
+    33,
+    297,
+    68
+   ],
+   "image": "images/comp-CouponOption-2.webp",
+   "first": [
+    80,
+    33
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-CouponRow_CouponsSection-0",
+   "kind": "component",
+   "label": "CouponRow · CouponsSection · Both on",
+   "labelZh": "CouponRow · CouponsSection · Both on",
+   "entry": "CouponRow · CouponsSection",
+   "state": 0,
+   "components": [
+    "CouponRow",
+    "CouponsSection"
+   ],
+   "pixels": 5846,
+   "ratio": 0.07624,
+   "box": [
+    30,
+    21,
+    301,
+    149
+   ],
+   "image": "images/comp-CouponRow_CouponsSection-0.webp",
+   "first": [
+    31,
+    21
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-CouponRow_CouponsSection-1",
+   "kind": "component",
+   "label": "CouponRow · CouponsSection · Not used",
+   "labelZh": "CouponRow · CouponsSection · Not used",
+   "entry": "CouponRow · CouponsSection",
+   "state": 1,
+   "components": [
+    "CouponRow",
+    "CouponsSection"
+   ],
+   "pixels": 5721,
+   "ratio": 0.07461,
+   "box": [
+    30,
+    21,
+    301,
+    150
+   ],
+   "image": "images/comp-CouponRow_CouponsSection-1.webp",
+   "first": [
+    31,
+    21
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Summary-0",
+   "kind": "component",
+   "label": "Summary · Both",
+   "labelZh": "Summary · Both",
+   "entry": "Summary",
+   "state": 0,
+   "components": [
+    "Summary"
+   ],
+   "pixels": 18596,
+   "ratio": 0.24834,
+   "box": [
+    29,
+    32,
+    302,
+    139
+   ],
+   "image": "images/comp-Summary-0.webp",
+   "first": [
+    30,
+    32
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Summary-1",
+   "kind": "component",
+   "label": "Summary · Discount only",
+   "labelZh": "Summary · Discount only",
+   "entry": "Summary",
+   "state": 1,
+   "components": [
+    "Summary"
+   ],
+   "pixels": 17265,
+   "ratio": 0.23057,
+   "box": [
+    29,
+    32,
+    302,
+    139
+   ],
+   "image": "images/comp-Summary-1.webp",
+   "first": [
+    30,
+    32
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Summary-2",
+   "kind": "component",
+   "label": "Summary · No coupon",
+   "labelZh": "Summary · No coupon",
+   "entry": "Summary",
+   "state": 2,
+   "components": [
+    "Summary"
+   ],
+   "pixels": 16150,
+   "ratio": 0.25782,
+   "box": [
+    29,
+    32,
+    302,
+    105
+   ],
+   "image": "images/comp-Summary-2.webp",
+   "first": [
+    30,
+    32
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Decision-0",
+   "kind": "component",
+   "label": "Decision · Discount",
+   "labelZh": "Decision · Discount",
+   "entry": "Decision",
+   "state": 0,
+   "components": [
+    "Decision"
+   ],
+   "pixels": 26521,
+   "ratio": 0.15608,
+   "box": [
+    32,
+    47,
+    296,
+    369
+   ],
+   "image": "images/comp-Decision-0.webp",
+   "first": [
+    303,
+    47
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Decision-1",
+   "kind": "component",
+   "label": "Decision · Can’t use (one button)",
+   "labelZh": "Decision · Can’t use (one button)",
+   "entry": "Decision",
+   "state": 1,
+   "components": [
+    "Decision"
+   ],
+   "pixels": 33699,
+   "ratio": 0.19832,
+   "box": [
+    32,
+    47,
+    296,
+    369
+   ],
+   "image": "images/comp-Decision-1.webp",
+   "first": [
+    303,
+    47
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Decision-2",
+   "kind": "component",
+   "label": "Decision · Limit",
+   "labelZh": "Decision · Limit",
+   "entry": "Decision",
+   "state": 2,
+   "components": [
+    "Decision"
+   ],
+   "pixels": 38615,
+   "ratio": 0.21198,
+   "box": [
+    32,
+    47,
+    296,
+    403
+   ],
+   "image": "images/comp-Decision-2.webp",
+   "first": [
+    303,
+    47
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-CreditCard-0",
+   "kind": "component",
+   "label": "CreditCard · Temporary credit",
+   "labelZh": "CreditCard · Temporary credit",
+   "entry": "CreditCard",
+   "state": 0,
+   "components": [
+    "CreditCard"
+   ],
+   "pixels": 61978,
+   "ratio": 0.72337,
+   "box": [
+    16,
+    16,
+    328,
+    198
+   ],
+   "image": "images/comp-CreditCard-0.webp",
+   "first": [
+    34,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-CreditCard-1",
+   "kind": "component",
+   "label": "CreditCard · No temporary",
+   "labelZh": "CreditCard · No temporary",
+   "entry": "CreditCard",
+   "state": 1,
+   "components": [
+    "CreditCard"
+   ],
+   "pixels": 59013,
+   "ratio": 0.72533,
+   "box": [
+    16,
+    16,
+    328,
+    186
+   ],
+   "image": "images/comp-CreditCard-1.webp",
+   "first": [
+    34,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-PaymentCard-0",
+   "kind": "component",
+   "label": "PaymentCard · Default",
+   "labelZh": "PaymentCard · Default",
+   "entry": "PaymentCard",
+   "state": 0,
+   "components": [
+    "PaymentCard"
+   ],
+   "pixels": 8466,
+   "ratio": 0.12185,
+   "box": [
+    31,
+    32,
+    297,
+    119
+   ],
+   "image": "images/comp-PaymentCard-0.webp",
+   "first": [
+    247,
+    32
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-PaymentCard-1",
+   "kind": "component",
+   "label": "PaymentCard · Discounted",
+   "labelZh": "PaymentCard · Discounted",
+   "entry": "PaymentCard",
+   "state": 1,
+   "components": [
+    "PaymentCard"
+   ],
+   "pixels": 8683,
+   "ratio": 0.12497,
+   "box": [
+    31,
+    32,
+    297,
+    119
+   ],
+   "image": "images/comp-PaymentCard-1.webp",
+   "first": [
+    247,
+    32
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-PaymentCard-2",
+   "kind": "component",
+   "label": "PaymentCard · Due today",
+   "labelZh": "PaymentCard · Due today",
+   "entry": "PaymentCard",
+   "state": 2,
+   "components": [
+    "PaymentCard"
+   ],
+   "pixels": 25434,
+   "ratio": 0.23394,
+   "box": [
+    15,
+    32,
+    330,
+    248
+   ],
+   "image": "images/comp-PaymentCard-2.webp",
+   "first": [
+    233,
+    32
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-HomeCoupons-0",
+   "kind": "component",
+   "label": "HomeCoupons · Two",
+   "labelZh": "HomeCoupons · Two",
+   "entry": "HomeCoupons",
+   "state": 0,
+   "components": [
+    "HomeCoupons"
+   ],
+   "pixels": 8167,
+   "ratio": 0.11694,
+   "box": [
+    26,
+    47,
+    308,
+    113
+   ],
+   "image": "images/comp-HomeCoupons-0.webp",
+   "first": [
+    39,
+    47
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-HomeCoupons-1",
+   "kind": "component",
+   "label": "HomeCoupons · Amount off",
+   "labelZh": "HomeCoupons · Amount off",
+   "entry": "HomeCoupons",
+   "state": 1,
+   "components": [
+    "HomeCoupons"
+   ],
+   "pixels": 8366,
+   "ratio": 0.11979,
+   "box": [
+    26,
+    47,
+    308,
+    113
+   ],
+   "image": "images/comp-HomeCoupons-1.webp",
+   "first": [
+    39,
+    47
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-HomeCoupons-2",
+   "kind": "component",
+   "label": "HomeCoupons · One",
+   "labelZh": "HomeCoupons · One",
+   "entry": "HomeCoupons",
+   "state": 2,
+   "components": [
+    "HomeCoupons"
+   ],
+   "pixels": 5975,
+   "ratio": 0.08057,
+   "box": [
+    24,
+    73,
+    312,
+    101
+   ],
+   "image": "images/comp-HomeCoupons-2.webp",
+   "first": [
+    37,
+    73
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-DotTitle_Banners_PartnerLogos-0",
+   "kind": "component",
+   "label": "DotTitle · Banners · PartnerLogos · More from PeraSure",
+   "labelZh": "DotTitle · Banners · PartnerLogos · More from PeraSure",
+   "entry": "DotTitle · Banners · PartnerLogos",
+   "state": 0,
+   "components": [
+    "PartnerLogos",
+    "DotTitle",
+    "Banners"
+   ],
+   "pixels": 4309,
+   "ratio": 0.05204,
+   "box": [
+    34,
+    21,
+    288,
+    131
+   ],
+   "image": "images/comp-DotTitle_Banners_PartnerLogos-0.webp",
+   "first": [
+    34,
+    21
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-TrustCard_Legal-0",
+   "kind": "component",
+   "label": "TrustCard · Legal · Default",
+   "labelZh": "TrustCard · Legal · Default",
+   "entry": "TrustCard · Legal",
+   "state": 0,
+   "components": [
+    "TrustCard",
+    "Legal"
+   ],
+   "pixels": 7857,
+   "ratio": 0.04683,
+   "box": [
+    27,
+    75,
+    305,
+    366
+   ],
+   "image": "images/comp-TrustCard_Legal-0.webp",
+   "first": [
+    102,
+    75
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Slider-0",
+   "kind": "component",
+   "label": "Slider · Drag",
+   "labelZh": "Slider · Drag",
+   "entry": "Slider",
+   "state": 0,
+   "components": [
+    "Slider"
+   ],
+   "pixels": 2326,
+   "ratio": 0.05384,
+   "box": [
+    20,
+    41,
+    320,
+    32
+   ],
+   "image": "images/comp-Slider-0.webp",
+   "first": [
+    229,
+    41
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Slider-1",
+   "kind": "component",
+   "label": "Slider · Raised by a coupon",
+   "labelZh": "Slider · Raised by a coupon",
+   "entry": "Slider",
+   "state": 1,
+   "components": [
+    "Slider"
+   ],
+   "pixels": 3368,
+   "ratio": 0.07796,
+   "box": [
+    20,
+    41,
+    326,
+    32
+   ],
+   "image": "images/comp-Slider-1.webp",
+   "first": [
+    337,
+    41
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-AmountCard-0",
+   "kind": "component",
+   "label": "AmountCard · Default",
+   "labelZh": "AmountCard · Default",
+   "entry": "AmountCard",
+   "state": 0,
+   "components": [
+    "AmountCard"
+   ],
+   "pixels": 9588,
+   "ratio": 0.0928,
+   "box": [
+    31,
+    36,
+    303,
+    210
+   ],
+   "image": "images/comp-AmountCard-0.webp",
+   "first": [
+    33,
+    36
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-AmountCard-1",
+   "kind": "component",
+   "label": "AmountCard · Limit coupon",
+   "labelZh": "AmountCard · Limit coupon",
+   "entry": "AmountCard",
+   "state": 1,
+   "components": [
+    "AmountCard"
+   ],
+   "pixels": 9534,
+   "ratio": 0.09228,
+   "box": [
+    31,
+    36,
+    297,
+    210
+   ],
+   "image": "images/comp-AmountCard-1.webp",
+   "first": [
+    33,
+    36
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-OrderDetails-0",
+   "kind": "component",
+   "label": "OrderDetails · With discount",
+   "labelZh": "OrderDetails · With discount",
+   "entry": "OrderDetails",
+   "state": 0,
+   "components": [
+    "OrderDetails"
+   ],
+   "pixels": 7006,
+   "ratio": 0.05055,
+   "box": [
+    30,
+    19,
+    298,
+    319
+   ],
+   "image": "images/comp-OrderDetails-0.webp",
+   "first": [
+    31,
+    19
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-OrderDetails-1",
+   "kind": "component",
+   "label": "OrderDetails · No discount",
+   "labelZh": "OrderDetails · No discount",
+   "entry": "OrderDetails",
+   "state": 1,
+   "components": [
+    "OrderDetails"
+   ],
+   "pixels": 3364,
+   "ratio": 0.04081,
+   "box": [
+    30,
+    19,
+    297,
+    163
+   ],
+   "image": "images/comp-OrderDetails-1.webp",
+   "first": [
+    31,
+    19
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-ProtectionCard_MethodCard-0",
+   "kind": "component",
+   "label": "ProtectionCard · MethodCard · Default",
+   "labelZh": "ProtectionCard · MethodCard · Default",
+   "entry": "ProtectionCard · MethodCard",
+   "state": 0,
+   "components": [
+    "ProtectionCard",
+    "MethodCard"
+   ],
+   "pixels": 9098,
+   "ratio": 0.078,
+   "box": [
+    28,
+    32,
+    300,
+    249
+   ],
+   "image": "images/comp-ProtectionCard_MethodCard-0.webp",
+   "first": [
+    259,
+    32
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-RepaymentPlan-0",
+   "kind": "component",
+   "label": "RepaymentPlan · Default",
+   "labelZh": "RepaymentPlan · Default",
+   "entry": "RepaymentPlan",
+   "state": 0,
+   "components": [
+    "RepaymentPlan"
+   ],
+   "pixels": 9126,
+   "ratio": 0.07922,
+   "box": [
+    32,
+    41,
+    284,
+    240
+   ],
+   "image": "images/comp-RepaymentPlan-0.webp",
+   "first": [
+    61,
+    41
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-OrderHead_OrderStatus_PlanRows-0",
+   "kind": "component",
+   "label": "OrderHead · OrderStatus · PlanRows · In review",
+   "labelZh": "OrderHead · OrderStatus · PlanRows · In review",
+   "entry": "OrderHead · OrderStatus · PlanRows",
+   "state": 0,
+   "components": [
+    "OrderHead",
+    "OrderStatus",
+    "PlanRows"
+   ],
+   "pixels": 8497,
+   "ratio": 0.11347,
+   "box": [
+    23,
+    51,
+    303,
+    120
+   ],
+   "image": "images/comp-OrderHead_OrderStatus_PlanRows-0.webp",
+   "first": [
+    69,
+    51
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-OrderHead_OrderStatus_PlanRows-1",
+   "kind": "component",
+   "label": "OrderHead · OrderStatus · PlanRows · Failed",
+   "labelZh": "OrderHead · OrderStatus · PlanRows · Failed",
+   "entry": "OrderHead · OrderStatus · PlanRows",
+   "state": 1,
+   "components": [
+    "OrderHead",
+    "OrderStatus",
+    "PlanRows"
+   ],
+   "pixels": 3462,
+   "ratio": 0.07071,
+   "box": [
+    75,
+    33,
+    250,
+    66
+   ],
+   "image": "images/comp-OrderHead_OrderStatus_PlanRows-1.webp",
+   "first": [
+    77,
+    33
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-OrderHead_OrderStatus_PlanRows-2",
+   "kind": "component",
+   "label": "OrderHead · OrderStatus · PlanRows · Plan",
+   "labelZh": "OrderHead · OrderStatus · PlanRows · Plan",
+   "entry": "OrderHead · OrderStatus · PlanRows",
+   "state": 2,
+   "components": [
+    "OrderHead",
+    "OrderStatus",
+    "PlanRows"
+   ],
+   "pixels": 3921,
+   "ratio": 0.04862,
+   "box": [
+    29,
+    19,
+    298,
+    163
+   ],
+   "image": "images/comp-OrderHead_OrderStatus_PlanRows-2.webp",
+   "first": [
+    29,
+    19
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-AmountEntry-0",
+   "kind": "component",
+   "label": "AmountEntry · Type",
+   "labelZh": "AmountEntry · Type",
+   "entry": "AmountEntry",
+   "state": 0,
+   "components": [
+    "AmountEntry"
+   ],
+   "pixels": 12108,
+   "ratio": 0.05356,
+   "box": [
+    24,
+    36,
+    312,
+    552
+   ],
+   "image": "images/comp-AmountEntry-0.webp",
+   "first": [
+    25,
+    36
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Profile_CreditLimitCard_GuestProfile-0",
+   "kind": "component",
+   "label": "Profile · CreditLimitCard · GuestProfile · Default",
+   "labelZh": "Profile · CreditLimitCard · GuestProfile · Default",
+   "entry": "Profile · CreditLimitCard · GuestProfile",
+   "state": 0,
+   "components": [
+    "Profile",
+    "CreditLimitCard",
+    "GuestProfile"
+   ],
+   "pixels": 3452,
+   "ratio": 0.03093,
+   "box": [
+    32,
+    101,
+    266,
+    141
+   ],
+   "image": "images/comp-Profile_CreditLimitCard_GuestProfile-0.webp",
+   "first": [
+    130,
+    101
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Profile_CreditLimitCard_GuestProfile-1",
+   "kind": "component",
+   "label": "Profile · CreditLimitCard · GuestProfile · Not signed in",
+   "labelZh": "Profile · CreditLimitCard · GuestProfile · Not signed in",
+   "entry": "Profile · CreditLimitCard · GuestProfile",
+   "state": 1,
+   "components": [
+    "Profile",
+    "CreditLimitCard",
+    "GuestProfile"
+   ],
+   "pixels": 16042,
+   "ratio": 0.11544,
+   "box": [
+    16,
+    101,
+    328,
+    214
+   ],
+   "image": "images/comp-Profile_CreditLimitCard_GuestProfile-1.webp",
+   "first": [
+    142,
+    101
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Menu_Social-0",
+   "kind": "component",
+   "label": "Menu · Social · Default",
+   "labelZh": "Menu · Social · Default",
+   "entry": "Menu · Social",
+   "state": 0,
+   "components": [
+    "Menu",
+    "Social"
+   ],
+   "pixels": 4482,
+   "ratio": 0.03705,
+   "box": [
+    33,
+    32,
+    274,
+    263
+   ],
+   "image": "images/comp-Menu_Social-0.webp",
+   "first": [
+    271,
+    32
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-AboutHead_FooterMark_RegCard-0",
+   "kind": "component",
+   "label": "AboutHead · FooterMark · RegCard · About",
+   "labelZh": "AboutHead · FooterMark · RegCard · About",
+   "entry": "AboutHead · FooterMark · RegCard",
+   "state": 0,
+   "components": [
+    "AboutHead",
+    "FooterMark",
+    "RegCard"
+   ],
+   "pixels": 2351,
+   "ratio": 0.02767,
+   "box": [
+    36,
+    118,
+    288,
+    93
+   ],
+   "image": "images/comp-AboutHead_FooterMark_RegCard-0.webp",
+   "first": [
+    145,
+    118
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Message_Bullets-0",
+   "kind": "component",
+   "label": "Message · Bullets · Message",
+   "labelZh": "Message · Bullets · Message",
+   "entry": "Message · Bullets",
+   "state": 0,
+   "components": [
+    "Message",
+    "Bullets"
+   ],
+   "pixels": 5005,
+   "ratio": 0.08375,
+   "box": [
+    30,
+    19,
+    302,
+    105
+   ],
+   "image": "images/comp-Message_Bullets-0.webp",
+   "first": [
+    31,
+    19
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Message_Bullets-1",
+   "kind": "component",
+   "label": "Message · Bullets · Bullets",
+   "labelZh": "Message · Bullets · Bullets",
+   "entry": "Message · Bullets",
+   "state": 1,
+   "components": [
+    "Message",
+    "Bullets"
+   ],
+   "pixels": 8502,
+   "ratio": 0.1018,
+   "box": [
+    28,
+    19,
+    283,
+    171
+   ],
+   "image": "images/comp-Message_Bullets-1.webp",
+   "first": [
+    28,
+    19
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Rating-0",
+   "kind": "component",
+   "label": "Rating · Sheet",
+   "labelZh": "Rating · Sheet",
+   "entry": "Rating",
+   "state": 0,
+   "components": [
+    "Rating"
+   ],
+   "pixels": 63168,
+   "ratio": 0.33232,
+   "box": [
+    0,
+    64,
+    360,
+    456
+   ],
+   "image": "images/comp-Rating-0.webp",
+   "first": [
+    0,
+    64
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-StateCard-0",
+   "kind": "component",
+   "label": "StateCard · In progress",
+   "labelZh": "StateCard · In progress",
+   "entry": "StateCard",
+   "state": 0,
+   "components": [
+    "StateCard"
+   ],
+   "pixels": 28785,
+   "ratio": 0.60574,
+   "box": [
+    16,
+    16,
+    328,
+    92
+   ],
+   "image": "images/comp-StateCard-0.webp",
+   "first": [
+    34,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-StateCard-1",
+   "kind": "component",
+   "label": "StateCard · Add documents",
+   "labelZh": "StateCard · Add documents",
+   "entry": "StateCard",
+   "state": 1,
+   "components": [
+    "StateCard"
+   ],
+   "pixels": 58232,
+   "ratio": 0.72863,
+   "box": [
+    16,
+    16,
+    328,
+    182
+   ],
+   "image": "images/comp-StateCard-1.webp",
+   "first": [
+    34,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-StateCard-2",
+   "kind": "component",
+   "label": "StateCard · Not approved",
+   "labelZh": "StateCard · Not approved",
+   "entry": "StateCard",
+   "state": 2,
+   "components": [
+    "StateCard"
+   ],
+   "pixels": 50853,
+   "ratio": 0.70278,
+   "box": [
+    16,
+    16,
+    328,
+    160
+   ],
+   "image": "images/comp-StateCard-2.webp",
+   "first": [
+    34,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-StateCard-3",
+   "kind": "component",
+   "label": "StateCard · Expired",
+   "labelZh": "StateCard · Expired",
+   "entry": "StateCard",
+   "state": 3,
+   "components": [
+    "StateCard"
+   ],
+   "pixels": 42752,
+   "ratio": 0.6825,
+   "box": [
+    16,
+    16,
+    328,
+    134
+   ],
+   "image": "images/comp-StateCard-3.webp",
+   "first": [
+    34,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Strip-0",
+   "kind": "component",
+   "label": "Strip · Loan update",
+   "labelZh": "Strip · Loan update",
+   "entry": "Strip",
+   "state": 0,
+   "components": [
+    "Strip"
+   ],
+   "pixels": 3164,
+   "ratio": 0.07324,
+   "box": [
+    32,
+    31,
+    296,
+    31
+   ],
+   "image": "images/comp-Strip-0.webp",
+   "first": [
+    36,
+    31
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Strip-1",
+   "kind": "component",
+   "label": "Strip · Chat",
+   "labelZh": "Strip · Chat",
+   "entry": "Strip",
+   "state": 1,
+   "components": [
+    "Strip"
+   ],
+   "pixels": 3540,
+   "ratio": 0.08194,
+   "box": [
+    32,
+    33,
+    243,
+    33
+   ],
+   "image": "images/comp-Strip-1.webp",
+   "first": [
+    72,
+    33
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Strip-2",
+   "kind": "component",
+   "label": "Strip · Raised",
+   "labelZh": "Strip · Raised",
+   "entry": "Strip",
+   "state": 2,
+   "components": [
+    "Strip"
+   ],
+   "pixels": 3164,
+   "ratio": 0.07324,
+   "box": [
+    32,
+    31,
+    296,
+    31
+   ],
+   "image": "images/comp-Strip-2.webp",
+   "first": [
+    36,
+    31
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Hero_Reviews_OfferCard_PermissionCard-0",
+   "kind": "component",
+   "label": "Hero · Reviews · OfferCard · PermissionCard · Hero",
+   "labelZh": "Hero · Reviews · OfferCard · PermissionCard · Hero",
+   "entry": "Hero · Reviews · OfferCard · PermissionCard",
+   "state": 0,
+   "components": [
+    "OfferCard",
+    "Hero",
+    "Reviews",
+    "PermissionCard"
+   ],
+   "pixels": 55820,
+   "ratio": 0.44556,
+   "box": [
+    16,
+    16,
+    328,
+    308
+   ],
+   "image": "images/comp-Hero_Reviews_OfferCard_PermissionCard-0.webp",
+   "first": [
+    34,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Hero_Reviews_OfferCard_PermissionCard-1",
+   "kind": "component",
+   "label": "Hero · Reviews · OfferCard · PermissionCard · Reviews",
+   "labelZh": "Hero · Reviews · OfferCard · PermissionCard · Reviews",
+   "entry": "Hero · Reviews · OfferCard · PermissionCard",
+   "state": 1,
+   "components": [
+    "OfferCard",
+    "Hero",
+    "Reviews",
+    "PermissionCard"
+   ],
+   "pixels": 7346,
+   "ratio": 0.07447,
+   "box": [
+    33,
+    4,
+    311,
+    216
+   ],
+   "image": "images/comp-Hero_Reviews_OfferCard_PermissionCard-1.webp",
+   "first": [
+    290,
+    4
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Hero_Reviews_OfferCard_PermissionCard-2",
+   "kind": "component",
+   "label": "Hero · Reviews · OfferCard · PermissionCard · Offer",
+   "labelZh": "Hero · Reviews · OfferCard · PermissionCard · Offer",
+   "entry": "Hero · Reviews · OfferCard · PermissionCard",
+   "state": 2,
+   "components": [
+    "OfferCard",
+    "Hero",
+    "Reviews",
+    "PermissionCard"
+   ],
+   "pixels": 17776,
+   "ratio": 0.17956,
+   "box": [
+    32,
+    33,
+    296,
+    201
+   ],
+   "image": "images/comp-Hero_Reviews_OfferCard_PermissionCard-2.webp",
+   "first": [
+    261,
+    33
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Hero_Reviews_OfferCard_PermissionCard-3",
+   "kind": "component",
+   "label": "Hero · Reviews · OfferCard · PermissionCard · Permission",
+   "labelZh": "Hero · Reviews · OfferCard · PermissionCard · Permission",
+   "entry": "Hero · Reviews · OfferCard · PermissionCard",
+   "state": 3,
+   "components": [
+    "OfferCard",
+    "Hero",
+    "Reviews",
+    "PermissionCard"
+   ],
+   "pixels": 3135,
+   "ratio": 0.06403,
+   "box": [
+    32,
+    28,
+    261,
+    71
+   ],
+   "image": "images/comp-Hero_Reviews_OfferCard_PermissionCard-3.webp",
+   "first": [
+    36,
+    28
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Installment_PayBar_PayDock_ScamStrip-0",
+   "kind": "component",
+   "label": "Installment · PayBar · PayDock · ScamStrip · Overdue",
+   "labelZh": "Installment · PayBar · PayDock · ScamStrip · Overdue",
+   "entry": "Installment · PayBar · PayDock · ScamStrip",
+   "state": 0,
+   "components": [
+    "ScamStrip",
+    "Installment",
+    "PayBar",
+    "PayDock"
+   ],
+   "pixels": 2834,
+   "ratio": 0.05079,
+   "box": [
+    43,
+    37,
+    285,
+    76
+   ],
+   "image": "images/comp-Installment_PayBar_PayDock_ScamStrip-0.webp",
+   "first": [
+    87,
+    37
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Installment_PayBar_PayDock_ScamStrip-1",
+   "kind": "component",
+   "label": "Installment · PayBar · PayDock · ScamStrip · Upcoming",
+   "labelZh": "Installment · PayBar · PayDock · ScamStrip · Upcoming",
+   "entry": "Installment · PayBar · PayDock · ScamStrip",
+   "state": 1,
+   "components": [
+    "ScamStrip",
+    "Installment",
+    "PayBar",
+    "PayDock"
+   ],
+   "pixels": 4376,
+   "ratio": 0.07842,
+   "box": [
+    32,
+    32,
+    292,
+    81
+   ],
+   "image": "images/comp-Installment_PayBar_PayDock_ScamStrip-1.webp",
+   "first": [
+    40,
+    32
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Installment_PayBar_PayDock_ScamStrip-2",
+   "kind": "component",
+   "label": "Installment · PayBar · PayDock · ScamStrip · Due today",
+   "labelZh": "Installment · PayBar · PayDock · ScamStrip · Due today",
+   "entry": "Installment · PayBar · PayDock · ScamStrip",
+   "state": 2,
+   "components": [
+    "ScamStrip",
+    "Installment",
+    "PayBar",
+    "PayDock"
+   ],
+   "pixels": 7238,
+   "ratio": 0.12971,
+   "box": [
+    32,
+    27,
+    296,
+    85
+   ],
+   "image": "images/comp-Installment_PayBar_PayDock_ScamStrip-2.webp",
+   "first": [
+    36,
+    27
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Installment_PayBar_PayDock_ScamStrip-3",
+   "kind": "component",
+   "label": "Installment · PayBar · PayDock · ScamStrip · Overdue 1–2 days",
+   "labelZh": "Installment · PayBar · PayDock · ScamStrip · Overdue 1–2 days",
+   "entry": "Installment · PayBar · PayDock · ScamStrip",
+   "state": 3,
+   "components": [
+    "ScamStrip",
+    "Installment",
+    "PayBar",
+    "PayDock"
+   ],
+   "pixels": 12329,
+   "ratio": 0.22095,
+   "box": [
+    16,
+    16,
+    328,
+    96
+   ],
+   "image": "images/comp-Installment_PayBar_PayDock_ScamStrip-3.webp",
+   "first": [
+    26,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Installment_PayBar_PayDock_ScamStrip-4",
+   "kind": "component",
+   "label": "Installment · PayBar · PayDock · ScamStrip · Overdue 3 days",
+   "labelZh": "Installment · PayBar · PayDock · ScamStrip · Overdue 3 days",
+   "entry": "Installment · PayBar · PayDock · ScamStrip",
+   "state": 4,
+   "components": [
+    "ScamStrip",
+    "Installment",
+    "PayBar",
+    "PayDock"
+   ],
+   "pixels": 6665,
+   "ratio": 0.11944,
+   "box": [
+    32,
+    27,
+    296,
+    85
+   ],
+   "image": "images/comp-Installment_PayBar_PayDock_ScamStrip-4.webp",
+   "first": [
+    36,
+    27
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Installment_PayBar_PayDock_ScamStrip-5",
+   "kind": "component",
+   "label": "Installment · PayBar · PayDock · ScamStrip · Total",
+   "labelZh": "Installment · PayBar · PayDock · ScamStrip · Total",
+   "entry": "Installment · PayBar · PayDock · ScamStrip",
+   "state": 5,
+   "components": [
+    "ScamStrip",
+    "Installment",
+    "PayBar",
+    "PayDock"
+   ],
+   "pixels": 8356,
+   "ratio": 0.11159,
+   "box": [
+    20,
+    27,
+    320,
+    75
+   ],
+   "image": "images/comp-Installment_PayBar_PayDock_ScamStrip-5.webp",
+   "first": [
+    36,
+    27
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-RepayCard_InsetRows_QrPanel_PayTimer_Accordion-0",
+   "kind": "component",
+   "label": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion · App",
+   "labelZh": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion · App",
+   "entry": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion",
+   "state": 0,
+   "components": [
+    "RepayCard",
+    "InsetRows",
+    "PayTimer",
+    "QrPanel",
+    "Accordion"
+   ],
+   "pixels": 20356,
+   "ratio": 0.248,
+   "box": [
+    31,
+    37,
+    297,
+    150
+   ],
+   "image": "images/comp-RepayCard_InsetRows_QrPanel_PayTimer_Accordion-0.webp",
+   "first": [
+    286,
+    37
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-RepayCard_InsetRows_QrPanel_PayTimer_Accordion-1",
+   "kind": "component",
+   "label": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion · Transfer",
+   "labelZh": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion · Transfer",
+   "entry": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion",
+   "state": 1,
+   "components": [
+    "RepayCard",
+    "InsetRows",
+    "PayTimer",
+    "QrPanel",
+    "Accordion"
+   ],
+   "pixels": 7497,
+   "ratio": 0.08363,
+   "box": [
+    31,
+    37,
+    297,
+    151
+   ],
+   "image": "images/comp-RepayCard_InsetRows_QrPanel_PayTimer_Accordion-1.webp",
+   "first": [
+    286,
+    37
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-RepayCard_InsetRows_QrPanel_PayTimer_Accordion-2",
+   "kind": "component",
+   "label": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion · QR code",
+   "labelZh": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion · QR code",
+   "entry": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion",
+   "state": 2,
+   "components": [
+    "RepayCard",
+    "InsetRows",
+    "PayTimer",
+    "QrPanel",
+    "Accordion"
+   ],
+   "pixels": 71296,
+   "ratio": 0.40417,
+   "box": [
+    31,
+    37,
+    297,
+    412
+   ],
+   "image": "images/comp-RepayCard_InsetRows_QrPanel_PayTimer_Accordion-2.webp",
+   "first": [
+    286,
+    37
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-RepayCard_InsetRows_QrPanel_PayTimer_Accordion-3",
+   "kind": "component",
+   "label": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion · Example",
+   "labelZh": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion · Example",
+   "entry": "RepayCard · InsetRows · QrPanel · PayTimer · Accordion",
+   "state": 3,
+   "components": [
+    "RepayCard",
+    "InsetRows",
+    "PayTimer",
+    "QrPanel",
+    "Accordion"
+   ],
+   "pixels": 5232,
+   "ratio": 0.10381,
+   "box": [
+    32,
+    36,
+    293,
+    60
+   ],
+   "image": "images/comp-RepayCard_InsetRows_QrPanel_PayTimer_Accordion-3.webp",
+   "first": [
+    33,
+    36
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-MethodPicker_Pager-0",
+   "kind": "component",
+   "label": "MethodPicker · Pager · Methods",
+   "labelZh": "MethodPicker · Pager · Methods",
+   "entry": "MethodPicker · Pager",
+   "state": 0,
+   "components": [
+    "MethodPicker",
+    "Pager"
+   ],
+   "pixels": 4210,
+   "ratio": 0.01816,
+   "box": [
+    44,
+    25,
+    280,
+    531
+   ],
+   "image": "images/comp-MethodPicker_Pager-0.webp",
+   "first": [
+    248,
+    25
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-MethodPicker_Pager-1",
+   "kind": "component",
+   "label": "MethodPicker · Pager · Searching",
+   "labelZh": "MethodPicker · Pager · Searching",
+   "entry": "MethodPicker · Pager",
+   "state": 1,
+   "components": [
+    "MethodPicker",
+    "Pager"
+   ],
+   "pixels": 15789,
+   "ratio": 0.0681,
+   "box": [
+    16,
+    16,
+    328,
+    280
+   ],
+   "image": "images/comp-MethodPicker_Pager-1.webp",
+   "first": [
+    159,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Carousel-0",
+   "kind": "component",
+   "label": "Carousel · Swipe",
+   "labelZh": "Carousel · Swipe",
+   "entry": "Carousel",
+   "state": 0,
+   "components": [
+    "Carousel"
+   ],
+   "pixels": 15580,
+   "ratio": 0.14923,
+   "box": [
+    16,
+    137,
+    328,
+    129
+   ],
+   "image": "images/comp-Carousel-0.webp",
+   "first": [
+    38,
+    137
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-PenaltyInfo-0",
+   "kind": "component",
+   "label": "PenaltyInfo · Card",
+   "labelZh": "PenaltyInfo · Card",
+   "entry": "PenaltyInfo",
+   "state": 0,
+   "components": [
+    "PenaltyInfo"
+   ],
+   "pixels": 6312,
+   "ratio": 0.06376,
+   "box": [
+    34,
+    39,
+    253,
+    194
+   ],
+   "image": "images/comp-PenaltyInfo-0.webp",
+   "first": [
+    34,
+    39
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-ScamTips-0",
+   "kind": "component",
+   "label": "ScamTips · Sheet",
+   "labelZh": "ScamTips · Sheet",
+   "entry": "ScamTips",
+   "state": 0,
+   "components": [
+    "ScamTips"
+   ],
+   "pixels": 61499,
+   "ratio": 0.30076,
+   "box": [
+    0,
+    69,
+    360,
+    491
+   ],
+   "image": "images/comp-ScamTips-0.webp",
+   "first": [
+    0,
+    69
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-GuestPay-0",
+   "kind": "component",
+   "label": "GuestPay · Logged out",
+   "labelZh": "GuestPay · Logged out",
+   "entry": "GuestPay",
+   "state": 0,
+   "components": [
+    "GuestPay"
+   ],
+   "pixels": 32031,
+   "ratio": 0.16851,
+   "box": [
+    30,
+    72,
+    288,
+    380
+   ],
+   "image": "images/comp-GuestPay-0.webp",
+   "first": [
+    30,
+    72
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-LinkList_Facts-0",
+   "kind": "component",
+   "label": "LinkList · Facts · Links",
+   "labelZh": "LinkList · Facts · Links",
+   "entry": "LinkList · Facts",
+   "state": 0,
+   "components": [
+    "LinkList",
+    "Facts"
+   ],
+   "pixels": 1480,
+   "ratio": 0.02271,
+   "box": [
+    31,
+    38,
+    111,
+    100
+   ],
+   "image": "images/comp-LinkList_Facts-0.webp",
+   "first": [
+    63,
+    38
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-LinkList_Facts-1",
+   "kind": "component",
+   "label": "LinkList · Facts · Contacts",
+   "labelZh": "LinkList · Facts · Contacts",
+   "entry": "LinkList · Facts",
+   "state": 1,
+   "components": [
+    "LinkList",
+    "Facts"
+   ],
+   "pixels": 2433,
+   "ratio": 0.04661,
+   "box": [
+    36,
+    36,
+    292,
+    66
+   ],
+   "image": "images/comp-LinkList_Facts-1.webp",
+   "first": [
+    213,
+    36
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-LinkList_Facts-3",
+   "kind": "component",
+   "label": "LinkList · Facts · Facts",
+   "labelZh": "LinkList · Facts · Facts",
+   "entry": "LinkList · Facts",
+   "state": 3,
+   "components": [
+    "LinkList",
+    "Facts"
+   ],
+   "pixels": 3186,
+   "ratio": 0.0489,
+   "box": [
+    32,
+    35,
+    146,
+    101
+   ],
+   "image": "images/comp-LinkList_Facts-3.webp",
+   "first": [
+    36,
+    35
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-LinkList_Facts-2",
+   "kind": "component",
+   "label": "LinkList · Facts · Outside",
+   "labelZh": "LinkList · Facts · Outside",
+   "entry": "LinkList · Facts",
+   "state": 2,
+   "components": [
+    "LinkList",
+    "Facts"
+   ],
+   "pixels": 62,
+   "ratio": 0.00144,
+   "box": [
+    34,
+    38,
+    96,
+    12
+   ],
+   "image": "images/comp-LinkList_Facts-2.webp",
+   "first": [
+    37,
+    38
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-LinkList_Facts-4",
+   "kind": "component",
+   "label": "LinkList · Facts · Help topics",
+   "labelZh": "LinkList · Facts · Help topics",
+   "entry": "LinkList · Facts",
+   "state": 4,
+   "components": [
+    "LinkList",
+    "Facts"
+   ],
+   "pixels": 2283,
+   "ratio": 0.02653,
+   "box": [
+    32,
+    38,
+    124,
+    155
+   ],
+   "image": "images/comp-LinkList_Facts-4.webp",
+   "first": [
+    34,
+    38
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-ActivityItem_InboxItem_HistoryRow-0",
+   "kind": "component",
+   "label": "ActivityItem · InboxItem · HistoryRow · Activity",
+   "labelZh": "ActivityItem · InboxItem · HistoryRow · Activity",
+   "entry": "ActivityItem · InboxItem · HistoryRow",
+   "state": 0,
+   "components": [
+    "ActivityItem",
+    "InboxItem",
+    "HistoryRow"
+   ],
+   "pixels": 4282,
+   "ratio": 0.07774,
+   "box": [
+    32,
+    34,
+    296,
+    77
+   ],
+   "image": "images/comp-ActivityItem_InboxItem_HistoryRow-0.webp",
+   "first": [
+    36,
+    34
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-ActivityItem_InboxItem_HistoryRow-1",
+   "kind": "component",
+   "label": "ActivityItem · InboxItem · HistoryRow · Message",
+   "labelZh": "ActivityItem · InboxItem · HistoryRow · Message",
+   "entry": "ActivityItem · InboxItem · HistoryRow",
+   "state": 1,
+   "components": [
+    "ActivityItem",
+    "InboxItem",
+    "HistoryRow"
+   ],
+   "pixels": 4282,
+   "ratio": 0.05532,
+   "box": [
+    32,
+    37,
+    296,
+    132
+   ],
+   "image": "images/comp-ActivityItem_InboxItem_HistoryRow-1.webp",
+   "first": [
+    287,
+    37
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-ActivityItem_InboxItem_HistoryRow-2",
+   "kind": "component",
+   "label": "ActivityItem · InboxItem · HistoryRow · History",
+   "labelZh": "ActivityItem · InboxItem · HistoryRow · History",
+   "entry": "ActivityItem · InboxItem · HistoryRow",
+   "state": 2,
+   "components": [
+    "ActivityItem",
+    "InboxItem",
+    "HistoryRow"
+   ],
+   "pixels": 11731,
+   "ratio": 0.08855,
+   "box": [
+    31,
+    32,
+    269,
+    293
+   ],
+   "image": "images/comp-ActivityItem_InboxItem_HistoryRow-2.webp",
+   "first": [
+    216,
+    32
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-HubCard_Tiles_Tips-0",
+   "kind": "component",
+   "label": "HubCard · Tiles · Tips · Hub",
+   "labelZh": "HubCard · Tiles · Tips · Hub",
+   "entry": "HubCard · Tiles · Tips",
+   "state": 0,
+   "components": [
+    "HubCard",
+    "Tiles",
+    "Tips"
+   ],
+   "pixels": 46782,
+   "ratio": 0.69866,
+   "box": [
+    16,
+    16,
+    328,
+    146
+   ],
+   "image": "images/comp-HubCard_Tiles_Tips-0.webp",
+   "first": [
+    34,
+    16
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-HubCard_Tiles_Tips-1",
+   "kind": "component",
+   "label": "HubCard · Tiles · Tips · Tiles",
+   "labelZh": "HubCard · Tiles · Tips · Tiles",
+   "entry": "HubCard · Tiles · Tips",
+   "state": 1,
+   "components": [
+    "HubCard",
+    "Tiles",
+    "Tips"
+   ],
+   "pixels": 1537,
+   "ratio": 0.01825,
+   "box": [
+    33,
+    37,
+    226,
+    148
+   ],
+   "image": "images/comp-HubCard_Tiles_Tips-1.webp",
+   "first": [
+    37,
+    37
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-HubCard_Tiles_Tips-2",
+   "kind": "component",
+   "label": "HubCard · Tiles · Tips · Tips",
+   "labelZh": "HubCard · Tiles · Tips · Tips",
+   "entry": "HubCard · Tiles · Tips",
+   "state": 2,
+   "components": [
+    "HubCard",
+    "Tiles",
+    "Tips"
+   ],
+   "pixels": 5349,
+   "ratio": 0.05873,
+   "box": [
+    32,
+    38,
+    294,
+    173
+   ],
+   "image": "images/comp-HubCard_Tiles_Tips-2.webp",
+   "first": [
+    83,
+    38
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-OrderSubmit-0",
+   "kind": "component",
+   "label": "OrderSubmit · Play",
+   "labelZh": "OrderSubmit · Play",
+   "entry": "OrderSubmit",
+   "state": 0,
+   "components": [
+    "OrderSubmit"
+   ],
+   "pixels": 4519,
+   "ratio": 0.03077,
+   "box": [
+    43,
+    107,
+    274,
+    261
+   ],
+   "image": "images/comp-OrderSubmit-0.webp",
+   "first": [
+    177,
+    107
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-OtpSheet-0",
+   "kind": "component",
+   "label": "OtpSheet · Open it",
+   "labelZh": "OtpSheet · Open it",
+   "entry": "OtpSheet",
+   "state": 0,
+   "components": [
+    "OtpSheet"
+   ],
+   "pixels": 14503,
+   "ratio": 0.08608,
+   "box": [
+    24,
+    24,
+    312,
+    48
+   ],
+   "image": "images/comp-OtpSheet-0.webp",
+   "first": [
+    43,
+    24
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-CreditLimitIntro-0",
+   "kind": "component",
+   "label": "CreditLimitIntro · Play",
+   "labelZh": "CreditLimitIntro · Play",
+   "entry": "CreditLimitIntro",
+   "state": 0,
+   "components": [
+    "CreditLimitIntro"
+   ],
+   "pixels": 1663,
+   "ratio": 0.00713,
+   "box": [
+    154,
+    302,
+    53,
+    36
+   ],
+   "image": "images/comp-CreditLimitIntro-0.webp",
+   "first": [
+    166,
+    302
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-PageHead-0",
+   "kind": "component",
+   "label": "PageHead · Default",
+   "labelZh": "PageHead · Default",
+   "entry": "PageHead",
+   "state": 0,
+   "components": [
+    "PageHead"
+   ],
+   "pixels": 2627,
+   "ratio": 0.06081,
+   "box": [
+    25,
+    24,
+    304,
+    50
+   ],
+   "image": "images/comp-PageHead-0.webp",
+   "first": [
+    25,
+    24
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-PageHead-1",
+   "kind": "component",
+   "label": "PageHead · Centred",
+   "labelZh": "PageHead · Centred",
+   "entry": "PageHead",
+   "state": 1,
+   "components": [
+    "PageHead"
+   ],
+   "pixels": 4366,
+   "ratio": 0.10106,
+   "box": [
+    28,
+    23,
+    304,
+    71
+   ],
+   "image": "images/comp-PageHead-1.webp",
+   "first": [
+    311,
+    23
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-IdCamera_Shutter-0",
+   "kind": "component",
+   "label": "IdCamera · Shutter · Front",
+   "labelZh": "IdCamera · Shutter · Front",
+   "entry": "IdCamera · Shutter",
+   "state": 0,
+   "components": [
+    "Shutter",
+    "IdCamera"
+   ],
+   "pixels": 15597,
+   "ratio": 0.05792,
+   "box": [
+    15,
+    138,
+    333,
+    444
+   ],
+   "image": "images/comp-IdCamera_Shutter-0.webp",
+   "first": [
+    44,
+    138
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-IdCamera_Shutter-1",
+   "kind": "component",
+   "label": "IdCamera · Shutter · Back",
+   "labelZh": "IdCamera · Shutter · Back",
+   "entry": "IdCamera · Shutter",
+   "state": 1,
+   "components": [
+    "Shutter",
+    "IdCamera"
+   ],
+   "pixels": 15627,
+   "ratio": 0.05803,
+   "box": [
+    15,
+    138,
+    333,
+    444
+   ],
+   "image": "images/comp-IdCamera_Shutter-1.webp",
+   "first": [
+    44,
+    138
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-IdSideCard-0",
+   "kind": "component",
+   "label": "IdSideCard · To add",
+   "labelZh": "IdSideCard · To add",
+   "entry": "IdSideCard",
+   "state": 0,
+   "components": [
+    "IdSideCard"
+   ],
+   "pixels": 1911,
+   "ratio": 0.0214,
+   "box": [
+    33,
+    37,
+    274,
+    147
+   ],
+   "image": "images/comp-IdSideCard-0.webp",
+   "first": [
+    84,
+    37
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-IdSideCard-1",
+   "kind": "component",
+   "label": "IdSideCard · Added",
+   "labelZh": "IdSideCard · Added",
+   "entry": "IdSideCard",
+   "state": 1,
+   "components": [
+    "IdSideCard"
+   ],
+   "pixels": 2309,
+   "ratio": 0.02586,
+   "box": [
+    33,
+    37,
+    263,
+    147
+   ],
+   "image": "images/comp-IdSideCard-1.webp",
+   "first": [
+    157,
+    37
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Selfie-0",
+   "kind": "component",
+   "label": "Selfie · Live",
+   "labelZh": "Selfie · Live",
+   "entry": "Selfie",
+   "state": 0,
+   "components": [
+    "Selfie"
+   ],
+   "pixels": 4224,
+   "ratio": 0.02419,
+   "box": [
+    34,
+    134,
+    294,
+    311
+   ],
+   "image": "images/comp-Selfie-0.webp",
+   "first": [
+    133,
+    134
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Selfie-1",
+   "kind": "component",
+   "label": "Selfie · Checking",
+   "labelZh": "Selfie · Checking",
+   "entry": "Selfie",
+   "state": 1,
+   "components": [
+    "Selfie"
+   ],
+   "pixels": 530,
+   "ratio": 0.00462,
+   "box": [
+    150,
+    133,
+    62,
+    44
+   ],
+   "image": "images/comp-Selfie-1.webp",
+   "first": [
+    173,
+    133
+   ],
+   "unsteady": 1143
+  },
+  {
+   "id": "comp-FaceCamera-0",
+   "kind": "component",
+   "label": "FaceCamera · Camera",
+   "labelZh": "FaceCamera · Camera",
+   "entry": "FaceCamera",
+   "state": 0,
+   "components": [
+    "FaceCamera"
+   ],
+   "pixels": 4585,
+   "ratio": 0.01703,
+   "box": [
+    62,
+    278,
+    235,
+    242
+   ],
+   "image": "images/comp-FaceCamera-0.webp",
+   "first": [
+    97,
+    278
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-FaceCamera-1",
+   "kind": "component",
+   "label": "FaceCamera · Photo taken",
+   "labelZh": "FaceCamera · Photo taken",
+   "entry": "FaceCamera",
+   "state": 1,
+   "components": [
+    "FaceCamera"
+   ],
+   "pixels": 16722,
+   "ratio": 0.0621,
+   "box": [
+    16,
+    503,
+    328,
+    137
+   ],
+   "image": "images/comp-FaceCamera-1.webp",
+   "first": [
+    52,
+    503
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-IdResult_SheetHero_ChoiceList_PhotoTips-0",
+   "kind": "component",
+   "label": "IdResult · SheetHero · ChoiceList · PhotoTips · In use",
+   "labelZh": "IdResult · SheetHero · ChoiceList · PhotoTips · In use",
+   "entry": "IdResult · SheetHero · ChoiceList · PhotoTips",
+   "state": 0,
+   "components": [
+    "SheetHero",
+    "ChoiceList",
+    "PhotoTips",
+    "IdResult"
+   ],
+   "pixels": 58780,
+   "ratio": 0.28746,
+   "box": [
+    0,
+    69,
+    360,
+    491
+   ],
+   "image": "images/comp-IdResult_SheetHero_ChoiceList_PhotoTips-0.webp",
+   "first": [
+    0,
+    69
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-IdResult_SheetHero_ChoiceList_PhotoTips-1",
+   "kind": "component",
+   "label": "IdResult · SheetHero · ChoiceList · PhotoTips · Failed",
+   "labelZh": "IdResult · SheetHero · ChoiceList · PhotoTips · Failed",
+   "entry": "IdResult · SheetHero · ChoiceList · PhotoTips",
+   "state": 1,
+   "components": [
+    "SheetHero",
+    "ChoiceList",
+    "PhotoTips",
+    "IdResult"
+   ],
+   "pixels": 59171,
+   "ratio": 0.28937,
+   "box": [
+    0,
+    69,
+    360,
+    491
+   ],
+   "image": "images/comp-IdResult_SheetHero_ChoiceList_PhotoTips-1.webp",
+   "first": [
+    0,
+    69
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-FileList_FileNote-0",
+   "kind": "component",
+   "label": "FileList · FileNote · Files",
+   "labelZh": "FileList · FileNote · Files",
+   "entry": "FileList · FileNote",
+   "state": 0,
+   "components": [
+    "FileList",
+    "FileNote"
+   ],
+   "pixels": 5026,
+   "ratio": 0.04533,
+   "box": [
+    26,
+    18,
+    217,
+    159
+   ],
+   "image": "images/comp-FileList_FileNote-0.webp",
+   "first": [
+    169,
+    18
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-SearchSheet_BankList-0",
+   "kind": "component",
+   "label": "SearchSheet · BankList · Banks",
+   "labelZh": "SearchSheet · BankList · Banks",
+   "entry": "SearchSheet · BankList",
+   "state": 0,
+   "components": [
+    "SearchSheet",
+    "BankList"
+   ],
+   "pixels": 47827,
+   "ratio": 0.21155,
+   "box": [
+    0,
+    0,
+    360,
+    572
+   ],
+   "image": "images/comp-SearchSheet_BankList-0.webp",
+   "first": [
+    0,
+    0
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-SearchSheet_BankList-1",
+   "kind": "component",
+   "label": "SearchSheet · BankList · White",
+   "labelZh": "SearchSheet · BankList · White",
+   "entry": "SearchSheet · BankList",
+   "state": 1,
+   "components": [
+    "SearchSheet",
+    "BankList"
+   ],
+   "pixels": 22262,
+   "ratio": 0.09847,
+   "box": [
+    0,
+    0,
+    360,
+    620
+   ],
+   "image": "images/comp-SearchSheet_BankList-1.webp",
+   "first": [
+    0,
+    0
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-PlacePicker-0",
+   "kind": "component",
+   "label": "PlacePicker · Pick",
+   "labelZh": "PlacePicker · Pick",
+   "entry": "PlacePicker",
+   "state": 0,
+   "components": [
+    "PlacePicker"
+   ],
+   "pixels": 47142,
+   "ratio": 0.20852,
+   "box": [
+    0,
+    0,
+    360,
+    418
+   ],
+   "image": "images/comp-PlacePicker-0.webp",
+   "first": [
+    0,
+    0
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-EstimateCard-0",
+   "kind": "component",
+   "label": "EstimateCard · Live",
+   "labelZh": "EstimateCard · Live",
+   "entry": "EstimateCard",
+   "state": 0,
+   "components": [
+    "EstimateCard"
+   ],
+   "pixels": 15231,
+   "ratio": 0.07257,
+   "box": [
+    25,
+    36,
+    303,
+    521
+   ],
+   "image": "images/comp-EstimateCard-0.webp",
+   "first": [
+    33,
+    36
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Article_Feedback_RelatedLinks-0",
+   "kind": "component",
+   "label": "Article · Feedback · RelatedLinks · Article",
+   "labelZh": "Article · Feedback · RelatedLinks · Article",
+   "entry": "Article · Feedback · RelatedLinks",
+   "state": 0,
+   "components": [
+    "Article",
+    "Feedback",
+    "RelatedLinks"
+   ],
+   "pixels": 13555,
+   "ratio": 0.13165,
+   "box": [
+    24,
+    20,
+    303,
+    238
+   ],
+   "image": "images/comp-Article_Feedback_RelatedLinks-0.webp",
+   "first": [
+    25,
+    20
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Article_Feedback_RelatedLinks-1",
+   "kind": "component",
+   "label": "Article · Feedback · RelatedLinks · Feedback",
+   "labelZh": "Article · Feedback · RelatedLinks · Feedback",
+   "entry": "Article · Feedback · RelatedLinks",
+   "state": 1,
+   "components": [
+    "Article",
+    "Feedback",
+    "RelatedLinks"
+   ],
+   "pixels": 763,
+   "ratio": 0.01139,
+   "box": [
+    17,
+    63,
+    192,
+    58
+   ],
+   "image": "images/comp-Article_Feedback_RelatedLinks-1.webp",
+   "first": [
+    17,
+    63
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-Article_Feedback_RelatedLinks-2",
+   "kind": "component",
+   "label": "Article · Feedback · RelatedLinks · Related",
+   "labelZh": "Article · Feedback · RelatedLinks · Related",
+   "entry": "Article · Feedback · RelatedLinks",
+   "state": 2,
+   "components": [
+    "Article",
+    "Feedback",
+    "RelatedLinks"
+   ],
+   "pixels": 4342,
+   "ratio": 0.05313,
+   "box": [
+    24,
+    85,
+    229,
+    104
+   ],
+   "image": "images/comp-Article_Feedback_RelatedLinks-2.webp",
+   "first": [
+    24,
+    85
+   ],
+   "unsteady": 0
+  },
+  {
+   "id": "comp-PageHero-0",
+   "kind": "component",
+   "label": "PageHero · Permissions",
+   "labelZh": "PageHero · Permissions",
+   "entry": "PageHero",
+   "state": 0,
+   "components": [
+    "PageHero"
+   ],
+   "pixels": 4366,
+   "ratio": 0.04594,
+   "box": [
+    28,
+    155,
+    304,
+    71
+   ],
+   "image": "images/comp-PageHero-0.webp",
+   "first": [
+    311,
+    155
+   ],
+   "unsteady": 0
+  }
+ ],
+ "added": [
+  {
+   "id": "comp-Button-9",
+   "kind": "component",
+   "label": "Button · Shade",
+   "labelZh": "Button · Shade",
+   "entry": "Button",
+   "state": 9,
+   "components": [
+    "Button"
+   ]
+  },
+  {
+   "id": "comp-Button-10",
+   "kind": "component",
+   "label": "Button · Soft · ghost · md",
+   "labelZh": "Button · Soft · ghost · md",
+   "entry": "Button",
+   "state": 10,
+   "components": [
+    "Button"
+   ]
+  },
+  {
+   "id": "comp-Button-11",
+   "kind": "component",
+   "label": "Button · Inactive",
+   "labelZh": "Button · Inactive",
+   "entry": "Button",
+   "state": 11,
+   "components": [
+    "Button"
+   ]
+  },
+  {
+   "id": "comp-Button-12",
+   "kind": "component",
+   "label": "Button · Disabled",
+   "labelZh": "Button · Disabled",
+   "entry": "Button",
+   "state": 12,
+   "components": [
+    "Button"
+   ]
+  },
+  {
+   "id": "comp-Mask-0",
+   "kind": "component",
+   "label": "Mask · Phone",
+   "labelZh": "Mask · Phone",
+   "entry": "Mask",
+   "state": 0,
+   "components": [
+    "Mask"
+   ]
+  },
+  {
+   "id": "comp-Keypad_Segmented_SelectBar-3",
+   "kind": "component",
+   "label": "Keypad · Segmented · SelectBar · Trailing radio",
+   "labelZh": "Keypad · Segmented · SelectBar · Trailing radio",
+   "entry": "Keypad · Segmented · SelectBar",
+   "state": 3,
+   "components": [
+    "Keypad",
+    "Segmented",
+    "SelectBar"
+   ]
+  },
+  {
+   "id": "comp-ChoiceSheet-0",
+   "kind": "component",
+   "label": "ChoiceSheet · Cards",
+   "labelZh": "ChoiceSheet · Cards",
+   "entry": "ChoiceSheet",
+   "state": 0,
+   "components": [
+    "ChoiceSheet"
+   ]
+  },
+  {
+   "id": "comp-ChoiceSheet-1",
+   "kind": "component",
+   "label": "ChoiceSheet · List · tags",
+   "labelZh": "ChoiceSheet · List · tags",
+   "entry": "ChoiceSheet",
+   "state": 1,
+   "components": [
+    "ChoiceSheet"
+   ]
+  },
+  {
+   "id": "comp-ChoiceSheet-2",
+   "kind": "component",
+   "label": "ChoiceSheet · From a field",
+   "labelZh": "ChoiceSheet · From a field",
+   "entry": "ChoiceSheet",
+   "state": 2,
+   "components": [
+    "ChoiceSheet"
+   ]
+  },
+  {
+   "id": "comp-FormField_Popover-5",
+   "kind": "component",
+   "label": "FormField · Popover · Picked",
+   "labelZh": "FormField · Popover · Picked",
+   "entry": "FormField · Popover",
+   "state": 5,
+   "components": [
+    "FormField",
+    "Popover"
+   ]
+  },
+  {
+   "id": "comp-SelfieTips_LineTabs-2",
+   "kind": "component",
+   "label": "SelfieTips · LineTabs · Tabs · hug (long labels)",
+   "labelZh": "SelfieTips · LineTabs · Tabs · hug (long labels)",
+   "entry": "SelfieTips · LineTabs",
+   "state": 2,
+   "components": [
+    "SelfieTips",
+    "LineTabs"
+   ]
+  },
+  {
+   "id": "comp-Tabs-3",
+   "kind": "component",
+   "label": "Tabs · Split · chip",
+   "labelZh": "Tabs · Split · chip",
+   "entry": "Tabs",
+   "state": 3,
+   "components": [
+    "Tabs"
+   ]
+  },
+  {
+   "id": "comp-Decision-3",
+   "kind": "component",
+   "label": "Decision · Two coupons",
+   "labelZh": "Decision · Two coupons",
+   "entry": "Decision",
+   "state": 3,
+   "components": [
+    "Decision"
+   ]
+  },
+  {
+   "id": "comp-PaymentCard-3",
+   "kind": "component",
+   "label": "PaymentCard · Overdue",
+   "labelZh": "PaymentCard · Overdue",
+   "entry": "PaymentCard",
+   "state": 3,
+   "components": [
+    "PaymentCard"
+   ]
+  },
+  {
+   "id": "comp-TrustCard_Legal-1",
+   "kind": "component",
+   "label": "TrustCard · Legal · Legal on navy",
+   "labelZh": "TrustCard · Legal · Legal on navy",
+   "entry": "TrustCard · Legal",
+   "state": 1,
+   "components": [
+    "TrustCard",
+    "Legal"
+   ]
+  },
+  {
+   "id": "comp-AmountCard-2",
+   "kind": "component",
+   "label": "AmountCard · Large · navy · no pencil (SMS landing)",
+   "labelZh": "AmountCard · Large · navy · no pencil (SMS landing)",
+   "entry": "AmountCard",
+   "state": 2,
+   "components": [
+    "AmountCard"
+   ]
+  },
+  {
+   "id": "comp-Installment_PayBar_PayDock_ScamStrip-6",
+   "kind": "component",
+   "label": "Installment · PayBar · PayDock · ScamStrip · Scam strip",
+   "labelZh": "Installment · PayBar · PayDock · ScamStrip · Scam strip",
+   "entry": "Installment · PayBar · PayDock · ScamStrip",
+   "state": 6,
+   "components": [
+    "ScamStrip",
+    "Installment",
+    "PayBar",
+    "PayDock"
+   ]
+  },
+  {
+   "id": "comp-Installment_PayBar_PayDock_ScamStrip-7",
+   "kind": "component",
+   "label": "Installment · PayBar · PayDock · ScamStrip · Nothing picked",
+   "labelZh": "Installment · PayBar · PayDock · ScamStrip · Nothing picked",
+   "entry": "Installment · PayBar · PayDock · ScamStrip",
+   "state": 7,
+   "components": [
+    "ScamStrip",
+    "Installment",
+    "PayBar",
+    "PayDock"
+   ]
+  },
+  {
+   "id": "comp-Installment_PayBar_PayDock_ScamStrip-8",
+   "kind": "component",
+   "label": "Installment · PayBar · PayDock · ScamStrip · Docked",
+   "labelZh": "Installment · PayBar · PayDock · ScamStrip · Docked",
+   "entry": "Installment · PayBar · PayDock · ScamStrip",
+   "state": 8,
+   "components": [
+    "ScamStrip",
+    "Installment",
+    "PayBar",
+    "PayDock"
+   ]
+  },
+  {
+   "id": "comp-MethodPicker_Pager-2",
+   "kind": "component",
+   "label": "MethodPicker · Pager · Pager",
+   "labelZh": "MethodPicker · Pager · Pager",
+   "entry": "MethodPicker · Pager",
+   "state": 2,
+   "components": [
+    "MethodPicker",
+    "Pager"
+   ]
+  }
+ ],
+ "failed": [],
+ "summary": {
+  "components": [
+   "Anim",
+   "Lottie",
+   "SendingCard",
+   "Card",
+   "Glass",
+   "TopBar",
+   "Icon",
+   "Back",
+   "HomeActions",
+   "Bands",
+   "Brand",
+   "Rise",
+   "Crossfade",
+   "Art",
+   "Amount",
+   "Button",
+   "Close",
+   "Tag",
+   "Count",
+   "Chip",
+   "Check",
+   "Agreement",
+   "Divider",
+   "Link",
+   "Section",
+   "KV",
+   "Rows",
+   "Swap",
+   "TextLink",
+   "InfoButton",
+   "SectionLabel",
+   "BottomBar",
+   "Navigator",
+   "Cover",
+   "Fallback",
+   "Sheet",
+   "SheetHead",
+   "ButtonRow",
+   "Confirm",
+   "Tooltip",
+   "Toast",
+   "Toasts",
+   "Coin",
+   "Dots",
+   "Loader",
+   "Busy",
+   "StatusBox",
+   "Notice",
+   "Result",
+   "Overlay",
+   "Splash",
+   "Field",
+   "PhoneField",
+   "OtpBoxes",
+   "ContactMethods",
+   "Keypad",
+   "Segmented",
+   "SelectBar",
+   "Search",
+   "Consent",
+   "UploadTile",
+   "FormField",
+   "Popover",
+   "FileRow",
+   "DocCard",
+   "SelfieTips",
+   "LineTabs",
+   "Wheel",
+   "DatePicker",
+   "OtpForm",
+   "ReasonList",
+   "CouponArt",
+   "Countdown",
+   "CouponTicket",
+   "Tabs",
+   "EmptyState",
+   "CouponOption",
+   "CouponRow",
+   "CouponsSection",
+   "Summary",
+   "Decision",
+   "CreditCard",
+   "PaymentCard",
+   "HomeCoupons",
+   "PartnerLogos",
+   "DotTitle",
+   "Banners",
+   "TrustCard",
+   "Legal",
+   "Slider",
+   "AmountCard",
+   "OrderDetails",
+   "ProtectionCard",
+   "MethodCard",
+   "RepaymentPlan",
+   "OrderHead",
+   "OrderStatus",
+   "PlanRows",
+   "AmountEntry",
+   "Profile",
+   "CreditLimitCard",
+   "GuestProfile",
+   "Menu",
+   "Social",
+   "AboutHead",
+   "FooterMark",
+   "RegCard",
+   "Message",
+   "Bullets",
+   "Rating",
+   "StateCard",
+   "Strip",
+   "OfferCard",
+   "Hero",
+   "Reviews",
+   "PermissionCard",
+   "ScamStrip",
+   "Installment",
+   "PayBar",
+   "PayDock",
+   "RepayCard",
+   "InsetRows",
+   "PayTimer",
+   "QrPanel",
+   "Accordion",
+   "MethodPicker",
+   "Pager",
+   "Carousel",
+   "PenaltyInfo",
+   "ScamTips",
+   "GuestPay",
+   "LinkList",
+   "Facts",
+   "ActivityItem",
+   "InboxItem",
+   "HistoryRow",
+   "HubCard",
+   "Tiles",
+   "Tips",
+   "OrderSubmit",
+   "OtpSheet",
+   "CreditLimitIntro",
+   "PageHead",
+   "Shutter",
+   "IdCamera",
+   "IdSideCard",
+   "Selfie",
+   "FaceCamera",
+   "SheetHero",
+   "ChoiceList",
+   "PhotoTips",
+   "IdResult",
+   "FileList",
+   "FileNote",
+   "SearchSheet",
+   "BankList",
+   "PlacePicker",
+   "EstimateCard",
+   "Article",
+   "Feedback",
+   "RelatedLinks",
+   "PageHero"
+  ],
+  "pages": [
+   "sending",
+   "permission",
+   "otp",
+   "login",
+   "opening",
+   "home",
+   "amount",
+   "withdraw",
+   "loan",
+   "method",
+   "order",
+   "coupons",
+   "keep",
+   "picker",
+   "plan",
+   "banks",
+   "payment",
+   "pay",
+   "paydetail",
+   "scams",
+   "paymethods",
+   "kyc-estimate",
+   "kyc-basic",
+   "kyc-id",
+   "camera",
+   "kyc-check",
+   "kyc-selfie",
+   "kyc-contact",
+   "docs",
+   "id-inuse",
+   "id-failed",
+   "date",
+   "city",
+   "account",
+   "hub",
+   "credit",
+   "inbox",
+   "history",
+   "message",
+   "cancel",
+   "loan-record",
+   "manage",
+   "delete",
+   "about",
+   "sec",
+   "bir",
+   "support",
+   "logout",
+   "doc",
+   "delete-ok",
+   "delete-no",
+   "faqs",
+   "rating",
+   "faq-topic",
+   "phone-old",
+   "faq",
+   "phone-new",
+   "phone-selfie",
+   "missing",
+   "face"
+  ],
+  "seconds": 439
+ }
+}
