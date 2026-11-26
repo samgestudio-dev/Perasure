@@ -2,6 +2,9 @@
 
 Source: the Figma file `kYyNV2MgxvH1w9bJ46A3yx` (rebrand copy), exported through `tools/sync-tokens.py`. The Legacy collections and styles are left out, and no `tokens/legacy/` file is written (owner, 2026-11-21).
 
+**Update (owner, 2026-11-26):** the blue version is now legacy. `tokens/legacy/2026.11.17.css` (from `tools/legacy-tokens.py legacy-blue 2026.11.17`)
+keeps every v2026.11.17 name and value that the rebrand removed or changed; the full blue repo is on branch `legacy/blue`.
+
 ## What changed
 
 - **Colour scales** (Brand Bible UI Foundations, OKLCH):

@@ -5,6 +5,9 @@ Phone-first motion prototypes. The repo is private; it is served at samge.studio
 **Open on your phone:** https://samge.studio/perasure/playground/ — a picker page with two tabs:
 **Prototypes** (interactive flows) and **Animations** (illustration animations, played one at a time as Lottie or GSAP).
 
+`main` is the **rebrand v3** (navy + green). The old blue version is **legacy**: branch `legacy/blue`, tag `legacy-blue`;
+its token names and values are kept in `tokens/legacy/2026.11.17.css`.
+
 ## Prototypes
 
 | Demo | Variants |

@@ -6,6 +6,9 @@ read straight from GitHub (the Worker lives in the repo `samgestudio-dev/devmode
 - Live picker: https://samge.studio/perasure/playground/ · Dev Mode: https://samge.studio/devmode/?app=perasure
 - Each demo is opened and tested on a real phone (iOS Safari and Android Chrome).
 - The owner is a designer; reply in plain language and keep the picker page tidy.
+- **`main` is the rebrand v3** (navy + green, since 2026-11-26). The old **blue** version is **legacy**: branch `legacy/blue`
+  and tag `legacy-blue` (frozen, don't build on it). Its CSS names and values stay usable through
+  `tokens/legacy/2026.11.17.css` (load it after `tokens/tokens.css`).
 
 ## Components first (owner's rule — this repo and every PeraSure project)
 
